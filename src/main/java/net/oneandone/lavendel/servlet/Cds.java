@@ -1,4 +1,4 @@
-package com.oneandone.lavendel.servlet;
+package net.oneandone.lavendel.servlet;
 
 import org.apache.log4j.Logger;
 
