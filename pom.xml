@@ -143,7 +143,14 @@
         <configuration>
           <rules>
             <banDuplicateClasses>
-              <findAllDuplicates>false</findAllDuplicates>
+              <findAllDuplicates>true</findAllDuplicates>
+              <ignoreClasses>
+                <ignoreClass>javax.servlet.*</ignoreClass>
+                <ignoreClass>org.apache.http.annotation.*</ignoreClass>
+                <ignoreClass>org.hamcrest.*</ignoreClass>
+                <ignoreClass>org.apache.PeriodicEventListener</ignoreClass>
+                <ignoreClass>org.apache.AnnotationProcessor</ignoreClass>
+               </ignoreClasses>
             </banDuplicateClasses>
           </rules>
         </configuration>
