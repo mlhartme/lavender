@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?><document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
+  <body>
+    <release version="1.5.0">
+      <action date="2013-07-12" dev="mhm" type="add">
+        Added gc dryrun switch.
+      </action>
+      <action date="2013-07-04" dev="mhm" type="update">
+        "gc" command takes a cluster argument now.
+      </action>
+      <action date="2013-07-04" dev="mhm" type="update">
+        Index always contains the path on the target machine as the lavendelized path;
+        as a consequence, indexes on flash servers map to plain paths now.
+      </action>
+      <action date="2013-07-04" dev="mhm" type="update">
+        Index without lavendelized on flash servers is no longer lavendelized.
+      </action>
+      <action date="2013-07-04" dev="mhm" type="add">
+        Added "svn" command to publish svn directories.
+      </action>
+      <action date="2013-07-04" dev="mhm" type="update">
+        Renamed "publish" command to "war".
+      </action>
+    </release>
+    <release date="2013-01-02" version="1.4.2">
+      <action date="2013-01-02" dev="mhm" type="update">
+        Use /home/mhm/logs/lavendel for temp files.
+      </action>
+      <action date="2013-01-02" dev="mhm" type="update">
+        Reduce disk space consumption sharing svn checkouts for different tags.
+      </action>
+    </release>
+    <release date="2012-11-09" version="1.4.1">
+      <action date="2012-11-08" dev="mhm" type="fix">
+        Fix deleteTree exception during publish.
+      </action>
+    </release>
+    <release date="2012-11-08" version="1.4.0">
+      <action date="2012-11-08" dev="mhm" type="fix">
+        Fix invalid originalPath for modules with static entries in their module descriptor.
+      </action>
+      <action date="2012-10-01" dev="mhm" type="add">
+        Add bazaar command for carsten.
+      </action>
+      <action date="2012-10-01" dev="mhm" type="update">
+        Update Sushi 2.6.2 to 2.8.0.
+      </action>
+    </release>
+    <release date="2012-08-13" version="1.3.7">
+      <action date="2012-08-13" dev="mhm" type="fix">
+        Fix missing lavendel subdirectory with -Plavendel.
+      </action>
+      <action date="2012-08-13" dev="mhm" type="update">
+        GC output tweaks.
+      </action>
+    </release>
+    <release date="2012-08-13" version="1.3.6">
+      <action date="2012-08-13" dev="mhm" type="update">
+        GC output tweaks.
+      </action>
+    </release>
+    <release date="2012-03-16" version="1.3.5">
+      <action date="2012-03-16" dev="mhm" type="fix">
+        Fix NPE in cluster initialization.
+      </action>
+    </release>
+    <release date="2012-03-16" version="1.3.4">
+      <action date="2012-03-07" dev="mhm" type="update">
+        Add us lavendel server config.
+      </action>
+    </release>
+    <release date="2012-02-27" version="1.3.3">
+      <action date="2012-02-27" dev="mhm" type="fix">
+        Fix -Plavendel.
+      </action>
+    </release>
+    <release date="2012-02-25" version="1.3.2">
+      <action date="2012-02-25" dev="mhm" type="fix">
+        Fix pustefix config problem.
+      </action>
+    </release>
+    <release date="2012-02-25" version="1.3.1">
+      <action date="2012-02-25" dev="mhm" type="fix">
+        Fix publisher argument bug.
+      </action>
+    </release>
+    <release date="2012-02-25" version="1.3.0">
+      <action date="2012-02-23" dev="mhm" type="add">
+        Add multi-cluster support.
+      </action>
+      <action date="2011-12-12" dev="mhm" type="add">
+        Add Flash Storage.
+      </action>
+      <action date="2012-02-14" dev="mhm" type="add">
+        Includes and excludes.
+      </action>
+    </release>
+    <release date="2011-12-12" version="1.2.7">
+      <action date="2011-12-12" dev="mhm" type="fix">
+        Fix svn auth cache pollution.
+      </action>
+    </release>
+    <release date="2011-12-07" version="1.2.6">
+      <action date="2011-12-07" dev="mhm" type="update">
+        Adjust to new htdocs directory for static content.
+      </action>
+    </release>
+    <release date="2011-11-24" version="1.2.5">
+      <action date="2011-11-24" dev="mhm" type="update">
+        Update Sushi 2.6.0 to 2.6.1 and Lavendelizer 1.1.9 to 1.1.10.
+      </action>
+    </release>
+    <release date="2011-09-05" version="1.2.4">
+      <action date="2011-07-21" dev="mhm" type="update">
+        Update lavendelizer 1.1.8 to 1.1.9 to fix Richi's encoding problem.
+      </action>
+    </release>
+    <release date="2011-07-21" version="1.2.3">
+      <action date="2011-07-21" dev="mhm" type="update">
+        Update lavendelizer 1.1.7 to 1.1.8 to fix NPE when mime type is not defined.
+      </action>
+    </release>
+    <release date="2011-07-21" version="1.2.2">
+      <action date="2011-07-19" dev="mhm" type="update">
+        Generalize status command to direct command.
+      </action>
+      <action date="2011-07-15" dev="mhm" type="update">
+        Update Lavendelizer 1.1.5 to 1.1.6.
+      </action>
+    </release>
+    <release date="2011-07-12" version="1.2.1">
+      <action date="2011-07-12" dev="mhm" type="fix">
+        Fix return code for IOExceptions.
+      </action>
+    </release>
+    <release date="2011-07-12" version="1.2.0">
+      <action date="2011-07-11" dev="mhm" type="add">
+        Add CLI
+      </action>
+      <action date="2011-07-11" dev="mhm" type="update">
+        Reject war files without log4j.jar.
+      </action>
+      <action date="2011-07-11" dev="mhm" type="update">
+        Automatically add lavendelizer.jar; report error if it's already in the war file.
+      </action>
+      <action dev="mhm" type="update">
+        WEB-INF/lavendel.properties are mandatory now.
+      </action>
+    </release>
+    <release date="2011-07-08" version="1.1.4">
+      <action dev="mhm" type="update">
+        Stand-alone build.
+      </action>
+      <action dev="mhm" type="update">
+        Update Sushi 2.4.0 to 2.6.0.
+      </action>
+    </release>
+    <release date="2011-05-31" version="1.1.3">
+      <action dev="mhm" type="update">
+        Improved error message for SVN failures (for Cyril).
+      </action>
+      <action dev="mhm" type="update">
+        Do not send 404 warning for favicon.ico.
+      </action>
+    </release>
+  </body>
+</document>

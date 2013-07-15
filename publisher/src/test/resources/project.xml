@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?><project-config xmlns:xalan="http://xml.apache.org/xalan" xmlns:ext="xalan://de.ui.devel.ant.billyboy.configupgrade.XsltExtensionFunctions" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.pustefix-framework.org/2008/namespace/project-config" xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/project-config                                          http://www.pustefix-framework.org/2008/namespace/project-config.xsd">
+
+  <project>
+    <!-- Short project name, should equal the name 
+         of the project directory                  --> 
+    <name>nightclub-eue-de</name>
+    <description>nightclub configuration process</description>
+    <!-- 
+      add
+    <enabled>false</enabled>
+      to make disregard this project when building the
+      server configuration 
+    -->
+  </project>
+  
+  <editor>
+    <choose>
+      <when test="$mode='test' or $mode='stage'">
+        <enabled>true</enabled>
+      </when>
+    </choose>
+    <location>http://cms.dxkabkh4h4j.ue.schlund.de:8080</location>
+    <secret>foobar</secret>
+  </editor>
+  
+  <!-- Performance logging options:
+         buffersize: size of buffer for perfevents (default: 1000)
+         autostart: start perflogging automatically (default: false)
+         offermaxwait: max time a the put-thread will wait when putting perfevent into a full buffer (default: 5)-->
+  <perflogging buffersize="2000" autostart="true" offermaxwait="5"/>
+  
+  <xml-generator>
+    <!-- Path to the configuration file of 
+         the TargetGenerator for this project -->
+    <config-file>docroot:/WEB-INF/depend.xml</config-file>
+    <choose>
+      <when test="$mode='prod'">
+        <check-modtime>false</check-modtime>
+        <include-cache capacity="50"/>
+        <target-cache capacity="50"/>
+      </when>
+      <when test="$mode='stage'">
+        <include-cache capacity="10"/>
+        <target-cache capacity="10"/>
+      </when>
+      <otherwise>
+        <include-cache capacity="50"/>
+        <target-cache capacity="30"/>
+      </otherwise>
+    </choose>
+  </xml-generator>
+  
+  
+  
+  <application>
+    
+    <!-- Path that static resources will be delivered from -->
+    <docroot-path>docroot:/htdocs</docroot-path>
+    
+    <!-- URI requests to / are redirected to -->
+    <default-path>/xml/order</default-path>
+    
+    <error-pages>
+      <error code="500">/error500_de.html</error>
+      <error code="404">/error404_de.html</error>
+    </error-pages>
+    
+    <!-- Only one context-xml-service may be specified per project -->
+    <context-xml-service>
+      <!-- URI the service will be available at -->
+      <path>/xml/order</path>
+      <!-- Path to the configuration file for the service -->
+      <config-file>docroot:/WEB-INF/order.conf.xml</config-file>
+      <additional-trail-info>de.schlund.pfixxml.perflogging.DefaultAdditionalTrailInfoImpl</additional-trail-info>
+      <choose>
+        <when test="$mode='prod'">
+          <session-cleaner-timeout>20</session-cleaner-timeout>
+        </when>
+        <otherwise>
+          <session-cleaner-timeout>600</session-cleaner-timeout>
+        </otherwise>
+      </choose>
+    </context-xml-service>
+    
+    <webservice-service>
+      <path>/xml/webservice</path>
+      <config-file>docroot:/WEB-INF/webservice.conf.xml</config-file>
+    </webservice-service>
+    
+    <!-- Extra paths for static resources -->
+    <static>
+      <path>common/img</path>
+      <path>common/style</path>
+      <path>common/script</path>
+      <path>modules/frontend-elements/htc</path>
+      <path>modules/frontend-elements/img</path>
+      <path>modules/frontend-elements/style</path>
+      <path>img</path>
+      <path>modules/entertainment-common/common/img</path>
+      <path>modules/entertainment-common/maxdome-common/img</path>
+      <path>modules/entertainment-common/maxdome-eue-common/img</path>
+      <path>modules/stageassistent/img</path>
+      <path>modules/stageassistent/style</path>
+      <path>modules/stageassistent/script</path>
+      <path>modules/frontend-tools/script</path>
+      <path>modules/frontend-tools/style</path>
+      <path>modules/frontend-tools/img</path>
+      <path>modules/unouno/script</path>
+      <path>modules/frontend-ingrid/img</path>
+    </static>
+    
+    <choose>
+      <when test="$mode='prod'">
+        <exception-processing>
+          <process type="java.lang.Throwable" processor="de.schlund.fehlertool.client.JmsQueueSenderExceptionProcessor"/>
+        </exception-processing>
+      </when>
+      <otherwise>
+        <exception-processing>
+          <process type="java.lang.Throwable" processor="de.schlund.pfixxml.exceptionprocessor.UniversalExceptionProcessor"/>
+        </exception-processing>
+      </otherwise>
+    </choose>
+  </application>
+  
+  <passthrough>img</passthrough>
+  
+  <properties>
+    
+    <choose>
+      <when test="$mode='prod'">
+        <prop name="ERROR_QUEUE_JNDI_FILE">common/conf/fehlertooljndi.properties</prop>        
+      </when>
+    </choose>
+    
+    <!-- Defines SSL ports used for redirect corresponding to the unsecure ports -->
+    <prop name="pfixcore.ssl_redirect_port.for.8080">8443</prop>
+    <prop name="pfixcore.ssl_redirect_port.for.9080">9443</prop>
+
+    <prop name="spsession.server">session.schlund.de</prop>
+    <prop name="spsession.port">2001</prop>
+
+
+  </properties>
+</project-config>

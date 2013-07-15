@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
+  <body>
+    <release version="1.2.0">
+      <action date="2013-07-06" dev="mhm" type="add">
+        Add Index.save to Stream and update to latest parent pom.
+      </action>
+      <action date="2012-11-08" dev="mhm" type="update">
+        Improved error message for conflicting resources.
+      </action>
+    </release>
+    <release date="2011-11-24" version="1.1.10">
+      <action date="2011-11-24" dev="mhm" type="update">
+        Do not warn if a bot gets an 404.
+      </action>
+    </release>
+    <release date="2011-09-05" version="1.1.9">
+      <action date="2011-09-01" dev="mhm" type="fix">
+        Fix missing OutputStreamWriter encoding for gzipped responses.
+      </action>
+      <action date="2011-09-01" dev="mhm" type="fix">
+        Default to UTF-8 encoding when filtering resources (instead of iso).
+      </action>
+    </release>
+    <release date="2011-07-21" version="1.1.8">
+      <action date="2011-07-21" dev="mhm" type="fix">
+        Fix npe when mimetype is not assigned
+      </action>
+    </release>
+    <release date="2011-07-18" version="1.1.7">
+      <action date="2011-07-18" dev="mhm" type="update">
+        Iterable Index.
+      </action>
+    </release>
+    <release date="2011-07-15" version="1.1.6">
+      <action date="2011-07-15" dev="mhm" type="update">
+        issue warning for invalid mimetype, not exception
+      </action>
+    </release>
+    <release date="2011-07-12" version="1.1.5">
+      <action date="2011-07-11" dev="mhm" type="remove">
+        Remove runtime dependency to commons-codec.
+      </action>
+    </release>
+    <release date="2011-07-08" version="1.1.4">
+      <action date="2011-07-08" dev="mhm" type="update">
+        Skip resource not found warnings if the user agent is a bot.
+      </action>
+      <action dev="mhm" type="update">
+        Changed into stand-alone Maven project.
+      </action>
+      <action dev="mhm" type="update">
+        Merged-in index module.
+      </action>
+      <action dev="mhm" type="update">
+        Simplified Index and RewriteEngine constructor, PustefixLavendeliter with fake init parameters is
+        no longer needed. As a consequence, this publisher doesn't work for applications with Lavendelizer 1.1.3 or
+        older.
+      </action>
+    </release>
+    <release date="2011-05-31" version="1.1.3">
+      <action dev="mhm" type="update">
+        Do not send 404 warning for favicon.ico.
+      </action>
+    </release>
+    <release date="2011-05-25" version="1.1.2">
+      <action dev="mhm" type="fix">
+        Fix NPE for opaque URIs like mailto:foo@bar.
+      </action>
+    </release>
+    <release date="2011-05-25" version="1.1.1">
+      <action dev="mhm" type="fix">
+        Fix rewrite engine to properly handle invalid URIs.
+      </action>
+    </release>
+  </body>
+</document>

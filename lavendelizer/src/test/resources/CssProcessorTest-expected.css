@@ -1,0 +1,1372 @@
+/**** zip:/home/seelmann/Development/test/stage-contractshop2/contractshop-de/target/contractshop-de/WEB-INF/lib/frontend-elements-0.4.21.jar!/style/reset.css */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  /*outline: 0;*/
+  font-weight: inherit;
+  font-style: inherit;
+  font-size: 100%;
+  font-family: inherit;
+  vertical-align: baseline;
+}
+
+sup {
+  line-height: 0;
+  font-size: 60%;
+}
+
+/* remember to define focus styles!
+:active {
+  outline: 0;
+}
+*/
+
+body {
+  line-height: 1;
+  color: black;
+  background: white;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+/* tables still need 'cellspacing="0"' in the markup */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+caption, th, td {
+  text-align: left;
+  font-weight: normal;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: "";
+}
+
+blockquote, q {
+  quotes: "" "";
+}
+/**** zip:/home/seelmann/Development/test/stage-contractshop2/contractshop-de/target/contractshop-de/WEB-INF/lib/frontend-elements-0.4.21.jar!/style/toplink.css */
+.toplink {
+  font-size: 11px;
+  margin-bottom: 12px;
+  margin-top: 12px;
+  text-align: right;
+}
+.toplink img {
+  vertical-align: bottom;
+  margin: 0 !important;
+  border: 0;
+}
+.toplink img.up {
+  margin: 0 0 2px 0 !important;
+}
+.toplink a.top {
+  padding: 0 3px 0 5px;
+}
+/**** zip:/home/seelmann/Development/test/stage-contractshop2/contractshop-de/target/contractshop-de/WEB-INF/lib/frontend-elements-0.4.21.jar!/style/button.css */
+/* --------------------------------------------------- */
+/* Buttons - additional styles in ie7.css and ie6.css! */
+/* --------------------------------------------------- */
+
+input.bt_off_large, input.bt_off_medium, input.bt_off_small,
+.bt_off_large, .bt_off_medium, .bt_off_small,
+input.bt_def_large, input.bt_def_medium, input.bt_def_small, 
+input.bt_alt_large, input.bt_alt_medium, input.bt_alt_small, 
+a.bt_off_large, a.bt_off_medium, a.bt_off_small, 
+a.bt_def_large, a.bt_def_medium, a.bt_def_small, 
+a.bt_alt_large, a.bt_alt_medium, a.bt_alt_small, 
+a.bt_off_large:link, a.bt_off_medium:link, a.bt_off_small:link, 
+a.bt_def_large:link, a.bt_def_medium:link, a.bt_def_small:link, 
+a.bt_alt_large:link, a.bt_alt_medium:link, a.bt_alt_small:link,
+a.bt_off_large:visited, a.bt_off_medium:visited, a.bt_off_small:visited, 
+a.bt_def_large:visited, a.bt_def_medium:visited, a.bt_def_small:visited, 
+a.bt_alt_large:visited, a.bt_alt_medium:visited, a.bt_alt_small:visited {
+  background: url(http://a.b.c) no-repeat;
+  border: 1px solid;
+  color: #fff !important;
+  cursor: pointer;
+  float: right;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: normal;
+  overflow: visible;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+}
+input.bt_off_large, input.bt_off_medium, input.bt_off_small, 
+a.bt_off_large, a.bt_off_medium, a.bt_off_small, 
+a.bt_off_large:link, a.bt_off_medium:link, a.bt_off_small:link, 
+a.bt_off_large:visited, a.bt_off_medium:visited, a.bt_off_small:visited, 
+.bt_off_large, .bt_off_medium, .bt_off_small {
+  cursor: default;
+}
+
+/* sizes and paddings */
+
+input.bt_off_large,
+.bt_off_large,
+input.bt_def_large, 
+input.bt_alt_large {
+  font-size: 19px;
+  height: 32px;
+  line-height: 24px;
+  width: 240px;
+  padding: 1px 0.875em 3px 1.425em;
+}
+input.bt_off_medium,
+.bt_off_medium,
+input.bt_def_medium, 
+input.bt_alt_medium {
+  font-size: 16px;
+  font-weight: bold;
+  height: 26px;
+  line-height: 20px;
+  width: 240px;
+  padding: 1px 0.875em 1px 1.425em;
+}
+input.bt_off_small,
+.bt_off_small, 
+input.bt_def_small, 
+input.bt_alt_small {
+  font-size: 13px;
+  font-weight: bold;
+  height: 22px;
+  line-height: 17px;
+  width: 80px;
+  padding: 2px 1.03em 2px 1.59em;
+}
+a.bt_off_large, a.bt_off_large:link, .bt_off_large,
+a.bt_def_large, a.bt_def_large:link, 
+a.bt_alt_large, a.bt_alt_large:link,
+a.bt_off_large, a.bt_off_large:visited, 
+a.bt_def_large, a.bt_def_large:visited, 
+a.bt_alt_large, a.bt_alt_large:visited {
+  font-size: 19px;
+  height: 26px;
+  line-height: 24px;
+  width: 196px;
+  padding: 3px 1.03em 1px 1.59em;
+}
+a.bt_off_medium, a.bt_off_medium:link, .bt_off_medium,
+a.bt_def_medium, a.bt_def_medium:link, 
+a.bt_alt_medium, a.bt_alt_medium:link,
+a.bt_off_medium, a.bt_off_medium:visited, 
+a.bt_def_medium, a.bt_def_medium:visited, 
+a.bt_alt_medium, a.bt_alt_medium:visited {
+  font-size: 16px;
+  font-weight: bold;
+  height: 20px;
+  line-height: 18px;
+  width: 196px;
+  padding: 3px 1.03em 1px 1.59em;
+}
+a.bt_off_small, a.bt_off_small:link, .bt_off_small,
+a.bt_def_small, a.bt_def_small:link, 
+a.bt_alt_small, a.bt_alt_small:link,
+a.bt_off_small, a.bt_off_small:visited, 
+a.bt_def_small, a.bt_def_small:visited, 
+a.bt_alt_small, a.bt_alt_small:visited {
+  font-size: 13px;
+  font-weight: bold;
+  height: 16px;
+  line-height: 12px;
+  width: 46px;
+  padding: 4px 1.03em 0px 1.59em;
+}
+
+/* color and effects */
+
+/* normal state */
+input.bt_off_large, .bt_off_large, 
+a.bt_off_large, a.bt_off_large:link,
+a.bt_off_large, a.bt_off_large:visited {
+  background-color: #9ea6ac;
+  background-position: 0 -444px;
+  border-color: #9ea6ac;
+}
+
+input.bt_def_large, 
+a.bt_def_large, a.bt_def_large:link,
+a.bt_def_large, a.bt_def_large:visited {
+  background-color: #B80000;
+  background-position: 0 0;
+  border-color: #B80000;
+}
+input.bt_alt_large, 
+a.bt_alt_large, a.bt_alt_large:link,
+a.bt_alt_large, a.bt_alt_large:visited {
+  background-color: #508110;
+  background-position: 0 -90px;
+  border-color: #508110;
+}
+input.bt_off_medium, .bt_off_medium, 
+a.bt_off_medium, a.bt_off_medium:link,
+a.bt_off_medium, a.bt_off_medium:visited {
+  background-color: #9ea6ac;
+  background-position: 0 -474px;
+  border-color: #9ea6ac;
+}
+input.bt_def_medium, 
+a.bt_def_medium, a.bt_def_medium:link,
+a.bt_def_medium, a.bt_def_medium:visited {
+  background-color: #B80000;
+  background-position: 0 -180px;
+  border-color: #B80000;
+}
+input.bt_alt_medium, 
+a.bt_alt_medium, a.bt_alt_medium:link,
+a.bt_alt_medium, a.bt_alt_medium:visited {
+  background-color: #508110;
+  background-position: 0 -252px;
+  border-color: #508110;
+}
+input.bt_off_small, .bt_off_small, 
+a.bt_off_small, a.bt_off_small:link,
+a.bt_off_small, a.bt_off_small:visited {
+  background-color: #9ea6ac;
+  background-position: 0 -498px;
+  border-color: #9ea6ac;
+}
+input.bt_def_small, 
+a.bt_def_small, a.bt_def_small:link,
+a.bt_def_small, a.bt_def_small:visited {
+  background-color: #B80000;
+  background-position: 0 -324px;
+  border-color: #B80000;
+}
+input.bt_alt_small, 
+a.bt_alt_small, a.bt_alt_small:link,
+a.bt_alt_small, a.bt_alt_small:visited {
+  background-color: #508110;
+  background-position: 0 -384px;
+  border-color: #508110;
+}
+
+/* onmouseover state */
+#content input.bt_def_large:hover, #content a.bt_def_large:hover {
+  background-position: 0 -30px;
+  color: #fff;
+  outline: 0;
+}
+#content input.bt_alt_large:hover, #content a.bt_alt_large:hover {
+  background-position: 0 -120px;
+  color: #fff;
+  outline: 0;
+}
+#content input.bt_def_medium:hover, #content a.bt_def_medium:hover {
+  background-position: 0 -204px;
+  color: #fff;
+  outline: 0;
+}
+#content input.bt_alt_medium:hover, #content a.bt_alt_medium:hover {
+  background-position: 0 -276px;
+  color: #fff;
+  outline: 0;
+}
+#content input.bt_def_small:hover, #content a.bt_def_small:hover {
+  background-position: 0 -344px;
+  color: #fff;
+  outline: 0;
+}
+#content input.bt_alt_small:hover, #content a.bt_alt_small:hover {
+  background-position: 0 -404px;
+  color: #fff;
+  outline: 0;
+}
+
+/* onfocus state */
+#content input.bt_def_large:focus, #content a.bt_def_large:focus {
+  background-position: 0 -30px;
+  color: #fff;
+  outline: 1px dotted #677AA1;
+}
+#content input.bt_alt_large:focus, #content a.bt_alt_large:focus {
+  background-position: 0 -120px;
+  color: #fff;
+  outline: 1px dotted #677AA1;
+}
+#content input.bt_def_medium:focus, #content a.bt_def_medium:focus {
+  background-position: 0 -204px;
+  color: #fff;
+  outline: 1px dotted #677AA1;
+}
+#content input.bt_alt_medium:focus, #content a.bt_alt_medium:focus {
+  background-position: 0 -276px;
+  color: #fff;
+  outline: 1px dotted #677AA1;
+}
+#content input.bt_def_small:focus, #content a.bt_def_small:focus {
+  background-position: 0 -344px;
+  color: #fff;
+  outline: 1px dotted #677AA1;
+}
+#content input.bt_alt_small:focus, #content a.bt_alt_small:focus {
+  background-position: 0 -404px;
+  color: #fff;
+  outline: 1px dotted #677AA1;
+}
+#content input.bt_def_large::-moz-focus-inner, 
+#content input.bt_def_medium::-moz-focus-inner, 
+#content input.bt_def_small::-moz-focus-inner {
+  border: 0 none; /* removes inner focus in inputs */
+}
+
+/* onclick state */
+#content input.bt_def_large:active, #content a.bt_def_large:active {
+  background-position: 0 -60px;
+  color: #fff;
+  outline: 0;
+}
+#content input.bt_alt_large:active, #content a.bt_alt_large:active {
+  background-position: 0 -150px;
+  color: #fff;
+  outline: 0;
+}
+#content input.bt_def_medium:active, #content a.bt_def_medium:active {
+  background-position: 0 -228px;
+  color: #fff;
+  outline: 0;
+}
+#content input.bt_alt_medium:active, #content a.bt_alt_medium:active {
+  background-position: 0 -300px;
+  color: #fff;
+  outline: 0;
+}
+#content input.bt_def_small:active, #content a.bt_def_small:active {
+  background-position: 0 -364px;
+  color: #fff;
+  outline: 0;
+}
+#content input.bt_alt_small:active, #content a.bt_alt_small:active {
+  background-position: 0 -424px;
+  color: #fff;
+  outline: 0;
+}
+
+/* --------------------------------------------------- */
+/* New Odin Skin Buttons - additional style in ie6.css! */
+/* --------------------------------------------------- */
+
+/* Basic Button Styles */
+.btn {
+  border: 0 none;
+  cursor: pointer;
+  display: inline-block;
+  font-family: arial, sans-serif;
+  font-weight: bold;
+  margin: 0;
+  outline: 0 none;
+  overflow: visible;
+  padding: 0;
+  position: relative;
+  text-decoration: none;
+  background: url(http://a.b.c) no-repeat;
+}
+
+.btn span {
+  display: block;
+  position: relative;
+  white-space: nowrap;
+  text-align:center;
+  background: url(http://a.b.c) no-repeat;
+}
+
+button.btn::-moz-focus-inner {
+  border: 0 none;
+  padding:0  /* fixing evil default firefox padding */
+}
+
+/* btn-yellow-small */
+.btn-yellow-small {
+  background-position: 100% -420px;
+}
+.btn-yellow-small span {
+  background-position: 0 -360px;
+  color: #004091;  
+}
+.btn-yellow-small:hover,
+.btn-yellow-small:focus {
+  background-position: 100% -450px;
+}
+.btn-yellow-small:hover span,
+.btn-yellow-small:focus span {
+  background-position: 0 -390px;
+}
+.btn-yellow-small:active span{
+  -ms-background-position-x: 0;
+  -ms-background-position-y: -391px; /* fixes IE8 auto simulation button 'press' */
+}
+/* btn-yellow-medium */
+.btn-yellow-medium {
+  background-position: 100% -280px;
+}
+.btn-yellow-medium span {
+  background-position: 0 -200px;
+  color: #004091;
+}
+.btn-yellow-medium:hover,
+.btn-yellow-medium:focus {
+  background-position: 100% -320px;
+}
+.btn-yellow-medium:hover span,
+.btn-yellow-medium:focus span {
+  background-position: 0 -240px;
+}
+.btn-yellow-medium:active span{
+  -ms-background-position-x: 0;
+  -ms-background-position-y: -241px; /* fixes IE8 auto simulation button 'press' */
+}
+/* btn-yellow-large */
+.btn-yellow-large {
+  background-position: 100% -100px;
+}
+.btn-yellow-large span {
+  background-position: 0 0;
+  color: #004091;
+}
+.btn-yellow-large:hover,
+.btn-yellow-large:focus {
+  background-position: 100% -150px;
+}
+.btn-yellow-large:hover span,
+.btn-yellow-large:focus span {
+  background-position: 0 -50px;
+}
+.btn-yellow-large:active span{
+  -ms-background-position-x: 0;
+  -ms-background-position-y: -51px; /* fixes IE8 auto simulation button 'press' */
+}
+/* btn-blue-small */
+.btn-blue-small {
+  background-position: 100% -900px;
+}
+.btn-blue-small span {
+  background-position: 0 -840px;
+  color: #fff;  
+}
+.btn-blue-small:hover,
+.btn-blue-small:focus {
+  background-position: 100% -930px;
+}
+.btn-blue-small:hover span,
+.btn-blue-small:focus span {
+  background-position: 0 -870px;
+}
+.btn-blue-small:active span{
+  -ms-background-position-x: 0;
+  -ms-background-position-y: -691px; /* fixes IE8 auto simulation button 'press' */
+}
+/* btn-blue-medium */
+.btn-blue-medium {
+  background-position: 100% -760px;
+}
+.btn-blue-medium span {
+  background-position: 0 -680px;
+  color: #fff;
+}
+.btn-blue-medium:hover,
+.btn-blue-medium:focus {
+  background-position: 100% -800px;
+}
+.btn-blue-medium:hover span,
+.btn-blue-medium:focus span {
+  background-position: 0 -720px;
+}
+.btn-blue-medium:active span{
+  -ms-background-position-x: 0;
+  -ms-background-position-y: -721px; /* fixes IE8 auto simulation button 'press' */
+}
+/* btn-blue-large */
+.btn-blue-large {
+  background-position: 100% -580px;
+}
+.btn-blue-large span {
+  background-position: 0 -480px;
+  color: #fff;
+}
+.btn-blue-large:hover,
+.btn-blue-large:focus {
+  background-position: 100% -630px;
+}
+.btn-blue-large:hover span,
+.btn-blue-large:focus span {
+  background-position: 0 -530px;
+}
+.btn-blue-large:active span{
+  -ms-background-position-x: 0;
+  -ms-background-position-y: -531px; /* fixes IE8 auto simulation button 'press' */
+}
+
+/* btn-disabled-small */
+.btn-disabled-small {
+  background-position: 100% -1170px;
+  cursor:default;
+}
+.btn-disabled-small span {
+  background-position: 0 -1140px;
+  color: #7a7a7a; 
+}
+.btn-disabled-small:hover {
+  background-position: 100% -1170px;
+  cursor:default;
+}
+.btn-disabled-small:hover span {
+  background-position: 0 -1140px;
+  color: #7a7a7a; 
+}
+/* btn-disabled-medium */
+.btn-disabled-medium {
+  background-position: 100% -1100px;
+  cursor:default;
+}
+.btn-disabled-medium span {
+  background-position: 0 -1060px;
+  color: #7a7a7a;
+}
+.btn-disabled-medium:hover {
+  background-position: 100% -1100px;
+  cursor:default;
+}
+.btn-disabled-medium:hover  span {
+  background-position: 0 -1060px;
+  color: #7a7a7a;
+}
+/* btn-disabled-large */
+.btn-disabled-large {
+  background-position: 100% -1010px;
+  cursor:default;
+}
+.btn-disabled-large span {
+  background-position: 0 -960px;
+  color: #7a7a7a;
+}
+/* btn-disabled-large */
+.btn-disabled-large:hover {
+  background-position: 100% -1010px;
+  cursor:default;
+}
+.btn-disabled-large:hover span {
+  background-position: 0 -960px;
+  color: #7a7a7a;
+}
+
+/* Button Small */
+.btn-yellow-small, 
+.btn-blue-small,
+.btn-disabled-small {
+  padding: 0 22px 0 0;
+}
+
+.btn-yellow-small span, 
+.btn-blue-small span,
+.btn-disabled-small span {
+  font-size: 12px;
+  height: 27px;
+  line-height: 27px;
+  margin: 0 0 0 0;
+  padding: 0 0 0 30px;
+}
+
+/* Button Medium */
+.btn-yellow-medium, 
+.btn-blue-medium,
+.btn-disabled-medium {
+  padding: 0 28px 0 0;
+}
+.btn-yellow-medium span, 
+.btn-blue-medium span,
+.btn-disabled-medium span {
+  font-size: 18px;
+  font-weight: 700;
+  height: 38px;
+  line-height: 38px;
+  margin: 0 0 0 0;
+  padding: 0 0 0 35px;
+}
+
+/* Button Large */
+.btn-yellow-large, 
+.btn-blue-large,
+.btn-disabled-large {
+  padding: 0 28px 0 0;
+}
+.btn-yellow-large span, 
+.btn-blue-large span,
+.btn-disabled-large span {
+  font-size: 26px;
+  height: 48px;
+  line-height: 46px;
+  margin: 0 0 0 0;
+  padding: 0 0 0 35px;
+}
+
+/* Button Control Blue */
+.btn-control-blue {
+  background-position: 100% -1215px;
+}
+.btn-control-blue span {
+  background-position: 0 -1200px;
+  color: #fff;  
+}
+.btn-control-blue:hover span,
+.btn-control-blue:focus span {
+  background-position: 0 -1230px;
+  color:#fff
+}
+.btn-control-blue:active span{
+  -ms-background-position-x: 0;
+  -ms-background-position-y: -1231px; /* fixes IE8 auto simulation button 'press' */
+}
+.btn-control-blue {
+  padding: 0 10px 0 0;
+}
+.btn-control-blue span {
+  font-size: 10px;
+  height: 15px;
+  line-height: 14px;
+  margin: 0 0 0 0;
+  padding: 0 0 0 18px;
+  color:#fff;
+  font-weight:700;
+}
+
+/* Button Control White */
+.btn-control-white {
+  background-position: 100% -1260px;
+}
+.btn-control-white span {
+  background-position: 0 -1245px;
+  color: #0a328c;  
+}
+.btn-control-white:hover span,
+.btn-control-white:focus span {
+  background-position: 0 -1275px;
+  color:#0a328c
+}
+.btn-control-white:active span{
+  -ms-background-position-x: 0;
+  -ms-background-position-y: -1276 px; /* fixes IE8 auto simulation button 'press' */
+}
+
+.btn-control-white {
+  padding: 0 10px 0 0;
+}
+
+.btn-control-white span {
+  font-size: 10px;
+  height: 15px;
+  line-height: 14px;
+  margin: 0 0 0 0;
+  padding: 0 0 0 18px;
+  color:#0a328c;
+  font-weight:700;
+}
+
+/* Button Detail Lightblue */
+.btn-detail-lightblue {
+  background-position: 100% -1290px;
+  color: #0a328c;
+  height: 17px;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 4px 17px 0 15px;
+  margin: 0 5px 0 0;
+}
+
+.btn-detail-lightblue:hover,
+.btn-detail-lightblue:focus,
+.btn-detail-lightblue:active {
+  text-decoration: underline
+}
+
+/* Button Detail Darkblue */
+.btn-detail-darkblue {
+  background-position: 100% -1311px;
+  color: #fff;
+  height: 17px;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 4px 17px 0 15px;
+  margin: 0 5px 0 0;
+}
+
+.btn-detail-darkblue:hover,
+.btn-detail-darkblue:focus,
+.btn-detail-darkblue:active {
+  text-decoration: underline
+}
+/**** zip:/home/seelmann/Development/test/stage-contractshop2/contractshop-de/target/contractshop-de/WEB-INF/lib/frontend-elements-0.4.21.jar!/style/checklist.css */
+ul.checklist_large {
+  margin-bottom: 6px;
+}
+ul.checklist_large li {
+  background: transparent url(http://a.b.c) no-repeat top left;
+  padding: 3px 0 3px 26px;
+  position: relative;
+}
+ul.checklist_small {
+  margin-bottom: 6px;
+}
+ul.checklist_small li {
+  background: transparent url(http://a.b.c) no-repeat top left;
+  font-size: 11px;
+  padding: 0 0 4px 23px;
+  position: relative;
+}
+ul.checklist_small + a {
+  font-size: 11px;
+}
+/**** zip:/home/seelmann/Development/test/stage-contractshop2/contractshop-de/target/contractshop-de/WEB-INF/lib/frontend-elements-0.4.21.jar!/style/pricelist.css */
+ul.pricelist {
+  background: #fff;
+  border: 1px solid #C7D4DD;
+  margin-left: 2px;
+  padding: 10px 12px 6px 11px;
+}
+ul.pricelist li {
+  position: relative;
+}
+ul.pricelist li span {
+  position: absolute;
+  right: 0px; /* has styles in ie6.css! */
+}
+ul.pricelist li h4 {
+  border-bottom: 1px solid #C7D4DD;
+  color: #63A503;
+  display: block;
+  font-size: 12px;
+  font-weight: bold;
+  padding-bottom: 3px;
+}
+ul.pricelist li ul {
+  padding-top: 3px;
+}
+ul.pricelist li ul li {
+  border-top: 1px dashed #C7D4DD;
+  margin-left: 12px;
+  padding: 3px 0 3px 0;
+}
+ul.pricelist li ul li.first {
+  border: none;
+  padding-top: 0px;
+}
+ul.pricelist li ul li ul {
+  padding-top: 4px;
+}
+ul.pricelist li ul li ul li {
+  padding-left: 0px;
+}
+/**** zip:/home/seelmann/Development/test/stage-contractshop2/contractshop-de/target/contractshop-de/WEB-INF/lib/frontend-elements-0.4.21.jar!/style/skipmenu.css */
+#skipmenu {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 180px;
+  z-index: 100;
+}
+
+a.skip-target {
+  display: block;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+a.skip {
+  font-size: 11px;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+a.skip, a.skip:link, a.skip:visited {
+  position: absolute;
+  top: -999em;
+}
+
+a.skip:focus, a.skip:active {
+  outline: 1px dotted #fff;
+  color: #fff;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/**** zip:/home/seelmann/Development/test/stage-contractshop2/contractshop-de/target/contractshop-de/WEB-INF/lib/frontend-elements-0.4.21.jar!/style/clearfix.css */
+/* www.jassesnee.de/easyclear/ */
+
+.clearfix:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+/* Hides from IE-mac \*/
+.clearfix {
+  display: block;
+}
+/* End hide from IE-mac */
+
+/**** zip:/home/seelmann/Development/test/stage-contractshop2/contractshop-de/target/contractshop-de/WEB-INF/lib/frontend-elements-0.4.21.jar!/style/popupnavi.css */
+
+/* !!! ALL DAS HIER MUSS RAUS IN DIE POPUP.CSS DER THOR-SKIN !!!*/
+
+/* !!! Diese popupnavi.css kann dann gelöscht werden !!! */
+
+
+#popup .popupNavigation {
+  margin: 20px 0 0 35px;
+}
+
+#popup .popupMainNavigation {
+  line-height: 1;
+}
+
+#popup .popupMainNavigation  ul {
+  height: 25px;
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+  border-bottom: 2px #2D4A8B solid;
+}
+
+#popup .popupMainNavigation  ul li {
+  float: left;
+  font-size: 12px;
+  background: 0 none;
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+
+#popup .popupMainNavigation  ul li.normal {
+  padding: 6px 3px;
+  background-color: #fff;
+  border-top: 1px #B9CAE3 solid;
+  font-weight: normal;
+  color: #345482;
+}
+
+#popup .popupMainNavigation  ul li.normal a {
+  font-weight: normal;
+  color: #345482;
+  text-decoration: none;
+}
+
+#popup .popupMainNavigation  ul li.active {
+  padding: 6px 3px;
+  background: #304A85 url(http://a.b.c) 0 0 no-repeat;
+  border-top: 1px #304A85 solid;
+  font-weight: bold;
+  color: #fff;
+}
+
+#popup .popupMainNavigation  ul li.active a {
+  font-weight: bold;
+  color: #fff;
+  text-decoration: none;
+}
+
+#popup .popupMainNavigation  ul li.first,
+#popup .popupMainNavigation  ul li.inner {
+  margin-right: 3px;
+}
+
+#popup .popupSubBorder {
+  display: none;
+  height: 0;
+  border-bottom: 2px #2D4A8B solid;
+}
+
+#popup .popupSubNavigation {
+  border-bottom: 1px #2D4A8B solid;
+  background: url(http://a.b.c) 0 0 repeat-x;
+  height: 20px;
+}
+
+#popup .popupSubNavigation ul li {
+  float: left;
+  color: #fff;
+  font-size: 11px;
+}
+
+#popup .popupSubNavigation ul li.normal {
+  padding: 4px 10px 4px 17px;
+  background: url(http://a.b.c) 8px 7px no-repeat;
+}
+
+#popup .popupSubNavigation ul li.normal a,
+#popup .popupSubNavigation ul li.normal a {
+  color: #fff;
+  text-decoration: none;
+}
+
+#popup .popupSubNavigation ul li.active {
+  padding: 4px 10px 4px 17px;
+  background: url(http://a.b.c) 8px 6px no-repeat;
+  font-weight: bold;
+}
+
+#popup .popupSubNavigation ul li.border img {
+  margin-top: 1px;
+}
+
+/**** zip:/home/seelmann/Development/test/stage-contractshop2/contractshop-de/target/contractshop-de/WEB-INF/lib/frontend-skin-thor-0.3.1.jar!/style/layout/main.css */
+
+/* - - - - - - - - - */
+/* Basic page styles */
+/* - - - - - - - - - */
+
+html {
+  height: 100%;
+}
+body {
+  background: #efefef url(http://a.b.c) repeat-x 0 -328px;
+  font: 12px/1.231 arial, helvetica, clean, sans-serif;
+  font-weight: normal;
+  height: 100%;
+  min-width: 987px; /* important for correct display of background gradient when resizing window */
+  text-align: center;
+}
+body.profiseller {
+  background: #efefef url(http://a.b.c) repeat-x 0 0;
+}
+body.plain {
+  background: #fff none;
+  text-align: left;
+}
+#container {
+  background: url(http://a.b.c) no-repeat 0 53px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 6px;
+  text-align: left;
+  width: 975px;
+}
+body.profiseller #container {
+  background: url(http://a.b.c) no-repeat 0 75px;
+}
+/* Important for sticky footer */
+body > #container {
+  height: auto;
+  min-height: 100%;
+}
+/* Important for sticky footer in IE */
+body img.tracking, 
+body iframe.tracking {
+  position: absolute; /* avoids tracking pixel stuff blow up footer */
+  margin-top: -1px;
+}
+
+body .visible {
+  display: block;
+}
+
+body .hidden {
+  display: none;
+}
+
+/* - - - - - - - - - - -*/
+/* Common page elements */
+/* - - - - - - - - - - -*/
+
+h1 {
+  font-size: 19px;
+  font-weight: normal;
+}
+h2 {
+  font-size: 26px;
+  font-weight: bold;
+  padding: 12px 0 12px 0;
+}
+h3 {
+  font-size: 19px;
+  font-weight: normal;
+  padding: 6px 0 6px 0;
+}
+h4 {
+  font-size: 16px;
+  font-weight: bold;
+  padding: 3px 0 6px 0;
+}
+h5, h6 {
+  font-size: 12px;
+  font-weight: bold;
+  padding: 0 0 6px 0;
+}
+p {
+  font-size: 12px;
+  font-weight: normal;
+  padding: 0 0 6px 0;
+}
+strong {
+  font-weight: bold;
+}
+small {
+  font-size: 11px;
+}
+a:link, a:visited, a:active {
+  color: #900;
+  text-decoration: underline;
+}
+a:hover {
+  color: #000;
+  text-decoration: none;
+}
+
+/**** zip:/home/seelmann/Development/test/stage-contractshop2/contractshop-de/target/contractshop-de/WEB-INF/lib/frontend-skin-thor-0.3.1.jar!/style/layout/header.css */
+#header {
+  background: #0e2e7b url(http://a.b.c) repeat-x 0 0;
+  border-bottom: 1px solid #314165;
+  clear: both;
+  float: left;
+  height: 59px;
+  line-height: normal;
+  position: relative;
+  width: 975px;
+  z-index: 100;
+}
+#header_profiseller {
+  background: #0e2e7b url(http://a.b.c) repeat-x 0 -59px;
+  color: #efefef;
+  display: block;
+  font-weight: bold;
+  height: 19px;
+  padding-top: 3px;
+  text-align: center;
+}
+#header_profiseller p {
+  font-size: 0.9em;
+  margin: 0 13px;
+  line-height: 1em;
+  padding-top: 5px;
+}
+#header_profiseller a {
+  color: #efefef;
+}
+#header #header_logo {
+  left: 20px;
+  position: absolute;
+  top: 1px;
+}
+#header h1 {
+  color: #fff;
+  font-size: 1.6em;
+  font-weight: normal;
+  left: 95px;
+  padding: 0;
+  position: absolute;
+  top: 8px;
+}
+#header h1.no_nav_tabs {
+  top: 18px;
+}
+#header h1.hide {
+  text-indent: -9999px;
+}
+#header #header_nav {
+  font-size: 11px;
+  line-height: 14px;
+  position: absolute;
+  right: 8px;
+  top: 3px;
+  white-space: nowrap;
+  z-index: 1000;
+}
+#header #header_nav li {
+  background: url(http://a.b.c) no-repeat left center;
+  float: left;
+}
+#header #header_nav li.first {
+  background: none;
+  margin-left: 47px;
+}
+#header #header_nav li.dropdown.singlecol.left, 
+#header #header_nav li.dropdown.left {
+  position: relative;
+}
+#header #header_nav li a,
+#header #header_nav li span.text {
+  background: url(http://a.b.c) no-repeat left center;
+  color: #c3cee9;
+  display: inline-block; /* ie6 needs this */
+  margin-left: 8px;
+  padding: 3px 5px 3px 9px;
+  text-decoration: none;
+}
+#header #header_nav li span.phone {
+  background: transparent url(http://a.b.c) no-repeat left center;
+  display: block;
+  color: #C3CEE9;
+  margin-left: 8px;
+  padding: 3px 4px 3px 18px;
+}
+#header #header_nav li span.phone sup {
+  font-size: 8px;
+}
+#header #header_nav li > a {
+  display: block; /* ff2 needs this */
+}
+#header #header_nav li a:hover {
+  text-decoration: underline;
+}
+#header #header_nav li.dropdown a:hover, 
+#header #header_nav li.dropdown:hover a,
+#header #header_nav li.dropdown_hover a {
+  background: #fff url(http://a.b.c) repeat-x 0 -140px;
+  color: #0E2E7B;
+  text-decoration: none;
+}
+#header #header_nav li.dropdown ul.dropdown {
+  left: -9999px;
+  position: absolute;
+}
+#header #header_nav li.dropdown:hover ul.dropdown,
+#header #header_nav li.dropdown_hover ul.dropdown {
+  background: #fff;
+  border: 1px solid #38496D;
+  border-top: none;
+  display: block;
+  left: auto;
+  padding: 6px 0 0 6px;
+  position: absolute;
+  right: -1px;
+  top: 20px;
+}
+/* left aligned dropdown */
+#header #header_nav li.dropdown.left:hover ul.dropdown,
+#header #header_nav li.dropdown_left_hover ul.dropdown {
+  left: 7px;
+  min-width: 240px;
+  right: auto;
+}
+/* singlecolumned dropdown */
+#header #header_nav li.dropdown.singlecol:hover ul.dropdown,
+#header #header_nav li.dropdown_singlecol_hover ul.dropdown {
+  min-width: 151px;
+  padding-bottom: 6px;
+  padding-right: 10%;
+}
+/* singlecolumned left aligned dropdown */
+#header #header_nav li.dropdown.singlecol.left:hover ul.dropdown,
+#header #header_nav li.dropdown_singlecol_left_hover ul.dropdown {
+  left: 7px;
+  right: auto;
+}
+#header #header_nav li.dropdown ul.dropdown li {
+  background-image: none;
+  margin-right: 12px;
+}
+#header #header_nav li.dropdown ul.dropdown li span {
+  color: #516594;
+  display: block;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+#header #header_nav li.dropdown ul.dropdown li ul {
+  padding-bottom: 6px;
+  margin-top: 0;
+}
+#header #header_nav li.dropdown ul.dropdown li ul li, 
+#header #header_nav li.dropdown.singlecol ul.dropdown li {
+  float: none;
+  margin-right: 0;
+}
+#header #header_nav li.dropdown ul.dropdown li ul li a, 
+#header #header_nav li.dropdown.singlecol ul.dropdown li a {
+  background: url(http://a.b.c) no-repeat left center;
+  color: #516594;
+  margin-left: 0;
+  padding-bottom: 0;
+  padding-right: 0;
+  padding-top: 0;
+}
+#header #header_nav li.dropdown.singlecol ul.dropdown li a {
+  padding-right: 6px;
+}
+#header #header_nav li.dropdown ul.dropdown li ul li a:hover, 
+#header #header_nav li.dropdown.singlecol ul.dropdown li a:hover {
+  background: url(http://a.b.c) no-repeat left center;
+  text-decoration: underline;
+}
+#header #nav_tabs {
+  left: 95px;
+  position: absolute;
+  top: 39px;
+  white-space: nowrap;
+  width: 870px;
+}
+#header #nav_tabs li {
+  background: url(http://a.b.c) no-repeat right top;
+  float: left;
+  margin-right: 1px;
+}
+#header #nav_tabs li a, 
+#header #nav_tabs li span {
+  background: url(http://a.b.c) no-repeat left top;
+  color: #fff;
+  display: block;
+  font-weight: bold;
+  padding: 3px 10px 4px 10px;
+  text-decoration: none;
+}
+#header #nav_tabs li a:hover {
+  color: #a9cffa;
+}
+#header #nav_tabs #nav_tab_active {
+  background: url(http://a.b.c) no-repeat right top;
+}
+#header #nav_tabs #nav_tab_active a, 
+#header #nav_tabs span.core_button_active {
+  background: url(http://a.b.c) no-repeat left top;
+  color: #516594;
+}
+#header #nav_tabs span.core_button_invisible {
+  color: #A9CFFA;
+}
+/**** zip:/home/seelmann/Development/test/stage-contractshop2/contractshop-de/target/contractshop-de/WEB-INF/lib/frontend-skin-thor-0.3.1.jar!/style/layout/content.css */
+#content {
+  background-color: #fff;
+  border: 1px solid #e5e5e5;  
+  clear: both;
+  margin-bottom: 107px;
+  padding-bottom: 15px;
+}
+
+#content a.top {
+  background: transparent url(http://a.b.c) no-repeat right center;
+  color: #990000;
+  float: right;
+  font-size: 10px;
+  font-weight: normal;
+  padding-right: 12px;
+}
+/**** zip:/home/seelmann/Development/test/stage-contractshop2/contractshop-de/target/contractshop-de/WEB-INF/lib/frontend-skin-thor-0.3.1.jar!/style/layout/footer.css */
+#footer_container {
+  background: url(http://a.b.c) repeat-x 0 -158px;
+  clear: both;
+  font-size: 0.9em;
+  height: 107px;
+  margin-top: -107px;
+  position: relative;
+  text-align: left;
+  width: 100%;
+}
+#footer_container #footer {
+  height: 107px;
+  margin: 0 auto 0 auto;
+  width: 975px;
+}
+#footer_container #footer #footer_logo {
+  float: left;
+  margin-left: 19px;
+  margin-right: 19px;
+  margin-top: 47px;
+}
+#footer_container #footer #footer_copy {
+  color: #7483A5;
+  float: left;
+  margin-top: 83px;
+}
+#footer_container #footer #footer_nav {
+  float: left;
+  margin-top: 83px;
+}
+#footer_container #footer #footer_nav li {
+  background: url(http://a.b.c) no-repeat right center;
+  float: left;
+  margin-right: 8px;
+  padding-right: 8px;
+}
+#footer_container #footer #footer_nav li a {
+  color: #fff;
+  display: block;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+#footer_container #footer #footer_nav li a:hover {
+  text-decoration: underline;
+}
+
+/* footnote */
+
+div.footnote {
+  background-color: #EFEFEF;
+  margin-top: -107px; /* removes surplus padding of preceding content div */
+  padding: 45px 30px 107px 30px;
+  width: 915px;
+}
+div.footnote, 
+div.footnote * {
+  color: #626262;
+}
+div.footnote h3 {
+  font-size: 15px;
+  padding: 0 0 23px 0;
+}
+div.footnote h4 {
+  font-size: 12px;
+  padding-bottom: 15px;
+}
+div.footnote h5 {
+  font-size: 11px;
+  padding-bottom: 5px;
+}
+div.footnote p {
+  font-size: 11px;
+  padding-bottom: 15px;
+}
+div.footnote a {
+  color: #900;
+}
+div.footnote ul {
+  list-style-type: square;
+  padding: 0 0 30px 15px;
+}
+div.footnote ul li {
+  font-size: 11px;
+  padding-bottom: 5px;
+}
+/* two footnotes */
+div.footnote_box_left {
+  float: left;
+  width: 430px;
+}
+div.footnote_box_right {
+  float: right!important;
+  width: 430px;
+}
+/* three footnotes */
+div.footnote_box_center {
+  float: left;
+  margin-left: 24px;
+  width: 288px;
+}
+div.footnote_box_third {
+  width: 288px;
+}
+/**** zip:/home/seelmann/Development/test/stage-contractshop2/contractshop-de/target/contractshop-de/WEB-INF/lib/frontend-skin-thor-0.3.1.jar!/style/layout/order.css */
+body.orderprocess #ordercontainer {
+  float: left;
+  margin: 0;
+  padding: 0 0 40px 0;
+  width: 625px;
+}
+
+body.orderprocess #ordercontainer h1 {
+  padding: 20px 0 0 25px;
+}

@@ -1,0 +1,2 @@
+.qui-selectbox{min-height:200px;background-color:white;border:1px solid #AAA;}.qui-selectboxContainer{border-bottom:1px solid grey;}.qui-selectboxInfo{font-size:8pt;font-style:italic;}ul.qui-selectboxList{padding:0;margin:0;}li.qui-selectboxListEntry{list-style:none inside;font-size:8pt;cursor:pointer;}
+li.qui-selectboxListEntry-selected{list-style:none inside;font-size:8pt;font-weight:normal;background-color:blue;color:white;cursor:pointer;}

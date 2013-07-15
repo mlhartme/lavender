@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:jee="http://java.sun.com/xml/ns/javaee">
+
+  <filter>
+    <filter-name>Lavendelizer</filter-name>
+    <filter-class>com.oneandone.lavendel.filter.Lavendelizer</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>Lavendelizer</filter-name>
+    <servlet-name>app</servlet-name>
+    <dispatcher>REQUEST</dispatcher>
+  </filter-mapping>
+
+  <servlet>
+    <servlet-name>app</servlet-name>
+    <servlet-class>org.apache.catalina.servlets.DefaultServlet
+    </servlet-class>
+    <init-param>
+      <param-name>debug</param-name>
+      <param-value>0</param-value>
+    </init-param>
+    <init-param>
+      <param-name>listings</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </servlet>
+
+  <servlet>
+    <servlet-name>lavendel</servlet-name>
+    <servlet-class>com.oneandone.lavendel.servlet.LavendelTomcatServlet
+    </servlet-class>
+    <init-param>
+      <param-name>docbase</param-name>
+      <param-value>/tmp/lavendel</param-value>
+    </init-param>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>app</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>lavendel</servlet-name>
+    <url-pattern>/lavendel/*</url-pattern>
+  </servlet-mapping>
+
+</web-app>
