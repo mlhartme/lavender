@@ -28,7 +28,7 @@
     <oneandone.java.source>1.7</oneandone.java.source>
     <oneandone.java.target>1.7</oneandone.java.target>
 
-    <tomcat.version>6.0.16</tomcat.version>
+    <tomcat.version>6.0.37</tomcat.version>
     <wsd.ypid>1224</wsd.ypid>
   </properties>
 
