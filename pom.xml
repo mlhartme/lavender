@@ -3,8 +3,8 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.oneandone.devel.maven.poms</groupId>
-    <artifactId>wsd-plugin</artifactId>
-    <version>2.1.6</version>
+    <artifactId>wsd</artifactId>
+    <version>2.2.8</version>
     <relativePath/>
   </parent>
 
@@ -15,8 +15,6 @@
   <groupId>net.oneandone</groupId>
   <artifactId>lavendel</artifactId>
   <version>2.0.0-SNAPSHOT</version>
-
-  <packaging>maven-plugin</packaging>
 
   <scm>
     <connection>scm:svn:https://svn.1and1.org/svn/PFX/lavendel/publisher/trunk</connection>
@@ -53,12 +51,6 @@
       <groupId>org.tmatesoft.svnkit</groupId>
       <artifactId>svnkit</artifactId>
       <version>1.7.6</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-plugin-api</artifactId>
-      <version>3.0.4</version>
     </dependency>
 
     <dependency>
@@ -194,27 +186,13 @@
        </executions>
      </plugin>
 
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <instrumentation>
-            <excludes>
-              <exclude>com/oneandone/lavendel/publish/pustefix/module/**/*.class</exclude>
-              <exclude>com/oneandone/lavendel/publish/pustefix/project/**/*.class</exclude>
-            </excludes>
-          </instrumentation>
-        </configuration>
-      </plugin>
-
-      <plugin>
+     <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
         <configuration>
           <includeEmptyDirs>true</includeEmptyDirs>
         </configuration>
-      </plugin>
+     </plugin>
     </plugins>
   </build>
 
