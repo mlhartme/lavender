@@ -8,13 +8,13 @@
     <relativePath/>
   </parent>
 
-  <name>Lavendel :: Publisher</name>
-  <description>Publishes resources from war files or svn directories.</description>
+  <name>Lavendel</name>
+  <description>Serves and publishes resources from war files or svn directories.</description>
   <url>https://inside.1and1.org/wiki/UE/LavendelHome</url>
 
-  <groupId>com.oneandone.lavendel</groupId>
-  <artifactId>publisher</artifactId>
-  <version>1.5.0-SNAPSHOT</version>
+  <groupId>net.oneandone</groupId>
+  <artifactId>lavendel</artifactId>
+  <version>2.0.0-SNAPSHOT</version>
 
   <packaging>maven-plugin</packaging>
 
@@ -147,7 +147,7 @@
         <version>1.4.2</version>
         <configuration>
           <name>lavendel</name>
-          <main>com.oneandone.lavendel.publisher.cli.Main</main>
+          <main>net.oneandone.lavendel.publisher.cli.Main</main>
           <options>-Djava.awt.headless=true</options>
           <remove>META-INF/DEPENDENCIES, META-INF/NOTICE, META-INF/LICENSE.txt, META-INF/NOTICE.txt, META-INF/LICENSE, META-INF/wsd.properties, META-INF/pominfo.properties</remove>
           <distribute>ssh://servlet@pumama64.schlund.de/home/servlet/tools</distribute>
@@ -174,7 +174,7 @@
             </goals>
             <configuration>
               <schemaFiles>module-descriptor.xsd</schemaFiles>
-              <packageName>com.oneandone.lavendel.publisher.pustefix.module</packageName>
+              <packageName>net.oneandone.lavendel.publisher.pustefix.module</packageName>
               <staleFile>${project.build.directory}/generated-sources/jaxb/.staleFlag.module-descriptor.xsd</staleFile>
               <clearOutputDir>false</clearOutputDir>
             </configuration>
@@ -186,7 +186,7 @@
             </goals>
             <configuration>
               <schemaFiles>project-config.xsd</schemaFiles>
-              <packageName>com.oneandone.lavendel.publisher.pustefix.project</packageName>
+              <packageName>net.oneandone.lavendel.publisher.pustefix.project</packageName>
               <staleFile>${project.build.directory}/generated-sources/jaxb/.staleFlag.project-configs.xsd</staleFile>
               <clearOutputDir>false</clearOutputDir>
             </configuration>

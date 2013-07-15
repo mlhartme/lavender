@@ -3,7 +3,7 @@
 
   <filter>
     <filter-name>Lavendelizer</filter-name>
-    <filter-class>com.oneandone.lavendel.filter.Lavendelizer</filter-class>
+    <filter-class>net.oneandone.lavendel.filter.Lavendelizer</filter-class>
   </filter>
   <filter-mapping>
     <filter-name>Lavendelizer</filter-name>
@@ -27,7 +27,7 @@
 
   <servlet>
     <servlet-name>lavendel</servlet-name>
-    <servlet-class>com.oneandone.lavendel.servlet.LavendelTomcatServlet
+    <servlet-class>net.oneandone.lavendel.servlet.LavendelTomcatServlet
     </servlet-class>
     <init-param>
       <param-name>docbase</param-name>
