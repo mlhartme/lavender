@@ -8,7 +8,6 @@ import net.oneandone.sushi.io.Buffer;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -196,21 +195,9 @@ public class WarEngine {
         outputWebXmlFile.writeTo(out);
         out.closeEntry();
 
-        addLavendelizer(out);
         out.close();
     }
 
-    private void addLavendelizer(ZipOutputStream out) throws IOException {
-        ZipEntry entry;
-        InputStream src;
-
-        entry = new ZipEntry("WEB-INF/lib/lavendelizer.jar");
-        out.putNextEntry(entry);
-        src = getClass().getResourceAsStream("/lavendelizer.jar");
-        outputWar.getWorld().getBuffer().copy(src, out);
-        src.close();
-        out.closeEntry();
-    }
     //--
 
     public static Log createNullLog() {
