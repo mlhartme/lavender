@@ -118,6 +118,12 @@
       <artifactId>tomcat-catalina</artifactId>
       <version>${tomcat.version}</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion><!-- because we have javax.servlet api -->
+          <groupId>org.apache.tomcat</groupId>
+          <artifactId>tomcat-servlet-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.tomcat</groupId>
@@ -130,6 +136,12 @@
       <artifactId>tomcat-jasper</artifactId>
       <version>${tomcat.version}</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion><!-- because we have javax.servlet api -->
+          <groupId>org.apache.tomcat</groupId>
+          <artifactId>tomcat-servlet-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 
@@ -142,7 +154,6 @@
             <banDuplicateClasses>
               <findAllDuplicates>true</findAllDuplicates>
               <ignoreClasses>
-                <ignoreClass>javax.servlet.*</ignoreClass>
                 <ignoreClass>org.apache.http.annotation.*</ignoreClass>
                 <ignoreClass>org.hamcrest.*</ignoreClass>
                 <ignoreClass>org.apache.PeriodicEventListener</ignoreClass>
