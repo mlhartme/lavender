@@ -42,23 +42,23 @@ public class LavenderIT {
 
     @Test
     public void warWithDownloads() throws Exception {
-        check("downloads", "40b307593cc2970a7f4e766ab648ebb9", "de/ui/webdev/pfixui/1.1.46/pfixui-1.1.46.war");
+        check("downloads", "1a70223661a8b527dd8f8867c360efd5", "de/ui/webdev/pfixui/1.1.46/pfixui-1.1.46.war");
     }
 
     @Test
     public void warWithDownloads2() throws Exception {
-        check("downloads2", "2595c2fbf2f96f619398b50a4e9d6623", "de/ui/webdev/pfixui/1.1.45/pfixui-1.1.45.war");
+        check("downloads2", "c614e4bb896f318884a141205c4e9adf", "de/ui/webdev/pfixui/1.1.45/pfixui-1.1.45.war");
     }
 
     @Test
     public void warWithFlashEu() throws Exception {
-        check("flash-eu", "25aa23795e61a430880944ceebef7fc7",
+        check("flash-eu", "c955eefa4c272043fab7add008b74876",
                 "com/oneandone/sales/diy/de/diy-business-de/2.1.147/diy-business-de-2.1.147.war");
     }
 
     @Test
     public void warWithFlashUs() throws Exception {
-        check("flash-us", "e59d0b4ad52596751e47f833c8f1b2f7",
+        check("flash-us", "5abc7826a38728e0a5356f3b32cbc26d",
                 "com/oneandone/sales/diy/us/diy-business-us/2.2.51/diy-business-us-2.2.51.war");
     }
 
