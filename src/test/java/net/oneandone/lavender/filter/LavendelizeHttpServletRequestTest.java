@@ -15,7 +15,6 @@
  */
 package net.oneandone.lavender.filter;
 
-import org.apache.tomcat.util.collections.EmptyEnumeration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,6 +23,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Vector;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -62,7 +62,7 @@ public class LavendelizeHttpServletRequestTest {
 
     @Test
     public void testGetHeaders() throws IOException {
-        when(wrappedRequest.getHeaders("Accept-Encoding")).thenReturn(new EmptyEnumeration());
+        when(wrappedRequest.getHeaders("Accept-Encoding")).thenReturn(new Vector().elements());
         when(wrappedRequest.getHeaders("Foo")).thenReturn(Collections.enumeration(Arrays.asList("Bar")));
 
         assertNotNull(request.getHeaders("Accept-Encoding"));

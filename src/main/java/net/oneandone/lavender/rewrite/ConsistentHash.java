@@ -24,13 +24,13 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
- * @see http://weblogs.java.net/blog/2007/11/27/consistent-hashing"
+ * @link http://weblogs.java.net/blog/2007/11/27/consistent-hashing"
  * @author seelmann
  */
 public class ConsistentHash {
 
     protected final int numberOfReplicas;
-    protected final SortedMap<Integer, String> circle = new TreeMap<Integer, String>();
+    protected final SortedMap<Integer, String> circle = new TreeMap<>();
 
     /**
      * Instantiates a new consistent hash.
