@@ -8,20 +8,19 @@
     <relativePath />
   </parent>
 
-  <name>Lavendel</name>
+  <name>Lavender</name>
   <description>Serves and publishes resources from war files or svn directories.</description>
-  <url>https://inside.1and1.org/wiki/UE/LavendelHome</url>
+  <url>https://github.com/mlhartme/lavender</url>
 
   <groupId>net.oneandone</groupId>
-  <artifactId>lavendel</artifactId>
+  <artifactId>lavender</artifactId>
   <version>2.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
 
   <scm>
-    <connection>scm:git:ssh://git@github.com/mlhartme/lavendel.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/mlhartme/lavendel.git</developerConnection>
-    <url>https://github.com/mlhartme/sushi</url>
+    <connection>scm:git:ssh://git@github.com/mlhartme/lavender.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/mlhartme/lavender.git</developerConnection>
   </scm>
 
   <properties>
@@ -160,12 +159,12 @@
         <artifactId>application</artifactId>
         <version>1.4.2</version>
         <configuration>
-          <name>lavendel</name>
-          <main>net.oneandone.lavendel.publisher.cli.Main</main>
+          <name>lavender</name>
+          <main>net.oneandone.lavender.publisher.cli.Main</main>
           <options>-Djava.awt.headless=true</options>
           <remove>META-INF/DEPENDENCIES, META-INF/NOTICE, META-INF/LICENSE.txt, META-INF/NOTICE.txt, META-INF/LICENSE, META-INF/wsd.properties, META-INF/pominfo.properties</remove>
           <distribute>ssh://servlet@pumama64.schlund.de/home/servlet/tools</distribute>
-          <backup>lavendel-old</backup>
+          <backup>lavender-old</backup>
         </configuration>
         <executions>
           <execution>
@@ -188,7 +187,7 @@
             </goals>
             <configuration>
               <schemaFiles>module-descriptor.xsd</schemaFiles>
-              <packageName>net.oneandone.lavendel.publisher.pustefix.module</packageName>
+              <packageName>net.oneandone.lavender.publisher.pustefix.module</packageName>
               <staleFile>${project.build.directory}/generated-sources/jaxb/.staleFlag.module-descriptor.xsd</staleFile>
               <clearOutputDir>false</clearOutputDir>
             </configuration>
@@ -200,7 +199,7 @@
             </goals>
             <configuration>
               <schemaFiles>project-config.xsd</schemaFiles>
-              <packageName>net.oneandone.lavendel.publisher.pustefix.project</packageName>
+              <packageName>net.oneandone.lavender.publisher.pustefix.project</packageName>
               <staleFile>${project.build.directory}/generated-sources/jaxb/.staleFlag.project-configs.xsd</staleFile>
               <clearOutputDir>false</clearOutputDir>
             </configuration>
