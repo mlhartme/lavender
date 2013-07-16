@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?><document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
   <body>
     <release version="2.0.0">
+      <action date="2013-07-16" dev="mhm" type="update">
+        Rename from Lavendel to Lavender. Flash indexes will be duplicated.
+      </action>
       <action date="2013-07-15" dev="mhm" type="add">
         Moved to github, changed package/groupId accordingly.
       </action>

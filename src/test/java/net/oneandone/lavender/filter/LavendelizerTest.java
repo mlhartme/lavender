@@ -35,10 +35,10 @@ public class LavendelizerTest {
 
     @Test
     public void init() throws Exception {
-        temporaryFolder.newFolder("lavendel");
-        temporaryFolder.newFolder("lavendel/WEB-INF");
-        File indexFile = temporaryFolder.newFile("lavendel" + Lavendelizer.LAVENDEL_IDX);
-        File nodesFile = temporaryFolder.newFile("lavendel" + Lavendelizer.LAVENDEL_NODES);
+        temporaryFolder.newFolder("lavender");
+        temporaryFolder.newFolder("lavender/WEB-INF");
+        File indexFile = temporaryFolder.newFile("lavender" + Lavendelizer.LAVENDEL_IDX);
+        File nodesFile = temporaryFolder.newFile("lavender" + Lavendelizer.LAVENDEL_NODES);
         String data = "";
         data += "http://s1.uicdn.net/m1" + IOUtils.LINE_SEPARATOR;
         data += "https://s1.uicdn.net/m1" + IOUtils.LINE_SEPARATOR;

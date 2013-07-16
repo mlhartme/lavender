@@ -58,7 +58,7 @@ public class Cluster {
     }
 
     public Cluster addFlash(String name) {
-        return addHost(name, "flash", "",  ".lavendel");
+        return addHost(name, "flash", "",  ".lavender");
     }
 
     public Cluster addLocalhost(FileNode basedir, String index) throws IOException {

@@ -99,7 +99,7 @@ public class SvnExtractorConfig {
     }
 
     public SvnExtractor create(World world, Log log) throws IOException {
-        FileNode lavendel;
+        FileNode lavender;
         String svnpath;
         FileNode dest;
         List<Node> resources;
@@ -110,8 +110,8 @@ public class SvnExtractorConfig {
         if (name.startsWith("/") || name.endsWith("/")) {
             throw new IllegalArgumentException();
         }
-        lavendel = (FileNode) world.getHome().join(".cache/lavendel");
-        lavendel.mkdirsOpt();
+        lavender = (FileNode) world.getHome().join(".cache/lavender");
+        lavender.mkdirsOpt();
         try {
             svnpath = simplify(new URI(svn).getPath());
             svnpath = svnpath.replace('/', '.');
@@ -119,7 +119,7 @@ public class SvnExtractorConfig {
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException(svn, e);
         }
-        dest = lavendel.join(svnpath);
+        dest = lavender.join(svnpath);
         try {
             log.info("using svn cache at " + dest);
             if (dest.exists()) {
@@ -128,7 +128,7 @@ public class SvnExtractorConfig {
                         "--username", PFIXPUBLISHER, "--password", PFIXPUBLISHER, svn));
             } else {
                 log.info("svn checkout " + svn);
-                log.info(lavendel.exec("svn", "checkout", "--non-interactive", "--no-auth-cache",
+                log.info(lavender.exec("svn", "checkout", "--non-interactive", "--no-auth-cache",
                         "--username", PFIXPUBLISHER, "--password", PFIXPUBLISHER, svn, dest.getName()));
             }
         } catch (IOException e) {

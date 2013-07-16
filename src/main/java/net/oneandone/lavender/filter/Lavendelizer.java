@@ -48,8 +48,8 @@ public class Lavendelizer implements Filter {
 
     protected ProcessorFactory processorFactory;
 
-    public static final String LAVENDEL_IDX = "/WEB-INF/lavendel.idx";
-    public static final String LAVENDEL_NODES = "/WEB-INF/lavendel.nodes";
+    public static final String LAVENDEL_IDX = "/WEB-INF/lavender.idx";
+    public static final String LAVENDEL_NODES = "/WEB-INF/lavender.nodes";
 
     /**
      * {@inheritDoc}

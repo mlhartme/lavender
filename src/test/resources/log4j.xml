@@ -9,7 +9,6 @@
     </layout>
   </appender>
 
-  <!-- Lavendel logger -->
   <category name="net.oneandone.lavender" additivity="true">
     <priority value="INFO" />
   </category>

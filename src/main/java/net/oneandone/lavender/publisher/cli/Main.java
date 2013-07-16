@@ -47,7 +47,7 @@ public class Main extends Cli implements Command {
 
         world = new World();
         if (logspath == null) {
-            logs = (FileNode) world.getHome().join("logs/lavendel");
+            logs = (FileNode) world.getHome().join("logs/lavender");
         } else {
             logs = world.file(logspath);
         }
@@ -104,7 +104,7 @@ public class Main extends Cli implements Command {
 
     @Override
     public void printHelp() {
-        console.info.println("usage: 'lavendel' command");
+        console.info.println("usage: 'lavender' command");
         console.info.println();
         console.info.println("publishing commands");
         console.info.println("  'war' cluster inputWar outputWar idxName");

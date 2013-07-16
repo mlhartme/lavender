@@ -125,20 +125,20 @@ public class LavendelizerIT {
     @Test
     public void cssResourceWithRewrite() throws Exception {
         String content = get("main.css");
-        assertTrue(content.contains("http://lavendel2.local/lavendel/app/38077243c8f578b3ab92b3fc4754aba4-li.gif"));
+        assertTrue(content.contains("http://lavendel2.local/lavender/app/38077243c8f578b3ab92b3fc4754aba4-li.gif"));
     }
 
     @Test
     public void htmlWithRewrite() throws IOException {
         String content = get("page.html");
 
-        assertTrue(content.contains("http://lavendel2.local/lavendel/app/f13f1bdec0d20d173aeee2b90a2a12e3-main.css"));
-        assertTrue(content.contains("http://lavendel3.local/lavendel/app/4c57f05c2589e93e1b41fa3a971f8883-other.css"));
-        assertTrue(content.contains("http://lavendel3.local/lavendel/app/5c4990d0d465809ca15232cc7b190583-ie6.css"));
-        assertTrue(content.contains("http://lavendel1.local/lavendel/app/ae01e2f698490a0c137018c5dcf07d4c-ie7.css"));
-        assertTrue(content.contains("http://lavendel1.local/lavendel/app/75d5b048491003744336d32a78154449-logo.png"));
-        assertTrue(content.contains("http://lavendel1.local/lavendel/app/e4ccf35257829c23b8e31e16619289ba-background.png"));
-        assertTrue(content.contains("http://lavendel3.local/lavendel/app/3dcdd67e7205534e2f7ad7c41683dc40-main.js"));
+        assertTrue(content.contains("http://lavendel2.local/lavender/app/f13f1bdec0d20d173aeee2b90a2a12e3-main.css"));
+        assertTrue(content.contains("http://lavendel3.local/lavender/app/4c57f05c2589e93e1b41fa3a971f8883-other.css"));
+        assertTrue(content.contains("http://lavendel3.local/lavender/app/5c4990d0d465809ca15232cc7b190583-ie6.css"));
+        assertTrue(content.contains("http://lavendel1.local/lavender/app/ae01e2f698490a0c137018c5dcf07d4c-ie7.css"));
+        assertTrue(content.contains("http://lavendel1.local/lavender/app/75d5b048491003744336d32a78154449-logo.png"));
+        assertTrue(content.contains("http://lavendel1.local/lavender/app/e4ccf35257829c23b8e31e16619289ba-background.png"));
+        assertTrue(content.contains("http://lavendel3.local/lavender/app/3dcdd67e7205534e2f7ad7c41683dc40-main.js"));
 
         assertTrue(content.endsWith("</html>"));
     }

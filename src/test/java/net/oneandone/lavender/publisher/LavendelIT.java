@@ -106,11 +106,11 @@ public class LavendelIT {
                 .addLocalhost(testhosts.join("cdn2"), "indexes")
                 .addVhost("fix", "/fix", "fix1.uicdn.net", "fix2.uicdn.net", "fix3.uicdn.net", "fix4.uicdn.net"));
         net.add("flash-eu", new Cluster()
-                .addLocalhost(testhosts.join("flash-eu1"), "htdocs/.lavendel")
-                .addLocalhost(testhosts.join("flash-eu2"), "htdocs/.lavendel")
+                .addLocalhost(testhosts.join("flash-eu1"), "htdocs/.lavender")
+                .addLocalhost(testhosts.join("flash-eu2"), "htdocs/.lavender")
                 .addVhost("foo", "", "foo"));
         net.add("flash-us", new Cluster()
-                .addLocalhost(testhosts.join("flash-us"), "htdocs/.lavendel")
+                .addLocalhost(testhosts.join("flash-us"), "htdocs/.lavender")
                 .addVhost("foo", "", "foo"));
         return net;
     }

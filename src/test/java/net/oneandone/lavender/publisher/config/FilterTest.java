@@ -73,7 +73,7 @@ public class FilterTest {
     @Test
     public void testIsIncluded() {
         Collection<String> includes = Arrays.asList("*.jpg", "*.gif");
-        Collection<String> excludes = Arrays.asList("**/close.gif", "http://lavendel.schlund.de/*");
+        Collection<String> excludes = Arrays.asList("**/close.gif", "http://lavender.schlund.de/*");
         Filter config = new Filter(includes, excludes);
 
         assertTrue(config.isIncluded("test.jpg"));
@@ -87,7 +87,7 @@ public class FilterTest {
         assertFalse(config.isIncluded("/close.gif"));
         assertFalse(config.isIncluded("/a/close.gif"));
         assertFalse(config.isIncluded("/a/b/c/close.gif"));
-        assertFalse(config.isIncluded("http://lavendel.schlund.de/test.gif"));
+        assertFalse(config.isIncluded("http://lavender.schlund.de/test.gif"));
     }
 
     @Test

@@ -69,7 +69,7 @@ public class WarEngine {
      * @param outputNodesFile
      *            the file where the nodes file is saved to
      * @param nodes
-     *            the lavendel nodes. Each URI must contain the scheme (http or https), hostname, optional port, and
+     *            the lavender nodes. Each URI must contain the scheme (http or https), hostname, optional port, and
      *            optional path. The collection must contain separate URIs for http and https.
      */
     public WarEngine(Log log, FileNode inputWar, FileNode outputWar, Map<String, Distributor> storages, FileNode outputWebXmlFile,
@@ -149,7 +149,7 @@ public class WarEngine {
         String filterString = "";
         filterString += "\n<filter>\n";
         filterString += "  <filter-name>Lavendelizer</filter-name>\n";
-        filterString += "  <filter-class>net.oneandone.lavendel.filter.Lavendelizer</filter-class>\n";
+        filterString += "  <filter-class>net.oneandone.lavender.filter.Lavendelizer</filter-class>\n";
         filterString += "</filter>\n";
         filterString += "<filter-mapping>\n";
         filterString += "  <filter-name>Lavendelizer</filter-name>\n";

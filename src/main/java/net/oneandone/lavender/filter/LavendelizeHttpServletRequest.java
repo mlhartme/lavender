@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  * An implementation of {@link HttpServletRequest} that removes the "Accept-Encoding" header from the request.
- * This is necessary to avoid gzipped output (e.g. by Jasmin), which had to be unzipped by Lavendel.
+ * This is necessary to avoid gzipped output (e.g. by Jasmin), which had to be unzipped by Lavender.
  * @author seelmann
  */
 public class LavendelizeHttpServletRequest extends HttpServletRequestWrapper {

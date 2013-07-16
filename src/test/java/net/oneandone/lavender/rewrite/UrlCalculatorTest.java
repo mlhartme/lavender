@@ -44,7 +44,7 @@ public class UrlCalculatorTest {
 
     @Before
     public void setup() throws IOException, DecoderException {
-        nodesFile = new File(tempFolder.getRoot(), "lavendel.nodes");
+        nodesFile = new File(tempFolder.getRoot(), "lavender.nodes");
         String data = "";
         data += "http://s1.uicdn.net/m1" + IOUtils.LINE_SEPARATOR;
         data += "https://s1.uicdn.net/m1" + IOUtils.LINE_SEPARATOR;

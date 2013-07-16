@@ -26,12 +26,12 @@
   </servlet>
 
   <servlet>
-    <servlet-name>lavendel</servlet-name>
+    <servlet-name>lavender</servlet-name>
     <servlet-class>net.oneandone.lavender.servlet.LavendelTomcatServlet
     </servlet-class>
     <init-param>
       <param-name>docbase</param-name>
-      <param-value>/tmp/lavendel</param-value>
+      <param-value>/tmp/lavender</param-value>
     </init-param>
   </servlet>
 
@@ -41,8 +41,8 @@
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>lavendel</servlet-name>
-    <url-pattern>/lavendel/*</url-pattern>
+    <servlet-name>lavender</servlet-name>
+    <url-pattern>/lavender/*</url-pattern>
   </servlet-mapping>
 
 </web-app>

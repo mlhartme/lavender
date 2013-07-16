@@ -39,9 +39,9 @@ public class Net {
                 .addVhost("u", "/fix", "u1.uicdn.net", "u2.uicdn.net", "u3.uicdn.net", "u4.uicdn.net")
                 .addVhost("au", "/fix", "au1.uicdn.net", "au2.uicdn.net", "au3.uicdn.net", "au4.uicdn.net"));
         net.add("walter", new Cluster()
-                .addHost("walter.websales.united.domain", "mhm", "Users/mhm/lavendel/htdocs", "Users/mhm/lavendel/indexes")
-                .addVhost("fix", "/fix", "fix.lavendel.walter.websales.united.domain")
-                .addVhost("svn", "/var", "var.lavendel.walter.websales.united.domain"));
+                .addHost("walter.websales.united.domain", "mhm", "Users/mhm/lavender/htdocs", "Users/mhm/lavender/indexes")
+                .addVhost("fix", "/fix", "fix.lavender.walter.websales.united.domain")
+                .addVhost("svn", "/var", "var.lavender.walter.websales.united.domain"));
         net.add("bazaar", new Cluster()
                 .addStatint("cdnfe01.schlund.de")
                 .addStatint("cdnfe02.schlund.de")
@@ -55,7 +55,7 @@ public class Net {
                 .addFlash("winflashus1.lxa.perfora.net")
                 .addFlash("winflashus2.lxa.perfora.net")
                 .addVhost("flash", "", "notused"));
-        net.addSvn("downloads", "https://svn.1and1.org/svn/PFX/lavendel/cors");
+        net.addSvn("downloads", "https://svn.1and1.org/svn/PFX/lavender/cors");
         return net;
     }
 

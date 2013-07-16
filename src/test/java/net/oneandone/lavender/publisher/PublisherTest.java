@@ -49,7 +49,7 @@ public class PublisherTest {
         assertTrue(outputWar.exists());
 
         List<String> webXmlContent = getLines(outputWar, "WEB-INF/web.xml");
-        assertTrue(webXmlContent.contains("  <filter-class>net.oneandone.lavendel.filter.Lavendelizer</filter-class>"));
+        assertTrue(webXmlContent.contains("  <filter-class>net.oneandone.lavender.filter.Lavendelizer</filter-class>"));
 
         List<String> lavendelIdxContent = getLines(outputWar, Lavendelizer.LAVENDEL_IDX.substring(1));
         assertTrue(lavendelIdxContent.toString(), lavendelIdxContent

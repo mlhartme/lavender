@@ -38,7 +38,7 @@ import java.util.Properties;
  *
  * where
  *   originalPath      source request path, that will be replaced by lavendelizer
- *   lavendelizedPath  path on Lavendel Servers
+ *   lavendelizedPath  path on Lavender Servers
  *   md5               md5 sum of the resource
  */
 public class Index implements Iterable<Label> {

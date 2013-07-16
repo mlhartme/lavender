@@ -33,7 +33,7 @@ import java.util.zip.ZipFile;
 
 /** Extracts resources */
 public abstract class Extractor implements Iterable<Resource> {
-    public static final String DEFAULT_STORAGE = "lavendel";
+    public static final String DEFAULT_STORAGE = "lavender";
 
     private static final String PROPERTIES = "WEB-INF/lavendel.properties";
 
