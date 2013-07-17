@@ -18,25 +18,16 @@ package net.oneandone.lavender.filter.it;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import org.apache.catalina.startup.Tomcat;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.HTTP;
-import org.apache.http.util.EntityUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.zip.GZIPInputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -73,23 +64,23 @@ public class LavendelizerIT {
 
     @Test
     public void imageResource() throws Exception {
-        getSame("logo.png");
+        doGet("logo.png");
     }
 
     @Test
     public void cssResourceWithoutRewrite() throws Exception {
-        getSame("other.css");
+        doGet("other.css");
     }
 
     @Test
     public void cssResourceWithRewrite() throws Exception {
-        String content = get("main.css");
+        String content = doGet("main.css");
         assertTrue(content.contains("http://lavendel2.local/lavender/app/38077243c8f578b3ab92b3fc4754aba4-li.gif"));
     }
 
     @Test
     public void htmlWithRewrite() throws IOException {
-        String content = get("page.html");
+        String content = doGet("page.html");
 
         assertTrue(content.contains("http://lavendel2.local/lavender/app/f13f1bdec0d20d173aeee2b90a2a12e3-main.css"));
         assertTrue(content.contains("http://lavendel3.local/lavender/app/4c57f05c2589e93e1b41fa3a971f8883-other.css"));
@@ -106,81 +97,43 @@ public class LavendelizerIT {
     public void htmlRewriteWithoutChanges() throws IOException {
         String content;
 
-        content = getSame("encoding.html");
+        content = doGet("encoding.html");
         assertTrue(content, content.contains("äöüÄÖÜß€µ"));
     }
 
 
-    private String get(String path) throws IOException {
-        return doGet(path, false);
-    }
-
-    private String getSame(String path) throws IOException {
-        return doGet(path, true);
-    }
-
-    private String doGet(String path, boolean same) throws IOException {
+    private String doGet(String path) throws IOException {
         String one;
         String two;
 
-        one = doGet(path, same, false);
-        two = doGet(path, same, true);
+        one = doGetZ(path, false);
+        two = doGetZ(path, true);
         assertEquals(one, two);
         return one;
     }
 
-    private String doGet(String path, boolean same, boolean gzip) throws IOException {
-        DefaultHttpClient client;
-        HttpGet get;
-        HttpResponse response;
-        HttpEntity entity;
-        byte[] content;
-        String charset;
+    private String doGetZ(String path, boolean gzip) throws IOException {
+        URL url;
+        HttpURLConnection conn;
+        BufferedReader rd;
+        String line;
+        StringBuilder buffer;
+        String content;
 
-        client = new DefaultHttpClient();
-        get = new HttpGet("http://localhost:" + PORT + "/" + path);
+
+        url = new URL("http://localhost:" + PORT + "/" + path);
+        conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
         if (gzip) {
-            get.setHeader("Accept-Encoding", "gzip");
+            conn.addRequestProperty("Accept-Encoding", "gzip");
         }
-        response = client.execute(get);
-        assertEquals(200, response.getStatusLine().getStatusCode());
-        System.out.println(path + ": " + Arrays.asList(response.getHeaders("content-type")));
-        entity = response.getEntity();
-        content = EntityUtils.toByteArray(entity);
-        if (isGzip(response)) {
-            content = gunzip(content);
+        rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        buffer = new StringBuilder();
+        while ((line = rd.readLine()) != null) {
+            buffer.append(line);
         }
-        if (same) {
-            assertArrayEquals(content, HOME.join("src/test/testapp1/webapp", path).readBytes());
-        }
-        charset = EntityUtils.getContentCharSet(entity);
-        if (charset == null) {
-            charset = HTTP.DEFAULT_CONTENT_CHARSET;
-        }
-        return new String(content, charset);
-    }
-
-    private boolean isGzip(HttpResponse response) {
-        Header[] headers;
-
-        headers = response.getHeaders("Content-Encoding");
-        for (Header header : headers) {
-            if (header.getValue().equals("gzip")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private byte[] gunzip(byte[] bytes) throws IOException {
-        InputStream in;
-        ByteArrayOutputStream out;
-
-        in = new GZIPInputStream(new ByteArrayInputStream(bytes));
-        out = new ByteArrayOutputStream();
-        WORLD.getBuffer().copy(in, out);
-        in.close();
-        out.close();
-        return out.toByteArray();
+        rd.close();
+        content = buffer.toString();
+        return content;
     }
 }
