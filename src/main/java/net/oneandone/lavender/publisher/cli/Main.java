@@ -116,7 +116,7 @@ public class Main extends Cli implements Command {
         console.info.println("  'version'                 print version information");
         console.info.println("  'bazaar'                  publishes Bazaar Voice files to eu cluster.");
         console.info.println("                            actually publish to the specified cluster");
-        console.info.println("  'direct' arg+             executes the specified command on all hosts");
+        console.info.println("  'direct' cluster arg+     executes the specified command on all machines of the cluster");
         console.info.println("  'gc' ['-dryrun'] cluster  removes unreferenced resources and empty directories from the");
         console.info.println("                            specified host(s); default: all hosts");
     }
