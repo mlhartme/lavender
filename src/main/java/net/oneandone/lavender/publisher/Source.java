@@ -50,7 +50,7 @@ public abstract class Source implements Iterable<Resource> {
         properties = getConfig(war.toPath().toFile());
         result.add(PustefixSource.forProperties(war.toPath().toFile(), properties));
         for (SvnSourceConfig config : SvnSourceConfig.parse(properties)) {
-            LOG.info("adding svn extractor " + config.name);
+            LOG.info("adding svn source " + config.name);
             result.add(config.create(war.getWorld(), svnUsername, svnPassword));
         }
         return result;

@@ -89,13 +89,13 @@ public class WarEngine {
      */
     public void run() throws IOException {
         long started;
-        List<Source> extractors;
+        List<Source> sources;
         Index index;
         long changed;
 
         started = System.currentTimeMillis();
-        extractors = Source.fromWar(inputWar, svnUsername, svnPassword);
-        changed = extract(extractors);
+        sources = Source.fromWar(inputWar, svnUsername, svnPassword);
+        changed = extract(sources);
         for (Map.Entry<String, Distributor> entry : storages.entrySet()) {
             index = entry.getValue().close();
             //  TODO
@@ -110,21 +110,21 @@ public class WarEngine {
         LOG.info("done: " + changed + "/" + outputIndex.size() + " files changed (" + (System.currentTimeMillis() - started) + " ms)");
     }
 
-    public long extract(Source... extractors) throws IOException {
-        return extract(Arrays.asList(extractors));
+    public long extract(Source... sources) throws IOException {
+        return extract(Arrays.asList(sources));
     }
 
-    public long extract(List<Source> extractors) throws IOException {
+    public long extract(List<Source> sources) throws IOException {
         Distributor storage;
         long changed;
 
         changed = 0;
-        for (Source extractor : extractors) {
-            storage = storages.get(extractor.getStorage());
+        for (Source source : sources) {
+            storage = storages.get(source.getStorage());
             if (storage == null) {
-                throw new IllegalStateException("storage not found: " + extractor.getStorage());
+                throw new IllegalStateException("storage not found: " + source.getStorage());
             }
-            changed += extractor.run(storage);
+            changed += source.run(storage);
         }
         return changed;
     }

@@ -38,8 +38,8 @@ public class PustefixSourceTest {
         URL url = getClass().getClassLoader().getResource("dummy.war");
 
         Map<String, Resource> resources = new HashMap<>();
-        PustefixSource extractor = new PustefixSource(new Filter(), new File(url.toURI()));
-        for (Resource resource : extractor) {
+        PustefixSource source = new PustefixSource(new Filter(), new File(url.toURI()));
+        for (Resource resource : source) {
             resources.put(resource.getPath(), resource);
         }
 
