@@ -36,6 +36,8 @@ import java.util.zip.ZipOutputStream;
  * configured. Main class of this module, used by Cli and the Publisher plugin.
  */
 public class WarEngine {
+    private final String svnUsername;
+    private final String svnPassword;
     private final Log log;
     private final FileNode inputWar;
     private final FileNode outputWar;
@@ -45,9 +47,11 @@ public class WarEngine {
     private final FileNode outputNodesFile;
     private final String nodes;
 
-    public WarEngine(Log log, FileNode inputWar, FileNode outputWar, Distributor lavendelStorage, FileNode outputWebXmlFile,
+    public WarEngine(String svnUsername, String svnPassword,
+                     Log log, FileNode inputWar, FileNode outputWar, Distributor lavendelStorage, FileNode outputWebXmlFile,
                      Index outputIndex, FileNode outputNodesFile, String nodes) {
-        this(log, inputWar, outputWar, defaultStorage(lavendelStorage), outputWebXmlFile, outputIndex, outputNodesFile, nodes);
+        this(svnUsername, svnPassword,
+                log, inputWar, outputWar, defaultStorage(lavendelStorage), outputWebXmlFile, outputIndex, outputNodesFile, nodes);
     }
 
     private static Map<String, Distributor> defaultStorage(Distributor lavendelStorage) {
@@ -72,8 +76,11 @@ public class WarEngine {
      *            the lavender nodes. Each URI must contain the scheme (http or https), hostname, optional port, and
      *            optional path. The collection must contain separate URIs for http and https.
      */
-    public WarEngine(Log log, FileNode inputWar, FileNode outputWar, Map<String, Distributor> storages, FileNode outputWebXmlFile,
+    public WarEngine(String svnUsername, String svnPassword,
+                     Log log, FileNode inputWar, FileNode outputWar, Map<String, Distributor> storages, FileNode outputWebXmlFile,
                      Index outputIndex, FileNode outputNodesFile, String nodes) {
+        this.svnUsername = svnUsername;
+        this.svnPassword = svnPassword;
         this.log = log;
         this.inputWar = inputWar;
         this.outputWar = outputWar;
@@ -96,7 +103,7 @@ public class WarEngine {
         long changed;
 
         started = System.currentTimeMillis();
-        extractors = Extractor.fromWar(log, inputWar);
+        extractors = Extractor.fromWar(log, inputWar, svnUsername, svnPassword);
         changed = extract(extractors);
         for (Map.Entry<String, Distributor> entry : storages.entrySet()) {
             index = entry.getValue().close();

@@ -19,6 +19,7 @@ import net.oneandone.lavender.publisher.cli.Main;
 import net.oneandone.lavender.publisher.config.Cluster;
 import net.oneandone.lavender.publisher.config.Host;
 import net.oneandone.lavender.publisher.config.Net;
+import net.oneandone.lavender.publisher.config.Settings;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import org.junit.Test;
@@ -31,7 +32,8 @@ public class MainManual {
         Node node;
 
         net = Net.normal();
-        world = Main.world(true, null);
+        world = new World();
+        Main.initWorld(world, Settings.load(world), true, null);
         for (Cluster cluster : net.clusters.values()) {
             for (Host host : cluster.hosts) {
                 node = host.docroot(host.open(world), "");

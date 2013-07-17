@@ -18,6 +18,7 @@ package net.oneandone.lavender.publisher.cli;
 import com.jcraft.jsch.JSchException;
 import net.oneandone.lavender.publisher.config.Host;
 import net.oneandone.lavender.publisher.config.Net;
+import net.oneandone.lavender.publisher.config.Settings;
 import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
@@ -38,8 +39,8 @@ public class Bazaar extends Base {
         return new SshRoot(fs, "sftp.1und1.de", 1022, "bazaarvoice", fs.getDefaultTimeout()).node("feeds", null);
     }
 
-    public Bazaar(Console console, Net base) {
-        super(console, base);
+    public Bazaar(Console console, Settings settings, Net base) {
+        super(console, settings, base);
     }
 
     @Override

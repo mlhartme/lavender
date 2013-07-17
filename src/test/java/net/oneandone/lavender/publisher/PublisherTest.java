@@ -17,6 +17,7 @@ package net.oneandone.lavender.publisher;
 
 import net.oneandone.lavender.filter.Lavendelizer;
 import net.oneandone.lavender.index.Index;
+import net.oneandone.lavender.publisher.config.Settings;
 import net.oneandone.lavender.publisher.config.Vhost;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -33,8 +34,10 @@ public class PublisherTest {
     public void test() throws Exception {
         World world;
         FileNode tmp;
+        Settings settings;
 
         world = new World();
+        settings = Settings.load(world);
         tmp = world.getTemp().createTempDirectory();
         FileNode outputDir = tmp.join("outputDir").mkdir();
         FileNode inputWar = (FileNode) world.resource("dummy.war");
@@ -43,7 +46,8 @@ public class PublisherTest {
         Index outputIndex = new Index();
         FileNode outputNodesFile = tmp.join("outputNodesFile").mkfile();
         Distributor distributor = Distributor.forTest(outputDir, "notused");
-        WarEngine extractor = new WarEngine(WarEngine.createNullLog(), inputWar, outputWar,
+        WarEngine extractor = new WarEngine(settings.svnUsername, settings.svnPassword,
+                WarEngine.createNullLog(), inputWar, outputWar,
                 distributor, outputWebXmlFile, outputIndex, outputNodesFile, Vhost.one("a.b.c").nodesFile());
         extractor.run();
         assertTrue(outputWar.exists());

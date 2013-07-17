@@ -17,15 +17,18 @@ package net.oneandone.lavender.publisher.cli;
 
 
 import net.oneandone.lavender.publisher.config.Net;
+import net.oneandone.lavender.publisher.config.Settings;
 import net.oneandone.sushi.cli.Command;
 import net.oneandone.sushi.cli.Console;
 
 public abstract class Base implements Command {
     protected final Console console;
+    protected final Settings settings;
     protected final Net net;
 
-    protected Base(Console console, Net net) {
+    protected Base(Console console, Settings settings, Net net) {
         this.console = console;
+        this.settings = settings;
         this.net = net;
     }
 

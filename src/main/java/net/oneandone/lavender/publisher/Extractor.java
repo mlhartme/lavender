@@ -37,7 +37,7 @@ public abstract class Extractor implements Iterable<Resource> {
 
     private static final String PROPERTIES = "WEB-INF/lavendel.properties";
 
-    public static List<Extractor> fromWar(Log log, FileNode war) throws IOException {
+    public static List<Extractor> fromWar(Log log, FileNode war, String svnUsername, String svnPassword) throws IOException {
         List<Extractor> result;
         Properties properties;
 
@@ -47,7 +47,7 @@ public abstract class Extractor implements Iterable<Resource> {
         result.add(PustefixExtractor.forProperties(war.toPath().toFile(), properties));
         for (SvnExtractorConfig config : SvnExtractorConfig.parse(properties)) {
             log.info("adding svn extractor " + config.name);
-            result.add(config.create(war.getWorld(), log));
+            result.add(config.create(war.getWorld(), log, svnUsername, svnPassword));
         }
         return result;
     }

@@ -17,6 +17,7 @@ package net.oneandone.lavender.publisher.cli;
 
 import com.jcraft.jsch.JSchException;
 import net.oneandone.lavender.publisher.config.Net;
+import net.oneandone.lavender.publisher.config.Settings;
 import net.oneandone.sushi.cli.Child;
 import net.oneandone.sushi.cli.Cli;
 import net.oneandone.sushi.cli.Command;
@@ -40,12 +41,10 @@ public class Main extends Cli implements Command {
         return main.run(args);
     }
 
-    public static World world(boolean withSsh, String logspath) throws MkdirException {
-        World world;
+    public static void initWorld(World world, Settings settings, boolean withSsh, String logspath) throws IOException {
         SshFilesystem ssh;
         FileNode logs;
 
-        world = new World();
         if (logspath == null) {
             logs = (FileNode) world.getHome().join("logs/lavender");
         } else {
@@ -55,7 +54,7 @@ public class Main extends Cli implements Command {
         world.setTemp((FileNode) logs.mkdirOpt());
 
         if (withSsh) {
-            world.getFilesystem("svn", SvnFilesystem.class).setDefaultCredentials("pfixpublisher", "pfixpublisher");
+            world.getFilesystem("svn", SvnFilesystem.class).setDefaultCredentials(settings.svnUsername, settings.svnPassword);
             ssh = world.getFilesystem("ssh", SshFilesystem.class);
             try {
                 ssh.addIdentity(world.resource("id_dsa"), null);  // flash access
@@ -66,40 +65,42 @@ public class Main extends Cli implements Command {
         } else {
             // disable them for integration tests, because I don't have .ssh on pearl/gems
         }
-        return world;
     }
 
 
     private final Net net;
+    private final Settings settings;
 
-    public Main(boolean withSsl, Net net, String logs) throws MkdirException {
-        super(world(withSsl, logs));
+    public Main(boolean withSsl, Net net, String logs) throws IOException {
+        super(new World());
+        this.settings = Settings.load(console.world);
+        initWorld(console.world, settings, withSsl, logs);
         this.net = net;
     }
 
     @Child("war")
     public Command war() {
-        return new War(console, net);
+        return new War(console, settings, net);
     }
 
     @Child("svn")
     public Command svn() {
-        return new Svn(console, net);
+        return new Svn(console, settings, net);
     }
 
     @Child("direct")
     public Command direct() {
-        return new Direct(console, net);
+        return new Direct(console, settings, net);
     }
 
     @Child("bazaar")
     public Command bazaar() {
-        return new Bazaar(console, net);
+        return new Bazaar(console, settings, net);
     }
 
     @Child("gc")
     public Command gc() {
-        return new GarbageCollection(console, net);
+        return new GarbageCollection(console, settings, net);
     }
 
     @Override

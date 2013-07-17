@@ -21,6 +21,7 @@ import net.oneandone.lavender.publisher.Log;
 import net.oneandone.lavender.publisher.config.Cluster;
 import net.oneandone.lavender.publisher.config.Filter;
 import net.oneandone.lavender.publisher.config.Net;
+import net.oneandone.lavender.publisher.config.Settings;
 import net.oneandone.lavender.publisher.config.Vhost;
 import net.oneandone.lavender.publisher.svn.SvnExtractor;
 import net.oneandone.lavender.publisher.svn.SvnExtractorConfig;
@@ -37,8 +38,8 @@ public class Svn extends Base {
     @Value(name = "directory", position = 2)
     private String directory;
 
-    public Svn(Console console, Net net) {
-        super(console, net);
+    public Svn(Console console, Settings settings, Net net) {
+        super(console, settings, net);
     }
 
     @Override
@@ -73,7 +74,7 @@ public class Svn extends Base {
         ec.pathPrefix = "";
         ec.svn = svnurl;
         ec.lavendelize = false;
-        e = ec.create(console.world, log);
+        e = ec.create(console.world, log, settings.svnUsername, settings.svnPassword);
         storage = Distributor.open(console.world, vhost.docroot, cluster.hosts, directory + ".idx");
         changed = e.run(storage);
         index = storage.close();

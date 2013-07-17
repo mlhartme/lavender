@@ -34,8 +34,6 @@ import java.util.Map;
 import java.util.Properties;
 
 public class SvnExtractorConfig {
-    private static final String PFIXPUBLISHER = "pfixpublisher";
-
     private static final String SVN_PREFIX = "svn.";
 
     public final String name;
@@ -98,7 +96,7 @@ public class SvnExtractorConfig {
         return result.values();
     }
 
-    public SvnExtractor create(World world, Log log) throws IOException {
+    public SvnExtractor create(World world, Log log, String svnUsername, String svnPassword) throws IOException {
         FileNode lavender;
         String svnpath;
         FileNode dest;
@@ -125,11 +123,11 @@ public class SvnExtractorConfig {
             if (dest.exists()) {
                 log.info("svn switch " + svn);
                 log.info(dest.exec("svn", "switch", "--non-interactive", "--no-auth-cache",
-                        "--username", PFIXPUBLISHER, "--password", PFIXPUBLISHER, svn));
+                        "--username", svnUsername, "--password", svnUsername, svn));
             } else {
                 log.info("svn checkout " + svn);
                 log.info(lavender.exec("svn", "checkout", "--non-interactive", "--no-auth-cache",
-                        "--username", PFIXPUBLISHER, "--password", PFIXPUBLISHER, svn, dest.getName()));
+                        "--username", svnUsername, "--password", svnUsername, svn, dest.getName()));
             }
         } catch (IOException e) {
             throw new IOException("error creating/updating svn checkout at " + dest + ": " + e.getMessage(), e);

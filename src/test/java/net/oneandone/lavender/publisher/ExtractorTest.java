@@ -17,6 +17,7 @@ package net.oneandone.lavender.publisher;
 
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.publisher.config.Filter;
+import net.oneandone.lavender.publisher.config.Settings;
 import net.oneandone.lavender.publisher.pustefix.PustefixExtractor;
 import net.oneandone.sushi.fs.LineFormat;
 import net.oneandone.sushi.fs.World;
@@ -52,15 +53,18 @@ public class ExtractorTest {
     public void setUp() throws IOException, URISyntaxException {
         World world;
         FileNode tmp;
+        Settings settings;
 
         world = new World();
+        settings = Settings.load(world);
         war = (FileNode) world.resource("dummy.war");
         tmp = world.getTemp().createTempDirectory();
         baseDirectory = tmp.join("storage").mkdir();
         nodesFile = tmp.join("nodes.lst");
         webXml = tmp.join("web.xml");
         distributor = Distributor.forTest(baseDirectory, "notused");
-        resourcePublisher = new WarEngine(WarEngine.createNullLog(), war, war, distributor, webXml,
+        resourcePublisher = new WarEngine(settings.svnUsername, settings.svnPassword,
+                WarEngine.createNullLog(), war, war, distributor, webXml,
                 new Index(), nodesFile, "");
     }
 

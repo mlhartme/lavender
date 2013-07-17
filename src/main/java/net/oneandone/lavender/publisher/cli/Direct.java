@@ -18,6 +18,7 @@ package net.oneandone.lavender.publisher.cli;
 import com.jcraft.jsch.JSchException;
 import net.oneandone.lavender.publisher.config.Host;
 import net.oneandone.lavender.publisher.config.Net;
+import net.oneandone.lavender.publisher.config.Settings;
 import net.oneandone.sushi.cli.ArgumentException;
 import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.cli.Remaining;
@@ -42,8 +43,8 @@ public class Direct extends Base {
         command.add(arg);
     }
 
-    public Direct(Console console, Net net) {
-        super(console, net);
+    public Direct(Console console, Settings settings, Net net) {
+        super(console, settings, net);
         this.command = new ArrayList<>();
     }
 

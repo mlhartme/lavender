@@ -21,6 +21,7 @@ import net.oneandone.lavender.index.Label;
 import net.oneandone.lavender.publisher.config.Cluster;
 import net.oneandone.lavender.publisher.config.Host;
 import net.oneandone.lavender.publisher.config.Net;
+import net.oneandone.lavender.publisher.config.Settings;
 import net.oneandone.lavender.publisher.config.Vhost;
 import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.cli.Option;
@@ -47,8 +48,8 @@ public class GarbageCollection extends Base {
     @Option("dryrun")
     private boolean dryrun = false;
 
-    public GarbageCollection(Console console, Net net) {
-        super(console, net);
+    public GarbageCollection(Console console, Settings settings, Net net) {
+        super(console, settings, net);
     }
 
     @Override
