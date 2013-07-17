@@ -61,7 +61,7 @@ public class ExtractorTest {
         nodesFile = tmp.join("nodes.lst");
         distributor = Distributor.forTest(baseDirectory, "notused");
         resourcePublisher = new WarEngine(settings.svnUsername, settings.svnPassword,
-                WarEngine.createNullLog(), war, war, distributor, new Index(), nodesFile, "");
+                war, war, distributor, new Index(), nodesFile, "");
     }
 
     @Test

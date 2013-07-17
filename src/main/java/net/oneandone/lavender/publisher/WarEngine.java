@@ -20,6 +20,8 @@ import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.io.Buffer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -36,9 +38,10 @@ import java.util.zip.ZipOutputStream;
  * configured. Main class of this module, used by Cli and the Publisher plugin.
  */
 public class WarEngine {
+    private static final Logger LOG = LoggerFactory.getLogger(WarEngine.class);
+
     private final String svnUsername;
     private final String svnPassword;
-    private final Log log;
     private final FileNode inputWar;
     private final FileNode outputWar;
     private final Map<String, Distributor> storages;
@@ -47,10 +50,9 @@ public class WarEngine {
     private final String nodes;
 
     public WarEngine(String svnUsername, String svnPassword,
-                     Log log, FileNode inputWar, FileNode outputWar, Distributor lavendelStorage,
+                     FileNode inputWar, FileNode outputWar, Distributor lavendelStorage,
                      Index outputIndex, FileNode outputNodesFile, String nodes) {
-        this(svnUsername, svnPassword,
-                log, inputWar, outputWar, defaultStorage(lavendelStorage), outputIndex, outputNodesFile, nodes);
+        this(svnUsername, svnPassword, inputWar, outputWar, defaultStorage(lavendelStorage), outputIndex, outputNodesFile, nodes);
     }
 
     /**
@@ -68,11 +70,10 @@ public class WarEngine {
      *            optional path. The collection must contain separate URIs for http and https.
      */
     public WarEngine(String svnUsername, String svnPassword,
-                     Log log, FileNode inputWar, FileNode outputWar, Map<String, Distributor> storages,
+                     FileNode inputWar, FileNode outputWar, Map<String, Distributor> storages,
                      Index outputIndex, FileNode outputNodesFile, String nodes) {
         this.svnUsername = svnUsername;
         this.svnPassword = svnPassword;
-        this.log = log;
         this.inputWar = inputWar;
         this.outputWar = outputWar;
         this.storages = storages;
@@ -93,7 +94,7 @@ public class WarEngine {
         long changed;
 
         started = System.currentTimeMillis();
-        extractors = Source.fromWar(log, inputWar, svnUsername, svnPassword);
+        extractors = Source.fromWar(inputWar, svnUsername, svnPassword);
         changed = extract(extractors);
         for (Map.Entry<String, Distributor> entry : storages.entrySet()) {
             index = entry.getValue().close();
@@ -106,7 +107,7 @@ public class WarEngine {
         }
         outputNodesFile.writeString(nodes);
         updateWarFile();
-        log.info("done: " + changed + "/" + outputIndex.size() + " files changed (" + (System.currentTimeMillis() - started) + " ms)");
+        LOG.info("done: " + changed + "/" + outputIndex.size() + " files changed (" + (System.currentTimeMillis() - started) + " ms)");
     }
 
     public long extract(Source... extractors) throws IOException {
@@ -168,23 +169,5 @@ public class WarEngine {
         storages = new HashMap<>();
         storages.put(Source.DEFAULT_STORAGE, lavendelStorage);
         return storages;
-    }
-
-    //--
-
-    public static Log createNullLog() {
-        return new Log() {
-            @Override
-            public void warn(String str) {
-            }
-
-            @Override
-            public void info(String str) {
-            }
-
-            @Override
-            public void verbose(String str) {
-            }
-        };
     }
 }

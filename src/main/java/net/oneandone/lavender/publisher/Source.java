@@ -20,6 +20,8 @@ import net.oneandone.lavender.publisher.config.Filter;
 import net.oneandone.lavender.publisher.pustefix.PustefixSource;
 import net.oneandone.lavender.publisher.svn.SvnSourceConfig;
 import net.oneandone.sushi.fs.file.FileNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,21 +35,23 @@ import java.util.zip.ZipFile;
 
 /** Extracts resources */
 public abstract class Source implements Iterable<Resource> {
+    private static final Logger LOG = LoggerFactory.getLogger(Source.class);
+
     public static final String DEFAULT_STORAGE = "lavender";
 
     private static final String PROPERTIES = "WEB-INF/lavender.properties";
 
-    public static List<Source> fromWar(Log log, FileNode war, String svnUsername, String svnPassword) throws IOException {
+    public static List<Source> fromWar(FileNode war, String svnUsername, String svnPassword) throws IOException {
         List<Source> result;
         Properties properties;
 
-        log.verbose("scanning " + war);
+        LOG.trace("scanning " + war);
         result = new ArrayList<>();
         properties = getConfig(war.toPath().toFile());
         result.add(PustefixSource.forProperties(war.toPath().toFile(), properties));
         for (SvnSourceConfig config : SvnSourceConfig.parse(properties)) {
-            log.info("adding svn extractor " + config.name);
-            result.add(config.create(war.getWorld(), log, svnUsername, svnPassword));
+            LOG.info("adding svn extractor " + config.name);
+            result.add(config.create(war.getWorld(), svnUsername, svnPassword));
         }
         return result;
     }

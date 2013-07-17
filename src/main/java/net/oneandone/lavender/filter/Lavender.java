@@ -16,7 +16,10 @@
 package net.oneandone.lavender.filter;
 
 import net.oneandone.lavender.index.Index;
+import net.oneandone.lavender.index.Label;
 import net.oneandone.lavender.processor.ProcessorFactory;
+import net.oneandone.lavender.publisher.Distributor;
+import net.oneandone.lavender.publisher.Source;
 import net.oneandone.lavender.rewrite.RewriteEngine;
 import net.oneandone.lavender.rewrite.UrlCalculator;
 import org.slf4j.Logger;
@@ -35,6 +38,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -93,11 +98,32 @@ public class Lavender implements Filter {
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (processorFactory == null) {
-            LOG.info("pass-through: " + request);
-            chain.doFilter(request, response);
+            doDevelFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
         } else {
             doProdFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
         }
+    }
+
+    public void doDevelFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        LOG.info("pass-through: " + request);
+        chain.doFilter(request, response);
+/* TODO
+        List<Source> extractors;
+        Index index;
+        long changed;
+
+        extractors = Source.fromWar(log, inputWar, svnUsername, svnPassword);
+        changed = extract(extractors);
+        for (Map.Entry<String, Distributor> entry : storages.entrySet()) {
+            index = entry.getValue().close();
+            //  TODO
+            if (!entry.getKey().contains("flash") && index != null) {
+                for (Label label : index) {
+                    outputIndex.add(label);
+                }
+            }
+        }*/
     }
 
     public void doProdFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException,

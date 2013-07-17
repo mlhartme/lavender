@@ -46,7 +46,7 @@ public class PublisherTest {
         FileNode outputNodesFile = tmp.join("outputNodesFile").mkfile();
         Distributor distributor = Distributor.forTest(outputDir, "notused");
         WarEngine extractor = new WarEngine(settings.svnUsername, settings.svnPassword,
-                WarEngine.createNullLog(), inputWar, outputWar, distributor, outputIndex, outputNodesFile, Vhost.one("a.b.c").nodesFile());
+                inputWar, outputWar, distributor, outputIndex, outputNodesFile, Vhost.one("a.b.c").nodesFile());
         extractor.run();
         assertTrue(outputWar.exists());
 

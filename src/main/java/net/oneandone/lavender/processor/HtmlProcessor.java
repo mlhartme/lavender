@@ -42,7 +42,7 @@ public class HtmlProcessor extends AbstractProcessor {
     protected StringBuilder tagBuffer = new StringBuilder(100);
 
     /** The relevant attributes in the current tag, in order. */
-    protected Map<Attr, Value> attrs = new LinkedHashMap<Attr, Value>();
+    protected Map<Attr, Value> attrs = new LinkedHashMap<>();
 
     /**
      * An enum to track the state of this processor.

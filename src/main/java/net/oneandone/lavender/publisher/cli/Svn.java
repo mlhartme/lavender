@@ -17,7 +17,6 @@ package net.oneandone.lavender.publisher.cli;
 
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.publisher.Distributor;
-import net.oneandone.lavender.publisher.Log;
 import net.oneandone.lavender.publisher.config.Cluster;
 import net.oneandone.lavender.publisher.config.Filter;
 import net.oneandone.lavender.publisher.config.Net;
@@ -59,14 +58,12 @@ public class Svn extends Base {
         Filter filter;
         SvnSourceConfig ec;
         SvnSource e;
-        Log log;
         Distributor storage;
         long changed;
         Index index;
 
         cluster = net.cluster(clusterName);
         vhost = cluster.vhost("svn");
-        log = War.createLog(console);
         filter = new Filter();
         filter.setIncludes("*");
         filter.setExcludes();
@@ -74,7 +71,7 @@ public class Svn extends Base {
         ec.pathPrefix = "";
         ec.svn = svnurl;
         ec.lavendelize = false;
-        e = ec.create(console.world, log, settings.svnUsername, settings.svnPassword);
+        e = ec.create(console.world, settings.svnUsername, settings.svnPassword);
         storage = Distributor.open(console.world, vhost.docroot, cluster.hosts, directory + ".idx");
         changed = e.run(storage);
         index = storage.close();

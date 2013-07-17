@@ -21,7 +21,6 @@ import net.oneandone.lavender.publisher.Source;
 import net.oneandone.lavender.publisher.config.Net;
 import net.oneandone.lavender.publisher.WarEngine;
 import net.oneandone.lavender.publisher.config.Cluster;
-import net.oneandone.lavender.publisher.Log;
 import net.oneandone.lavender.publisher.config.Settings;
 import net.oneandone.lavender.publisher.config.Vhost;
 import net.oneandone.sushi.cli.Console;
@@ -62,11 +61,8 @@ public class War extends Base {
     private String indexName;
 
 
-    private final Log log;
-
     public War(Console console, Settings settings, Net net) {
         super(console, settings, net);
-        this.log = createLog(console);
     }
 
     @Override
@@ -96,31 +92,8 @@ public class War extends Base {
         }
         storages = createDefaultStorages(console.world, cluster, net.cluster("flash-eu"), net.cluster("flash-us"), indexName);
         engine = new WarEngine(settings.svnUsername, settings.svnPassword,
-                log, inputWar, outputWar, storages, outputIndex, outputNodesFile, vhost.nodesFile());
+                inputWar, outputWar, storages, outputIndex, outputNodesFile, vhost.nodesFile());
         engine.run();
         outputNodesFile.deleteFile();
     }
-
-    //--
-
-    public static Log createLog(final Console console) {
-         return new Log() {
-            @Override
-            public void warn(String str) {
-                console.error.println(str);
-            }
-
-            @Override
-            public void info(String str) {
-                console.info.println(str);
-            }
-
-            @Override
-            public void verbose(String str) {
-                console.verbose.println(str);
-            }
-        };
-    }
-
-
 }

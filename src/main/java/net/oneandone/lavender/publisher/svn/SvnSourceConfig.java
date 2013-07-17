@@ -16,12 +16,13 @@
 package net.oneandone.lavender.publisher.svn;
 
 import net.oneandone.lavender.publisher.Source;
-import net.oneandone.lavender.publisher.Log;
 import net.oneandone.lavender.publisher.config.Filter;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -34,6 +35,8 @@ import java.util.Map;
 import java.util.Properties;
 
 public class SvnSourceConfig {
+    private static final Logger LOG = LoggerFactory.getLogger(SvnSourceConfig.class);
+
     private static final String SVN_PREFIX = "svn.";
 
     public final String name;
@@ -96,7 +99,7 @@ public class SvnSourceConfig {
         return result.values();
     }
 
-    public SvnSource create(World world, Log log, String svnUsername, String svnPassword) throws IOException {
+    public SvnSource create(World world, String svnUsername, String svnPassword) throws IOException {
         FileNode lavender;
         String svnpath;
         FileNode dest;
@@ -119,15 +122,15 @@ public class SvnSourceConfig {
         }
         dest = lavender.join(svnpath);
         try {
-            log.info("using svn cache at " + dest);
+            LOG.info("using svn cache at " + dest);
             if (dest.exists()) {
-                log.info("svn switch " + svn);
-                log.info(dest.exec("svn", "switch", "--non-interactive", "--no-auth-cache",
-                        "--username", svnUsername, "--password", svnUsername, svn));
+                LOG.info("svn switch " + svn);
+                LOG.info(dest.exec("svn", "switch", "--non-interactive", "--no-auth-cache",
+                        "--username", svnUsername, "--password", svnPassword, svn));
             } else {
-                log.info("svn checkout " + svn);
-                log.info(lavender.exec("svn", "checkout", "--non-interactive", "--no-auth-cache",
-                        "--username", svnUsername, "--password", svnUsername, svn, dest.getName()));
+                LOG.info("svn checkout " + svn);
+                LOG.info(lavender.exec("svn", "checkout", "--non-interactive", "--no-auth-cache",
+                        "--username", svnUsername, "--password", svnPassword, svn, dest.getName()));
             }
         } catch (IOException e) {
             throw new IOException("error creating/updating svn checkout at " + dest + ": " + e.getMessage(), e);
