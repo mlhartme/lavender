@@ -22,6 +22,7 @@ import net.oneandone.sushi.cli.Child;
 import net.oneandone.sushi.cli.Cli;
 import net.oneandone.sushi.cli.Command;
 import net.oneandone.sushi.fs.MkdirException;
+import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.ssh.SshFilesystem;
@@ -31,17 +32,17 @@ import java.io.IOException;
 
 public class Main extends Cli implements Command {
     public static void main(String[] args) throws IOException {
-        System.exit(doMain(true, Net.normal(), null, args));
+        System.exit(doMain(Net.normal(), null, args));
     }
 
-    public static int doMain(boolean withSsl, Net net, String logspath, String... args) throws IOException {
+    public static int doMain(Net net, String logspath, String... args) throws IOException {
         Main main;
 
-        main = new Main(withSsl, net, logspath);
+        main = new Main(net, logspath);
         return main.run(args);
     }
 
-    public static void initWorld(World world, Settings settings, boolean withSsh, String logspath) throws IOException {
+    public static void initWorld(World world, Settings settings, String logspath) throws IOException {
         SshFilesystem ssh;
         FileNode logs;
 
@@ -53,28 +54,26 @@ public class Main extends Cli implements Command {
         // /var/log is too small on pumamma64
         world.setTemp((FileNode) logs.mkdirOpt());
 
-        if (withSsh) {
-            world.getFilesystem("svn", SvnFilesystem.class).setDefaultCredentials(settings.svnUsername, settings.svnPassword);
-            ssh = world.getFilesystem("ssh", SshFilesystem.class);
+        world.getFilesystem("svn", SvnFilesystem.class).setDefaultCredentials(settings.svnUsername, settings.svnPassword);
+        ssh = world.getFilesystem("ssh", SshFilesystem.class);
+        for (Node node : settings.sshKeys) {
             try {
-                ssh.addIdentity(world.resource("id_dsa"), null);  // flash access
-                ssh.addDefaultIdentity();                         // sftp.1und1.de in bazaar command
+                ssh.addIdentity(node, null);
             } catch (JSchException | IOException e) {
                 throw new IllegalStateException("cannot connect to flash server: " + e.getMessage(), e);
             }
-        } else {
-            // disable them for integration tests, because I don't have .ssh on pearl/gems
         }
+        // disable them for integration tests, because I don't have .ssh on pearl/gems
     }
 
 
     private final Net net;
     private final Settings settings;
 
-    public Main(boolean withSsl, Net net, String logs) throws IOException {
+    public Main(Net net, String logs) throws IOException {
         super(new World());
         this.settings = Settings.load(console.world);
-        initWorld(console.world, settings, withSsl, logs);
+        initWorld(console.world, settings, logs);
         this.net = net;
     }
 

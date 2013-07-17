@@ -86,7 +86,7 @@ public class LavenderIT {
         testhosts.getParent().mkdirsOpt();
         started = System.currentTimeMillis();
         net = net(testhosts);
-        assertEquals(0, Main.doMain(false, net, target.join("itlogs").getAbsolute(),
+        assertEquals(0, Main.doMain(net, target.join("itlogs").getAbsolute(),
                 "-e", "war", "test", war.getAbsolute(), warModified.getAbsolute(), INDEX_NAME));
         System.out.println(name + " done: " + (System.currentTimeMillis() - started) + " ms");
 

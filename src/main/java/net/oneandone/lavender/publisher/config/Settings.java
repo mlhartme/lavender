@@ -15,24 +15,36 @@
  */
 package net.oneandone.lavender.publisher.config;
 
+import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class Settings {
     public final String svnUsername;
     public final String svnPassword;
+    public final List<Node> sshKeys;
 
-    public Settings(String svnUsername, String svnPassword) {
+    public Settings(String svnUsername, String svnPassword, List<Node> sshKeys) {
         this.svnUsername = svnUsername;
         this.svnPassword = svnPassword;
+        this.sshKeys = sshKeys;
     }
 
     public static Settings load(World world) throws IOException {
         Properties properties;
+        List<Node> sshKeys;
 
         properties = world.getHome().join(".lavender.settings").readProperties();
-        return new Settings(properties.getProperty("svn.username"), properties.getProperty("svn.password"));
+        sshKeys = new ArrayList<>();
+        for (String key : properties.stringPropertyNames()) {
+            if (key.startsWith("ssh.")) {
+                sshKeys.add(world.file(properties.getProperty(key)));
+            }
+        }
+        return new Settings(properties.getProperty("svn.username"), properties.getProperty("svn.password"), sshKeys);
     }
 }
