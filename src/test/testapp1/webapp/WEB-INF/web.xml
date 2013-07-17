@@ -3,7 +3,7 @@
 
   <filter>
     <filter-name>Lavendelizer</filter-name>
-    <filter-class>net.oneandone.lavender.filter.Lavendelizer</filter-class>
+    <filter-class>net.oneandone.lavender.filter.Lavender</filter-class>
   </filter>
   <filter-mapping>
     <filter-name>Lavendelizer</filter-name>

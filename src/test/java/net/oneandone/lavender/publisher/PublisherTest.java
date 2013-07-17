@@ -15,7 +15,7 @@
  */
 package net.oneandone.lavender.publisher;
 
-import net.oneandone.lavender.filter.Lavendelizer;
+import net.oneandone.lavender.filter.Lavender;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.publisher.config.Settings;
 import net.oneandone.lavender.publisher.config.Vhost;
@@ -50,12 +50,12 @@ public class PublisherTest {
         extractor.run();
         assertTrue(outputWar.exists());
 
-        List<String> lavendelIdxContent = getLines(outputWar, Lavendelizer.LAVENDEL_IDX.substring(1));
+        List<String> lavendelIdxContent = getLines(outputWar, Lavender.LAVENDEL_IDX.substring(1));
         assertTrue(lavendelIdxContent.toString(), lavendelIdxContent
                 .contains("modules/frontend-tools/img/delete.png=684/61ca5187cd2c6af08786467085f2b/frontend-tools"
                         + "/delete.png\\:68461ca5187cd2c6af08786467085f2b"));
 
-        List<String> lavendelNodesContent = getLines(outputWar, Lavendelizer.LAVENDEL_NODES.substring(1));
+        List<String> lavendelNodesContent = getLines(outputWar, Lavender.LAVENDEL_NODES.substring(1));
         assertTrue(lavendelNodesContent.contains("http://a.b.c"));
         assertTrue(lavendelNodesContent.contains("https://a.b.c"));
         File extractedFile = new File(outputDir.toPath().toFile(), "684/61ca5187cd2c6af08786467085f2b/frontend-tools/delete.png");

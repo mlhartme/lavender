@@ -40,8 +40,8 @@ import java.util.Map.Entry;
  * A servlet filter that <em>lavendelizes</em> the response content.
  * @author seelmann
  */
-public class Lavendelizer implements Filter {
-    private static final Logger LOG = Logger.getLogger(Lavendelizer.class);
+public class Lavender implements Filter {
+    private static final Logger LOG = Logger.getLogger(Lavender.class);
 
     /** The filter configuration. */
     protected FilterConfig filterConfig;

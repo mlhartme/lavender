@@ -29,7 +29,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class LavendelizerTest {
+public class LavenderTest {
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
@@ -37,8 +37,8 @@ public class LavendelizerTest {
     public void init() throws Exception {
         temporaryFolder.newFolder("lavender");
         temporaryFolder.newFolder("lavender/WEB-INF");
-        File indexFile = temporaryFolder.newFile("lavender" + Lavendelizer.LAVENDEL_IDX);
-        File nodesFile = temporaryFolder.newFile("lavender" + Lavendelizer.LAVENDEL_NODES);
+        File indexFile = temporaryFolder.newFile("lavender" + Lavender.LAVENDEL_IDX);
+        File nodesFile = temporaryFolder.newFile("lavender" + Lavender.LAVENDEL_NODES);
         String data = "";
         data += "http://s1.uicdn.net/m1" + IOUtils.LINE_SEPARATOR;
         data += "https://s1.uicdn.net/m1" + IOUtils.LINE_SEPARATOR;
@@ -49,11 +49,11 @@ public class LavendelizerTest {
 
         FilterConfig filterConfig = mock(FilterConfig.class);
         ServletContext servletContext = mock(ServletContext.class);
-        when(servletContext.getResource(Lavendelizer.LAVENDEL_IDX)).thenReturn(indexFile.toURI().toURL());
-        when(servletContext.getResource(Lavendelizer.LAVENDEL_NODES)).thenReturn(nodesFile.toURI().toURL());
+        when(servletContext.getResource(Lavender.LAVENDEL_IDX)).thenReturn(indexFile.toURI().toURL());
+        when(servletContext.getResource(Lavender.LAVENDEL_NODES)).thenReturn(nodesFile.toURI().toURL());
         when(filterConfig.getServletContext()).thenReturn(servletContext);
 
-        Lavendelizer filter = new Lavendelizer();
+        Lavender filter = new Lavender();
         filter.init(filterConfig);
 
         assertNotNull(filter.processorFactory);

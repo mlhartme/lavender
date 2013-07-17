@@ -15,7 +15,7 @@
  */
 package net.oneandone.lavender.publisher;
 
-import net.oneandone.lavender.filter.Lavendelizer;
+import net.oneandone.lavender.filter.Lavender;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -147,12 +147,12 @@ public class WarEngine {
         }
         zin.close();
 
-        ZipEntry indexEntry = new ZipEntry(Lavendelizer.LAVENDEL_IDX.substring(1));
+        ZipEntry indexEntry = new ZipEntry(Lavender.LAVENDEL_IDX.substring(1));
         out.putNextEntry(indexEntry);
         outputIndex.save(out);
         out.closeEntry();
 
-        ZipEntry nodesEntry = new ZipEntry(Lavendelizer.LAVENDEL_NODES.substring(1));
+        ZipEntry nodesEntry = new ZipEntry(Lavender.LAVENDEL_NODES.substring(1));
         out.putNextEntry(nodesEntry);
         outputNodesFile.writeTo(out);
         out.closeEntry();
