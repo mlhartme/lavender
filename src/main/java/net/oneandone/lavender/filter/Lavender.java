@@ -92,7 +92,7 @@ public class Lavender implements Filter {
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (processorFactory == null) {
-            LOG.info("pass-through");
+            LOG.info("pass-through: " + request);
             chain.doFilter(request, response);
         } else {
             doProdFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
