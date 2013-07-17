@@ -4,6 +4,9 @@
       <action date="2013-07-17" dev="mhm" type="update">
         Servlet 3.0 (e.g. Tomcat 7) is a prerequisite now.
       </action>
+      <action date="2013-07-17" dev="mhm" type="update">
+        Configurable svn credentials.
+      </action>
       <action date="2013-07-16" dev="mhm" type="update">
         Rename from Lavendel to Lavender. Flash indexes will be duplicated.
       </action>
