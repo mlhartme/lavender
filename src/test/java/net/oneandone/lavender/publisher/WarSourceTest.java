@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class ExtractorTest {
+public class WarSourceTest {
     private WarEngine resourcePublisher;
 
     private FileNode war;

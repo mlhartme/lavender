@@ -31,7 +31,7 @@ import java.util.zip.ZipInputStream;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class PustefixExtractorTest {
+public class PustefixSourceTest {
 
     @Test
     public void testExtract() throws Exception {

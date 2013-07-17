@@ -23,7 +23,7 @@ import java.util.Properties;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-public class SvnResourceExtractorConfigTest {
+public class SvnSourceConfigTest {
     @Test
     public void empty() {
         assertEquals(0, SvnSourceConfig.parse(new Properties()).size());

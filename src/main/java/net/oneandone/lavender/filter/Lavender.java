@@ -108,22 +108,6 @@ public class Lavender implements Filter {
             throws IOException, ServletException {
         LOG.info("pass-through: " + request);
         chain.doFilter(request, response);
-/* TODO
-        List<Source> extractors;
-        Index index;
-        long changed;
-
-        extractors = Source.fromWar(log, inputWar, svnUsername, svnPassword);
-        changed = extract(extractors);
-        for (Map.Entry<String, Distributor> entry : storages.entrySet()) {
-            index = entry.getValue().close();
-            //  TODO
-            if (!entry.getKey().contains("flash") && index != null) {
-                for (Label label : index) {
-                    outputIndex.add(label);
-                }
-            }
-        }*/
     }
 
     public void doProdFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException,

@@ -45,9 +45,9 @@ public class PublisherTest {
         Index outputIndex = new Index();
         FileNode outputNodesFile = tmp.join("outputNodesFile").mkfile();
         Distributor distributor = Distributor.forTest(outputDir, "notused");
-        WarEngine extractor = new WarEngine(settings.svnUsername, settings.svnPassword,
+        WarEngine engine = new WarEngine(settings.svnUsername, settings.svnPassword,
                 inputWar, outputWar, distributor, outputIndex, outputNodesFile, Vhost.one("a.b.c").nodesFile());
-        extractor.run();
+        engine.run();
         assertTrue(outputWar.exists());
 
         List<String> lavendelIdxContent = getLines(outputWar, Lavender.LAVENDEL_IDX.substring(1));
