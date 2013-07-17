@@ -15,7 +15,7 @@
  */
 package net.oneandone.lavender.publisher.svn;
 
-import net.oneandone.lavender.publisher.Extractor;
+import net.oneandone.lavender.publisher.Source;
 import net.oneandone.lavender.publisher.Log;
 import net.oneandone.lavender.publisher.config.Filter;
 import net.oneandone.sushi.fs.Node;
@@ -33,27 +33,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public class SvnExtractorConfig {
+public class SvnSourceConfig {
     private static final String SVN_PREFIX = "svn.";
 
     public final String name;
     public final Filter filter;
     public String svn;
-    public String storage = Extractor.DEFAULT_STORAGE;
+    public String storage = Source.DEFAULT_STORAGE;
     public boolean lavendelize = true;
     public String pathPrefix = "";
 
-    public SvnExtractorConfig(String name, Filter filter) {
+    public SvnSourceConfig(String name, Filter filter) {
         this.name = name;
         this.filter = filter;
     }
 
-    public static Collection<SvnExtractorConfig> parse(Properties properties) {
+    public static Collection<SvnSourceConfig> parse(Properties properties) {
         String key;
         String value;
         String name;
-        SvnExtractorConfig config;
-        Map<String, SvnExtractorConfig> result;
+        SvnSourceConfig config;
+        Map<String, SvnSourceConfig> result;
 
         result = new HashMap<>();
         for (Map.Entry<Object, Object> entry : properties.entrySet()) {
@@ -71,7 +71,7 @@ public class SvnExtractorConfig {
                 }
                 config = result.get(name);
                 if (config == null) {
-                    config = new SvnExtractorConfig(name, Filter.forProperties(properties, SVN_PREFIX + name, null));
+                    config = new SvnSourceConfig(name, Filter.forProperties(properties, SVN_PREFIX + name, null));
                     result.put(name, config);
                 }
                 if (key == null) {
@@ -96,7 +96,7 @@ public class SvnExtractorConfig {
         return result.values();
     }
 
-    public SvnExtractor create(World world, Log log, String svnUsername, String svnPassword) throws IOException {
+    public SvnSource create(World world, Log log, String svnUsername, String svnPassword) throws IOException {
         FileNode lavender;
         String svnpath;
         FileNode dest;
@@ -139,7 +139,7 @@ public class SvnExtractorConfig {
                 resources.add(file);
             }
         }
-        return new SvnExtractor(filter, storage, lavendelize, pathPrefix, resources, name, dest);
+        return new SvnSource(filter, storage, lavendelize, pathPrefix, resources, name, dest);
     }
 
     private static final String TAGS = "/tags/";

@@ -17,8 +17,8 @@ package net.oneandone.lavender.publisher;
 
 import net.oneandone.lavender.index.Label;
 import net.oneandone.lavender.publisher.config.Filter;
-import net.oneandone.lavender.publisher.pustefix.PustefixExtractor;
-import net.oneandone.lavender.publisher.svn.SvnExtractorConfig;
+import net.oneandone.lavender.publisher.pustefix.PustefixSource;
+import net.oneandone.lavender.publisher.svn.SvnSourceConfig;
 import net.oneandone.sushi.fs.file.FileNode;
 
 import java.io.File;
@@ -32,20 +32,20 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 /** Extracts resources */
-public abstract class Extractor implements Iterable<Resource> {
+public abstract class Source implements Iterable<Resource> {
     public static final String DEFAULT_STORAGE = "lavender";
 
     private static final String PROPERTIES = "WEB-INF/lavendel.properties";
 
-    public static List<Extractor> fromWar(Log log, FileNode war, String svnUsername, String svnPassword) throws IOException {
-        List<Extractor> result;
+    public static List<Source> fromWar(Log log, FileNode war, String svnUsername, String svnPassword) throws IOException {
+        List<Source> result;
         Properties properties;
 
         log.verbose("scanning " + war);
         result = new ArrayList<>();
         properties = getConfig(war.toPath().toFile());
-        result.add(PustefixExtractor.forProperties(war.toPath().toFile(), properties));
-        for (SvnExtractorConfig config : SvnExtractorConfig.parse(properties)) {
+        result.add(PustefixSource.forProperties(war.toPath().toFile(), properties));
+        for (SvnSourceConfig config : SvnSourceConfig.parse(properties)) {
             log.info("adding svn extractor " + config.name);
             result.add(config.create(war.getWorld(), log, svnUsername, svnPassword));
         }
@@ -77,7 +77,7 @@ public abstract class Extractor implements Iterable<Resource> {
     private final boolean lavendelize;
     private final String pathPrefix;
 
-    public Extractor(Filter filter, String storage, boolean lavendelize, String pathPrefix) {
+    public Source(Filter filter, String storage, boolean lavendelize, String pathPrefix) {
         if (filter == null) {
             throw new IllegalArgumentException();
         }

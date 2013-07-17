@@ -58,7 +58,7 @@ public class WarEngine {
         Map<String, Distributor> storages;
 
         storages = new HashMap<>();
-        storages.put(Extractor.DEFAULT_STORAGE, lavendelStorage);
+        storages.put(Source.DEFAULT_STORAGE, lavendelStorage);
         return storages;
     }
 
@@ -98,12 +98,12 @@ public class WarEngine {
      */
     public void run() throws IOException {
         long started;
-        List<Extractor> extractors;
+        List<Source> extractors;
         Index index;
         long changed;
 
         started = System.currentTimeMillis();
-        extractors = Extractor.fromWar(log, inputWar, svnUsername, svnPassword);
+        extractors = Source.fromWar(log, inputWar, svnUsername, svnPassword);
         changed = extract(extractors);
         for (Map.Entry<String, Distributor> entry : storages.entrySet()) {
             index = entry.getValue().close();
@@ -120,16 +120,16 @@ public class WarEngine {
         log.info("done: " + changed + "/" + outputIndex.size() + " files changed (" + (System.currentTimeMillis() - started) + " ms)");
     }
 
-    public long extract(Extractor... extractors) throws IOException {
+    public long extract(Source... extractors) throws IOException {
         return extract(Arrays.asList(extractors));
     }
 
-    public long extract(List<Extractor> extractors) throws IOException {
+    public long extract(List<Source> extractors) throws IOException {
         Distributor storage;
         long changed;
 
         changed = 0;
-        for (Extractor extractor : extractors) {
+        for (Source extractor : extractors) {
             storage = storages.get(extractor.getStorage());
             if (storage == null) {
                 throw new IllegalStateException("storage not found: " + extractor.getStorage());

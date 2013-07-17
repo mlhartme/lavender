@@ -17,9 +17,9 @@ package net.oneandone.lavender.publisher.cli;
 
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.publisher.Distributor;
+import net.oneandone.lavender.publisher.Source;
 import net.oneandone.lavender.publisher.config.Net;
 import net.oneandone.lavender.publisher.WarEngine;
-import net.oneandone.lavender.publisher.Extractor;
 import net.oneandone.lavender.publisher.config.Cluster;
 import net.oneandone.lavender.publisher.Log;
 import net.oneandone.lavender.publisher.config.Settings;
@@ -40,7 +40,7 @@ public class War extends Base {
         Map<String, Distributor> storages;
 
         storages = new HashMap<>();
-        storages.put(Extractor.DEFAULT_STORAGE, Distributor.forCdn(world, cdn, cdn.vhost("fix"), indexName));
+        storages.put(Source.DEFAULT_STORAGE, Distributor.forCdn(world, cdn, cdn.vhost("fix"), indexName));
         String flashIdx = Strings.replace(Strings.replace(indexName, "-a.idx", ""), "-b.idx", "") + ".idx";
         storages.put("flash-eu", Distributor.forCdn(world, flashEu, flashEu.vhosts.get(0), flashIdx));
         storages.put("flash-us", Distributor.forCdn(world, flashUs, flashUs.vhosts.get(0), flashIdx));

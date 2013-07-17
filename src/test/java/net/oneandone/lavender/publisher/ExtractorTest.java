@@ -18,7 +18,7 @@ package net.oneandone.lavender.publisher;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.publisher.config.Filter;
 import net.oneandone.lavender.publisher.config.Settings;
-import net.oneandone.lavender.publisher.pustefix.PustefixExtractor;
+import net.oneandone.lavender.publisher.pustefix.PustefixSource;
 import net.oneandone.sushi.fs.LineFormat;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -73,7 +73,7 @@ public class ExtractorTest {
         Collection<String> indexFileContent;
         Index index;
 
-        resourcePublisher.extract(new PustefixExtractor(new Filter(), war.toPath().toFile()));
+        resourcePublisher.extract(new PustefixSource(new Filter(), war.toPath().toFile()));
         index = distributor.close();
         indexFileContent = indexLines(index);
         assertEquals(1 + 14 + 1, indexFileContent.size()); // contains properties header line
@@ -97,7 +97,7 @@ public class ExtractorTest {
         config.setIncludes("*.jpg", "*.gif");
         config.setExcludes("**/close.gif");
 
-        resourcePublisher.extract(new PustefixExtractor(config, war.toPath().toFile()));
+        resourcePublisher.extract(new PustefixSource(config, war.toPath().toFile()));
         index = distributor.close();
 
         Collection<String> indexFileContent = indexLines(index);

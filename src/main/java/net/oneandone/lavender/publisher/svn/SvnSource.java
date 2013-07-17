@@ -15,7 +15,7 @@
  */
 package net.oneandone.lavender.publisher.svn;
 
-import net.oneandone.lavender.publisher.Extractor;
+import net.oneandone.lavender.publisher.Source;
 import net.oneandone.lavender.publisher.Resource;
 import net.oneandone.lavender.publisher.config.Filter;
 import net.oneandone.sushi.fs.Node;
@@ -25,13 +25,13 @@ import java.util.Iterator;
 import java.util.List;
 
 /** Extracts resources from svn */
-public class SvnExtractor extends Extractor {
+public class SvnSource extends Source {
     private final List<Node> resources;
     private final String name;
     private final Node dest;
 
-    public SvnExtractor(Filter filter, String storage, boolean lavendelize, String pathPrefix,
-                        List<Node> resources, String name, Node dest) {
+    public SvnSource(Filter filter, String storage, boolean lavendelize, String pathPrefix,
+                     List<Node> resources, String name, Node dest) {
         super(filter, storage, lavendelize, pathPrefix);
         this.resources = resources;
         this.name = name;

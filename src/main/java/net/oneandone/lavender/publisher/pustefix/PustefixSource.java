@@ -15,7 +15,7 @@
  */
 package net.oneandone.lavender.publisher.pustefix;
 
-import net.oneandone.lavender.publisher.Extractor;
+import net.oneandone.lavender.publisher.Source;
 import net.oneandone.lavender.publisher.Resource;
 import net.oneandone.lavender.publisher.config.Filter;
 
@@ -30,17 +30,17 @@ import java.util.Properties;
  * Extracts static resources from a Pustefix application. Valid static resource path are defined in WEB-INF/project.xml.
  * Resources can be found in the WAR or in nested JARs.
  */
-public class PustefixExtractor extends Extractor {
+public class PustefixSource extends Source {
     private static final List<String> DEFAULT_INCLUDE_EXTENSIONS = new ArrayList<>(Arrays.asList(
             "gif", "png", "jpg", "jpeg", "ico", "swf", "css", "js"));
 
-    public static PustefixExtractor forProperties(File war, Properties properties) {
-        return new PustefixExtractor(Filter.forProperties(properties, "pustefix", DEFAULT_INCLUDE_EXTENSIONS), war);
+    public static PustefixSource forProperties(File war, Properties properties) {
+        return new PustefixSource(Filter.forProperties(properties, "pustefix", DEFAULT_INCLUDE_EXTENSIONS), war);
     }
 
     private final File war;
 
-    public PustefixExtractor(Filter filter, File war) {
+    public PustefixSource(Filter filter, File war) {
         super(filter, DEFAULT_STORAGE, true, "");
         this.war = war;
     }

@@ -26,20 +26,20 @@ import static org.junit.Assert.assertFalse;
 public class SvnResourceExtractorConfigTest {
     @Test
     public void empty() {
-        assertEquals(0, SvnExtractorConfig.parse(new Properties()).size());
+        assertEquals(0, SvnSourceConfig.parse(new Properties()).size());
     }
 
     @Test
     public void one() {
         Properties props;
-        Collection<SvnExtractorConfig> result;
-        SvnExtractorConfig config;
+        Collection<SvnSourceConfig> result;
+        SvnSourceConfig config;
 
         props = new Properties();
         props.put("svn.foo", "svn");
         props.put("svn.foo.pathPrefix", "prefix");
         props.put("svn.foo.lavendelize", "false");
-        result = SvnExtractorConfig.parse(props);
+        result = SvnSourceConfig.parse(props);
         assertEquals(1, result.size());
         config = result.iterator().next();
         assertEquals("foo", config.name);
@@ -51,13 +51,13 @@ public class SvnResourceExtractorConfigTest {
     @Test
     public void more() {
         Properties props;
-        Collection<SvnExtractorConfig> result;
+        Collection<SvnSourceConfig> result;
 
         props = new Properties();
         props.put("svn.foo", "1");
         props.put("svn.bar", "2");
         props.put("svn.baz", "3");
-        result = SvnExtractorConfig.parse(props);
+        result = SvnSourceConfig.parse(props);
         assertEquals(3, result.size());
     }
 
@@ -70,6 +70,6 @@ public class SvnResourceExtractorConfigTest {
     }
 
     private void check(String expected, String orig) {
-        assertEquals(expected, SvnExtractorConfig.simplify(orig));
+        assertEquals(expected, SvnSourceConfig.simplify(orig));
     }
 }
