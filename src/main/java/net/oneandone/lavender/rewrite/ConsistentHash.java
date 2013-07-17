@@ -25,7 +25,6 @@ import java.util.TreeMap;
 
 /**
  * @link http://weblogs.java.net/blog/2007/11/27/consistent-hashing"
- * @author seelmann
  */
 public class ConsistentHash {
 

@@ -24,7 +24,6 @@ import java.net.URI;
 
 /**
  * Base implementation of {@link Processor}.
- * @author seelmann
  */
 public abstract class AbstractProcessor implements Processor {
 

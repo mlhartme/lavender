@@ -24,7 +24,6 @@ import java.net.URI;
 /**
  * A {@link Processor} scans content for rewritable URIs, delegates the rewrite to the
  * {@link net.oneandone.lavender.rewrite.RewriteEngine}, and streams the content to the {@link Writer}.
- * @author seelmann
  */
 public interface Processor {
     /**

@@ -30,7 +30,6 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Runs a performance test.
- * @author seelmann
  */
 @Ignore
 public class LavendelizeHttpServletResponsePT {

@@ -40,7 +40,6 @@ import java.util.zip.GZIPOutputStream;
 /**
  * An implementation of {@link HttpServletResponse} that uses a custom {@link ServletOutputStream} and
  * {@link PrintWriter} to lavendelize the response content.
- * @author seelmann
  */
 public class LavendelizeHttpServletResponse extends HttpServletResponseWrapper {
     /** The logger. */

@@ -30,7 +30,6 @@ import java.util.Map;
 
 /**
  * Uses a consistent hash function to calculate the host name for a particular resource.
- * @author seelmann
  */
 public class UrlCalculator {
     /** The nodes used for HTTP */

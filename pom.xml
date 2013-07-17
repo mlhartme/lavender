@@ -42,6 +42,15 @@
       </roles>
       <timezone>+1</timezone>
     </developer>
+    <developer>
+      <id>seelmann</id>
+      <name>Stefan Seelmann</name>
+      <url>http://www.stefan-seelmann.de</url>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
   </developers>
 
   <dependencies>

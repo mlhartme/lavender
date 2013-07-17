@@ -44,7 +44,6 @@ import java.util.Map.Entry;
 
 /**
  * A servlet filter that <em>lavendelizes</em> the response content.
- * @author seelmann
  */
 public class Lavender implements Filter {
     private static final Logger LOG = LoggerFactory.getLogger(Lavender.class);

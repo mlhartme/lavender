@@ -26,7 +26,6 @@ import java.util.Map;
 
 /**
  * Factory for two content types: text/html and text/css.
- * @author seelmann
  */
 public class ProcessorFactory {
 

@@ -26,7 +26,6 @@ import java.text.MessageFormat;
 
 /**
  * RewriteEngine that is able to load and push resources during rewrite.
- * @author seelmann
  */
 public class RewriteEngine {
     private static final Logger LOG = LoggerFactory.getLogger(RewriteEngine.class);

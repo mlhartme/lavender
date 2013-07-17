@@ -23,7 +23,6 @@ import java.io.IOException;
 /**
  * {@link Processor} for CSS content. This implementation scans the content for <code>url(...)</code> pattern and
  * rewrites found URIs.
- * @author seelmann
  */
 public class CssProcessor extends AbstractProcessor {
 
