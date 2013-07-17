@@ -27,7 +27,7 @@
 
   <servlet>
     <servlet-name>lavender</servlet-name>
-    <servlet-class>net.oneandone.lavender.servlet.LavendelTomcatServlet
+    <servlet-class>net.oneandone.lavender.servlet.Cds
     </servlet-class>
     <init-param>
       <param-name>docbase</param-name>

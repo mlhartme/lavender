@@ -17,13 +17,7 @@ package net.oneandone.lavender.filter.it;
 
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
-import org.apache.catalina.Context;
-import org.apache.catalina.Engine;
-import org.apache.catalina.Host;
-import org.apache.catalina.connector.Connector;
-import org.apache.catalina.loader.WebappLoader;
-import org.apache.catalina.realm.MemoryRealm;
-import org.apache.catalina.startup.Embedded;
+import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -37,10 +31,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.zip.GZIPInputStream;
 
@@ -56,50 +48,17 @@ public class LavendelizerIT {
     private static final FileNode HOME = WORLD.guessProjectHome(LavendelizerIT.class);
 
     private static final int PORT = 8087;
-    private static final String HOST = "127.0.0.1";
-    private static Embedded container;
+    private static Tomcat container;
 
     @BeforeClass
     public static void startTomcat() throws Exception {
         FileNode dest = HOME.join("target/testapp1");
 
         HOME.join("src/test/testapp1").copy(dest);
-        container = new Embedded();
-        doStartTomcat(dest.toPath().toFile(), HOST, PORT);
-    }
-
-    private static void doStartTomcat(File dir, String host, int port) throws Exception {
-        container.setCatalinaHome(new File(dir, "tomcat").getAbsolutePath());
-        container.setRealm(new MemoryRealm());
-
-        // create webapp loader
-        WebappLoader loader = new WebappLoader(LavendelizerIT.class.getClassLoader());
-
-        loader.addRepository(new File("target/classes").toURI().toURL().toString());
-
-        // create context
-        Context rootContext = container.createContext("/", new File(dir, "webapp").getAbsolutePath());
-        rootContext.setLoader(loader);
-        rootContext.setReloadable(false);
-
-        // create host
-        Host localHost = container.createHost(host, dir.getAbsolutePath());
-        localHost.addChild(rootContext);
-
-        // create engine
-        Engine engine = container.createEngine();
-        engine.setName("localEngine");
-        engine.addChild(localHost);
-        engine.setDefaultHost(localHost.getName());
-        container.addEngine(engine);
-
-        // create http connector
-        Connector httpConnector = container.createConnector((InetAddress) null, port, false);
-        container.addConnector(httpConnector);
-
-        container.setAwait(true);
-
-        // start server
+        container = new Tomcat();
+        container.setBaseDir(dest.join("tomcat").getAbsolute());
+        container.addWebapp("/", dest.join("webapp").getAbsolute());
+        container.setPort(PORT);
         container.start();
     }
 

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?><document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
   <body>
     <release version="2.0.0">
+      <action date="2013-07-17" dev="mhm" type="update">
+        Servlet 3.0 (e.g. Tomcat 7) is a prerequisite now.
+      </action>
       <action date="2013-07-16" dev="mhm" type="update">
         Rename from Lavendel to Lavender. Flash indexes will be duplicated.
       </action>
@@ -11,7 +14,7 @@
         Added gc dryrun switch.
       </action>
       <action date="2013-07-15" dev="mhm" type="remove">
-        Dumped Mojo.
+        Dumped Mojo, we always configure a filter now.
       </action>
       <action date="2013-07-04" dev="mhm" type="update">
         "gc" command takes a cluster argument now.

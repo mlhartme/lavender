@@ -46,7 +46,7 @@ public class LavendelizeHttpServletRequest extends HttpServletRequestWrapper {
 
     @Override
     public Enumeration<String> getHeaderNames() {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
 
         HttpServletRequest request = (HttpServletRequest) getRequest();
         Enumeration<String> e = request.getHeaderNames();
@@ -62,7 +62,7 @@ public class LavendelizeHttpServletRequest extends HttpServletRequestWrapper {
     }
 
     @Override
-    public Enumeration<?> getHeaders(String name) {
+    public Enumeration getHeaders(String name) {
         if (ACCEPT_ENCODING.equalsIgnoreCase(name)) {
             return Collections.enumeration(Collections.emptyList());
         }

@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Collection;
 import java.util.Locale;
 
 public class MockHttpServletResponse implements HttpServletResponse {
@@ -87,6 +88,26 @@ public class MockHttpServletResponse implements HttpServletResponse {
     }
 
     public void setStatus(int sc, String sm) {
+    }
+
+    @Override
+    public int getStatus() {
+        return 0;
+    }
+
+    @Override
+    public String getHeader(String s) {
+        return null;
+    }
+
+    @Override
+    public Collection<String> getHeaders(String s) {
+        return null;
+    }
+
+    @Override
+    public Collection<String> getHeaderNames() {
+        return null;
     }
 
     public void flushBuffer() throws IOException {
