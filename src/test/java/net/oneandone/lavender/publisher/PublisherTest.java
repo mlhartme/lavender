@@ -42,18 +42,13 @@ public class PublisherTest {
         FileNode outputDir = tmp.join("outputDir").mkdir();
         FileNode inputWar = (FileNode) world.resource("dummy.war");
         FileNode outputWar = tmp.join("outputWar");
-        FileNode outputWebXmlFile = tmp.join("outputWebXmlFile").mkfile();
         Index outputIndex = new Index();
         FileNode outputNodesFile = tmp.join("outputNodesFile").mkfile();
         Distributor distributor = Distributor.forTest(outputDir, "notused");
         WarEngine extractor = new WarEngine(settings.svnUsername, settings.svnPassword,
-                WarEngine.createNullLog(), inputWar, outputWar,
-                distributor, outputWebXmlFile, outputIndex, outputNodesFile, Vhost.one("a.b.c").nodesFile());
+                WarEngine.createNullLog(), inputWar, outputWar, distributor, outputIndex, outputNodesFile, Vhost.one("a.b.c").nodesFile());
         extractor.run();
         assertTrue(outputWar.exists());
-
-        List<String> webXmlContent = getLines(outputWar, "WEB-INF/web.xml");
-        assertTrue(webXmlContent.contains("  <filter-class>net.oneandone.lavender.filter.Lavendelizer</filter-class>"));
 
         List<String> lavendelIdxContent = getLines(outputWar, Lavendelizer.LAVENDEL_IDX.substring(1));
         assertTrue(lavendelIdxContent.toString(), lavendelIdxContent

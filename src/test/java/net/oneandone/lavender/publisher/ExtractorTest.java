@@ -45,8 +45,6 @@ public class ExtractorTest {
 
     private FileNode nodesFile;
 
-    private FileNode webXml;
-
     private Distributor distributor;
 
     @Before
@@ -61,11 +59,9 @@ public class ExtractorTest {
         tmp = world.getTemp().createTempDirectory();
         baseDirectory = tmp.join("storage").mkdir();
         nodesFile = tmp.join("nodes.lst");
-        webXml = tmp.join("web.xml");
         distributor = Distributor.forTest(baseDirectory, "notused");
         resourcePublisher = new WarEngine(settings.svnUsername, settings.svnPassword,
-                WarEngine.createNullLog(), war, war, distributor, webXml,
-                new Index(), nodesFile, "");
+                WarEngine.createNullLog(), war, war, distributor, new Index(), nodesFile, "");
     }
 
     @Test

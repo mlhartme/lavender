@@ -33,6 +33,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
+// TODO: enable when we have real apps with for Lavender 2.
 @Ignore
 public class LavenderIT {
     private static final World WORLD = new World();

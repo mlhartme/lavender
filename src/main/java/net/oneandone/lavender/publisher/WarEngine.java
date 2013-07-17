@@ -42,24 +42,15 @@ public class WarEngine {
     private final FileNode inputWar;
     private final FileNode outputWar;
     private final Map<String, Distributor> storages;
-    private final FileNode outputWebXmlFile;
     private final Index outputIndex;
     private final FileNode outputNodesFile;
     private final String nodes;
 
     public WarEngine(String svnUsername, String svnPassword,
-                     Log log, FileNode inputWar, FileNode outputWar, Distributor lavendelStorage, FileNode outputWebXmlFile,
+                     Log log, FileNode inputWar, FileNode outputWar, Distributor lavendelStorage,
                      Index outputIndex, FileNode outputNodesFile, String nodes) {
         this(svnUsername, svnPassword,
-                log, inputWar, outputWar, defaultStorage(lavendelStorage), outputWebXmlFile, outputIndex, outputNodesFile, nodes);
-    }
-
-    private static Map<String, Distributor> defaultStorage(Distributor lavendelStorage) {
-        Map<String, Distributor> storages;
-
-        storages = new HashMap<>();
-        storages.put(Source.DEFAULT_STORAGE, lavendelStorage);
-        return storages;
+                log, inputWar, outputWar, defaultStorage(lavendelStorage), outputIndex, outputNodesFile, nodes);
     }
 
     /**
@@ -77,7 +68,7 @@ public class WarEngine {
      *            optional path. The collection must contain separate URIs for http and https.
      */
     public WarEngine(String svnUsername, String svnPassword,
-                     Log log, FileNode inputWar, FileNode outputWar, Map<String, Distributor> storages, FileNode outputWebXmlFile,
+                     Log log, FileNode inputWar, FileNode outputWar, Map<String, Distributor> storages,
                      Index outputIndex, FileNode outputNodesFile, String nodes) {
         this.svnUsername = svnUsername;
         this.svnPassword = svnPassword;
@@ -85,7 +76,6 @@ public class WarEngine {
         this.inputWar = inputWar;
         this.outputWar = outputWar;
         this.storages = storages;
-        this.outputWebXmlFile = outputWebXmlFile;
         this.outputIndex = outputIndex;
         this.outputNodesFile = outputNodesFile;
         this.nodes = nodes;
@@ -115,7 +105,6 @@ public class WarEngine {
             }
         }
         outputNodesFile.writeString(nodes);
-        mergeWebXmlFile();
         updateWarFile();
         log.info("done: " + changed + "/" + outputIndex.size() + " files changed (" + (System.currentTimeMillis() - started) + " ms)");
     }
@@ -139,68 +128,24 @@ public class WarEngine {
         return changed;
     }
 
-    private void mergeWebXmlFile() throws IOException {
-        ZipInputStream zin = new ZipInputStream(new FileInputStream(inputWar.toPath().toFile()));
-
-        ZipEntry entry = zin.getNextEntry();
-        while (entry != null) {
-            if ("WEB-INF/web.xml".equals(entry.getName())) {
-                outputWebXmlFile.getWorld().getBuffer().copy(zin, outputWebXmlFile);
-                break;
-            }
-            entry = zin.getNextEntry();
-        }
-        zin.close();
-
-        String endTag = "</web-app>";
-        String filterString = "";
-        filterString += "\n<filter>\n";
-        filterString += "  <filter-name>Lavendelizer</filter-name>\n";
-        filterString += "  <filter-class>net.oneandone.lavender.filter.Lavendelizer</filter-class>\n";
-        filterString += "</filter>\n";
-        filterString += "<filter-mapping>\n";
-        filterString += "  <filter-name>Lavendelizer</filter-name>\n";
-        filterString += "  <url-pattern>/*</url-pattern>\n";
-        filterString += "</filter-mapping>\n";
-
-        String webXmlContent = outputWebXmlFile.readString();
-        webXmlContent = webXmlContent.replace(endTag, filterString + endTag);
-        outputWebXmlFile.writeString(webXmlContent);
-    }
-
     private void updateWarFile() throws IOException {
         ZipInputStream zin = new ZipInputStream(new FileInputStream(inputWar.toPath().toFile()));
         ZipOutputStream out = new ZipOutputStream(outputWar.createOutputStream());
         ZipEntry entry;
         Buffer buffer;
         String name;
-        boolean log4j;
 
-        log4j = false;
         entry = zin.getNextEntry();
         buffer = outputWar.getWorld().getBuffer();
         while (entry != null) {
             name = entry.getName();
-            if (!"WEB-INF/web.xml".equals(name)) {
-                ZipEntry outEntry = new ZipEntry(name);
-                out.putNextEntry(outEntry);
-                buffer.copy(zin, out);
-                out.closeEntry();
-            }
-            if (name.matches("WEB-INF/lib/lavendelizer.*jar")) {
-                throw new IOException("hard-coded lavandelizer.jar found in war file: " + entry.getName());
-            }
-            if (name.matches("WEB-INF/lib/log4j.*jar")) {
-                log4j = true;
-            }
-
+            ZipEntry outEntry = new ZipEntry(name);
+            out.putNextEntry(outEntry);
+            buffer.copy(zin, out);
+            out.closeEntry();
             entry = zin.getNextEntry();
         }
         zin.close();
-
-        if (!log4j) {
-            throw new IOException("missing log4j.jar in war file");
-        }
 
         ZipEntry indexEntry = new ZipEntry(Lavendelizer.LAVENDEL_IDX.substring(1));
         out.putNextEntry(indexEntry);
@@ -212,12 +157,17 @@ public class WarEngine {
         outputNodesFile.writeTo(out);
         out.closeEntry();
 
-        ZipEntry webXmlEntry = new ZipEntry("WEB-INF/web.xml");
-        out.putNextEntry(webXmlEntry);
-        outputWebXmlFile.writeTo(out);
-        out.closeEntry();
-
         out.close();
+    }
+
+    //--
+
+    private static Map<String, Distributor> defaultStorage(Distributor lavendelStorage) {
+        Map<String, Distributor> storages;
+
+        storages = new HashMap<>();
+        storages.put(Source.DEFAULT_STORAGE, lavendelStorage);
+        return storages;
     }
 
     //--

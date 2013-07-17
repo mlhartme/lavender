@@ -72,7 +72,6 @@ public class War extends Base {
     @Override
     public void invoke() throws IOException {
         FileNode tmp;
-        FileNode outputWebXmlFile;
         Index outputIndex;
         FileNode outputNodesFile;
         WarEngine engine;
@@ -85,7 +84,6 @@ public class War extends Base {
         outputWar.checkNotExists();
 
         tmp = inputWar.getWorld().getTemp();
-        outputWebXmlFile = tmp.createTempFile();
         outputIndex = new Index();
         outputNodesFile = tmp.createTempFile();
         idx = clusterVhost.indexOf("/");
@@ -98,9 +96,8 @@ public class War extends Base {
         }
         storages = createDefaultStorages(console.world, cluster, net.cluster("flash-eu"), net.cluster("flash-us"), indexName);
         engine = new WarEngine(settings.svnUsername, settings.svnPassword,
-                log, inputWar, outputWar, storages, outputWebXmlFile, outputIndex, outputNodesFile, vhost.nodesFile());
+                log, inputWar, outputWar, storages, outputIndex, outputNodesFile, vhost.nodesFile());
         engine.run();
-        outputWebXmlFile.deleteFile();
         outputNodesFile.deleteFile();
     }
 

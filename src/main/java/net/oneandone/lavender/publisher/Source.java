@@ -35,7 +35,7 @@ import java.util.zip.ZipFile;
 public abstract class Source implements Iterable<Resource> {
     public static final String DEFAULT_STORAGE = "lavender";
 
-    private static final String PROPERTIES = "WEB-INF/lavendel.properties";
+    private static final String PROPERTIES = "WEB-INF/lavender.properties";
 
     public static List<Source> fromWar(Log log, FileNode war, String svnUsername, String svnPassword) throws IOException {
         List<Source> result;
