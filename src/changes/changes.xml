@@ -8,7 +8,7 @@
         Servlet 3.0 (e.g. Tomcat 7) is a prerequisite now.
       </action>
       <action date="2013-07-17" dev="mhm" type="update">
-        Filter is no longer added automatically, the user has to configure it in his web.xml.
+        Lavender Filter is mandatory in web.xml now, it is no longer added automatically.
       </action>
       <action date="2013-07-17" dev="mhm" type="update">
         svn and ssh are configured in ~/.lavendel.settings now.
