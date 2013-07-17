@@ -55,67 +55,67 @@ public class Lavendelizer implements Filter {
      * {@inheritDoc}
      */
     public void init(FilterConfig config) throws ServletException {
+        URL src;
         Index index;
         UrlCalculator urlCalculator;
         RewriteEngine rewriteEngine;
 
-        try {
-            this.filterConfig = config;
-
-            index = new Index(resource(LAVENDEL_IDX));
-            urlCalculator = new UrlCalculator(resource(LAVENDEL_NODES));
-            rewriteEngine = new RewriteEngine(index, urlCalculator);
-
-            this.processorFactory = new ProcessorFactory(rewriteEngine);
-        } catch (IOException ie) {
-            LOG.fatal("Error in Lavendelizer.init()", ie);
-            throw new ServletException("io error", ie);
-        } catch (ServletException se) {
-            LOG.fatal("Error in Lavendelizer.init()", se);
-            throw se;
-        } catch (RuntimeException re) {
-            LOG.fatal("Error in Lavendelizer.init()", re);
-            throw re;
+        this.filterConfig = config;
+        src = resourceOpt(LAVENDEL_IDX);
+        if (src == null) {
+            processorFactory = null;
+            LOG.info("Lavendel devel filter");
+        } else {
+            try {
+                index = new Index(src);
+                urlCalculator = new UrlCalculator(resourceOpt(LAVENDEL_NODES));
+                rewriteEngine = new RewriteEngine(index, urlCalculator);
+                processorFactory = new ProcessorFactory(rewriteEngine);
+                LOG.info("Lavender prod filter");
+            } catch (IOException ie) {
+                LOG.fatal("Error in Lavendelizer.init()", ie);
+                throw new ServletException("io error", ie);
+            } catch (ServletException | RuntimeException se) {
+                LOG.fatal("Error in Lavendelizer.init()", se);
+                throw se;
+            }
         }
     }
 
-    private URL resource(String path) throws ServletException {
-        URL url;
-
+    private URL resourceOpt(String path) throws ServletException {
         try {
-            url = filterConfig.getServletContext().getResource(path);
+            return filterConfig.getServletContext().getResource(path);
         } catch (MalformedURLException e) {
             throw new IllegalStateException(e);
         }
-        if (url == null) {
-            throw new ServletException("resource not found: " + path);
-        }
-        return url;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        if (processorFactory == null) {
+            LOG.info("pass-through");
+            chain.doFilter(request, response);
+        } else {
+            doProdFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
+        }
+    }
+
+    public void doProdFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException,
             ServletException {
 
         StringBuffer url;
-        LavendelizeHttpServletRequest lavendelRequest;
-        LavendelizeHttpServletResponse lavendelResponse;
+        LavendelizeHttpServletRequest lavenderRequest;
+        LavendelizeHttpServletResponse lavenderResponse;
 
         try {
-            HttpServletRequest httpRequest = (HttpServletRequest) request;
-            HttpServletResponse httpResponse = (HttpServletResponse) response;
-
-            url = httpRequest.getRequestURL();
+            url = request.getRequestURL();
             URI requestURI = URI.create(url.toString());
 
             // use custom request and response objects
-            lavendelRequest = new LavendelizeHttpServletRequest(httpRequest);
-            lavendelResponse = new LavendelizeHttpServletResponse(httpResponse, processorFactory,
-                    requestURI, httpRequest.getHeader("User-Agent"),
-                    httpRequest.getContextPath() + "/", Gzip.canGzip(httpRequest));
-            logRequest(url, httpRequest);
+            lavenderRequest = new LavendelizeHttpServletRequest(request);
+            lavenderResponse = new LavendelizeHttpServletResponse(response, processorFactory,
+                    requestURI, request.getHeader("User-Agent"),
+                    request.getContextPath() + "/", Gzip.canGzip(request));
+            logRequest(url, request);
         } catch (RuntimeException re) {
             LOG.fatal("Error in Lavendelizer.doFilter()", re);
             throw re;
@@ -123,13 +123,13 @@ public class Lavendelizer implements Filter {
 
         // continue the request
         // No exception handling at this point. Exceptions in processors are handled in LavendelizeOutputStream/Writer
-        chain.doFilter(lavendelRequest, lavendelResponse);
+        chain.doFilter(lavenderRequest, lavenderResponse);
 
         try {
             // close the response to make sure all buffers are flushed
-            lavendelResponse.close();
+            lavenderResponse.close();
 
-            logResponse(url, lavendelResponse);
+            logResponse(url, lavenderResponse);
         } catch (IOException ioe) {
             LOG.fatal("Error in Lavendelizer.doFilter()", ioe);
             throw ioe;
