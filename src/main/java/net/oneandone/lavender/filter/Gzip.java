@@ -15,7 +15,8 @@
  */
 package net.oneandone.lavender.filter;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.regex.Matcher;
@@ -25,7 +26,7 @@ import java.util.regex.Pattern;
  * gzip handling
  */
 public final class Gzip {
-    private static final Logger LOG = Logger.getLogger(Gzip.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Gzip.class);
 
     public static boolean canGzip(HttpServletRequest request) {
         String accepted;

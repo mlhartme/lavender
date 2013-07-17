@@ -19,7 +19,8 @@ import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.processor.ProcessorFactory;
 import net.oneandone.lavender.rewrite.RewriteEngine;
 import net.oneandone.lavender.rewrite.UrlCalculator;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -41,7 +42,7 @@ import java.util.Map.Entry;
  * @author seelmann
  */
 public class Lavender implements Filter {
-    private static final Logger LOG = Logger.getLogger(Lavender.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Lavender.class);
 
     /** The filter configuration. */
     protected FilterConfig filterConfig;
@@ -73,10 +74,10 @@ public class Lavender implements Filter {
                 processorFactory = new ProcessorFactory(rewriteEngine);
                 LOG.info("Lavender prod filter");
             } catch (IOException ie) {
-                LOG.fatal("Error in Lavendelizer.init()", ie);
+                LOG.error("Error in Lavendelizer.init()", ie);
                 throw new ServletException("io error", ie);
             } catch (ServletException | RuntimeException se) {
-                LOG.fatal("Error in Lavendelizer.init()", se);
+                LOG.error("Error in Lavendelizer.init()", se);
                 throw se;
             }
         }
@@ -117,7 +118,7 @@ public class Lavender implements Filter {
                     request.getContextPath() + "/", Gzip.canGzip(request));
             logRequest(url, request);
         } catch (RuntimeException re) {
-            LOG.fatal("Error in Lavendelizer.doFilter()", re);
+            LOG.error("Error in Lavendelizer.doFilter()", re);
             throw re;
         }
 
@@ -131,10 +132,10 @@ public class Lavender implements Filter {
 
             logResponse(url, lavenderResponse);
         } catch (IOException ioe) {
-            LOG.fatal("Error in Lavendelizer.doFilter()", ioe);
+            LOG.error("Error in Lavendelizer.doFilter()", ioe);
             throw ioe;
         } catch (RuntimeException re) {
-            LOG.fatal("Error in Lavendelizer.doFilter()", re);
+            LOG.error("Error in Lavendelizer.doFilter()", re);
             throw re;
         }
     }

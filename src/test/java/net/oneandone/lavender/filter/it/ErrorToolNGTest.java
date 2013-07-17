@@ -15,13 +15,14 @@
  */
 package net.oneandone.lavender.filter.it;
 
-import org.apache.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ErrorToolNGTest {
 
-    private static final Logger LOG = Logger.getLogger(ErrorToolNGTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ErrorToolNGTest.class);
 
     @Ignore
     @Test

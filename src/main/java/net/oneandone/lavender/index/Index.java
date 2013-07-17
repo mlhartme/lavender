@@ -15,7 +15,8 @@
  */
 package net.oneandone.lavender.index;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -44,7 +45,7 @@ import java.util.Properties;
 public class Index implements Iterable<Label> {
     public static final String ENCODING = "UTF-8";
 
-    private static final Logger LOG = Logger.getLogger(Index.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Index.class);
 
     private static final String DELIMITER = ":";
 

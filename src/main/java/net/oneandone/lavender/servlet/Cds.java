@@ -15,7 +15,8 @@
  */
 package net.oneandone.lavender.servlet;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -32,7 +33,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 public class Cds extends HttpServlet {
-    private static final Logger LOG = Logger.getLogger(Cds.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Cds.class);
     private static final String DOCBASE_PARAM = "docbase";
     private static final int INPUTSTREAM_BUFFER = 4096;
     private static final int RESPONSE_BUFFER = 4096;

@@ -15,7 +15,8 @@
  */
 package net.oneandone.lavender.filter;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletOutputStream;
 import java.io.IOException;
@@ -41,7 +42,7 @@ public class WriterOutputStream extends ServletOutputStream {
 
     }
 
-    private static final Logger LOG = Logger.getLogger(WriterOutputStream.class);
+    private static final Logger LOG = LoggerFactory.getLogger(WriterOutputStream.class);
 
     /** The wrapped writer. */
     private final Writer wrapped;
@@ -76,12 +77,9 @@ public class WriterOutputStream extends ServletOutputStream {
         try {
             single[0] = (byte) b;
             doWrite(single, 0, 1);
-        } catch (IOException ioe) {
-            LOG.fatal("Error in WriterOutputStream.write(int)", ioe);
-            throw ioe;
-        } catch (RuntimeException re) {
-            LOG.fatal("Error in WriterOutputStream.write(int)", re);
-            throw re;
+        } catch (IOException | RuntimeException e) {
+            LOG.error("Error in WriterOutputStream.write(int)", e);
+            throw e;
         }
     }
 
@@ -92,12 +90,9 @@ public class WriterOutputStream extends ServletOutputStream {
     public void write(byte[] b) throws IOException {
         try {
             doWrite(b, 0, b.length);
-        } catch (IOException ioe) {
-            LOG.fatal("Error in WriterOutputStream.write(byte[])", ioe);
-            throw ioe;
-        } catch (RuntimeException re) {
-            LOG.fatal("Error in WriterOutputStream.write(byte[])", re);
-            throw re;
+        } catch (IOException | RuntimeException e) {
+            LOG.error("Error in WriterOutputStream.write(byte[])", e);
+            throw e;
         }
     }
 
@@ -108,12 +103,9 @@ public class WriterOutputStream extends ServletOutputStream {
     public void write(byte[] b, int off, int len) throws IOException {
         try {
             doWrite(b, off, len);
-        } catch (IOException ioe) {
-            LOG.fatal("Error in WriterOutputStream.write(byte[],int,int)", ioe);
-            throw ioe;
-        } catch (RuntimeException re) {
-            LOG.fatal("Error in WriterOutputStream.write(byte[],int,int)", re);
-            throw re;
+        } catch (IOException | RuntimeException e) {
+            LOG.error("Error in WriterOutputStream.write(byte[],int,int)", e);
+            throw e;
         }
     }
 
@@ -150,12 +142,9 @@ public class WriterOutputStream extends ServletOutputStream {
     public void flush() throws IOException {
         try {
             doFlush();
-        } catch (IOException ioe) {
-            LOG.fatal("Error in WriterOutputStream.flush()", ioe);
-            throw ioe;
-        } catch (RuntimeException re) {
-            LOG.fatal("Error in WriterOutputStream.flush()", re);
-            throw re;
+        } catch (IOException | RuntimeException e) {
+            LOG.error("Error in WriterOutputStream.flush()", e);
+            throw e;
         }
     }
 
@@ -176,10 +165,10 @@ public class WriterOutputStream extends ServletOutputStream {
         try {
             doClose();
         } catch (IOException ioe) {
-            LOG.fatal("Error in WriterOutputStream.close()", ioe);
+            LOG.error("Error in WriterOutputStream.close()", ioe);
             throw ioe;
         } catch (RuntimeException re) {
-            LOG.fatal("Error in WriterOutputStream.close()", re);
+            LOG.error("Error in WriterOutputStream.close()", re);
             throw re;
         }
     }

@@ -17,7 +17,8 @@ package net.oneandone.lavender.rewrite;
 
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -28,7 +29,7 @@ import java.text.MessageFormat;
  * @author seelmann
  */
 public class RewriteEngine {
-    private static final Logger LOG = Logger.getLogger(RewriteEngine.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RewriteEngine.class);
 
     protected final Index index;
     protected final UrlCalculator urlCalculator;

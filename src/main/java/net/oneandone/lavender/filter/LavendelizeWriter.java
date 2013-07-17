@@ -16,7 +16,8 @@
 package net.oneandone.lavender.filter;
 
 import net.oneandone.lavender.processor.Processor;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -27,7 +28,7 @@ import java.nio.CharBuffer;
  */
 public class LavendelizeWriter extends Writer {
 
-    private static final Logger LOG = Logger.getLogger(LavendelizeWriter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LavendelizeWriter.class);
 
     /** The content processor. */
     private final Processor processor;
@@ -49,12 +50,9 @@ public class LavendelizeWriter extends Writer {
     public void write(char[] cbuf, int off, int len) throws IOException {
         try {
             processor.process(CharBuffer.wrap(cbuf), off, len);
-        } catch (IOException ioe) {
-            LOG.fatal("Error in LavendelizeWriter.write(char[],int,int)", ioe);
-            throw ioe;
-        } catch (RuntimeException re) {
-            LOG.fatal("Error in LavendelizeWriter.write(char[],int,int)", re);
-            throw re;
+        } catch (IOException | RuntimeException e) {
+            LOG.error("Error in LavendelizeWriter.write(char[],int,int)", e);
+            throw e;
         }
     }
 
@@ -65,12 +63,9 @@ public class LavendelizeWriter extends Writer {
     public void flush() throws IOException {
         try {
             processor.flush();
-        } catch (IOException ioe) {
-            LOG.fatal("Error in LavendelizeWriter.flush()", ioe);
-            throw ioe;
-        } catch (RuntimeException re) {
-            LOG.fatal("Error in LavendelizeWriter.flush()", re);
-            throw re;
+        } catch (IOException | RuntimeException e) {
+            LOG.error("Error in LavendelizeWriter.flush()", e);
+            throw e;
         }
     }
 
@@ -85,12 +80,9 @@ public class LavendelizeWriter extends Writer {
         closed = true;
         try {
             processor.close();
-        } catch (IOException ioe) {
-            LOG.fatal("Error in LavendelizeWriter.close()", ioe);
-            throw ioe;
-        } catch (RuntimeException re) {
-            LOG.fatal("Error in LavendelizeWriter.close()", re);
-            throw re;
+        } catch (IOException | RuntimeException e) {
+            LOG.error("Error in LavendelizeWriter.close()", e);
+            throw e;
         }
     }
 }

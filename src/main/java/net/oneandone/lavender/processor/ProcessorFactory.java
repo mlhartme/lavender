@@ -16,7 +16,8 @@
 package net.oneandone.lavender.processor;
 
 import net.oneandone.lavender.rewrite.RewriteEngine;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -29,7 +30,7 @@ import java.util.Map;
  */
 public class ProcessorFactory {
 
-    private static final Logger LOG = Logger.getLogger(ProcessorFactory.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ProcessorFactory.class);
 
     protected final RewriteEngine rewriteEngine;
     protected final Map<String, Class<? extends Processor>> contentTypes;

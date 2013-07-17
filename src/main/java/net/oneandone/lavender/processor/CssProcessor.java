@@ -15,7 +15,8 @@
  */
 package net.oneandone.lavender.processor;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -27,7 +28,7 @@ import java.io.IOException;
 public class CssProcessor extends AbstractProcessor {
 
     /** The logger. */
-    static final Logger LOG = Logger.getLogger(CssProcessor.class);
+    static final Logger LOG = LoggerFactory.getLogger(CssProcessor.class);
 
     /** The state of this processor. */
     protected State state = State.OTHER;

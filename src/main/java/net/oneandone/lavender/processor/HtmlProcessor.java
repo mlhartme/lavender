@@ -15,7 +15,8 @@
  */
 package net.oneandone.lavender.processor;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -24,7 +25,7 @@ import java.util.Map;
 public class HtmlProcessor extends AbstractProcessor {
 
     /** The logger. */
-    private static final Logger LOG = Logger.getLogger(HtmlProcessor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HtmlProcessor.class);
 
     /** The main state of this processor. */
     protected State state = State.NULL;

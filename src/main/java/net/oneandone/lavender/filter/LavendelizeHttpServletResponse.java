@@ -17,7 +17,8 @@ package net.oneandone.lavender.filter;
 
 import net.oneandone.lavender.processor.ProcessorFactory;
 import net.oneandone.lavender.processor.Processor;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
@@ -43,7 +44,7 @@ import java.util.zip.GZIPOutputStream;
  */
 public class LavendelizeHttpServletResponse extends HttpServletResponseWrapper {
     /** The logger. */
-    private static final Logger LOG = Logger.getLogger(LavendelizeHttpServletResponse.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LavendelizeHttpServletResponse.class);
 
     /** The processor factory. */
     protected final ProcessorFactory processorFactory;

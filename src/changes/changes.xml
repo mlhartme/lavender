@@ -13,6 +13,9 @@
       <action date="2013-07-17" dev="mhm" type="update">
         svn and ssh are configured in ~/.lavendel.settings now.
       </action>
+      <action date="2013-07-15" dev="mhm" type="update">
+        Replace log4j by slf4j.
+      </action>
       <action date="2013-07-12" dev="mhm" type="add">
         Added gc dryrun switch.
       </action>
