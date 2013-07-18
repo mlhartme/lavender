@@ -58,12 +58,12 @@ public class ResourceTest {
 
     @Test
     public void testGetLavendelizedPath() throws IOException {
-        assertEquals("852/e7d76cdb8af7395cd039c0ecc293a/folder/close.gif", resource.labelLavendelized("").getLavendelizedPath());
+        assertEquals("852/e7d76cdb8af7395cd039c0ecc293a/folder/close.gif", resource.labelLavendelized("", resource.readData()).getLavendelizedPath());
     }
 
     @Test
     public void testMd5() throws IOException {
-        byte[] md5 = resource.md5();
+        byte[] md5 = resource.md5(resource.readData());
         assertNotNull(md5);
         assertEquals(16, md5.length);
         assertEquals("852e7d76cdb8af7395cd039c0ecc293a", Hex.encodeString(md5));

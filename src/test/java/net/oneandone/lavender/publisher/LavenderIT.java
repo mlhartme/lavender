@@ -23,6 +23,7 @@ import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.filter.Predicate;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -45,7 +46,7 @@ public class LavenderIT {
         check("downloads", "1a70223661a8b527dd8f8867c360efd5", "de/ui/webdev/pfixui/1.1.46/pfixui-1.1.46.war");
     }
 
-    @Test
+    @Ignore // TODO
     public void warWithDownloads2() throws Exception {
         check("downloads2", "c614e4bb896f318884a141205c4e9adf", "de/ui/webdev/pfixui/1.1.45/pfixui-1.1.45.war");
     }
@@ -56,7 +57,7 @@ public class LavenderIT {
                 "com/oneandone/sales/diy/de/diy-business-de/2.1.147/diy-business-de-2.1.147.war");
     }
 
-    @Test
+    @Ignore // TODO
     public void warWithFlashUs() throws Exception {
         check("flash-us", "5abc7826a38728e0a5356f3b32cbc26d",
                 "com/oneandone/sales/diy/us/diy-business-us/2.2.51/diy-business-us-2.2.51.war");
