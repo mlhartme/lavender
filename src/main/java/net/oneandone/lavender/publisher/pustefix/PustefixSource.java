@@ -18,8 +18,12 @@ package net.oneandone.lavender.publisher.pustefix;
 import net.oneandone.lavender.publisher.Source;
 import net.oneandone.lavender.publisher.Resource;
 import net.oneandone.lavender.publisher.config.Filter;
+import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.file.FileNode;
 
+import javax.xml.bind.JAXBException;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -34,18 +38,22 @@ public class PustefixSource extends Source {
     private static final List<String> DEFAULT_INCLUDE_EXTENSIONS = new ArrayList<>(Arrays.asList(
             "gif", "png", "jpg", "jpeg", "ico", "swf", "css", "js"));
 
-    public static PustefixSource forProperties(File war, Properties properties) {
+    public static PustefixSource forProperties(FileNode war, Properties properties) {
         return new PustefixSource(Filter.forProperties(properties, "pustefix", DEFAULT_INCLUDE_EXTENSIONS), war);
     }
 
-    private final File war;
+    private final FileNode war;
 
-    public PustefixSource(Filter filter, File war) {
+    public PustefixSource(Filter filter, FileNode war) {
         super(filter, DEFAULT_STORAGE, true, "");
         this.war = war;
     }
 
     public Iterator<Resource> iterator() {
-        return new PustefixResourceIterator(war);
+        try {
+            return new PustefixResourceIterator(war.getWorld(), war.toPath().toFile());
+        } catch (IOException | JAXBException e) {
+            throw new IllegalStateException(e);
+        }
     }
 }

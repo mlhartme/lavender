@@ -16,8 +16,10 @@
 package net.oneandone.lavender.publisher.pustefix;
 
 import net.oneandone.lavender.publisher.Resource;
+import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.io.Buffer;
 
+import javax.xml.bind.JAXBException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,9 +43,9 @@ public class PustefixResourceIterator implements Iterator<Resource> {
 
     private final Buffer buffer;
 
-    public PustefixResourceIterator(File war) {
+    public PustefixResourceIterator(World world, File war) throws IOException, JAXBException {
         this.war = war;
-        this.config = new PustefixProjectConfig(war);
+        this.config = new PustefixProjectConfig(world.file(war).openZip());
         this.buffer = new Buffer();
     }
 

@@ -16,11 +16,10 @@
 package net.oneandone.lavender.publisher.pustefix;
 
 import net.oneandone.lavender.publisher.pustefix.project.ProjectConfig;
+import net.oneandone.sushi.fs.Node;
 
 import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -33,8 +32,11 @@ public class PustefixProjectConfig {
     private ProjectConfig project;
     private Map<String, PustefixModuleConfig> modules = new HashMap<>();
 
-    public PustefixProjectConfig(File war) {
-        load(war);
+    public PustefixProjectConfig(Node webapp) throws IOException, JAXBException {
+        loadProjectXml(webapp.join("WEB-INF/project.xml"));
+        for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
+            loadModuleXml(jar);
+        }
     }
 
     /**
@@ -79,46 +81,22 @@ public class PustefixProjectConfig {
 
     //--
 
-    private  void load(File war) {
-        try {
-            ZipInputStream warInputStream = new ZipInputStream(new FileInputStream(war));
-            ZipEntry warEntry;
-            while ((warEntry = warInputStream.getNextEntry()) != null) {
-                if (isProjectXml(warEntry)) {
-                    loadProjectXml(warInputStream);
-                }
-                if (isJarEntry(warEntry)) {
-                    loadModuleXml(warEntry, warInputStream);
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    private void loadProjectXml(Node node) throws JAXBException, IOException {
+        try (InputStream src = node.createInputStream()) {
+            project = JAXB.unmarshal(src, ProjectConfig.class);
         }
     }
 
-    private void loadProjectXml(InputStream warInputStream) throws JAXBException, IOException {
-        // Use a shield to prevent the original stream from being closed
-        // because JAXB.unmarshall() calls close() on the stream
-        project = JAXB.unmarshal(PustefixModuleConfig.doNotClose(warInputStream), ProjectConfig.class);
-    }
+    private void loadModuleXml(Node jar) throws JAXBException, IOException {
 
-    private void loadModuleXml(ZipEntry warEntry, ZipInputStream warInputStream) throws JAXBException, IOException {
-        ZipInputStream jarInputStream = new ZipInputStream(warInputStream);
+        ZipInputStream jarInputStream = new ZipInputStream(jar.createInputStream());
         ZipEntry jarEntry;
         while ((jarEntry = jarInputStream.getNextEntry()) != null) {
             if (isModuleXml(jarEntry)) {
                 PustefixModuleConfig config = new PustefixModuleConfig(this, jarInputStream);
-                modules.put(warEntry.getName(), config);
+                modules.put(jar.getPath(), config);
             }
         }
-    }
-
-    private boolean isProjectXml(ZipEntry entry) {
-        return entry.getName().equals("WEB-INF/project.xml");
-    }
-
-    private boolean isJarEntry(ZipEntry entry) {
-        return entry.getName().startsWith("WEB-INF/lib/") && entry.getName().endsWith(".jar");
     }
 
     private boolean isModuleXml(ZipEntry entry) {

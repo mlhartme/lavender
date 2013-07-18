@@ -69,7 +69,7 @@ public class WarSourceTest {
         Collection<String> indexFileContent;
         Index index;
 
-        resourcePublisher.extract(new PustefixSource(new Filter(), war.toPath().toFile()));
+        resourcePublisher.extract(new PustefixSource(new Filter(), war));
         index = distributor.close();
         indexFileContent = indexLines(index);
         assertEquals(1 + 14 + 1, indexFileContent.size()); // contains properties header line
@@ -93,7 +93,7 @@ public class WarSourceTest {
         config.setIncludes("*.jpg", "*.gif");
         config.setExcludes("**/close.gif");
 
-        resourcePublisher.extract(new PustefixSource(config, war.toPath().toFile()));
+        resourcePublisher.extract(new PustefixSource(config, war));
         index = distributor.close();
 
         Collection<String> indexFileContent = indexLines(index);

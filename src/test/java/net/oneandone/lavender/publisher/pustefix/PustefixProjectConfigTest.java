@@ -15,12 +15,14 @@
  */
 package net.oneandone.lavender.publisher.pustefix;
 
+import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.file.FileNode;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.File;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -28,13 +30,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class PustefixProjectConfigTest {
-
+    private static final World WORLD = new World();
     private static PustefixProjectConfig config;
 
     @BeforeClass
-    public static void setup() throws URISyntaxException {
-        URL url = PustefixProjectConfigTest.class.getClassLoader().getResource("dummy.war");
-        config = new PustefixProjectConfig(new File(url.toURI()));
+    public static void setup() throws URISyntaxException, IOException, JAXBException {
+        FileNode war = WORLD.guessProjectHome(PustefixProjectConfigTest.class).join("src/test/resources/dummy.war");
+        config = new PustefixProjectConfig(war.openZip());
     }
 
     @Test
