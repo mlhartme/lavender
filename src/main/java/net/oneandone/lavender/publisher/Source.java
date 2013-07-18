@@ -66,7 +66,11 @@ public abstract class Source implements Iterable<Resource> {
         zip = new ZipFile(war);
         entry = zip.getEntry(PROPERTIES);
         if (entry == null) {
-            throw new FileNotFoundException("missing " + PROPERTIES);
+            // TODO: dump this compatibility check as soon as I have ITs with new wars
+            entry = zip.getEntry("WEB-INF/lavendel.properties");
+            if (entry == null) {
+                throw new FileNotFoundException("missing " + PROPERTIES);
+            }
         }
         src = zip.getInputStream(entry);
         result.load(src);
