@@ -107,7 +107,6 @@ public abstract class Source implements Iterable<Resource> {
     public long run(Distributor distributor) throws IOException {
         Filter config;
         Label label;
-        boolean changed;
         long count;
 
         count = 0;
@@ -119,7 +118,7 @@ public abstract class Source implements Iterable<Resource> {
                 } else {
                     label = resource.labelNormal(pathPrefix);
                 }
-                if (distributor.write(label, resource.getData())) {
+                if (distributor.write(label, resource.readData())) {
                     count++;
                 }
             }

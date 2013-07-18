@@ -17,23 +17,26 @@ package net.oneandone.lavender.publisher;
 
 import net.oneandone.lavender.index.Hex;
 import net.oneandone.lavender.index.Label;
+import net.oneandone.sushi.fs.LengthException;
+import net.oneandone.sushi.fs.Node;
 
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Resource {
-    private final byte[] data;
+    private final Node node;
     private final String path;
     private final String folderName;
 
-    public Resource(byte[] data, String path, String folderName) {
-        this.data = data;
+    public Resource(Node node, String path, String folderName) {
+        this.node = node;
         this.path = path;
         this.folderName = folderName;
     }
 
-    public byte[] getData() {
-        return data;
+    public byte[] readData() throws IOException {
+        return node.readBytes();
     }
 
     public String getPath() {
@@ -42,11 +45,18 @@ public class Resource {
 
     @Override
     public String toString() {
-        return path + "[" + data.length + "]";
+        String length;
+
+        try {
+            length = Long.toString(node.length());
+        } catch (LengthException e) {
+            length = "?";
+        }
+        return path + "[" + length + "]";
     }
 
 
-    public Label labelLavendelized(String pathPrefix) {
+    public Label labelLavendelized(String pathPrefix) throws IOException {
         String filename;
         byte[] md5;
         String md5str;
@@ -60,7 +70,7 @@ public class Resource {
         return new Label(path, pathPrefix + md5str.substring(0, 3) + "/" + md5str.substring(3) + "/" + folderName + "/" + filename, md5);
     }
 
-    public Label labelNormal(String pathPrefix) {
+    public Label labelNormal(String pathPrefix) throws IOException {
         return new Label(path, pathPrefix + path, md5());
     }
 
@@ -76,7 +86,11 @@ public class Resource {
         }
     }
 
-    public byte[] md5() {
+    public byte[] md5() throws IOException {
+        byte[] data;
+
+        // TODO: expensive ...
+        data = readData();
         DIGEST.update(data, 0, data.length);
         return DIGEST.digest();
     }

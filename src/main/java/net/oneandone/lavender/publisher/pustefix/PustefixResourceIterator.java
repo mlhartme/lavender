@@ -17,7 +17,6 @@ package net.oneandone.lavender.publisher.pustefix;
 
 import net.oneandone.lavender.publisher.Resource;
 import net.oneandone.sushi.fs.Node;
-import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Predicate;
 import net.oneandone.sushi.io.Buffer;
 
@@ -134,6 +133,6 @@ public class PustefixResourceIterator implements Iterator<Resource> {
         dest = new ByteArrayOutputStream();
         buffer.copy(in, dest);
         data = dest.toByteArray();
-        return new Resource(data, path, folderName);
+        return new Resource(webapp.getWorld().memoryNode(data), path, folderName);
     }
 }

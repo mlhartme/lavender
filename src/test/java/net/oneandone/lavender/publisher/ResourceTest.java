@@ -16,6 +16,8 @@
 package net.oneandone.lavender.publisher;
 
 import net.oneandone.lavender.index.Hex;
+import net.oneandone.sushi.fs.Node;
+import net.oneandone.sushi.fs.World;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,18 +27,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class ResourceTest {
-
+    private static final World WORLD = new World();
     private Resource resource;
 
     @Before
     public void setup() throws IOException {
-        byte[] data = new byte[] { 0x00, 0x01, 0x7F, (byte) 0x80, (byte) 0x81, (byte) 0xFF };
-        resource = new Resource(data, "modules/x/img/close.gif", "folder");
+        Node node;
+
+        node = WORLD.memoryNode((byte) 0x00, (byte) 0x01, (byte) 0x7F, (byte) 0x80, (byte) 0x81, (byte) 0xFF);
+        resource = new Resource(node, "modules/x/img/close.gif", "folder");
     }
 
     @Test
     public void testData() throws IOException {
-        byte[] data = resource.getData();
+        byte[] data = resource.readData();
         assertNotNull(data);
         assertEquals(6, data.length);
         assertEquals(0x00, data[0]);
@@ -53,12 +57,12 @@ public class ResourceTest {
     }
 
     @Test
-    public void testGetLavendelizedPath() {
+    public void testGetLavendelizedPath() throws IOException {
         assertEquals("852/e7d76cdb8af7395cd039c0ecc293a/folder/close.gif", resource.labelLavendelized("").getLavendelizedPath());
     }
 
     @Test
-    public void testMd5() {
+    public void testMd5() throws IOException {
         byte[] md5 = resource.md5();
         assertNotNull(md5);
         assertEquals(16, md5.length);

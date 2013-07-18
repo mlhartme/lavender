@@ -17,6 +17,7 @@ package net.oneandone.lavender.publisher;
 
 import net.oneandone.lavender.index.Index;
 import net.oneandone.sushi.fs.Node;
+import net.oneandone.sushi.fs.World;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -29,12 +30,14 @@ public class DistributorTest {
     @Test
     public void write() throws IOException {
         Index index;
+        World world;
 
-        Resource resource1 = new Resource("abcd".getBytes("UTF-8"), "img/test.png", "folder");
-        Resource resource2 = new Resource("abcd".getBytes("UTF-8"), "modules/stageassistent/img/test.gif", "stageassistent");
+        world = new World();
+        Resource resource1 = new Resource(world.memoryNode("abcd"), "img/test.png", "folder");
+        Resource resource2 = new Resource(world.memoryNode("abcd"), "modules/stageassistent/img/test.gif", "stageassistent");
         Distributor storage = new Distributor(new HashMap<Node, Node>(), new Index());
-        storage.write(resource1.labelLavendelized(""), resource1.getData());
-        storage.write(resource2.labelLavendelized(""), resource1.getData());
+        storage.write(resource1.labelLavendelized(""), resource1.readData());
+        storage.write(resource2.labelLavendelized(""), resource1.readData());
         index = storage.close();
         assertEquals("e2f/c714c4727ee9395f324cd2e7f331f/folder/test.png", index.lookup("img/test.png").getLavendelizedPath());
         assertEquals("e2f/c714c4727ee9395f324cd2e7f331f/stageassistent/test.gif",

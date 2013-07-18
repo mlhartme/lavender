@@ -51,11 +51,7 @@ public class SvnSource extends Source {
                 Node file;
 
                 file = base.next();
-                try {
-                    return new Resource(file.readBytes(), file.getRelative(dest), name);
-                } catch (IOException e) {
-                    throw new RuntimeException("TODO", e);
-                }
+                return new Resource(file, file.getRelative(dest), name);
             }
 
             public void remove() {
