@@ -35,12 +35,16 @@ public class Resource {
         this.folderName = folderName;
     }
 
-    public byte[] readData() throws IOException {
-        return node.readBytes();
-    }
-
     public String getPath() {
         return path;
+    }
+
+    public Node getNode() {
+        return node;
+    }
+
+    public byte[] readData() throws IOException {
+        return node.readBytes();
     }
 
     @Override

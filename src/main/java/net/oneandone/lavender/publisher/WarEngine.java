@@ -94,7 +94,7 @@ public class WarEngine {
         long changed;
 
         started = System.currentTimeMillis();
-        sources = Source.fromWar(inputWar, svnUsername, svnPassword);
+        sources = Source.fromWebapp(inputWar.openZip(), svnUsername, svnPassword);
         changed = extract(sources);
         for (Map.Entry<String, Distributor> entry : storages.entrySet()) {
             index = entry.getValue().close();

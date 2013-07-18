@@ -35,7 +35,7 @@ public class PustefixProjectConfig {
     public PustefixProjectConfig(Node webapp) throws IOException, JAXBException {
         loadProjectXml(webapp.join("WEB-INF/project.xml"));
         for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
-            loadModuleXml(jar);
+            loadModuleXml(webapp, jar);
         }
     }
 
@@ -87,14 +87,16 @@ public class PustefixProjectConfig {
         }
     }
 
-    private void loadModuleXml(Node jar) throws JAXBException, IOException {
-
-        ZipInputStream jarInputStream = new ZipInputStream(jar.createInputStream());
+    private void loadModuleXml(Node webapp, Node jar) throws JAXBException, IOException {
+        ZipInputStream jarInputStream;
         ZipEntry jarEntry;
+        PustefixModuleConfig config;
+
+        jarInputStream = new ZipInputStream(jar.createInputStream());
         while ((jarEntry = jarInputStream.getNextEntry()) != null) {
             if (isModuleXml(jarEntry)) {
-                PustefixModuleConfig config = new PustefixModuleConfig(this, jarInputStream);
-                modules.put(jar.getPath(), config);
+                config = new PustefixModuleConfig(this, jarInputStream);
+                modules.put(jar.getRelative(webapp), config);
             }
         }
     }
