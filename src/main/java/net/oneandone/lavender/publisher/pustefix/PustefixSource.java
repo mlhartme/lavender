@@ -18,6 +18,7 @@ package net.oneandone.lavender.publisher.pustefix;
 import net.oneandone.lavender.publisher.Source;
 import net.oneandone.lavender.publisher.Resource;
 import net.oneandone.lavender.publisher.config.Filter;
+import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 
@@ -31,27 +32,27 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Extracts static resources from a Pustefix application. Valid static resource path are defined in WEB-INF/project.xml.
+ * Iterates static resources from a Pustefix application. Valid static resource path are defined in WEB-INF/project.xml.
  * Resources can be found in the WAR or in nested JARs.
  */
 public class PustefixSource extends Source {
     private static final List<String> DEFAULT_INCLUDE_EXTENSIONS = new ArrayList<>(Arrays.asList(
             "gif", "png", "jpg", "jpeg", "ico", "swf", "css", "js"));
 
-    public static PustefixSource forProperties(FileNode war, Properties properties) {
-        return new PustefixSource(Filter.forProperties(properties, "pustefix", DEFAULT_INCLUDE_EXTENSIONS), war);
+    public static PustefixSource forProperties(Node webapp, Properties properties) {
+        return new PustefixSource(Filter.forProperties(properties, "pustefix", DEFAULT_INCLUDE_EXTENSIONS), webapp);
     }
 
-    private final FileNode war;
+    private final Node webapp;
 
-    public PustefixSource(Filter filter, FileNode war) {
+    public PustefixSource(Filter filter, Node webapp) {
         super(filter, DEFAULT_STORAGE, true, "");
-        this.war = war;
+        this.webapp = webapp;
     }
 
     public Iterator<Resource> iterator() {
         try {
-            return new PustefixResourceIterator(war.openZip());
+            return new PustefixResourceIterator(webapp);
         } catch (IOException | JAXBException e) {
             throw new IllegalStateException(e);
         }

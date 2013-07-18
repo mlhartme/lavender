@@ -48,7 +48,7 @@ public abstract class Source implements Iterable<Resource> {
         LOG.trace("scanning " + war);
         result = new ArrayList<>();
         properties = getConfig(war.toPath().toFile());
-        result.add(PustefixSource.forProperties(war, properties));
+        result.add(PustefixSource.forProperties(war.openZip(), properties));
         for (SvnSourceConfig config : SvnSourceConfig.parse(properties)) {
             LOG.info("adding svn source " + config.name);
             result.add(config.create(war.getWorld(), svnUsername, svnPassword));
