@@ -109,16 +109,18 @@ public abstract class Source implements Iterable<Resource> {
         Label label;
         long count;
         byte[] data;
+        byte[] md5;
 
         count = 0;
         config = getFilter();
         for (Resource resource : this) {
             if (config.isIncluded(resource.getPath())) {
                 data = resource.readData();
+                md5 = Resource.md5(data);
                 if (lavendelize) {
-                    label = resource.labelLavendelized(pathPrefix, data);
+                    label = resource.labelLavendelized(pathPrefix, md5);
                 } else {
-                    label = resource.labelNormal(pathPrefix, data);
+                    label = resource.labelNormal(pathPrefix, md5);
                 }
                 if (distributor.write(label, data)) {
                     count++;

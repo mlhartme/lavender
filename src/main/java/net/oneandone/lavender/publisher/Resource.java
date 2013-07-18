@@ -56,13 +56,11 @@ public class Resource {
     }
 
 
-    public Label labelLavendelized(String pathPrefix, byte[] data) {
+    public Label labelLavendelized(String pathPrefix, byte[] md5) {
         String filename;
-        byte[] md5;
         String md5str;
 
         filename = path.substring(path.lastIndexOf('/') + 1); // ok when not found
-        md5 = md5(data);
         md5str = Hex.encodeString(md5);
         if (md5str.length() < 3) {
             throw new IllegalArgumentException(md5str);
@@ -70,8 +68,8 @@ public class Resource {
         return new Label(path, pathPrefix + md5str.substring(0, 3) + "/" + md5str.substring(3) + "/" + folderName + "/" + filename, md5);
     }
 
-    public Label labelNormal(String pathPrefix, byte[] data) {
-        return new Label(path, pathPrefix + path, md5(data));
+    public Label labelNormal(String pathPrefix, byte[] md5) {
+        return new Label(path, pathPrefix + path, md5);
     }
 
     //-- utils
