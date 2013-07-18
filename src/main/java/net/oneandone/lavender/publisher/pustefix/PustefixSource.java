@@ -51,7 +51,7 @@ public class PustefixSource extends Source {
 
     public Iterator<Resource> iterator() {
         try {
-            return new PustefixResourceIterator(war.getWorld(), war.toPath().toFile());
+            return new PustefixResourceIterator(war);
         } catch (IOException | JAXBException e) {
             throw new IllegalStateException(e);
         }

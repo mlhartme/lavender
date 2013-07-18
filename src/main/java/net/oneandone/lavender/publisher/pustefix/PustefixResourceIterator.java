@@ -16,7 +16,7 @@
 package net.oneandone.lavender.publisher.pustefix;
 
 import net.oneandone.lavender.publisher.Resource;
-import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.io.Buffer;
 
 import javax.xml.bind.JAXBException;
@@ -31,7 +31,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class PustefixResourceIterator implements Iterator<Resource> {
-    private File war;
+    private FileNode war;
     private PustefixProjectConfig config;
 
     private ZipInputStream warInputStream;
@@ -43,9 +43,9 @@ public class PustefixResourceIterator implements Iterator<Resource> {
 
     private final Buffer buffer;
 
-    public PustefixResourceIterator(World world, File war) throws IOException, JAXBException {
+    public PustefixResourceIterator(FileNode war) throws IOException, JAXBException {
         this.war = war;
-        this.config = new PustefixProjectConfig(world.file(war).openZip());
+        this.config = new PustefixProjectConfig(war.openZip());
         this.buffer = new Buffer();
     }
 
@@ -57,7 +57,7 @@ public class PustefixResourceIterator implements Iterator<Resource> {
             }
 
             if (warInputStream == null) {
-                warInputStream = new ZipInputStream(new FileInputStream(war));
+                warInputStream = new ZipInputStream(war.createInputStream());
             }
 
             do {
