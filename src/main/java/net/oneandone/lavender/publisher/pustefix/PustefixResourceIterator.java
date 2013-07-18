@@ -16,25 +16,24 @@
 package net.oneandone.lavender.publisher.pustefix;
 
 import net.oneandone.lavender.publisher.Resource;
+import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
+import net.oneandone.sushi.fs.filter.Predicate;
 import net.oneandone.sushi.io.Buffer;
 
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class PustefixResourceIterator implements Iterator<Resource> {
-    private FileNode war;
+    private Node webapp;
     private PustefixProjectConfig config;
-
-    private ZipInputStream warInputStream;
 
     private ZipInputStream moduleInputStream;
     private PustefixModuleConfig moduleConfig;
@@ -42,29 +41,32 @@ public class PustefixResourceIterator implements Iterator<Resource> {
     private Resource next;
 
     private final Buffer buffer;
+    private List<Node> files;
+    private int nextFile;
 
-    public PustefixResourceIterator(FileNode war) throws IOException, JAXBException {
-        this.war = war;
-        this.config = new PustefixProjectConfig(war.openZip());
+    public PustefixResourceIterator(Node webapp) throws IOException, JAXBException {
+        this.webapp = webapp;
+        this.config = new PustefixProjectConfig(webapp);
         this.buffer = new Buffer();
     }
 
     public boolean hasNext() {
+        Node file;
+        ZipEntry entry;
+        String path;
 
         try {
             if (next != null) {
                 return true;
             }
 
-            if (warInputStream == null) {
-                warInputStream = new ZipInputStream(war.createInputStream());
+            if (files == null) {
+                files = webapp.find(webapp.getWorld().filter().include("**/*").predicate(Predicate.FILE));
+                nextFile = 0;
             }
 
             do {
-                ZipEntry entry;
-
                 if (moduleConfig != null) {
-
                     while ((entry = moduleInputStream.getNextEntry()) != null) {
                         String name = entry.getName();
 
@@ -73,23 +75,20 @@ public class PustefixResourceIterator implements Iterator<Resource> {
                             return true;
                         }
                     }
-
                     moduleConfig = null;
                     moduleInputStream = null;
                 }
 
-                while ((entry = warInputStream.getNextEntry()) != null) {
-                    String name = entry.getName();
-
-                    if (!entry.isDirectory() && config.isPublicResource(name)) {
-                        next = createProjectResource(name);
+                while (nextFile < files.size()) {
+                    file = files.get(nextFile++);
+                    path = file.getRelative(webapp);
+                    if (config.isPublicResource(path)) {
+                        next = createProjectResource(file, path);
                         return true;
                     }
-
-                    if (config.isModule(name)) {
-                        moduleConfig = config.getModuleConfig(name);
-                        moduleInputStream = new ZipInputStream(warInputStream);
-
+                    if (config.isModule(path)) {
+                        moduleConfig = config.getModuleConfig(path);
+                        moduleInputStream = new ZipInputStream(file.createInputStream());
                         break;
                     }
                 }
@@ -115,13 +114,13 @@ public class PustefixResourceIterator implements Iterator<Resource> {
         throw new UnsupportedOperationException();
     }
 
-    private Resource createProjectResource(String path) throws IOException {
+    private Resource createProjectResource(Node node, String relative) throws IOException {
         String folderName = config.getProjectName();
-        String[] splitted = path.split("/");
+        String[] splitted = relative.split("/");
         if (splitted.length > 2 && splitted[0].equals("modules")) {
             folderName = splitted[1];
         }
-        return createResource(warInputStream, path, folderName);
+        return createResource(node.createInputStream(), relative, folderName);
     }
 
     private Resource createModuleResource(String name) throws IOException {
