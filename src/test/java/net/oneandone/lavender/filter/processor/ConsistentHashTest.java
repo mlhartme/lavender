@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.oneandone.lavender.rewrite;
+package net.oneandone.lavender.filter.processor;
 
+import net.oneandone.lavender.filter.processor.ConsistentHash;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Before;
 import org.junit.Test;

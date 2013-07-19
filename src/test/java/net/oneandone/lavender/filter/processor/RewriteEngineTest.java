@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.oneandone.lavender.rewrite;
+package net.oneandone.lavender.filter.processor;
 
+import net.oneandone.lavender.filter.processor.RewriteEngine;
+import net.oneandone.lavender.filter.processor.UrlCalculator;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
 import org.junit.Before;

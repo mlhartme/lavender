@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.oneandone.lavender.rewrite;
+package net.oneandone.lavender.filter.processor;
 
+import net.oneandone.lavender.filter.processor.UrlCalculator;
 import net.oneandone.lavender.index.Label;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.digest.DigestUtils;

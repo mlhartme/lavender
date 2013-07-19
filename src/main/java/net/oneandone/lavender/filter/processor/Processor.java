@@ -15,15 +15,13 @@
  */
 package net.oneandone.lavender.filter.processor;
 
-import net.oneandone.lavender.rewrite.RewriteEngine;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URI;
 
 /**
  * A {@link Processor} scans content for rewritable URIs, delegates the rewrite to the
- * {@link net.oneandone.lavender.rewrite.RewriteEngine}, and streams the content to the {@link Writer}.
+ * {@link RewriteEngine}, and streams the content to the {@link Writer}.
  */
 public interface Processor {
     /**

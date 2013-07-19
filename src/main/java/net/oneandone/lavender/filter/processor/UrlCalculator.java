@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.oneandone.lavender.rewrite;
+package net.oneandone.lavender.filter.processor;
 
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
+import net.oneandone.lavender.filter.processor.ConsistentHash;
 
 import java.io.BufferedReader;
 import java.io.IOException;

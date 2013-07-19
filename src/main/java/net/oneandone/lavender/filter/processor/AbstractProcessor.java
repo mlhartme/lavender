@@ -15,7 +15,6 @@
  */
 package net.oneandone.lavender.filter.processor;
 
-import net.oneandone.lavender.rewrite.RewriteEngine;
 import org.slf4j.Logger;
 
 import java.io.IOException;
