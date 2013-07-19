@@ -67,6 +67,9 @@ public class PustefixResourceIterator implements Iterator<Resource> {
         this.fileFilter = fileFilter;
     }
 
+    private static final String MODULES_PREFIX = "modules/";
+    private static final int MODULES_PREFIX_LENGTH = MODULES_PREFIX.length();
+
     public boolean hasNext() {
         Node file;
         ZipEntry entry;
@@ -108,12 +111,15 @@ public class PustefixResourceIterator implements Iterator<Resource> {
                     file = files.get(nextFile++);
                     path = file.getRelative(webapp);
                     if (config.isPublicResource(path)) {
-                        String folderName = config.getProjectName();
-                        String[] splitted = path.split("/");
-                        if (splitted.length > 2 && splitted[0].equals("modules")) {
-                            folderName = splitted[1];
+                        String folder;
+                        int end;
+
+                        if (path.startsWith(MODULES_PREFIX) && ((end = path.indexOf('/', MODULES_PREFIX_LENGTH)) != -1)) {
+                            folder = path.substring(MODULES_PREFIX_LENGTH, end);
+                        } else {
+                            folder = config.getProjectName();
                         }
-                        next = new Resource(file, path, folderName);
+                        next = new Resource(file, path, folder);
                         return true;
                     }
                     if (config.isModule(path)) {

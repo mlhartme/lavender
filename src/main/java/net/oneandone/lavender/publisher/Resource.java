@@ -27,12 +27,12 @@ import java.security.NoSuchAlgorithmException;
 public class Resource {
     private final Node node;
     private final String path;
-    private final String folderName;
+    private final String folder;
 
-    public Resource(Node node, String path, String folderName) {
+    public Resource(Node node, String path, String folder) {
         this.node = node;
         this.path = path;
-        this.folderName = folderName;
+        this.folder = folder;
     }
 
     public String getPath() {
@@ -69,7 +69,7 @@ public class Resource {
         if (md5str.length() < 3) {
             throw new IllegalArgumentException(md5str);
         }
-        return new Label(path, pathPrefix + md5str.substring(0, 3) + "/" + md5str.substring(3) + "/" + folderName + "/" + filename, md5);
+        return new Label(path, pathPrefix + md5str.substring(0, 3) + "/" + md5str.substring(3) + "/" + folder + "/" + filename, md5);
     }
 
     public Label labelNormal(String pathPrefix, byte[] md5) {
