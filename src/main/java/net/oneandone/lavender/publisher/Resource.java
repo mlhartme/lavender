@@ -56,7 +56,7 @@ public class Resource {
         } catch (LengthException e) {
             length = "?";
         }
-        return path + "[" + length + "]";
+        return path + "[" + length + "] ->" + node.getURI();
     }
 
 
