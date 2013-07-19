@@ -16,6 +16,7 @@
 package net.oneandone.lavender.publisher.cli;
 
 import com.jcraft.jsch.JSchException;
+import net.oneandone.lavender.publisher.config.Docroot;
 import net.oneandone.lavender.publisher.config.Host;
 import net.oneandone.lavender.publisher.config.Net;
 import net.oneandone.lavender.publisher.config.Settings;
@@ -63,7 +64,7 @@ public class Bazaar extends Base {
         root = local.openZip();
         for (Host host : net.cluster("bazaar").hosts) {
             console.info.println(host);
-            destTmp = host.docroot(host.open(console.world), "/var/bazaarvoice/tmp");
+            destTmp = new Docroot("var/bazaarvoice/tmp").node(host.open(console.world));
             destFinal = destTmp.getParent().join("latest");
             destFinal.checkDirectory();
             destTmp.mkdir();

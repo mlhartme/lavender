@@ -73,7 +73,7 @@ public class Svn extends Base {
         ec.svnurl = svnurl;
         ec.lavendelize = false;
         e = ec.create(console.world, settings.svnUsername, settings.svnPassword);
-        storage = Distributor.open(console.world, docroot.docroot, cluster.hosts, directory + ".idx");
+        storage = Distributor.open(console.world, cluster.hosts, docroot, directory + ".idx");
         changed = e.run(storage);
         index = storage.close();
         console.info.println("done: " + changed + "/" + index.size() + " files changed");

@@ -17,6 +17,7 @@ package net.oneandone.lavender.publisher;
 
 import net.oneandone.lavender.publisher.cli.Main;
 import net.oneandone.lavender.publisher.config.Cluster;
+import net.oneandone.lavender.publisher.config.Docroot;
 import net.oneandone.lavender.publisher.config.Host;
 import net.oneandone.lavender.publisher.config.Net;
 import net.oneandone.lavender.publisher.config.Settings;
@@ -36,7 +37,7 @@ public class MainManual {
         Main.initWorld(world, Settings.load(world), null);
         for (Cluster cluster : net.clusters.values()) {
             for (Host host : cluster.hosts) {
-                node = host.docroot(host.open(world), "");
+                node = new Docroot("").node(host.open(world));
                 System.out.println(host + ":\n  " + node.list());
             }
         }

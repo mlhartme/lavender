@@ -25,19 +25,14 @@ public class Host {
     public final String login;
 
     /** where docroots of the various domains reside */
-    private final String docrootbase;
     private final String indexbase;
 
-    public Host(String name, String login, String docrootbase, String indexbase) {
-        if (docrootbase.startsWith("/") || docrootbase.endsWith("/")) {
-            throw new IllegalArgumentException(docrootbase);
-        }
+    public Host(String name, String login, String indexbase) {
         if (indexbase.startsWith("/") || indexbase.endsWith("/")) {
             throw new IllegalArgumentException(indexbase);
         }
         this.name = name;
         this.login = login;
-        this.docrootbase = docrootbase;
         this.indexbase = indexbase;
     }
 
@@ -48,10 +43,6 @@ public class Host {
         } else {
             return world.file("/");
         }
-    }
-
-    public Node docroot(Node root, String suffix) throws NodeInstantiationException {
-        return root.join(docrootbase + suffix);
     }
 
     public Node index(Node root, String indexName) throws NodeInstantiationException {

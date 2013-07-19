@@ -48,29 +48,30 @@ public class Cluster {
     public Cluster addCdn(String name) {
         String login = "wwwcdn";
 
-        return addHost(name, login, "home/" + login + "/htdocs", "home/" + login + "/indexes");
+        return addHost(name, login, "home/" + login + "/indexes");
     }
 
     public Cluster addStatint(String name) {
         String login = "wwwstatint";
 
-        return addHost(name, login, "home/" + login + "/htdocs", "home/" + login + "/indexes");
+        return addHost(name, login, "home/" + login + "/indexes");
     }
 
     public Cluster addFlash(String name) {
-        return addHost(name, "flash", "",  ".lavender");
+        return addHost(name, "flash",  ".lavender");
     }
 
     public Cluster addLocalhost(FileNode basedir, String index) throws IOException {
         basedir.mkdir();
         basedir.join(index).mkdirs();
-        hosts.add(Net.local((FileNode) basedir.join("htdocs").mkdirOpt(), basedir.join(index)));
+        basedir.join("htdocs").mkdirOpt();
+        hosts.add(Net.local(basedir.join(index)));
         return this;
     }
 
 
-    public Cluster addHost(String name, String login, String docrootbase, String indexbase) {
-        hosts.add(new Host(name, login, docrootbase, indexbase));
+    public Cluster addHost(String name, String login, String indexbase) {
+        hosts.add(new Host(name, login, indexbase));
         return this;
     }
 

@@ -66,7 +66,7 @@ public class GarbageCollection extends Base {
             hostroot = host.open(console.world);
             for (Docroot docrootObj : cluster.docroots) {
                 // TODO: sshnode
-                docroot = (SshNode) host.docroot(hostroot, docrootObj.docroot);
+                docroot = (SshNode) docrootObj.node(hostroot);
                 if (docroot.exists()) {
                     references = new HashSet<>();
                     console.info.println(host);

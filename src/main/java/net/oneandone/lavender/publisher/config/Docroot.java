@@ -15,6 +15,9 @@
  */
 package net.oneandone.lavender.publisher.config;
 
+import net.oneandone.sushi.fs.Node;
+import net.oneandone.sushi.fs.NodeInstantiationException;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,8 +29,17 @@ public class Docroot {
     public Docroot(String docroot, Alias ... aliases) {
         this(docroot, Arrays.asList(aliases));
     }
+
     public Docroot(String docroot, List<Alias> aliases) {
+        if (docroot.startsWith("/") || docroot.endsWith("/")) {
+            throw new IllegalArgumentException(docroot);
+        }
         this.docroot = docroot;
         this.aliases = aliases;
     }
+
+    public Node node(Node host) throws NodeInstantiationException {
+        return host.join(docroot);
+    }
+
 }

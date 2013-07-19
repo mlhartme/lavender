@@ -39,7 +39,7 @@ import java.util.Map;
 /** Receives extracted files and uploads them */
 public class Distributor {
     public static Distributor forCdn(World world, Cluster cluster, Docroot docroot, String indexName) throws IOException {
-        return open(world, docroot.docroot, cluster.hosts, indexName);
+        return open(world, cluster.hosts, docroot, indexName);
     }
 
     public static Distributor forTest(FileNode baseDirectory, String indexName) throws IOException {
@@ -47,13 +47,13 @@ public class Distributor {
         Docroot docroot;
 
         cluster = new Cluster();
-        cluster.hosts.add(Net.local(baseDirectory, baseDirectory.join("index.idx")));
+        cluster.hosts.add(Net.local(baseDirectory.join("index.idx")));
         docroot = new Docroot("", new Alias("dummy"));
         cluster.docroots.add(docroot);
         return Distributor.forCdn(baseDirectory.getWorld(), cluster, docroot, indexName);
     }
 
-    public static Distributor open(World world, String suffix, List<Host> hosts, String indexName) throws IOException {
+    public static Distributor open(World world, List<Host> hosts, Docroot docroot, String indexName) throws IOException {
         Node root;
         Node destroot;
         Node index;
@@ -65,7 +65,7 @@ public class Distributor {
         prev = null;
         for (Host host : hosts) {
             root = host.open(world);
-            destroot = host.docroot(root, suffix);
+            destroot = docroot.node(root);
             index = host.index(root, indexName);
             if (index.exists()) {
                 try (InputStream src = index.createInputStream()) {
