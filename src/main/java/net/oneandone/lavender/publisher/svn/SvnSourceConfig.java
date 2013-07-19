@@ -39,15 +39,15 @@ public class SvnSourceConfig {
 
     private static final String SVN_PREFIX = "svn.";
 
-    public final String name;
+    public final String folder;
     public final Filter filter;
-    public String svn;
+    public String svnurl;
     public String storage = Source.DEFAULT_STORAGE;
     public boolean lavendelize = true;
     public String pathPrefix = "";
 
     public SvnSourceConfig(String name, Filter filter) {
-        this.name = name;
+        this.folder = name;
         this.filter = filter;
     }
 
@@ -78,7 +78,7 @@ public class SvnSourceConfig {
                     result.put(name, config);
                 }
                 if (key == null) {
-                    config.svn = Strings.removeLeftOpt((String) entry.getValue(), "scm:svn:");
+                    config.svnurl = Strings.removeLeftOpt((String) entry.getValue(), "scm:svn:");
                 } else {
                     if (key.equals("pathPrefix")) {
                         config.pathPrefix = value;
@@ -105,32 +105,32 @@ public class SvnSourceConfig {
         FileNode dest;
         List<Node> resources;
 
-        if (svn == null) {
+        if (svnurl == null) {
             throw new IllegalArgumentException("missing svn url");
         }
-        if (name.startsWith("/") || name.endsWith("/")) {
+        if (folder.startsWith("/") || folder.endsWith("/")) {
             throw new IllegalArgumentException();
         }
         lavender = (FileNode) world.getHome().join(".cache/lavender");
         lavender.mkdirsOpt();
         try {
-            svnpath = simplify(new URI(svn).getPath());
+            svnpath = simplify(new URI(svnurl).getPath());
             svnpath = svnpath.replace('/', '.');
             svnpath = Strings.removeLeftOpt(svnpath, ".svn.");
         } catch (URISyntaxException e) {
-            throw new IllegalArgumentException(svn, e);
+            throw new IllegalArgumentException(svnurl, e);
         }
         dest = lavender.join(svnpath);
         try {
             LOG.info("using svn cache at " + dest);
             if (dest.exists()) {
-                LOG.info("svn switch " + svn);
+                LOG.info("svn switch " + svnurl);
                 LOG.info(dest.exec("svn", "switch", "--non-interactive", "--no-auth-cache",
-                        "--username", svnUsername, "--password", svnPassword, svn));
+                        "--username", svnUsername, "--password", svnPassword, svnurl));
             } else {
-                LOG.info("svn checkout " + svn);
+                LOG.info("svn checkout " + svnurl);
                 LOG.info(lavender.exec("svn", "checkout", "--non-interactive", "--no-auth-cache",
-                        "--username", svnUsername, "--password", svnPassword, svn, dest.getName()));
+                        "--username", svnUsername, "--password", svnPassword, svnurl, dest.getName()));
             }
         } catch (IOException e) {
             throw new IOException("error creating/updating svn checkout at " + dest + ": " + e.getMessage(), e);
@@ -142,7 +142,7 @@ public class SvnSourceConfig {
                 resources.add(file);
             }
         }
-        return new SvnSource(filter, storage, lavendelize, pathPrefix, resources, name, dest);
+        return new SvnSource(filter, storage, lavendelize, pathPrefix, resources, folder, dest);
     }
 
     private static final String TAGS = "/tags/";

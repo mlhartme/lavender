@@ -77,6 +77,7 @@ public class Lavender implements Filter {
      * {@inheritDoc}
      */
     public void lazyInit() throws ServletException {
+        long started;
         URL src;
         Index index;
         UrlCalculator urlCalculator;
@@ -92,17 +93,19 @@ public class Lavender implements Filter {
         LOG.info("init");
         try {
             if (src == null) {
+                started = System.currentTimeMillis();
                 processorFactory = null;
                 settings = Settings.load(world);
                 webapp = world.file(filterConfig.getServletContext().getRealPath(""));
                 develResources = new HashMap<>();
                 for (Source source : PustefixSource.fromWebapp(webapp, settings.svnUsername, settings.svnPassword)) {
                     for (Resource resource : source) {
-                        LOG.info("resource: " + resource);
+                        LOG.debug("resource: " + resource);
                         develResources.put(resource.getPath(), resource);
                     }
                 }
-                LOG.info("Lavendel devel filter for " + webapp);
+                LOG.info("Lavender devel filter for " + webapp + ", " + develResources.size()
+                        + " resources. Init in " + (System.currentTimeMillis() - started + " ms"));
             } else {
                 index = new Index(src);
                 urlCalculator = new UrlCalculator(resourceOpt(LAVENDEL_NODES));

@@ -95,16 +95,16 @@ public abstract class Source implements Iterable<Resource> {
 
     /** @return number of changed (updated or added) files */
     public long run(Distributor distributor) throws IOException {
-        Filter config;
+        Filter filter;
         Label label;
         long count;
         byte[] data;
         byte[] md5;
 
         count = 0;
-        config = getFilter();
+        filter = getFilter();
         for (Resource resource : this) {
-            if (config.isIncluded(resource.getPath())) {
+            if (filter.isIncluded(resource.getPath())) {
                 data = resource.readData();
                 md5 = Resource.md5(data);
                 if (lavendelize) {

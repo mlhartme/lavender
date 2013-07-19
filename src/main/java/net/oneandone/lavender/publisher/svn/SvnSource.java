@@ -27,14 +27,14 @@ import java.util.List;
 /** Extracts resources from svn */
 public class SvnSource extends Source {
     private final List<Node> resources;
-    private final String name;
+    private final String folder;
     private final Node dest;
 
     public SvnSource(Filter filter, String storage, boolean lavendelize, String pathPrefix,
-                     List<Node> resources, String name, Node dest) {
+                     List<Node> resources, String folder, Node dest) {
         super(filter, storage, lavendelize, pathPrefix);
         this.resources = resources;
-        this.name = name;
+        this.folder = folder;
         this.dest = dest;
     }
 
@@ -51,7 +51,7 @@ public class SvnSource extends Source {
                 Node file;
 
                 file = base.next();
-                return new Resource(file, file.getRelative(dest), name);
+                return new Resource(file, file.getRelative(dest), folder);
             }
 
             public void remove() {
