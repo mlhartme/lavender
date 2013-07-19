@@ -46,8 +46,8 @@ public class SvnSourceConfig {
     public boolean lavendelize = true;
     public String pathPrefix = "";
 
-    public SvnSourceConfig(String name, Filter filter) {
-        this.folder = name;
+    public SvnSourceConfig(String folder, Filter filter) {
+        this.folder = folder;
         this.filter = filter;
     }
 

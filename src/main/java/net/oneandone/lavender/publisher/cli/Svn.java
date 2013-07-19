@@ -69,7 +69,7 @@ public class Svn extends Base {
         filter.setExcludes();
         ec = new SvnSourceConfig("svn", filter);
         ec.pathPrefix = "";
-        ec.svn = svnurl;
+        ec.svnurl = svnurl;
         ec.lavendelize = false;
         e = ec.create(console.world, settings.svnUsername, settings.svnPassword);
         storage = Distributor.open(console.world, vhost.docroot, cluster.hosts, directory + ".idx");

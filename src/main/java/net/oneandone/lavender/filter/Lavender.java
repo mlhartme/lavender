@@ -151,7 +151,7 @@ public class Lavender implements Filter {
             resource = null;
         }
         if (resource != null) {
-            LOG.info("lavender: " + path);
+            LOG.info("lavender: " + path + " -> " + resource.getNode().getURI());
             serve(resource.getNode(), response);
         } else {
             chain.doFilter(request, response);

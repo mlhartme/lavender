@@ -42,10 +42,10 @@ public class SvnSourceConfigTest {
         result = SvnSourceConfig.parse(props);
         assertEquals(1, result.size());
         config = result.iterator().next();
-        assertEquals("foo", config.name);
+        assertEquals("foo", config.folder);
         assertFalse(config.lavendelize);
         assertEquals("prefix", config.pathPrefix);
-        assertEquals("svn", config.svn);
+        assertEquals("svn", config.svnurl);
     }
 
     @Test
