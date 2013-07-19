@@ -67,10 +67,9 @@ public class PustefixResourceIterator implements Iterator<Resource> {
             do {
                 if (moduleConfig != null) {
                     while ((entry = moduleInputStream.getNextEntry()) != null) {
-                        String name = entry.getName();
-
-                        if (!entry.isDirectory() && moduleConfig.isPublicResource(name)) {
-                            next = createModuleResource(name);
+                        path = entry.getName();
+                        if (!entry.isDirectory() && moduleConfig.isPublicResource(path)) {
+                            next = createResource(moduleInputStream, moduleConfig.getPath(path), moduleConfig.getModuleName());
                             return true;
                         }
                     }
@@ -82,7 +81,12 @@ public class PustefixResourceIterator implements Iterator<Resource> {
                     file = files.get(nextFile++);
                     path = file.getRelative(webapp);
                     if (config.isPublicResource(path)) {
-                        next = createProjectResource(file, path);
+                        String folderName = config.getProjectName();
+                        String[] splitted = path.split("/");
+                        if (splitted.length > 2 && splitted[0].equals("modules")) {
+                            folderName = splitted[1];
+                        }
+                        next = createResource(file.createInputStream(), path, folderName);
                         return true;
                     }
                     if (config.isModule(path)) {
@@ -111,19 +115,6 @@ public class PustefixResourceIterator implements Iterator<Resource> {
 
     public void remove() {
         throw new UnsupportedOperationException();
-    }
-
-    private Resource createProjectResource(Node node, String relative) throws IOException {
-        String folderName = config.getProjectName();
-        String[] splitted = relative.split("/");
-        if (splitted.length > 2 && splitted[0].equals("modules")) {
-            folderName = splitted[1];
-        }
-        return createResource(node.createInputStream(), relative, folderName);
-    }
-
-    private Resource createModuleResource(String name) throws IOException {
-        return createResource(moduleInputStream, moduleConfig.getPath(name), moduleConfig.getModuleName());
     }
 
     private Resource createResource(InputStream in, String path, String folderName) throws IOException {
