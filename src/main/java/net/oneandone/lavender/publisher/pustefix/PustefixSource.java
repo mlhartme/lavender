@@ -52,7 +52,7 @@ public class PustefixSource extends Source {
 
     public Iterator<Resource> iterator() {
         try {
-            return new PustefixResourceIterator(webapp);
+            return PustefixResourceIterator.create(webapp);
         } catch (IOException | JAXBException e) {
             throw new IllegalStateException(e);
         }

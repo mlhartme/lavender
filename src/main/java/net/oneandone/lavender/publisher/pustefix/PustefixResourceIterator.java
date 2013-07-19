@@ -17,11 +17,11 @@ package net.oneandone.lavender.publisher.pustefix;
 
 import net.oneandone.lavender.publisher.Resource;
 import net.oneandone.sushi.fs.Node;
+import net.oneandone.sushi.fs.file.FileNode;
+import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.filter.Predicate;
-import net.oneandone.sushi.io.Buffer;
 
 import javax.xml.bind.JAXBException;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
@@ -31,50 +31,77 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class PustefixResourceIterator implements Iterator<Resource> {
-    private Node webapp;
-    private PustefixProjectConfig config;
+    private final PustefixProjectConfig config;
+    private final Node webapp;
+    private List<Node> files;
 
-    private ZipInputStream moduleInputStream;
-    private PustefixModuleConfig moduleConfig;
+    private final Filter fileFilter;
+
+    // iterating data
 
     private Resource next;
 
-    private final Buffer buffer;
-    private List<Node> files;
     private int nextFile;
+    private ZipInputStream moduleInputStream;
+    private PustefixModuleConfig moduleConfig;
+    private List<Node> moduleJarFiles;
+    private int nextModuleJarFile;
 
-    public PustefixResourceIterator(Node webapp) throws IOException, JAXBException {
+
+    public static PustefixResourceIterator create(Node webapp) throws IOException, JAXBException {
+        PustefixProjectConfig config;
+        Filter filter;
+
+        config = new PustefixProjectConfig(webapp);
+        filter = webapp.getWorld().filter().include("**/*").predicate(Predicate.FILE);
+        return new PustefixResourceIterator(config, webapp, webapp.find(filter), filter);
+    }
+
+
+    public PustefixResourceIterator(PustefixProjectConfig config, Node webapp, List<Node> files, Filter fileFilter) throws IOException, JAXBException {
+        this.config = config;
         this.webapp = webapp;
-        this.config = new PustefixProjectConfig(webapp);
-        this.buffer = new Buffer();
+        this.files = files;
+        this.nextFile = 0;
+
+        this.fileFilter = fileFilter;
     }
 
     public boolean hasNext() {
         Node file;
         ZipEntry entry;
         String path;
+        byte[] data;
 
         try {
             if (next != null) {
                 return true;
             }
-
-            if (files == null) {
-                files = webapp.find(webapp.getWorld().filter().include("**/*").predicate(Predicate.FILE));
-                nextFile = 0;
-            }
-
             do {
                 if (moduleConfig != null) {
-                    while ((entry = moduleInputStream.getNextEntry()) != null) {
-                        path = entry.getName();
-                        if (!entry.isDirectory() && moduleConfig.isPublicResource(path)) {
-                            next = createResource(moduleInputStream, moduleConfig.getPath(path), moduleConfig.getModuleName());
-                            return true;
+                    if (moduleInputStream != null) {
+                        while ((entry = moduleInputStream.getNextEntry()) != null) {
+                            path = entry.getName();
+                            if (!entry.isDirectory() && moduleConfig.isPublicResource(path)) {
+                                data = webapp.getWorld().getBuffer().readBytes(moduleInputStream);
+                                next = new Resource(webapp.getWorld().memoryNode(data), moduleConfig.getPath(path), moduleConfig.getModuleName());
+                                return true;
+                            }
+                        }
+                    } else {
+                        while (nextModuleJarFile < moduleJarFiles.size()) {
+                            file = moduleJarFiles.get(nextModuleJarFile);
+                            nextModuleJarFile++;
+                            path = file.getPath();
+                            if (moduleConfig.isPublicResource(path)) {
+                                next = new Resource(file, moduleConfig.getPath(path), moduleConfig.getModuleName());
+                                return true;
+                            }
                         }
                     }
                     moduleConfig = null;
                     moduleInputStream = null;
+                    moduleJarFiles = null;
                 }
 
                 while (nextFile < files.size()) {
@@ -86,12 +113,19 @@ public class PustefixResourceIterator implements Iterator<Resource> {
                         if (splitted.length > 2 && splitted[0].equals("modules")) {
                             folderName = splitted[1];
                         }
-                        next = createResource(file.createInputStream(), path, folderName);
+                        next = new Resource(file, path, folderName);
                         return true;
                     }
                     if (config.isModule(path)) {
                         moduleConfig = config.getModuleConfig(path);
-                        moduleInputStream = new ZipInputStream(file.createInputStream());
+                        if (file instanceof FileNode) {
+                            moduleInputStream = null;
+                            moduleJarFiles = ((FileNode) file).openZip().find(fileFilter);
+                            nextModuleJarFile = 0;
+                        } else {
+                            moduleInputStream = new ZipInputStream(file.createInputStream());
+                            moduleJarFiles = null;
+                        }
                         break;
                     }
                 }
@@ -115,15 +149,5 @@ public class PustefixResourceIterator implements Iterator<Resource> {
 
     public void remove() {
         throw new UnsupportedOperationException();
-    }
-
-    private Resource createResource(InputStream in, String path, String folderName) throws IOException {
-        ByteArrayOutputStream dest;
-        byte[] data;
-
-        dest = new ByteArrayOutputStream();
-        buffer.copy(in, dest);
-        data = dest.toByteArray();
-        return new Resource(webapp.getWorld().memoryNode(data), path, folderName);
     }
 }
