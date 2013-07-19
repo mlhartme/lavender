@@ -17,11 +17,12 @@ package net.oneandone.lavender.publisher.cli;
 
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.publisher.Distributor;
+import net.oneandone.lavender.publisher.config.Alias;
 import net.oneandone.lavender.publisher.config.Cluster;
+import net.oneandone.lavender.publisher.config.Docroot;
 import net.oneandone.lavender.publisher.config.Filter;
 import net.oneandone.lavender.publisher.config.Net;
 import net.oneandone.lavender.publisher.config.Settings;
-import net.oneandone.lavender.publisher.config.Vhost;
 import net.oneandone.lavender.publisher.svn.SvnSource;
 import net.oneandone.lavender.publisher.svn.SvnSourceConfig;
 import net.oneandone.sushi.cli.ArgumentException;
@@ -54,7 +55,7 @@ public class Svn extends Base {
 
     private void invoke(String svnurl) throws IOException {
         Cluster cluster;
-        Vhost vhost;
+        Docroot docroot;
         Filter filter;
         SvnSourceConfig ec;
         SvnSource e;
@@ -63,7 +64,7 @@ public class Svn extends Base {
         Index index;
 
         cluster = net.cluster(clusterName);
-        vhost = cluster.vhost("svn");
+        docroot = (Docroot) cluster.alias("svn")[0];
         filter = new Filter();
         filter.setIncludes("*");
         filter.setExcludes();
@@ -72,7 +73,7 @@ public class Svn extends Base {
         ec.svnurl = svnurl;
         ec.lavendelize = false;
         e = ec.create(console.world, settings.svnUsername, settings.svnPassword);
-        storage = Distributor.open(console.world, vhost.docroot, cluster.hosts, directory + ".idx");
+        storage = Distributor.open(console.world, docroot.docroot, cluster.hosts, directory + ".idx");
         changed = e.run(storage);
         index = storage.close();
         console.info.println("done: " + changed + "/" + index.size() + " files changed");

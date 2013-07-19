@@ -38,11 +38,11 @@ public class Cluster {
     public final List<Host> hosts;
 
     /** pointing to "fix" docroot */
-    public final List<Vhost> vhosts;
+    public final List<Docroot> docroots;
 
     public Cluster() {
         this.hosts = new ArrayList<>();
-        this.vhosts = new ArrayList<>();
+        this.docroots = new ArrayList<>();
     }
 
     public Cluster addCdn(String name) {
@@ -74,17 +74,19 @@ public class Cluster {
         return this;
     }
 
-    public Cluster addVhost(String name, String docroot, String ... domains) {
-        vhosts.add(new Vhost(name, docroot, Arrays.asList(domains)));
+    public Cluster addDocroot(String docroot, Alias ... aliases) {
+        docroots.add(new Docroot(docroot, Arrays.asList(aliases)));
         return this;
     }
 
-    public Vhost vhost(String name) {
-        for (Vhost vhost : vhosts) {
-            if (name.equals(vhost.name)) {
-                return vhost;
+    public Object[] alias(String name) {
+        for (Docroot docroot : docroots) {
+            for (Alias alias : docroot.aliases) {
+                if (name.equals(alias.name)) {
+                    return new Object[] { docroot, alias };
+                }
             }
         }
-        throw new ArgumentException("vhost not found: " + name);
+        throw new ArgumentException("alias not found: " + name);
     }
 }

@@ -17,8 +17,8 @@ package net.oneandone.lavender.publisher;
 
 import net.oneandone.lavender.filter.Lavender;
 import net.oneandone.lavender.index.Index;
+import net.oneandone.lavender.publisher.config.Alias;
 import net.oneandone.lavender.publisher.config.Settings;
-import net.oneandone.lavender.publisher.config.Vhost;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import org.junit.Test;
@@ -46,7 +46,7 @@ public class PublisherTest {
         FileNode outputNodesFile = tmp.join("outputNodesFile").mkfile();
         Distributor distributor = Distributor.forTest(outputDir, "notused");
         WarEngine engine = new WarEngine(settings.svnUsername, settings.svnPassword,
-                inputWar, outputWar, distributor, outputIndex, outputNodesFile, Vhost.one("a.b.c").nodesFile());
+                inputWar, outputWar, distributor, outputIndex, outputNodesFile, Alias.one("a.b.c").nodesFile());
         engine.run();
         assertTrue(outputWar.exists());
 

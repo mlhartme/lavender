@@ -17,10 +17,11 @@ package net.oneandone.lavender.publisher;
 
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
+import net.oneandone.lavender.publisher.config.Alias;
 import net.oneandone.lavender.publisher.config.Cluster;
+import net.oneandone.lavender.publisher.config.Docroot;
 import net.oneandone.lavender.publisher.config.Host;
 import net.oneandone.lavender.publisher.config.Net;
-import net.oneandone.lavender.publisher.config.Vhost;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -28,6 +29,7 @@ import net.oneandone.sushi.fs.file.FileNode;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -36,19 +38,19 @@ import java.util.Map;
 
 /** Receives extracted files and uploads them */
 public class Distributor {
-    public static Distributor forCdn(World world, Cluster cluster, Vhost vhost, String indexName) throws IOException {
-        return open(world, vhost.docroot, cluster.hosts, indexName);
+    public static Distributor forCdn(World world, Cluster cluster, Docroot docroot, String indexName) throws IOException {
+        return open(world, docroot.docroot, cluster.hosts, indexName);
     }
 
     public static Distributor forTest(FileNode baseDirectory, String indexName) throws IOException {
         Cluster cluster;
-        Vhost vhost;
+        Docroot docroot;
 
         cluster = new Cluster();
         cluster.hosts.add(Net.local(baseDirectory, baseDirectory.join("index.idx")));
-        vhost = Vhost.one("dummy");
-        cluster.vhosts.add(vhost);
-        return Distributor.forCdn(baseDirectory.getWorld(), cluster, vhost, indexName);
+        docroot = new Docroot("", new Alias("dummy"));
+        cluster.docroots.add(docroot);
+        return Distributor.forCdn(baseDirectory.getWorld(), cluster, docroot, indexName);
     }
 
     public static Distributor open(World world, String suffix, List<Host> hosts, String indexName) throws IOException {

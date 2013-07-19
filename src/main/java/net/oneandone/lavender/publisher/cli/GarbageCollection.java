@@ -18,11 +18,12 @@ package net.oneandone.lavender.publisher.cli;
 import com.jcraft.jsch.JSchException;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
+import net.oneandone.lavender.publisher.config.Alias;
 import net.oneandone.lavender.publisher.config.Cluster;
+import net.oneandone.lavender.publisher.config.Docroot;
 import net.oneandone.lavender.publisher.config.Host;
 import net.oneandone.lavender.publisher.config.Net;
 import net.oneandone.lavender.publisher.config.Settings;
-import net.oneandone.lavender.publisher.config.Vhost;
 import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.cli.Option;
 import net.oneandone.sushi.cli.Value;
@@ -58,17 +59,15 @@ public class GarbageCollection extends Base {
         Node hostroot;
         Index index;
         Set<String> references;
-        Set<String> docrootsDone;
         SshNode docroot;
 
         cluster = net.cluster(clusterName);
         for (Host host : cluster.hosts) {
             hostroot = host.open(console.world);
-            docrootsDone = new HashSet<>();
-            for (Vhost vhost : cluster.vhosts) {
+            for (Docroot docrootObj : cluster.docroots) {
                 // TODO: sshnode
-                docroot = (SshNode) host.docroot(hostroot, vhost.docroot);
-                if (docroot.exists() && docrootsDone.add(vhost.docroot)) {
+                docroot = (SshNode) host.docroot(hostroot, docrootObj.docroot);
+                if (docroot.exists()) {
                     references = new HashSet<>();
                     console.info.println(host);
                     console.info.print("collecting references ...");

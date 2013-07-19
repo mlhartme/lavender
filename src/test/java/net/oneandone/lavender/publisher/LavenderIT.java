@@ -16,6 +16,7 @@
 package net.oneandone.lavender.publisher;
 
 import net.oneandone.lavender.publisher.cli.Main;
+import net.oneandone.lavender.publisher.config.Alias;
 import net.oneandone.lavender.publisher.config.Cluster;
 import net.oneandone.lavender.publisher.config.Net;
 import net.oneandone.sushi.fs.Node;
@@ -106,14 +107,15 @@ public class LavenderIT {
         net.add("test", new Cluster()
                 .addLocalhost(testhosts.join("cdn1"), "indexes")
                 .addLocalhost(testhosts.join("cdn2"), "indexes")
-                .addVhost("fix", "/fix", "fix1.uicdn.net", "fix2.uicdn.net", "fix3.uicdn.net", "fix4.uicdn.net"));
+                .addDocroot("/fix",
+                        new Alias("fix", "/fix", "fix1.uicdn.net", "fix2.uicdn.net", "fix3.uicdn.net", "fix4.uicdn.net")));
         net.add("flash-eu", new Cluster()
                 .addLocalhost(testhosts.join("flash-eu1"), "htdocs/.lavender")
                 .addLocalhost(testhosts.join("flash-eu2"), "htdocs/.lavender")
-                .addVhost("foo", "", "foo"));
+                .addDocroot(""));
         net.add("flash-us", new Cluster()
                 .addLocalhost(testhosts.join("flash-us"), "htdocs/.lavender")
-                .addVhost("foo", "", "foo"));
+                .addDocroot(""));
         return net;
     }
 
