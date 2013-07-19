@@ -154,7 +154,9 @@ public class Lavender implements Filter {
             LOG.info("lavender: " + path + " -> " + resource.getNode().getURI());
             serve(resource.getNode(), response);
         } else {
+            LOG.info("pass-through: " + path);
             chain.doFilter(request, response);
+            LOG.info("result: " + response.getStatus());
         }
     }
 
