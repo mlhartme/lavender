@@ -15,7 +15,7 @@
  */
 package net.oneandone.lavender.filter;
 
-import net.oneandone.lavender.processor.Processor;
+import net.oneandone.lavender.filter.processor.Processor;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;

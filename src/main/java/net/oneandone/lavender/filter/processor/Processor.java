@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.oneandone.lavender.processor;
+package net.oneandone.lavender.filter.processor;
 
 import net.oneandone.lavender.rewrite.RewriteEngine;
 

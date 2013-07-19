@@ -16,7 +16,7 @@
 package net.oneandone.lavender.filter;
 
 import net.oneandone.lavender.index.Index;
-import net.oneandone.lavender.processor.ProcessorFactory;
+import net.oneandone.lavender.filter.processor.ProcessorFactory;
 import net.oneandone.lavender.publisher.Resource;
 import net.oneandone.lavender.publisher.Source;
 import net.oneandone.lavender.publisher.config.Settings;

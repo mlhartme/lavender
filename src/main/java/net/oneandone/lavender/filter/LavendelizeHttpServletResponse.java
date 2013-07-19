@@ -15,8 +15,8 @@
  */
 package net.oneandone.lavender.filter;
 
-import net.oneandone.lavender.processor.ProcessorFactory;
-import net.oneandone.lavender.processor.Processor;
+import net.oneandone.lavender.filter.processor.ProcessorFactory;
+import net.oneandone.lavender.filter.processor.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -16,7 +16,7 @@
 package net.oneandone.lavender.filter.pt;
 
 import net.oneandone.lavender.filter.LavendelizeHttpServletResponse;
-import net.oneandone.lavender.processor.ProcessorFactory;
+import net.oneandone.lavender.filter.processor.ProcessorFactory;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
