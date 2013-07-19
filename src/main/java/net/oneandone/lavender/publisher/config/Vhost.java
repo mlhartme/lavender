@@ -18,6 +18,7 @@ package net.oneandone.lavender.publisher.config;
 import java.util.ArrayList;
 import java.util.List;
 
+/** multiple vhost may share the same docroot. */
 public class Vhost {
     public static Vhost one(String name) {
         List<String> domains;
@@ -27,11 +28,11 @@ public class Vhost {
         return new Vhost(name, "", domains);
     }
 
-    public final List<String> domains;
+    public final String name;
 
     public final String docroot;
 
-    public final String name;
+    public final List<String> domains;
 
     public Vhost(String name, String docroot, List<String> domains) {
         this.name = name;
