@@ -56,8 +56,8 @@ public class PustefixSource extends Source {
 
         LOG.trace("scanning " + webapp);
         result = new ArrayList<>();
-        properties = getConfig(webapp);
-        ps = PustefixSource.forProperties(webapp, properties);
+        properties = getProperties(webapp);
+        ps = create(Filter.forProperties(properties, "pustefix", DEFAULT_INCLUDE_EXTENSIONS), webapp);
         result.add(ps);
         for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
             mc = loadModuleXml(ps, jar);
@@ -93,7 +93,7 @@ public class PustefixSource extends Source {
         return entry.getName().equals("META-INF/pustefix-module.xml");
     }
 
-    private static Properties getConfig(Node webapp) throws IOException {
+    private static Properties getProperties(Node webapp) throws IOException {
         Node src;
 
         src = webapp.join(PROPERTIES);
@@ -104,10 +104,6 @@ public class PustefixSource extends Source {
         return src.readProperties();
     }
 
-    public static PustefixSource forProperties(Node webapp, Properties properties) throws IOException {
-        return create(Filter.forProperties(properties, "pustefix", DEFAULT_INCLUDE_EXTENSIONS), webapp);
-    }
-
     public static PustefixSource create(Filter filter, Node webapp) throws IOException {
         ProjectConfig config;
 
@@ -116,6 +112,8 @@ public class PustefixSource extends Source {
         }
         return new PustefixSource(filter, config, webapp);
     }
+
+    //--
 
     private final ProjectConfig config;
     private final Node webapp;
@@ -134,12 +132,7 @@ public class PustefixSource extends Source {
             throw new IllegalStateException(e);
         }
     }
-    /**
-     * Checks if the given resource is public.
-     * @param resourceName
-     *            the resource name
-     * @return true if the resource is public
-     */
+
     public boolean isPublicResource(String resourceName) {
         if (resourceName.startsWith("WEB-INF")) {
             return false;
@@ -154,10 +147,6 @@ public class PustefixSource extends Source {
         return false;
     }
 
-    /**
-     * Gets the project name.
-     * @return the project name
-     */
     public String getProjectName() {
         return config.getProject().getName();
     }

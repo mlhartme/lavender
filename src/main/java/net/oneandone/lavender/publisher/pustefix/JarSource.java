@@ -19,6 +19,7 @@ import net.oneandone.lavender.publisher.Resource;
 import net.oneandone.lavender.publisher.Source;
 import net.oneandone.lavender.publisher.config.Filter;
 import net.oneandone.sushi.fs.Node;
+import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Predicate;
 
 import java.io.IOException;
@@ -36,7 +37,11 @@ public class JarSource extends Source {
 
     public Iterator<Resource> iterator() {
         try {
-            return new JarResourceIterator(config, jar, jar.getWorld().filter().includeAll().predicate(Predicate.FILE));
+            if (jar instanceof FileNode) {
+                return new JarFileResourceIterator(config, (FileNode) jar, jar.getWorld().filter().includeAll().predicate(Predicate.FILE));
+            } else {
+                return new JarStreamResourceIterator(config, jar);
+            }
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
