@@ -17,7 +17,7 @@ package net.oneandone.lavender.publisher.cli;
 
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.publisher.Distributor;
-import net.oneandone.lavender.publisher.Source;
+import net.oneandone.lavender.modules.Source;
 import net.oneandone.lavender.publisher.config.Alias;
 import net.oneandone.lavender.publisher.config.Docroot;
 import net.oneandone.lavender.publisher.config.Net;

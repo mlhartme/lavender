@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.oneandone.lavender.publisher;
+package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.index.Label;
+import net.oneandone.lavender.publisher.Distributor;
+import net.oneandone.lavender.publisher.Resource;
 import net.oneandone.lavender.publisher.config.Filter;
 
 import java.io.IOException;
 
-/** Extracts resources */
+/** Contains resources. */
 public abstract class Source implements Iterable<Resource> {
     public static final String DEFAULT_STORAGE = "lavender";
 
