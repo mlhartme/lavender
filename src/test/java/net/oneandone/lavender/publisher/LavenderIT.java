@@ -34,7 +34,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-@Ignore
 public class LavenderIT {
     private static final World WORLD = new World();
 

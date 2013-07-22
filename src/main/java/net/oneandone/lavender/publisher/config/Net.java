@@ -65,8 +65,8 @@ public class Net {
 
     //--
 
-    public static Host local(FileNode index) {
-        return new Host(null, null, index.getPath());
+    public static Host local(FileNode basedir, String index) {
+        return Host.local(basedir, index);
     }
 
     //--

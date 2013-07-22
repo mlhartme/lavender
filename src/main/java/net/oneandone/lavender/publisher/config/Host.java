@@ -18,31 +18,43 @@ package net.oneandone.lavender.publisher.config;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.NodeInstantiationException;
 import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.file.FileNode;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class Host {
-    /** null for localhost (login is ignored in this case, and open returns FileNodes) */
+    public static Host remote(String name, String login, String indexbase) {
+        if (indexbase.startsWith("/") || indexbase.endsWith("/")) {
+            throw new IllegalArgumentException(indexbase);
+        }
+        try {
+            return new Host(name, new URI("ssh://" + login + "@" + name), indexbase);
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    public static Host local(FileNode basedir, String indexbase) {
+        return new Host("localhost", basedir.getURI(), indexbase);
+    }
+
     public final String name;
-    public final String login;
+
+    public final URI uri;
 
     /** where docroots of the various domains reside */
     private final String indexbase;
 
-    public Host(String name, String login, String indexbase) {
-        if (indexbase.startsWith("/") || indexbase.endsWith("/")) {
-            throw new IllegalArgumentException(indexbase);
-        }
+    public Host(String name, URI uri, String indexbase) {
         this.name = name;
-        this.login = login;
+        this.uri = uri;
         this.indexbase = indexbase;
     }
 
     /** @return root node of this host */
     public Node open(World world) throws NodeInstantiationException {
-        if (name != null) {
-            return world.validNode("ssh://" + login + "@" + name);
-        } else {
-            return world.file("/");
-        }
+        return world.node(uri);
     }
 
     public Node index(Node root, String indexName) throws NodeInstantiationException {
@@ -50,10 +62,6 @@ public class Host {
     }
 
     public String toString() {
-        if (name == null) {
-            return "[localhost]";
-        } else {
-            return "[" + login + "@" + name + "]";
-        }
+        return "[" + uri + "]";
     }
 }

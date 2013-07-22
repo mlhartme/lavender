@@ -58,7 +58,7 @@ public class Direct extends Base {
         }
         fs = (SshFilesystem) console.world.getFilesystem("ssh");
         for (Host host : net.cluster(cluster).hosts) {
-            root = fs.root(host.name, host.login);
+            root = (SshRoot) host.open(console.world).getRoot();
             console.info.println(host.toString());
             try {
                 console.info.println(root.exec(Strings.toArray(command)));

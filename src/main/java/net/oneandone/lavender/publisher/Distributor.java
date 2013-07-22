@@ -47,8 +47,8 @@ public class Distributor {
         Docroot docroot;
 
         cluster = new Cluster();
-        cluster.hosts.add(Net.local(baseDirectory.join("index.idx")));
-        docroot = new Docroot(baseDirectory.getPath(), new Alias("dummy"));
+        cluster.hosts.add(Net.local(baseDirectory, "index.idx"));
+        docroot = new Docroot("", new Alias("dummy"));
         cluster.docroots.add(docroot);
         return Distributor.forCdn(baseDirectory.getWorld(), cluster, docroot, indexName);
     }

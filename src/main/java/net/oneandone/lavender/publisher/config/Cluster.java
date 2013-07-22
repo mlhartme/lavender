@@ -65,13 +65,13 @@ public class Cluster {
         basedir.mkdir();
         basedir.join(index).mkdirs();
         basedir.join("htdocs").mkdirOpt();
-        hosts.add(Net.local(basedir.join(index)));
+        hosts.add(Net.local(basedir, index));
         return this;
     }
 
 
     public Cluster addHost(String name, String login, String indexbase) {
-        hosts.add(new Host(name, login, indexbase));
+        hosts.add(Host.remote(name, login, indexbase));
         return this;
     }
 
