@@ -16,7 +16,7 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.publisher.Resource;
-import net.oneandone.lavender.publisher.config.Filter;
+import net.oneandone.lavender.config.Filter;
 import net.oneandone.sushi.fs.World;
 import org.junit.Ignore;
 import org.junit.Test;

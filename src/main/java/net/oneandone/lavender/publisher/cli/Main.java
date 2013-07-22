@@ -16,12 +16,11 @@
 package net.oneandone.lavender.publisher.cli;
 
 import com.jcraft.jsch.JSchException;
-import net.oneandone.lavender.publisher.config.Net;
-import net.oneandone.lavender.publisher.config.Settings;
+import net.oneandone.lavender.config.Net;
+import net.oneandone.lavender.config.Settings;
 import net.oneandone.sushi.cli.Child;
 import net.oneandone.sushi.cli.Cli;
 import net.oneandone.sushi.cli.Command;
-import net.oneandone.sushi.fs.MkdirException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;

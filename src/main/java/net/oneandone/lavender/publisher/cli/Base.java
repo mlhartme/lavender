@@ -16,8 +16,8 @@
 package net.oneandone.lavender.publisher.cli;
 
 
-import net.oneandone.lavender.publisher.config.Net;
-import net.oneandone.lavender.publisher.config.Settings;
+import net.oneandone.lavender.config.Net;
+import net.oneandone.lavender.config.Settings;
 import net.oneandone.sushi.cli.Command;
 import net.oneandone.sushi.cli.Console;
 

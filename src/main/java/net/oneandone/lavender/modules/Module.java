@@ -18,7 +18,7 @@ package net.oneandone.lavender.modules;
 import net.oneandone.lavender.index.Label;
 import net.oneandone.lavender.publisher.Distributor;
 import net.oneandone.lavender.publisher.Resource;
-import net.oneandone.lavender.publisher.config.Filter;
+import net.oneandone.lavender.config.Filter;
 
 import java.io.IOException;
 

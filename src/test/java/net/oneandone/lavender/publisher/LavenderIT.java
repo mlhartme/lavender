@@ -16,9 +16,9 @@
 package net.oneandone.lavender.publisher;
 
 import net.oneandone.lavender.publisher.cli.Main;
-import net.oneandone.lavender.publisher.config.Alias;
-import net.oneandone.lavender.publisher.config.Cluster;
-import net.oneandone.lavender.publisher.config.Net;
+import net.oneandone.lavender.config.Alias;
+import net.oneandone.lavender.config.Cluster;
+import net.oneandone.lavender.config.Net;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;

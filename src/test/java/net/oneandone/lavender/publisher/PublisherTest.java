@@ -17,8 +17,8 @@ package net.oneandone.lavender.publisher;
 
 import net.oneandone.lavender.filter.Lavender;
 import net.oneandone.lavender.index.Index;
-import net.oneandone.lavender.publisher.config.Alias;
-import net.oneandone.lavender.publisher.config.Settings;
+import net.oneandone.lavender.config.Alias;
+import net.oneandone.lavender.config.Settings;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import org.junit.Test;

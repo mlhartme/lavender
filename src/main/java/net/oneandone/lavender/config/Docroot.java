@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.oneandone.lavender.publisher.config;
+package net.oneandone.lavender.config;
 
 import net.oneandone.sushi.fs.Node;
-import net.oneandone.sushi.fs.NodeInstantiationException;
 
 import java.util.Arrays;
 import java.util.List;

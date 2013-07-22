@@ -16,10 +16,10 @@
 package net.oneandone.lavender.publisher.cli;
 
 import com.jcraft.jsch.JSchException;
-import net.oneandone.lavender.publisher.config.Docroot;
-import net.oneandone.lavender.publisher.config.Host;
-import net.oneandone.lavender.publisher.config.Net;
-import net.oneandone.lavender.publisher.config.Settings;
+import net.oneandone.lavender.config.Docroot;
+import net.oneandone.lavender.config.Host;
+import net.oneandone.lavender.config.Net;
+import net.oneandone.lavender.config.Settings;
 import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
