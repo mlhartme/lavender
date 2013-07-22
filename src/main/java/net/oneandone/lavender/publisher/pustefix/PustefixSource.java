@@ -19,11 +19,8 @@ import net.oneandone.lavender.publisher.Source;
 import net.oneandone.lavender.publisher.Resource;
 import net.oneandone.lavender.publisher.config.Filter;
 import net.oneandone.sushi.fs.Node;
-import net.oneandone.sushi.fs.World;
-import net.oneandone.sushi.fs.file.FileNode;
 
 import javax.xml.bind.JAXBException;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
