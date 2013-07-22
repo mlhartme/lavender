@@ -15,7 +15,7 @@
  */
 package net.oneandone.lavender.publisher;
 
-import net.oneandone.lavender.publisher.cli.Main;
+import net.oneandone.lavender.publisher.Main;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Host;

@@ -180,7 +180,7 @@
         <version>1.4.2</version>
         <configuration>
           <name>lavender</name>
-          <main>net.oneandone.lavender.publisher.cli.Main</main>
+          <main>net.oneandone.lavender.publisher.Main</main>
           <options>-Djava.awt.headless=true</options>
           <remove>META-INF/DEPENDENCIES, META-INF/NOTICE, META-INF/LICENSE.txt, META-INF/NOTICE.txt, META-INF/LICENSE, META-INF/wsd.properties, META-INF/pominfo.properties</remove>
           <distribute>ssh://servlet@pumama64.schlund.de/home/servlet/tools</distribute>
