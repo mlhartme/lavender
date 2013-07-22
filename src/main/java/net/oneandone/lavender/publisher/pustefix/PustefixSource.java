@@ -18,18 +18,20 @@ package net.oneandone.lavender.publisher.pustefix;
 import net.oneandone.lavender.publisher.Source;
 import net.oneandone.lavender.publisher.Resource;
 import net.oneandone.lavender.publisher.config.Filter;
+import net.oneandone.lavender.publisher.pustefix.project.ProjectConfig;
 import net.oneandone.lavender.publisher.svn.SvnSourceConfig;
 import net.oneandone.sushi.fs.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -58,7 +60,7 @@ public class PustefixSource extends Source {
         ps = PustefixSource.forProperties(webapp, properties);
         result.add(ps);
         for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
-            mc = loadModuleXml(ps.config, jar);
+            mc = loadModuleXml(ps, jar);
             if (mc != null) {
                 result.add(new JarSource(ps.getFilter(), mc, jar));
             }
@@ -70,7 +72,7 @@ public class PustefixSource extends Source {
         return result;
     }
 
-    private static PustefixModuleConfig loadModuleXml(PustefixProjectConfig pc, Node jar) throws IOException {
+    private static PustefixModuleConfig loadModuleXml(PustefixSource source, Node jar) throws IOException {
         ZipInputStream jarInputStream;
         ZipEntry jarEntry;
 
@@ -78,7 +80,7 @@ public class PustefixSource extends Source {
         while ((jarEntry = jarInputStream.getNextEntry()) != null) {
             if (isModuleXml(jarEntry)) {
                 try {
-                    return new PustefixModuleConfig(pc, jarInputStream);
+                    return new PustefixModuleConfig(source, jarInputStream);
                 } catch (JAXBException e) {
                     throw new IOException("cannot load module descriptor", e);
                 }
@@ -107,30 +109,57 @@ public class PustefixSource extends Source {
     }
 
     public static PustefixSource create(Filter filter, Node webapp) throws IOException {
-        PustefixProjectConfig config;
+        ProjectConfig config;
 
-        try {
-            config = new PustefixProjectConfig(webapp);
-        } catch (JAXBException e) {
-            throw new IOException("cannot load pustefix configuration: " + e.getMessage(), e);
+        try (InputStream src = webapp.join("WEB-INF/project.xml").createInputStream()) {
+            config = JAXB.unmarshal(src, ProjectConfig.class);
         }
         return new PustefixSource(filter, config, webapp);
     }
 
-    private final PustefixProjectConfig config;
+    private final ProjectConfig config;
     private final Node webapp;
 
-    public PustefixSource(Filter filter, PustefixProjectConfig config, Node webapp) throws IOException {
+    public PustefixSource(Filter filter, ProjectConfig config, Node webapp) throws IOException {
         super(filter, DEFAULT_STORAGE, true, "");
+
         this.config = config;
         this.webapp = webapp;
     }
 
     public Iterator<Resource> iterator() {
         try {
-            return PustefixResourceIterator.create(config, webapp);
+            return PustefixResourceIterator.create(this, webapp);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
     }
+    /**
+     * Checks if the given resource is public.
+     * @param resourceName
+     *            the resource name
+     * @return true if the resource is public
+     */
+    public boolean isPublicResource(String resourceName) {
+        if (resourceName.startsWith("WEB-INF")) {
+            return false;
+        }
+
+        for (String path : config.getApplication().getStatic().getPath()) {
+            if (resourceName.startsWith(path)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Gets the project name.
+     * @return the project name
+     */
+    public String getProjectName() {
+        return config.getProject().getName();
+    }
+
 }

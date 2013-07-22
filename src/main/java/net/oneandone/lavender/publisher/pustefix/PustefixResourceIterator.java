@@ -31,7 +31,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class PustefixResourceIterator implements Iterator<Resource> {
-    private final PustefixProjectConfig config;
+    private final PustefixSource source;
     private final Node webapp;
     private List<Node> files;
 
@@ -42,16 +42,16 @@ public class PustefixResourceIterator implements Iterator<Resource> {
     private int nextFile;
 
 
-    public static PustefixResourceIterator create(PustefixProjectConfig config, Node webapp) throws IOException {
+    public static PustefixResourceIterator create(PustefixSource source, Node webapp) throws IOException {
         Filter filter;
 
         filter = webapp.getWorld().filter().include("**/*").predicate(Predicate.FILE);
-        return new PustefixResourceIterator(config, webapp, webapp.find(filter));
+        return new PustefixResourceIterator(source, webapp, webapp.find(filter));
     }
 
 
-    public PustefixResourceIterator(PustefixProjectConfig config, Node webapp, List<Node> files) {
-        this.config = config;
+    public PustefixResourceIterator(PustefixSource source, Node webapp, List<Node> files) {
+        this.source = source;
         this.webapp = webapp;
         this.files = files;
         this.nextFile = 0;
@@ -70,14 +70,14 @@ public class PustefixResourceIterator implements Iterator<Resource> {
         while (nextFile < files.size()) {
             file = files.get(nextFile++);
             path = file.getRelative(webapp);
-            if (config.isPublicResource(path)) {
+            if (source.isPublicResource(path)) {
                 String folder;
                 int end;
 
                 if (path.startsWith(MODULES_PREFIX) && ((end = path.indexOf('/', MODULES_PREFIX_LENGTH)) != -1)) {
                     folder = path.substring(MODULES_PREFIX_LENGTH, end);
                 } else {
-                    folder = config.getProjectName();
+                    folder = source.getProjectName();
                 }
                 next = new Resource(file, path, folder);
                 return true;
