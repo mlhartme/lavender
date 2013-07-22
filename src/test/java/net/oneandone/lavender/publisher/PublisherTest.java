@@ -16,6 +16,7 @@
 package net.oneandone.lavender.publisher;
 
 import net.oneandone.lavender.filter.Lavender;
+import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.config.Alias;
 import net.oneandone.lavender.config.Settings;

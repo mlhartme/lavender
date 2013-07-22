@@ -18,7 +18,7 @@ package net.oneandone.lavender.publisher;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.SvnModule;
 import net.oneandone.lavender.modules.SvnModuleConfig;
-import net.oneandone.lavender.publisher.Distributor;
+import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Filter;

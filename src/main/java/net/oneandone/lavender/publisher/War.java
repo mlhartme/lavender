@@ -17,11 +17,10 @@ package net.oneandone.lavender.publisher;
 
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.Module;
-import net.oneandone.lavender.publisher.Distributor;
+import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.config.Alias;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Net;
-import net.oneandone.lavender.publisher.WarEngine;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Settings;
 import net.oneandone.sushi.cli.Console;

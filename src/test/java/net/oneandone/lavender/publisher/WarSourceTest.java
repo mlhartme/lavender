@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.publisher;
 
+import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.PustefixModule;
 import net.oneandone.lavender.config.Filter;

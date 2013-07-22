@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.oneandone.lavender.publisher;
+package net.oneandone.lavender.index;
 
 import net.oneandone.lavender.index.Hex;
 import net.oneandone.lavender.index.Label;
