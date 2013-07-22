@@ -35,17 +35,11 @@ public class PustefixResourceIterator implements Iterator<Resource> {
     private final Node webapp;
     private List<Node> files;
 
-    private final Filter fileFilter;
-
     // iterating data
 
     private Resource next;
 
     private int nextFile;
-    private ZipInputStream moduleInputStream;
-    private PustefixModuleConfig moduleConfig;
-    private List<Node> moduleJarFiles;
-    private int nextModuleJarFile;
 
 
     public static PustefixResourceIterator create(Node webapp) throws IOException, JAXBException {
@@ -54,17 +48,15 @@ public class PustefixResourceIterator implements Iterator<Resource> {
 
         config = new PustefixProjectConfig(webapp);
         filter = webapp.getWorld().filter().include("**/*").predicate(Predicate.FILE);
-        return new PustefixResourceIterator(config, webapp, webapp.find(filter), filter);
+        return new PustefixResourceIterator(config, webapp, webapp.find(filter));
     }
 
 
-    public PustefixResourceIterator(PustefixProjectConfig config, Node webapp, List<Node> files, Filter fileFilter) throws IOException, JAXBException {
+    public PustefixResourceIterator(PustefixProjectConfig config, Node webapp, List<Node> files) throws IOException, JAXBException {
         this.config = config;
         this.webapp = webapp;
         this.files = files;
         this.nextFile = 0;
-
-        this.fileFilter = fileFilter;
     }
 
     private static final String MODULES_PREFIX = "modules/";
@@ -72,75 +64,28 @@ public class PustefixResourceIterator implements Iterator<Resource> {
 
     public boolean hasNext() {
         Node file;
-        ZipEntry entry;
         String path;
-        byte[] data;
 
-        try {
-            if (next != null) {
+        if (next != null) {
+            return true;
+        }
+        while (nextFile < files.size()) {
+            file = files.get(nextFile++);
+            path = file.getRelative(webapp);
+            if (config.isPublicResource(path)) {
+                String folder;
+                int end;
+
+                if (path.startsWith(MODULES_PREFIX) && ((end = path.indexOf('/', MODULES_PREFIX_LENGTH)) != -1)) {
+                    folder = path.substring(MODULES_PREFIX_LENGTH, end);
+                } else {
+                    folder = config.getProjectName();
+                }
+                next = new Resource(file, path, folder);
                 return true;
             }
-            do {
-                if (moduleConfig != null) {
-                    if (moduleInputStream != null) {
-                        while ((entry = moduleInputStream.getNextEntry()) != null) {
-                            path = entry.getName();
-                            if (!entry.isDirectory() && moduleConfig.isPublicResource(path)) {
-                                data = webapp.getWorld().getBuffer().readBytes(moduleInputStream);
-                                next = new Resource(webapp.getWorld().memoryNode(data), moduleConfig.getPath(path), moduleConfig.getModuleName());
-                                return true;
-                            }
-                        }
-                    } else {
-                        while (nextModuleJarFile < moduleJarFiles.size()) {
-                            file = moduleJarFiles.get(nextModuleJarFile);
-                            nextModuleJarFile++;
-                            path = file.getPath();
-                            if (moduleConfig.isPublicResource(path)) {
-                                next = new Resource(file, moduleConfig.getPath(path), moduleConfig.getModuleName());
-                                return true;
-                            }
-                        }
-                    }
-                    moduleConfig = null;
-                    moduleInputStream = null;
-                    moduleJarFiles = null;
-                }
-
-                while (nextFile < files.size()) {
-                    file = files.get(nextFile++);
-                    path = file.getRelative(webapp);
-                    if (config.isPublicResource(path)) {
-                        String folder;
-                        int end;
-
-                        if (path.startsWith(MODULES_PREFIX) && ((end = path.indexOf('/', MODULES_PREFIX_LENGTH)) != -1)) {
-                            folder = path.substring(MODULES_PREFIX_LENGTH, end);
-                        } else {
-                            folder = config.getProjectName();
-                        }
-                        next = new Resource(file, path, folder);
-                        return true;
-                    }
-                    if (config.isModule(path)) {
-                        moduleConfig = config.getModuleConfig(path);
-                        if (file instanceof FileNode) {
-                            moduleInputStream = null;
-                            moduleJarFiles = ((FileNode) file).openZip().find(fileFilter);
-                            nextModuleJarFile = 0;
-                        } else {
-                            moduleInputStream = new ZipInputStream(file.createInputStream());
-                            moduleJarFiles = null;
-                        }
-                        break;
-                    }
-                }
-            } while (moduleConfig != null);
-
-            return false;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
+        return false;
     }
 
     public Resource next() {

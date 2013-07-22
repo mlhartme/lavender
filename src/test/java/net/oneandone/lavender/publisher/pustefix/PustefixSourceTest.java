@@ -45,7 +45,7 @@ public class PustefixSourceTest {
             resources.put(resource.getPath(), resource);
         }
 
-        assertEquals(14, resources.size());
+        assertEquals(9, resources.size());
 
         assertTrue(resources.containsKey("img/sub/check_grey.gif"));
         assertTrue(resources.containsKey("img/sub/check_green.gif"));
@@ -56,11 +56,6 @@ public class PustefixSourceTest {
         assertTrue(resources.containsKey("modules/frontend-tools/img/delete.png"));
         assertTrue(resources.containsKey("modules/frontend-tools/img/accept.png"));
         assertTrue(resources.containsKey("modules/frontend-tools/img/cross.png"));
-        assertTrue(resources.containsKey("modules/frontend-elements/style/error.css"));
-        assertTrue(resources.containsKey("modules/frontend-elements/img/buttons/buttons-ie6.png"));
-        assertTrue(resources.containsKey("modules/frontend-elements/img/buttons/buttons.png"));
-        assertTrue(resources.containsKey("modules/frontend-elements/img/error/error.gif"));
-        assertTrue(resources.containsKey("modules/frontend-elements/img/error/logo.gif"));
     }
 
     @Ignore

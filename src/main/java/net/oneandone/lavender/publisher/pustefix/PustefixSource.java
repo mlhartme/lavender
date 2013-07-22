@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -46,11 +47,22 @@ public class PustefixSource extends Source {
     public static List<Source> fromWebapp(Node webapp, String svnUsername, String svnPassword) throws IOException {
         List<Source> result;
         Properties properties;
+        PustefixProjectConfig pc;
+        PustefixSource ps;
 
         LOG.trace("scanning " + webapp);
         result = new ArrayList<>();
         properties = getConfig(webapp);
-        result.add(PustefixSource.forProperties(webapp, properties));
+        ps = PustefixSource.forProperties(webapp, properties);
+        result.add(ps);
+        try {
+            pc = new PustefixProjectConfig(webapp);
+        } catch (JAXBException e) {
+            throw new IOException("cannot load pustefix configuration: " + e.getMessage(), e);
+        }
+        for (Map.Entry<String, PustefixModuleConfig> entry : pc.getModules().entrySet()) {
+            result.add(new JarSource(ps.getFilter(), entry.getValue(), webapp.join(entry.getKey())));
+        }
         for (SvnSourceConfig config : SvnSourceConfig.parse(properties)) {
             LOG.info("adding svn source " + config.folder);
             result.add(config.create(webapp.getWorld(), svnUsername, svnPassword));

@@ -72,18 +72,15 @@ public class WarSourceTest {
         resourcePublisher.extract(new PustefixSource(new Filter(), war.openZip()));
         index = distributor.close();
         indexFileContent = indexLines(index);
-        assertEquals(1 + 14 + 1, indexFileContent.size()); // contains properties header line
+        assertEquals(1 + 9 + 1, indexFileContent.size()); // contains properties header line
         assertTrue(indexFileContent
                 .contains("modules/frontend-tools/img/delete.png=684/61ca5187cd2c6af08786467085f2b/frontend-tools"
                         + "/delete.png\\:68461ca5187cd2c6af08786467085f2b"));
         assertTrue(indexFileContent
-                .contains("modules/frontend-elements/style/error.css=13e/8ca508d2063e9504497b4953f9ae3/frontend-elements"
-                        + "/error.css\\:13e8ca508d2063e9504497b4953f9ae3"));
-        assertTrue(indexFileContent
                 .contains("modules/stageassistent/img/close.gif=d08/fcb52992b3e6da757c4e7778e70c1/stageassistent"
                         + "/close.gif\\:d08fcb52992b3e6da757c4e7778e70c1"));
 
-        assertEquals(14 + 1, baseDirectory.list().size());
+        assertEquals(9 + 1, baseDirectory.list().size());
     }
 
     @Test
@@ -97,18 +94,15 @@ public class WarSourceTest {
         index = distributor.close();
 
         Collection<String> indexFileContent = indexLines(index);
-        assertEquals(1 + 7 + 1, indexFileContent.size()); // contains properties header line
+        assertEquals(1 + 5 + 1, indexFileContent.size()); // contains properties header line
         assertFalse(indexFileContent
                 .contains("modules/frontend-tools/img/delete.png=684/61ca5187cd2c6af08786467085f2b/frontend-tools"
                         + "/delete.png\\:68461ca5187cd2c6af08786467085f2b"));
         assertFalse(indexFileContent
-                .contains("modules/frontend-elements/style/error.css=13e/8ca508d2063e9504497b4953f9ae3/frontend-elements"
-                        + "/error.css\\:13e8ca508d2063e9504497b4953f9ae3"));
-        assertFalse(indexFileContent
                 .contains("modules/stageassistent/img/close.gif=d08/fcb52992b3e6da757c4e7778e70c1/stageassistent"
                         + "/close.gif\\:d08fcb52992b3e6da757c4e7778e70c1"));
 
-        assertEquals(7 + 1, baseDirectory.list().size());
+        assertEquals(5 + 1, baseDirectory.list().size());
     }
 
     public static final Separator LF = Separator.on("\n").trim(LineFormat.Trim.SEPARATOR);
