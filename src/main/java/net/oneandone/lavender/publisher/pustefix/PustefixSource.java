@@ -18,7 +18,10 @@ package net.oneandone.lavender.publisher.pustefix;
 import net.oneandone.lavender.publisher.Source;
 import net.oneandone.lavender.publisher.Resource;
 import net.oneandone.lavender.publisher.config.Filter;
+import net.oneandone.lavender.publisher.svn.SvnSourceConfig;
 import net.oneandone.sushi.fs.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -33,8 +36,38 @@ import java.util.Properties;
  * Resources can be found in the WAR or in nested JARs.
  */
 public class PustefixSource extends Source {
+    private static final Logger LOG = LoggerFactory.getLogger(Source.class);
+
     private static final List<String> DEFAULT_INCLUDE_EXTENSIONS = new ArrayList<>(Arrays.asList(
             "gif", "png", "jpg", "jpeg", "ico", "swf", "css", "js"));
+
+    private static final String PROPERTIES = "WEB-INF/lavender.properties";
+
+    public static List<Source> fromWebapp(Node webapp, String svnUsername, String svnPassword) throws IOException {
+        List<Source> result;
+        Properties properties;
+
+        LOG.trace("scanning " + webapp);
+        result = new ArrayList<>();
+        properties = getConfig(webapp);
+        result.add(PustefixSource.forProperties(webapp, properties));
+        for (SvnSourceConfig config : SvnSourceConfig.parse(properties)) {
+            LOG.info("adding svn source " + config.folder);
+            result.add(config.create(webapp.getWorld(), svnUsername, svnPassword));
+        }
+        return result;
+    }
+
+    private static Properties getConfig(Node webapp) throws IOException {
+        Node src;
+
+        src = webapp.join(PROPERTIES);
+        if (!src.exists()) {
+            // TODO: dump this compatibility check as soon as I have ITs with new wars
+            src = webapp.join("WEB-INF/lavendel.properties");
+        }
+        return src.readProperties();
+    }
 
     public static PustefixSource forProperties(Node webapp, Properties properties) {
         return new PustefixSource(Filter.forProperties(properties, "pustefix", DEFAULT_INCLUDE_EXTENSIONS), webapp);

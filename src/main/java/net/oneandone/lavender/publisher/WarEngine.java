@@ -18,6 +18,7 @@ package net.oneandone.lavender.publisher;
 import net.oneandone.lavender.filter.Lavender;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
+import net.oneandone.lavender.publisher.pustefix.PustefixSource;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.io.Buffer;
 import org.slf4j.Logger;
@@ -94,7 +95,7 @@ public class WarEngine {
         long changed;
 
         started = System.currentTimeMillis();
-        sources = Source.fromWebapp(inputWar.openZip(), svnUsername, svnPassword);
+        sources = PustefixSource.fromWebapp(inputWar.openZip(), svnUsername, svnPassword);
         changed = extract(sources);
         for (Map.Entry<String, Distributor> entry : storages.entrySet()) {
             index = entry.getValue().close();
