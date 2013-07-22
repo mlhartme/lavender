@@ -22,21 +22,13 @@ import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 /** Project.xml and more. */
 public class PustefixProjectConfig {
     private ProjectConfig project;
-    private Map<String, PustefixModuleConfig> modules = new HashMap<>();
 
     public PustefixProjectConfig(Node webapp) throws IOException, JAXBException {
         loadProjectXml(webapp.join("WEB-INF/project.xml"));
-        for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
-            loadModuleXml(webapp, jar);
-        }
     }
 
     /**
@@ -67,41 +59,11 @@ public class PustefixProjectConfig {
         return project.getProject().getName();
     }
 
-    public Map<String, PustefixModuleConfig> getModules() {
-        return modules;
-    }
-
-    public PustefixModuleConfig getModuleConfig(String name) {
-        return modules.get(name);
-    }
-
-    public boolean isModule(String name) {
-        return modules.containsKey(name);
-    }
-
     //--
 
     private void loadProjectXml(Node node) throws JAXBException, IOException {
         try (InputStream src = node.createInputStream()) {
             project = JAXB.unmarshal(src, ProjectConfig.class);
         }
-    }
-
-    private void loadModuleXml(Node webapp, Node jar) throws JAXBException, IOException {
-        ZipInputStream jarInputStream;
-        ZipEntry jarEntry;
-        PustefixModuleConfig config;
-
-        jarInputStream = new ZipInputStream(jar.createInputStream());
-        while ((jarEntry = jarInputStream.getNextEntry()) != null) {
-            if (isModuleXml(jarEntry)) {
-                config = new PustefixModuleConfig(this, jarInputStream);
-                modules.put(jar.getRelative(webapp), config);
-            }
-        }
-    }
-
-    private boolean isModuleXml(ZipEntry entry) {
-        return entry.getName().equals("META-INF/pustefix-module.xml");
     }
 }

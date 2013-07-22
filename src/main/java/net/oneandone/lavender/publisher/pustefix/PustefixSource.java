@@ -31,6 +31,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * Iterates static resources from a Pustefix application. Valid static resource path are defined in WEB-INF/project.xml.
@@ -48,20 +50,45 @@ public class PustefixSource extends Source {
         List<Source> result;
         Properties properties;
         PustefixSource ps;
+        PustefixModuleConfig mc;
 
         LOG.trace("scanning " + webapp);
         result = new ArrayList<>();
         properties = getConfig(webapp);
         ps = PustefixSource.forProperties(webapp, properties);
         result.add(ps);
-        for (Map.Entry<String, PustefixModuleConfig> entry : ps.config.getModules().entrySet()) {
-            result.add(new JarSource(ps.getFilter(), entry.getValue(), webapp.join(entry.getKey())));
+        for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
+            mc = loadModuleXml(ps.config, jar);
+            if (mc != null) {
+                result.add(new JarSource(ps.getFilter(), mc, jar));
+            }
         }
         for (SvnSourceConfig config : SvnSourceConfig.parse(properties)) {
             LOG.info("adding svn source " + config.folder);
             result.add(config.create(webapp.getWorld(), svnUsername, svnPassword));
         }
         return result;
+    }
+
+    private static PustefixModuleConfig loadModuleXml(PustefixProjectConfig pc, Node jar) throws IOException {
+        ZipInputStream jarInputStream;
+        ZipEntry jarEntry;
+
+        jarInputStream = new ZipInputStream(jar.createInputStream());
+        while ((jarEntry = jarInputStream.getNextEntry()) != null) {
+            if (isModuleXml(jarEntry)) {
+                try {
+                    return new PustefixModuleConfig(pc, jarInputStream);
+                } catch (JAXBException e) {
+                    throw new IOException("cannot load module descriptor", e);
+                }
+            }
+        }
+        return null;
+    }
+
+    private static boolean isModuleXml(ZipEntry entry) {
+        return entry.getName().equals("META-INF/pustefix-module.xml");
     }
 
     private static Properties getConfig(Node webapp) throws IOException {
