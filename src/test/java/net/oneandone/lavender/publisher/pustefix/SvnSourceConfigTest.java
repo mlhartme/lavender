@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.oneandone.lavender.publisher.svn;
+package net.oneandone.lavender.publisher.pustefix;
 
+import net.oneandone.lavender.publisher.pustefix.SvnSourceConfig;
 import org.junit.Test;
 
 import java.util.Collection;

@@ -17,22 +17,8 @@ package net.oneandone.lavender.publisher;
 
 import net.oneandone.lavender.index.Label;
 import net.oneandone.lavender.publisher.config.Filter;
-import net.oneandone.lavender.publisher.pustefix.PustefixSource;
-import net.oneandone.lavender.publisher.svn.SvnSourceConfig;
-import net.oneandone.sushi.fs.Node;
-import net.oneandone.sushi.fs.file.FileNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 /** Extracts resources */
 public abstract class Source implements Iterable<Resource> {

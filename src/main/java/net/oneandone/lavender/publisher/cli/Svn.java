@@ -17,14 +17,13 @@ package net.oneandone.lavender.publisher.cli;
 
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.publisher.Distributor;
-import net.oneandone.lavender.publisher.config.Alias;
 import net.oneandone.lavender.publisher.config.Cluster;
 import net.oneandone.lavender.publisher.config.Docroot;
 import net.oneandone.lavender.publisher.config.Filter;
 import net.oneandone.lavender.publisher.config.Net;
 import net.oneandone.lavender.publisher.config.Settings;
-import net.oneandone.lavender.publisher.svn.SvnSource;
-import net.oneandone.lavender.publisher.svn.SvnSourceConfig;
+import net.oneandone.lavender.publisher.pustefix.SvnSource;
+import net.oneandone.lavender.publisher.pustefix.SvnSourceConfig;
 import net.oneandone.sushi.cli.ArgumentException;
 import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.cli.Value;

@@ -19,7 +19,6 @@ import net.oneandone.lavender.publisher.Source;
 import net.oneandone.lavender.publisher.Resource;
 import net.oneandone.lavender.publisher.config.Filter;
 import net.oneandone.lavender.publisher.pustefix.project.ProjectConfig;
-import net.oneandone.lavender.publisher.svn.SvnSourceConfig;
 import net.oneandone.sushi.fs.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
