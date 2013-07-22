@@ -71,7 +71,7 @@ public class GarbageCollection extends Base {
                     references = new HashSet<>();
                     console.info.println(host);
                     console.info.print("collecting references ...");
-                    for (Node file : host.index(hostroot, "").list()) {
+                    for (Node file : docrootObj.index(hostroot, "foo").getParent().list()) {
                         index = new Index(file.createInputStream());
                         for (Label label : index) {
                             if (!references.add(label.getLavendelizedPath())) {

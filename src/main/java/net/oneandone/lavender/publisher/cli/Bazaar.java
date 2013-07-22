@@ -64,7 +64,7 @@ public class Bazaar extends Base {
         root = local.openZip();
         for (Host host : net.cluster("bazaar").hosts) {
             console.info.println(host);
-            destTmp = new Docroot("var/bazaarvoice/tmp").node(host.open(console.world));
+            destTmp = new Docroot("var/bazaarvoice/tmp", "var/bazaarvoice/tmp").node(host.open(console.world));
             destFinal = destTmp.getParent().join("latest");
             destFinal.checkDirectory();
             destTmp.mkdir();

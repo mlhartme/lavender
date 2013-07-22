@@ -24,44 +24,33 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class Host {
-    public static Host remote(String name, String login, String indexbase) {
-        if (indexbase.startsWith("/") || indexbase.endsWith("/")) {
-            throw new IllegalArgumentException(indexbase);
-        }
+    public static Host remote(String name, String login) {
         try {
-            return new Host(name, new URI("ssh://" + login + "@" + name), indexbase);
+            return new Host(name, new URI("ssh://" + login + "@" + name));
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException(e);
         }
     }
 
-    public static Host local(FileNode basedir, String indexbase) {
-        return new Host("localhost", basedir.getURI(), indexbase);
+    public static Host local(FileNode basedir) {
+        return new Host("localhost", basedir.getURI());
     }
 
     public final String name;
 
     public final URI uri;
 
-    /** where docroots of the various domains reside */
-    private final String indexbase;
-
-    public Host(String name, URI uri, String indexbase) {
+    public Host(String name, URI uri) {
         this.name = name;
         this.uri = uri;
-        this.indexbase = indexbase;
-    }
+   }
 
     /** @return root node of this host */
     public Node open(World world) throws NodeInstantiationException {
         return world.node(uri);
     }
 
-    public Node index(Node root, String indexName) throws NodeInstantiationException {
-        return root.join(indexbase, indexName);
-    }
-
     public String toString() {
-        return "[" + uri + "]";
+        return "[" + name + "]";
     }
 }

@@ -46,37 +46,33 @@ public class Cluster {
     }
 
     public Cluster addCdn(String name) {
-        String login = "wwwcdn";
-
-        return addHost(name, login, "home/" + login + "/indexes");
+        return addHost(name, "wwwcdn");
     }
 
     public Cluster addStatint(String name) {
-        String login = "wwwstatint";
-
-        return addHost(name, login, "home/" + login + "/indexes");
+        return addHost(name, "wwwstatint");
     }
 
     public Cluster addFlash(String name) {
-        return addHost(name, "flash",  ".lavender");
+        return addHost(name, "flash");
     }
 
-    public Cluster addLocalhost(FileNode basedir, String index) throws IOException {
+    public Cluster addLocalhost(FileNode basedir) throws IOException {
         basedir.mkdir();
-        basedir.join(index).mkdirs();
+        basedir.join("indexes").mkdirs();
         basedir.join("htdocs").mkdirOpt();
-        hosts.add(Net.local(basedir, index));
+        hosts.add(Net.local(basedir));
         return this;
     }
 
 
-    public Cluster addHost(String name, String login, String indexbase) {
-        hosts.add(Host.remote(name, login, indexbase));
+    public Cluster addHost(String name, String login) {
+        hosts.add(Host.remote(name, login));
         return this;
     }
 
-    public Cluster addDocroot(String docroot, Alias ... aliases) {
-        docroots.add(new Docroot(docroot, Arrays.asList(aliases)));
+    public Cluster addDocroot(String docroot, String indexes, Alias ... aliases) {
+        docroots.add(new Docroot(docroot, indexes, Arrays.asList(aliases)));
         return this;
     }
 

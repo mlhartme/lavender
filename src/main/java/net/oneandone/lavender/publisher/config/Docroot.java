@@ -24,22 +24,31 @@ import java.util.List;
 public class Docroot {
     public final String docroot;
 
+    public final String indexes;
+
     public final List<Alias> aliases;
 
-    public Docroot(String docroot, Alias ... aliases) {
-        this(docroot, Arrays.asList(aliases));
+    public Docroot(String docroot, String indexes, Alias ... aliases) {
+        this(docroot, indexes, Arrays.asList(aliases));
     }
 
-    public Docroot(String docroot, List<Alias> aliases) {
+    public Docroot(String docroot, String indexes, List<Alias> aliases) {
         if (docroot.startsWith("/") || docroot.endsWith("/")) {
             throw new IllegalArgumentException(docroot);
         }
+        if (indexes.startsWith("/") || indexes.endsWith("/")) {
+            throw new IllegalArgumentException(indexes);
+        }
         this.docroot = docroot;
+        this.indexes = indexes;
         this.aliases = aliases;
     }
 
-    public Node node(Node host) throws NodeInstantiationException {
+    public Node node(Node host) {
         return host.join(docroot);
     }
 
+    public Node index(Node host, String indexName) {
+        return host.join(indexes, indexName);
+    }
 }

@@ -104,17 +104,17 @@ public class LavenderIT {
         testhosts.mkdir();
         net = new Net();
         net.add("test", new Cluster()
-                .addLocalhost(testhosts.join("cdn1"), "indexes")
-                .addLocalhost(testhosts.join("cdn2"), "indexes")
-                .addDocroot("htdocs/fix",
+                .addLocalhost(testhosts.join("cdn1"))
+                .addLocalhost(testhosts.join("cdn2"))
+                .addDocroot("htdocs/fix", "indexes",
                         new Alias("fix", "/fix", "fix1.uicdn.net", "fix2.uicdn.net", "fix3.uicdn.net", "fix4.uicdn.net")));
         net.add("flash-eu", new Cluster()
-                .addLocalhost(testhosts.join("flash-eu1"), "htdocs/.lavender")
-                .addLocalhost(testhosts.join("flash-eu2"), "htdocs/.lavender")
-                .addDocroot("htdocs"));
+                .addLocalhost(testhosts.join("flash-eu1"))
+                .addLocalhost(testhosts.join("flash-eu2"))
+                .addDocroot("htdocs", "htdocs/.lavender"));
         net.add("flash-us", new Cluster()
-                .addLocalhost(testhosts.join("flash-us"), "htdocs/.lavender")
-                .addDocroot("htdocs"));
+                .addLocalhost(testhosts.join("flash-us"))
+                .addDocroot("htdocs", "htdocs/.lavender"));
         return net;
     }
 
