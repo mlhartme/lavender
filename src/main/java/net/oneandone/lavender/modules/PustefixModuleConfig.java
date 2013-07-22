@@ -32,10 +32,10 @@ import java.util.zip.ZipInputStream;
  */
 public class PustefixModuleConfig {
 
-    private PustefixSource source;
+    private PustefixModule source;
     private ModuleDescriptorType config;
 
-    public PustefixModuleConfig(PustefixSource source, ZipInputStream jarInputStream) throws JAXBException, IOException {
+    public PustefixModuleConfig(PustefixModule source, ZipInputStream jarInputStream) throws JAXBException, IOException {
         this.source = source;
         loadModuleXml(jarInputStream);
     }

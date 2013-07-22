@@ -18,8 +18,9 @@ package net.oneandone.lavender.publisher;
 import net.oneandone.lavender.filter.Lavender;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
-import net.oneandone.lavender.modules.PustefixSource;
-import net.oneandone.lavender.modules.Source;
+import net.oneandone.lavender.modules.Module;
+import net.oneandone.lavender.modules.PustefixModule;
+import net.oneandone.lavender.modules.PustefixModule;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.io.Buffer;
 import org.slf4j.Logger;
@@ -91,12 +92,12 @@ public class WarEngine {
      */
     public void run() throws IOException {
         long started;
-        List<Source> sources;
+        List<Module> sources;
         Index index;
         long changed;
 
         started = System.currentTimeMillis();
-        sources = PustefixSource.fromWebapp(inputWar.openZip(), svnUsername, svnPassword);
+        sources = PustefixModule.fromWebapp(inputWar.openZip(), svnUsername, svnPassword);
         changed = extract(sources);
         for (Map.Entry<String, Distributor> entry : storages.entrySet()) {
             index = entry.getValue().close();
@@ -112,16 +113,16 @@ public class WarEngine {
         LOG.info("done: " + changed + "/" + outputIndex.size() + " files changed (" + (System.currentTimeMillis() - started) + " ms)");
     }
 
-    public long extract(Source... sources) throws IOException {
+    public long extract(Module... sources) throws IOException {
         return extract(Arrays.asList(sources));
     }
 
-    public long extract(List<Source> sources) throws IOException {
+    public long extract(List<Module> sources) throws IOException {
         Distributor storage;
         long changed;
 
         changed = 0;
-        for (Source source : sources) {
+        for (Module source : sources) {
             storage = storages.get(source.getStorage());
             if (storage == null) {
                 throw new IllegalStateException("storage not found: " + source.getStorage());
@@ -169,7 +170,7 @@ public class WarEngine {
         Map<String, Distributor> storages;
 
         storages = new HashMap<>();
-        storages.put(Source.DEFAULT_STORAGE, lavendelStorage);
+        storages.put(Module.DEFAULT_STORAGE, lavendelStorage);
         return storages;
     }
 }

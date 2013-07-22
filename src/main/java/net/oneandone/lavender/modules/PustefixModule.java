@@ -38,18 +38,18 @@ import java.util.zip.ZipInputStream;
  * Iterates static resources from a Pustefix application. Valid static resource path are defined in WEB-INF/project.xml.
  * Resources can be found in the WAR or in nested JARs.
  */
-public class PustefixSource extends Source {
-    private static final Logger LOG = LoggerFactory.getLogger(Source.class);
+public class PustefixModule extends Module {
+    private static final Logger LOG = LoggerFactory.getLogger(Module.class);
 
     private static final List<String> DEFAULT_INCLUDE_EXTENSIONS = new ArrayList<>(Arrays.asList(
             "gif", "png", "jpg", "jpeg", "ico", "swf", "css", "js"));
 
     private static final String PROPERTIES = "WEB-INF/lavender.properties";
 
-    public static List<Source> fromWebapp(Node webapp, String svnUsername, String svnPassword) throws IOException {
-        List<Source> result;
+    public static List<Module> fromWebapp(Node webapp, String svnUsername, String svnPassword) throws IOException {
+        List<Module> result;
         Properties properties;
-        PustefixSource ps;
+        PustefixModule ps;
         PustefixModuleConfig mc;
 
         LOG.trace("scanning " + webapp);
@@ -60,17 +60,17 @@ public class PustefixSource extends Source {
         for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
             mc = loadModuleXml(ps, jar);
             if (mc != null) {
-                result.add(new JarSource(ps.getFilter(), mc, jar));
+                result.add(new JarModule(ps.getFilter(), mc, jar));
             }
         }
-        for (SvnSourceConfig config : SvnSourceConfig.parse(properties)) {
+        for (SvnModuleConfig config : SvnModuleConfig.parse(properties)) {
             LOG.info("adding svn source " + config.folder);
             result.add(config.create(webapp.getWorld(), svnUsername, svnPassword));
         }
         return result;
     }
 
-    private static PustefixModuleConfig loadModuleXml(PustefixSource source, Node jar) throws IOException {
+    private static PustefixModuleConfig loadModuleXml(PustefixModule source, Node jar) throws IOException {
         ZipInputStream jarInputStream;
         ZipEntry jarEntry;
 
@@ -102,13 +102,13 @@ public class PustefixSource extends Source {
         return src.readProperties();
     }
 
-    public static PustefixSource create(Filter filter, Node webapp) throws IOException {
+    public static PustefixModule create(Filter filter, Node webapp) throws IOException {
         ProjectConfig config;
 
         try (InputStream src = webapp.join("WEB-INF/project.xml").createInputStream()) {
             config = JAXB.unmarshal(src, ProjectConfig.class);
         }
-        return new PustefixSource(filter, config, webapp);
+        return new PustefixModule(filter, config, webapp);
     }
 
     //--
@@ -116,7 +116,7 @@ public class PustefixSource extends Source {
     private final ProjectConfig config;
     private final Node webapp;
 
-    public PustefixSource(Filter filter, ProjectConfig config, Node webapp) throws IOException {
+    public PustefixModule(Filter filter, ProjectConfig config, Node webapp) throws IOException {
         super(filter, DEFAULT_STORAGE, true, "");
 
         this.config = config;

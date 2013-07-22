@@ -16,14 +16,15 @@
 package net.oneandone.lavender.publisher.cli;
 
 import net.oneandone.lavender.index.Index;
+import net.oneandone.lavender.modules.SvnModule;
+import net.oneandone.lavender.modules.SvnModuleConfig;
 import net.oneandone.lavender.publisher.Distributor;
 import net.oneandone.lavender.publisher.config.Cluster;
 import net.oneandone.lavender.publisher.config.Docroot;
 import net.oneandone.lavender.publisher.config.Filter;
 import net.oneandone.lavender.publisher.config.Net;
 import net.oneandone.lavender.publisher.config.Settings;
-import net.oneandone.lavender.modules.SvnSource;
-import net.oneandone.lavender.modules.SvnSourceConfig;
+import net.oneandone.lavender.modules.SvnModuleConfig;
 import net.oneandone.sushi.cli.ArgumentException;
 import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.cli.Value;
@@ -56,8 +57,8 @@ public class Svn extends Base {
         Cluster cluster;
         Docroot docroot;
         Filter filter;
-        SvnSourceConfig ec;
-        SvnSource e;
+        SvnModuleConfig ec;
+        SvnModule e;
         Distributor storage;
         long changed;
         Index index;
@@ -67,7 +68,7 @@ public class Svn extends Base {
         filter = new Filter();
         filter.setIncludes("*");
         filter.setExcludes();
-        ec = new SvnSourceConfig("svn", filter);
+        ec = new SvnModuleConfig("svn", filter);
         ec.pathPrefix = "";
         ec.svnurl = svnurl;
         ec.lavendelize = false;

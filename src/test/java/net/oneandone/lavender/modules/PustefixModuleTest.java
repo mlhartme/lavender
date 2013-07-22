@@ -32,7 +32,7 @@ import java.util.zip.ZipInputStream;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class PustefixSourceTest {
+public class PustefixModuleTest {
     private static World WORLD = new World();
 
     @Test
@@ -40,7 +40,7 @@ public class PustefixSourceTest {
         URL url = getClass().getClassLoader().getResource("dummy.war");
 
         Map<String, Resource> resources = new HashMap<>();
-        PustefixSource source = PustefixSource.create(new Filter(), WORLD.file(new File(url.toURI())).openZip());
+        PustefixModule source = PustefixModule.create(new Filter(), WORLD.file(new File(url.toURI())).openZip());
         for (Resource resource : source) {
             resources.put(resource.getPath(), resource);
         }

@@ -17,10 +17,11 @@ package net.oneandone.lavender.filter;
 
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.filter.processor.ProcessorFactory;
+import net.oneandone.lavender.modules.Module;
+import net.oneandone.lavender.modules.PustefixModule;
 import net.oneandone.lavender.publisher.Resource;
-import net.oneandone.lavender.modules.Source;
 import net.oneandone.lavender.publisher.config.Settings;
-import net.oneandone.lavender.modules.PustefixSource;
+import net.oneandone.lavender.modules.PustefixModule;
 import net.oneandone.lavender.filter.processor.RewriteEngine;
 import net.oneandone.lavender.filter.processor.UrlCalculator;
 import net.oneandone.sushi.fs.Node;
@@ -98,7 +99,7 @@ public class Lavender implements Filter {
                 settings = Settings.load(world);
                 webapp = world.file(filterConfig.getServletContext().getRealPath(""));
                 develResources = new HashMap<>();
-                for (Source source : PustefixSource.fromWebapp(webapp, settings.svnUsername, settings.svnPassword)) {
+                for (Module source : PustefixModule.fromWebapp(webapp, settings.svnUsername, settings.svnPassword)) {
                     for (Resource resource : source) {
                         LOG.debug("resource: " + resource);
                         develResources.put(resource.getPath(), resource);

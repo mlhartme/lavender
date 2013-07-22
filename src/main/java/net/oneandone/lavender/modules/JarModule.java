@@ -24,11 +24,11 @@ import net.oneandone.sushi.fs.filter.Predicate;
 import java.io.IOException;
 import java.util.Iterator;
 
-public class JarSource extends Source {
+public class JarModule extends Module {
     private final PustefixModuleConfig config;
     private final Node jar;
 
-    public JarSource(Filter filter, PustefixModuleConfig config, Node jar) {
+    public JarModule(Filter filter, PustefixModuleConfig config, Node jar) {
         super(filter, DEFAULT_STORAGE, true, "");
         this.config = config;
         this.jar = jar;

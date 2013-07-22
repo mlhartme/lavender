@@ -23,12 +23,12 @@ import java.util.Iterator;
 import java.util.List;
 
 /** Extracts resources from svn */
-public class SvnSource extends Source {
+public class SvnModule extends Module {
     private final List<Node> resources;
     private final String folder;
     private final Node dest;
 
-    public SvnSource(Filter filter, String storage, boolean lavendelize, String pathPrefix,
+    public SvnModule(Filter filter, String storage, boolean lavendelize, String pathPrefix,
                      List<Node> resources, String folder, Node dest) {
         super(filter, storage, lavendelize, pathPrefix);
         this.resources = resources;

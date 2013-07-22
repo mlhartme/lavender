@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public class PustefixResourceIterator implements Iterator<Resource> {
-    private final PustefixSource source;
+    private final PustefixModule source;
     private final Node webapp;
     private List<Node> files;
 
@@ -37,7 +37,7 @@ public class PustefixResourceIterator implements Iterator<Resource> {
     private int nextFile;
 
 
-    public static PustefixResourceIterator create(PustefixSource source, Node webapp) throws IOException {
+    public static PustefixResourceIterator create(PustefixModule source, Node webapp) throws IOException {
         Filter filter;
 
         filter = webapp.getWorld().filter().include("**/*").predicate(Predicate.FILE);
@@ -45,7 +45,7 @@ public class PustefixResourceIterator implements Iterator<Resource> {
     }
 
 
-    public PustefixResourceIterator(PustefixSource source, Node webapp, List<Node> files) {
+    public PustefixResourceIterator(PustefixModule source, Node webapp, List<Node> files) {
         this.source = source;
         this.webapp = webapp;
         this.files = files;

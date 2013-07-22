@@ -23,7 +23,7 @@ import net.oneandone.lavender.publisher.config.Filter;
 import java.io.IOException;
 
 /** Contains resources. */
-public abstract class Source implements Iterable<Resource> {
+public abstract class Module implements Iterable<Resource> {
     public static final String DEFAULT_STORAGE = "lavender";
 
     //--
@@ -33,7 +33,7 @@ public abstract class Source implements Iterable<Resource> {
     private final boolean lavendelize;
     private final String pathPrefix;
 
-    public Source(Filter filter, String storage, boolean lavendelize, String pathPrefix) {
+    public Module(Filter filter, String storage, boolean lavendelize, String pathPrefix) {
         if (filter == null) {
             throw new IllegalArgumentException();
         }

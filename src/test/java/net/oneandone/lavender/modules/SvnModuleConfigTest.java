@@ -23,23 +23,23 @@ import java.util.Properties;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-public class SvnSourceConfigTest {
+public class SvnModuleConfigTest {
     @Test
     public void empty() {
-        assertEquals(0, SvnSourceConfig.parse(new Properties()).size());
+        assertEquals(0, SvnModuleConfig.parse(new Properties()).size());
     }
 
     @Test
     public void one() {
         Properties props;
-        Collection<SvnSourceConfig> result;
-        SvnSourceConfig config;
+        Collection<SvnModuleConfig> result;
+        SvnModuleConfig config;
 
         props = new Properties();
         props.put("svn.foo", "svn");
         props.put("svn.foo.pathPrefix", "prefix");
         props.put("svn.foo.lavendelize", "false");
-        result = SvnSourceConfig.parse(props);
+        result = SvnModuleConfig.parse(props);
         assertEquals(1, result.size());
         config = result.iterator().next();
         assertEquals("foo", config.folder);
@@ -51,13 +51,13 @@ public class SvnSourceConfigTest {
     @Test
     public void more() {
         Properties props;
-        Collection<SvnSourceConfig> result;
+        Collection<SvnModuleConfig> result;
 
         props = new Properties();
         props.put("svn.foo", "1");
         props.put("svn.bar", "2");
         props.put("svn.baz", "3");
-        result = SvnSourceConfig.parse(props);
+        result = SvnModuleConfig.parse(props);
         assertEquals(3, result.size());
     }
 
@@ -70,6 +70,6 @@ public class SvnSourceConfigTest {
     }
 
     private void check(String expected, String orig) {
-        assertEquals(expected, SvnSourceConfig.simplify(orig));
+        assertEquals(expected, SvnModuleConfig.simplify(orig));
     }
 }

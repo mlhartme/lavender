@@ -33,29 +33,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public class SvnSourceConfig {
-    private static final Logger LOG = LoggerFactory.getLogger(SvnSourceConfig.class);
+public class SvnModuleConfig {
+    private static final Logger LOG = LoggerFactory.getLogger(SvnModuleConfig.class);
 
     private static final String SVN_PREFIX = "svn.";
 
     public final String folder;
     public final Filter filter;
     public String svnurl;
-    public String storage = Source.DEFAULT_STORAGE;
+    public String storage = Module.DEFAULT_STORAGE;
     public boolean lavendelize = true;
     public String pathPrefix = "";
 
-    public SvnSourceConfig(String folder, Filter filter) {
+    public SvnModuleConfig(String folder, Filter filter) {
         this.folder = folder;
         this.filter = filter;
     }
 
-    public static Collection<SvnSourceConfig> parse(Properties properties) {
+    public static Collection<SvnModuleConfig> parse(Properties properties) {
         String key;
         String value;
         String name;
-        SvnSourceConfig config;
-        Map<String, SvnSourceConfig> result;
+        SvnModuleConfig config;
+        Map<String, SvnModuleConfig> result;
 
         result = new HashMap<>();
         for (Map.Entry<Object, Object> entry : properties.entrySet()) {
@@ -73,7 +73,7 @@ public class SvnSourceConfig {
                 }
                 config = result.get(name);
                 if (config == null) {
-                    config = new SvnSourceConfig(name, Filter.forProperties(properties, SVN_PREFIX + name, null));
+                    config = new SvnModuleConfig(name, Filter.forProperties(properties, SVN_PREFIX + name, null));
                     result.put(name, config);
                 }
                 if (key == null) {
@@ -98,7 +98,7 @@ public class SvnSourceConfig {
         return result.values();
     }
 
-    public SvnSource create(World world, String svnUsername, String svnPassword) throws IOException {
+    public SvnModule create(World world, String svnUsername, String svnPassword) throws IOException {
         FileNode lavender;
         String svnpath;
         FileNode dest;
@@ -141,7 +141,7 @@ public class SvnSourceConfig {
                 resources.add(file);
             }
         }
-        return new SvnSource(filter, storage, lavendelize, pathPrefix, resources, folder, dest);
+        return new SvnModule(filter, storage, lavendelize, pathPrefix, resources, folder, dest);
     }
 
     private static final String TAGS = "/tags/";
