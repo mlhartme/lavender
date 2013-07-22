@@ -111,10 +111,10 @@ public class LavenderIT {
         net.add("flash-eu", new Cluster()
                 .addLocalhost(testhosts.join("flash-eu1"), "htdocs/.lavender")
                 .addLocalhost(testhosts.join("flash-eu2"), "htdocs/.lavender")
-                .addDocroot(""));
+                .addDocroot("htdocs"));
         net.add("flash-us", new Cluster()
                 .addLocalhost(testhosts.join("flash-us"), "htdocs/.lavender")
-                .addDocroot(""));
+                .addDocroot("htdocs"));
         return net;
     }
 

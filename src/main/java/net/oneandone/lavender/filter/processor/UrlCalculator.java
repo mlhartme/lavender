@@ -34,10 +34,10 @@ import java.util.Map;
  */
 public class UrlCalculator {
     /** The nodes used for HTTP */
-    protected final Map<String, URI> httpNodes = new HashMap<String, URI>();
+    protected final Map<String, URI> httpNodes = new HashMap<>();
 
     /** The nodes used for HTTPS */
-    protected final Map<String, URI> httpsNodes = new HashMap<String, URI>();
+    protected final Map<String, URI> httpsNodes = new HashMap<>();
 
     /** The consistent hash function. */
     protected final ConsistentHash consistentHash;
