@@ -207,7 +207,7 @@
             </goals>
             <configuration>
               <schemaFiles>module-descriptor.xsd</schemaFiles>
-              <packageName>net.oneandone.lavender.publisher.pustefix.module</packageName>
+              <packageName>net.oneandone.lavender.publisher.modules.module</packageName>
               <staleFile>${project.build.directory}/generated-sources/jaxb/.staleFlag.module-descriptor.xsd</staleFile>
               <clearOutputDir>false</clearOutputDir>
             </configuration>
@@ -219,7 +219,7 @@
             </goals>
             <configuration>
               <schemaFiles>project-config.xsd</schemaFiles>
-              <packageName>net.oneandone.lavender.publisher.pustefix.project</packageName>
+              <packageName>net.oneandone.lavender.publisher.modules.project</packageName>
               <staleFile>${project.build.directory}/generated-sources/jaxb/.staleFlag.project-configs.xsd</staleFile>
               <clearOutputDir>false</clearOutputDir>
             </configuration>

@@ -18,7 +18,7 @@ package net.oneandone.lavender.publisher;
 import net.oneandone.lavender.filter.Lavender;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
-import net.oneandone.lavender.publisher.pustefix.PustefixSource;
+import net.oneandone.lavender.publisher.modules.PustefixSource;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.io.Buffer;
 import org.slf4j.Logger;

@@ -20,7 +20,7 @@ import net.oneandone.lavender.filter.processor.ProcessorFactory;
 import net.oneandone.lavender.publisher.Resource;
 import net.oneandone.lavender.publisher.Source;
 import net.oneandone.lavender.publisher.config.Settings;
-import net.oneandone.lavender.publisher.pustefix.PustefixSource;
+import net.oneandone.lavender.publisher.modules.PustefixSource;
 import net.oneandone.lavender.filter.processor.RewriteEngine;
 import net.oneandone.lavender.filter.processor.UrlCalculator;
 import net.oneandone.sushi.fs.Node;
