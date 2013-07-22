@@ -42,17 +42,15 @@ public class PustefixResourceIterator implements Iterator<Resource> {
     private int nextFile;
 
 
-    public static PustefixResourceIterator create(Node webapp) throws IOException, JAXBException {
-        PustefixProjectConfig config;
+    public static PustefixResourceIterator create(PustefixProjectConfig config, Node webapp) throws IOException {
         Filter filter;
 
-        config = new PustefixProjectConfig(webapp);
         filter = webapp.getWorld().filter().include("**/*").predicate(Predicate.FILE);
         return new PustefixResourceIterator(config, webapp, webapp.find(filter));
     }
 
 
-    public PustefixResourceIterator(PustefixProjectConfig config, Node webapp, List<Node> files) throws IOException, JAXBException {
+    public PustefixResourceIterator(PustefixProjectConfig config, Node webapp, List<Node> files) {
         this.config = config;
         this.webapp = webapp;
         this.files = files;

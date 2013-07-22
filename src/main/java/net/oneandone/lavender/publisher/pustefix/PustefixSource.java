@@ -47,7 +47,6 @@ public class PustefixSource extends Source {
     public static List<Source> fromWebapp(Node webapp, String svnUsername, String svnPassword) throws IOException {
         List<Source> result;
         Properties properties;
-        PustefixProjectConfig pc;
         PustefixSource ps;
 
         LOG.trace("scanning " + webapp);
@@ -55,12 +54,7 @@ public class PustefixSource extends Source {
         properties = getConfig(webapp);
         ps = PustefixSource.forProperties(webapp, properties);
         result.add(ps);
-        try {
-            pc = new PustefixProjectConfig(webapp);
-        } catch (JAXBException e) {
-            throw new IOException("cannot load pustefix configuration: " + e.getMessage(), e);
-        }
-        for (Map.Entry<String, PustefixModuleConfig> entry : pc.getModules().entrySet()) {
+        for (Map.Entry<String, PustefixModuleConfig> entry : ps.config.getModules().entrySet()) {
             result.add(new JarSource(ps.getFilter(), entry.getValue(), webapp.join(entry.getKey())));
         }
         for (SvnSourceConfig config : SvnSourceConfig.parse(properties)) {
@@ -81,21 +75,34 @@ public class PustefixSource extends Source {
         return src.readProperties();
     }
 
-    public static PustefixSource forProperties(Node webapp, Properties properties) {
-        return new PustefixSource(Filter.forProperties(properties, "pustefix", DEFAULT_INCLUDE_EXTENSIONS), webapp);
+    public static PustefixSource forProperties(Node webapp, Properties properties) throws IOException {
+        return create(Filter.forProperties(properties, "pustefix", DEFAULT_INCLUDE_EXTENSIONS), webapp);
     }
 
+    public static PustefixSource create(Filter filter, Node webapp) throws IOException {
+        PustefixProjectConfig config;
+
+        try {
+            config = new PustefixProjectConfig(webapp);
+        } catch (JAXBException e) {
+            throw new IOException("cannot load pustefix configuration: " + e.getMessage(), e);
+        }
+        return new PustefixSource(filter, config, webapp);
+    }
+
+    private final PustefixProjectConfig config;
     private final Node webapp;
 
-    public PustefixSource(Filter filter, Node webapp) {
+    public PustefixSource(Filter filter, PustefixProjectConfig config, Node webapp) throws IOException {
         super(filter, DEFAULT_STORAGE, true, "");
+        this.config = config;
         this.webapp = webapp;
     }
 
     public Iterator<Resource> iterator() {
         try {
-            return PustefixResourceIterator.create(webapp);
-        } catch (IOException | JAXBException e) {
+            return PustefixResourceIterator.create(config, webapp);
+        } catch (IOException e) {
             throw new IllegalStateException(e);
         }
     }
