@@ -103,13 +103,13 @@ public class RewriteEngine {
         switch (uri.getScheme()) {
             case "http":
                 httpNodes.put(uri.getHost(), uri);
+                consistentHash.addNode(uri.getHost());
                 break;
             case "https":
                 httpsNodes.put(uri.getHost(), uri);
-                consistentHash.addNode(uri.getHost());
                 break;
             default:
-                throw new IllegalArgumentException(uri + " has unsupported schema, only http and https are supported.");
+                throw new IllegalArgumentException(uri + " has unsupported scheme, only http and https are supported.");
         }
     }
 
