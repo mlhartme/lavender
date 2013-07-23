@@ -127,7 +127,7 @@ public class RewriteEngine {
         try {
             reference = new URI(uri);
         } catch (URISyntaxException e) {
-            LOG.warn("cannot rewrite invalid URI '" + uri + "'");
+            LOG.warn("cannot rewrite invalid URI '" + uri + "': " + e.getMessage());
             return uri;
         }
         result = rewrite(reference, baseURI, contextPath).toASCIIString();
