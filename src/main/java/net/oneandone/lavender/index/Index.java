@@ -15,12 +15,12 @@
  */
 package net.oneandone.lavender.index;
 
+import net.oneandone.sushi.fs.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -38,7 +38,7 @@ import java.util.Properties;
  *   originalPath = lavendelizedPath : md5
  *
  * where
- *   originalPath      source request path, that will be replaced by lavendelizer
+ *   originalPath      source request path, that will be replaced by Lavender filter
  *   lavendelizedPath  path on Lavender Servers
  *   md5               md5 sum of the resource
  */
@@ -168,8 +168,8 @@ public class Index implements Iterable<Label> {
         return properties.hashCode();
     }
 
-    public void save(File indexFile) throws IOException {
-        try (OutputStream dest = new FileOutputStream(indexFile)) {
+    public void save(Node indexFile) throws IOException {
+        try (OutputStream dest = indexFile.createOutputStream()) {
             save(dest);
         }
     }

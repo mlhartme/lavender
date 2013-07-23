@@ -15,15 +15,11 @@
  */
 package net.oneandone.lavender.index;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
+import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.file.FileNode;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
@@ -35,20 +31,17 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class IndexTest {
-    private File indexFile;
-    private Index index;
+    private static final World WORLD = new World();
 
-    @Rule
-    public TemporaryFolder tempFolder = new TemporaryFolder();
+    private FileNode indexFile;
+    private Index index;
 
     @Before
     public void setup() throws IOException {
-        indexFile = new File(tempFolder.getRoot(), "index.idx");
-        String data = "";
-        data += "img/close.gif=app/ABCDEF1234567890-close.gif\\:abcdef1234567890";
-        data += IOUtils.LINE_SEPARATOR;
-        FileUtils.writeStringToFile(indexFile, data);
-        index = new Index(indexFile);
+        indexFile = WORLD.getTemp().createTempFile();
+        index = new Index();
+        index.add(new Label("img/close.gif", "app/ABCDEF1234567890-close.gif", Hex.decode("abcdef1234567890".toCharArray())));
+        index.save(indexFile);
     }
 
     @Test
@@ -62,7 +55,7 @@ public class IndexTest {
 
         assertTrue(indexFile.exists());
 
-        String readFileToString = FileUtils.readFileToString(indexFile);
+        String readFileToString = indexFile.readString();
         assertTrue(readFileToString.contains("img/close.gif=app/ABCDEF1234567890-close.gif\\:abcdef1234567890"));
         assertTrue(readFileToString.contains("img/test.png=app/ABCDEF1234567890-test.png\\:abcdef1234567890"));
         assertTrue(readFileToString
@@ -71,7 +64,7 @@ public class IndexTest {
 
     @Test
     public void testWriteToNonExistingFile() throws IOException {
-        File nonexistingfile = new File(tempFolder.getRoot(), "nonexistingfile.idx");
+        FileNode nonexistingfile = WORLD.getTemp().createTempFile().deleteFile();
         assertFalse(nonexistingfile.exists());
 
         Index myIndex = new Index();
@@ -85,7 +78,7 @@ public class IndexTest {
 
         assertTrue(nonexistingfile.exists());
 
-        String readFileToString = FileUtils.readFileToString(nonexistingfile);
+        String readFileToString = nonexistingfile.readString();
         assertTrue(readFileToString.contains("img/test.png=app/ABCDEF1234567890-test.png\\:abcdef1234567890"));
         assertTrue(readFileToString
                 .contains("modules/stageassistent/img/test.gif=stageassistent/ABCDEF1234567890-test.gif\\:abcdef1234567890"));
@@ -111,17 +104,17 @@ public class IndexTest {
 
     @Test(expected = RuntimeException.class)
     public void testPropertiesConstructorCorruptPropertiesFile() throws Exception {
-        FileUtils.writeStringToFile(indexFile, "\\u00");
-        new Index(indexFile.toURI().toURL());
+        indexFile.writeString("\\u00");
+        new Index(indexFile.getURI().toURL());
     }
 
     @Test
     public void testPropertiesConstructor() throws Exception {
-        new Index(indexFile.toURI().toURL());
+        new Index(indexFile.getURI().toURL());
     }
 
     @Test
     public void testInputStreamConstructor() throws Exception {
-        new Index(new FileInputStream(indexFile));
+        new Index(indexFile.createInputStream());
     }
 }

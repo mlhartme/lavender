@@ -15,12 +15,11 @@
  */
 package net.oneandone.lavender.filter.processor;
 
-import org.apache.commons.io.IOUtils;
+import net.oneandone.sushi.fs.World;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URI;
 
@@ -32,6 +31,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class CssProcessorTest {
+    private static final World WORLD = new World();
 
     protected StringWriter out;
     protected CssProcessor processor;
@@ -74,15 +74,13 @@ public class CssProcessorTest {
 
     @Test
     public void testComplex() throws IOException {
+        String input;
+        String expected;
 
-        InputStream in = getClass().getResourceAsStream("/CssProcessorTest.css");
-        String input = IOUtils.toString(in, "UTF-8");
-
+        input = WORLD.resource("CssProcessorTest.css").readString();
         processor.process(input, 0, input.length());
         processor.flush();
-
-        in = getClass().getResourceAsStream("/CssProcessorTest-expected.css");
-        String expected = IOUtils.toString(in, "UTF-8");
+        expected = WORLD.resource("CssProcessorTest-expected.css").readString();
         assertEquals(expected, out.getBuffer().toString());
     }
 
