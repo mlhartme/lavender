@@ -128,26 +128,40 @@ public class Lavender implements Filter {
 
     public void doDevelFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
+        if (!develIntercept(request, response)) {
+            chain.doFilter(request, response);
+            LOG.info("[" + request.getMethod() + " " + request.getRequestURI() + ": " + response.getStatus() + "]");
+        }
+    }
+
+    public boolean develIntercept(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String path;
         Resource resource;
 
         path = request.getPathInfo();
-        if (path.startsWith("/")) {
-            resource = develResources.get(path.substring(1));
-        } else {
-            resource = null;
+        if (!path.startsWith("/")) {
+            return false;
         }
-        if (resource != null) {
-            LOG.info("lavender: " + path + " -> " + resource.getNode().getURI());
-            serve(resource.getNode(), response);
-        } else {
-            chain.doFilter(request, response);
-            LOG.info("pass-through: " + request.getRequestURI() + ": " + response.getStatus());
+        resource = develResources.get(path.substring(1));
+        if (resource == null) {
+            return false;
+        }
+        switch (request.getMethod()) {
+            case "GET":
+                LOG.info("GET " + path + " -> " + resource.getNode().getURI());
+                develGet(resource.getNode(), response, true);
+                return true;
+            case "HEAD":
+                LOG.info("HEAD " + path + " -> " + resource.getNode().getURI());
+                develGet(resource.getNode(), response, false);
+                return true;
+            default:
+                return false;
         }
     }
 
-    public void doProdFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException,
-            ServletException {
+    public void doProdFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
 
         StringBuffer url;
         LavendelizeHttpServletRequest lavenderRequest;
@@ -160,8 +174,7 @@ public class Lavender implements Filter {
             // use custom request and response objects
             lavenderRequest = new LavendelizeHttpServletRequest(request);
             lavenderResponse = new LavendelizeHttpServletResponse(response, processorFactory,
-                    requestURI, request.getHeader("User-Agent"),
-                    request.getContextPath() + "/", Gzip.canGzip(request));
+                    requestURI, request.getHeader("User-Agent"), request.getContextPath() + "/", Gzip.canGzip(request));
             logRequest(url, request);
         } catch (RuntimeException re) {
             LOG.error("Error in Lavendelizer.doFilter()", re);
@@ -219,7 +232,7 @@ public class Lavender implements Filter {
     //--
 
 
-    public void serve(Node file,  HttpServletResponse response) throws IOException {
+    public void develGet(Node file, HttpServletResponse response, boolean withBody) throws IOException {
         String contentType;
         long contentLength;
         ServletOutputStream out;
@@ -232,16 +245,18 @@ public class Lavender implements Filter {
         }
         contentLength = file.length();
         if (contentLength >= Integer.MAX_VALUE) {
-            throw new IOException("file to big: " + contentLength);
+            throw new IOException("file too big: " + contentLength);
         }
-        response.setContentLength((int) contentLength);
-        out = response.getOutputStream();
-        try {
-            response.setBufferSize(4096);
-        } catch (IllegalStateException e) {
-            // Silent catch
+        if (withBody) {
+            response.setContentLength((int) contentLength);
+            out = response.getOutputStream();
+            try {
+                response.setBufferSize(4096);
+            } catch (IllegalStateException e) {
+                // Silent catch
+            }
+            file.writeTo(out);
         }
-        file.writeTo(out);
     }
 
     private static void setCacheExpireDate(HttpServletResponse response, int years) {
