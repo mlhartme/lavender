@@ -15,42 +15,42 @@
  */
 package net.oneandone.lavender.filter;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.junit.Rule;
+import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.file.FileNode;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
-import java.io.File;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class LavenderTest {
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    private static final World WORLD = new World();
 
     @Test
     public void init() throws Exception {
-        temporaryFolder.newFolder("lavender");
-        temporaryFolder.newFolder("lavender/WEB-INF");
-        File indexFile = temporaryFolder.newFile("lavender" + Lavender.LAVENDEL_IDX);
-        File nodesFile = temporaryFolder.newFile("lavender" + Lavender.LAVENDEL_NODES);
-        String data = "";
-        data += "http://s1.uicdn.net/m1" + IOUtils.LINE_SEPARATOR;
-        data += "https://s1.uicdn.net/m1" + IOUtils.LINE_SEPARATOR;
-        data += "http://s2.uicdn.net/m1/" + IOUtils.LINE_SEPARATOR;
-        data += "https://s2.uicdn.net/m1/" + IOUtils.LINE_SEPARATOR;
-        data += IOUtils.LINE_SEPARATOR;
-        FileUtils.writeStringToFile(nodesFile, data);
+        FileNode root;
+        FileNode lavender;
+
+        root = WORLD.getTemp().createTempDirectory();
+        lavender = root.join("lavender");
+        lavender.mkdir();
+        lavender.join("WEB-INF").mkdir();
+
+        FileNode indexFile = root.join("lavender" + Lavender.LAVENDEL_IDX).mkfile();
+        FileNode nodesFile = root.join("lavender" + Lavender.LAVENDEL_NODES);
+
+        nodesFile.writeLines("http://s1.uicdn.net/m1",
+                "https://s1.uicdn.net/m1",
+                "http://s2.uicdn.net/m1",
+                "https://s2.uicdn.net/m1");
 
         FilterConfig filterConfig = mock(FilterConfig.class);
         ServletContext servletContext = mock(ServletContext.class);
-        when(servletContext.getResource(Lavender.LAVENDEL_IDX)).thenReturn(indexFile.toURI().toURL());
-        when(servletContext.getResource(Lavender.LAVENDEL_NODES)).thenReturn(nodesFile.toURI().toURL());
+        when(servletContext.getResource(Lavender.LAVENDEL_IDX)).thenReturn(indexFile.getURI().toURL());
+        when(servletContext.getResource(Lavender.LAVENDEL_NODES)).thenReturn(nodesFile.getURI().toURL());
         when(filterConfig.getServletContext()).thenReturn(servletContext);
 
         Lavender filter = new Lavender();
