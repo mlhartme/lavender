@@ -17,6 +17,7 @@ package net.oneandone.lavender.filter.processor;
 
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
+import net.oneandone.sushi.fs.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,55 +38,78 @@ import java.util.Map;
 public class RewriteEngine {
     private static final Logger LOG = LoggerFactory.getLogger(RewriteEngine.class);
 
-    protected final Index index;
+    //--
 
-    /** The nodes used for HTTP */
-    protected final Map<String, URI> httpNodes = new HashMap<>();
-
-    /** The nodes used for HTTPS */
-    protected final Map<String, URI> httpsNodes = new HashMap<>();
-
-    /** The consistent hash function. */
-    protected final ConsistentHash consistentHash;
-
-    public RewriteEngine(Index index, URL nodesUrl) throws IOException {
-        this.index = index;
-        InputStream in;
-
-        in = nodesUrl.openStream();
-        if (in == null) {
-            throw new IllegalStateException("nodes file not found: " + nodesUrl);
+    public static RewriteEngine load(Index index, Node nodesFiles) throws IOException {
+        try (InputStream src = nodesFiles.createInputStream()) {
+            return load(index, src);
         }
-        readNodes(in);
-        in.close();
-        this.consistentHash = new ConsistentHash(200, httpNodes.keySet().toArray(new String[0]));
     }
 
+    public static RewriteEngine load(Index index, URL url) throws IOException {
+        try (InputStream src = url.openStream()) {
+            return load(index, src);
+        }
+    }
 
-    private void readNodes(InputStream raw) throws IOException {
+    public static RewriteEngine load(Index index, InputStream raw) throws IOException {
+        RewriteEngine result;
         BufferedReader in;
         String line;
 
+        result = new RewriteEngine(index);
         in = new BufferedReader(new InputStreamReader(raw, Index.ENCODING));
         while (true) {
             line = in.readLine();
             if (line == null) {
-                return;
+                break;
             }
             line = line.trim();
             if (!line.isEmpty()) {
                 if (!line.endsWith("/")) {
                     line = line + "/";
                 }
-                URI uri = URI.create(line);
-                if ("http".equals(uri.getScheme())) {
-                    httpNodes.put(uri.getHost(), uri);
-                } else if ("https".equals(uri.getScheme())) {
-                    httpsNodes.put(uri.getHost(), uri);
-                } else {
-                    throw new IllegalArgumentException("Node " + line + " has unsupported schema, only http and https are supported.");
-                }
+                result.add(URI.create(line));
             }
+        }
+        in.close();
+        return result;
+    }
+
+    //--
+
+    protected final Index index;
+
+    /** The nodes used for HTTP */
+    protected final Map<String, URI> httpNodes;
+
+    /** The nodes used for HTTPS */
+    protected final Map<String, URI> httpsNodes;
+
+    /** The consistent hash function. */
+    protected final ConsistentHash consistentHash;
+
+    public RewriteEngine(Index index) {
+        this.index = index;
+        this.consistentHash = new ConsistentHash(200);
+        this.httpNodes = new HashMap<>();
+        this.httpsNodes = new HashMap<>();
+    }
+
+    public void add(URI uri) {
+        if (!uri.getPath().endsWith("/")) {
+            throw new IllegalArgumentException(uri.toString());
+        }
+        switch (uri.getScheme()) {
+            case "http":
+                httpNodes.put(uri.getHost(), uri);
+                break;
+            case "https":
+                httpsNodes.put(uri.getHost(), uri);
+                consistentHash.addNode(uri.getHost());
+                break;
+            default:
+                throw new IllegalArgumentException(uri + " has unsupported schema, only http and https are supported.");
         }
     }
 

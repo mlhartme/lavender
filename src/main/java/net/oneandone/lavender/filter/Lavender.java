@@ -22,7 +22,6 @@ import net.oneandone.lavender.modules.PustefixModule;
 import net.oneandone.lavender.index.Resource;
 import net.oneandone.lavender.config.Settings;
 import net.oneandone.lavender.filter.processor.RewriteEngine;
-import net.oneandone.lavender.filter.processor.UrlCalculator;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import org.slf4j.Logger;
@@ -80,7 +79,6 @@ public class Lavender implements Filter {
         long started;
         URL src;
         Index index;
-        UrlCalculator urlCalculator;
         RewriteEngine rewriteEngine;
         Settings settings;
         Node webapp;
@@ -108,8 +106,7 @@ public class Lavender implements Filter {
                         + " resources. Init in " + (System.currentTimeMillis() - started + " ms"));
             } else {
                 index = new Index(src);
-                urlCalculator = new UrlCalculator(resourceOpt(LAVENDEL_NODES));
-                rewriteEngine = new RewriteEngine(index, urlCalculator);
+                rewriteEngine = RewriteEngine.load(index, resourceOpt(LAVENDEL_NODES));
                 processorFactory = new ProcessorFactory(rewriteEngine);
                 LOG.info("Lavender prod filter");
             }

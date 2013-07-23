@@ -88,7 +88,7 @@ public class Resource {
         }
     }
 
-    public static byte[] md5(byte[] data) {
+    public static byte[] md5(byte ... data) {
         DIGEST.update(data, 0, data.length);
         return DIGEST.digest();
     }

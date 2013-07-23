@@ -31,13 +31,10 @@ public class ConsistentHash {
     protected final int numberOfReplicas;
     protected final SortedMap<Integer, String> circle = new TreeMap<>();
 
-    /**
-     * Instantiates a new consistent hash.
-     * @param numberOfReplicas
-     *            the number of replicas
-     * @param nodes
-     *            the nodes
-     */
+    public ConsistentHash(int numberOfReplicas) {
+        this(numberOfReplicas, new String[0]);
+    }
+
     public ConsistentHash(int numberOfReplicas, String[] nodes) {
         this.numberOfReplicas = numberOfReplicas;
 

@@ -15,18 +15,13 @@
  */
 package net.oneandone.lavender.filter.processor;
 
+import net.oneandone.lavender.index.Hex;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
+import net.oneandone.lavender.index.Resource;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -48,42 +43,13 @@ public class RewriteEngineTest {
     @Before
     public void setUp() throws IOException {
         index = mock(Index.class);
-        engine = new RewriteEngine(index, urlCalculator);
+        engine = new RewriteEngine(index);
     }
 
     @Test(expected = NullPointerException.class)
     public void testDefaultRewriteEngineNullParameters() throws IOException, URISyntaxException {
-        engine = new RewriteEngine(null, null);
+        engine = new RewriteEngine(null);
         engine.rewrite(new URI("abc"), new URI("http://a.b.c"), "");
-    }
-
-    @Test
-    public void testRewriteWithoutCache() throws IOException, URISyntaxException {
-
-        String path1 = "abc";
-        String path2 = "def";
-        URI baseURI = URI.create("");
-        String contextPath = "/";
-
-        Label label1 = mock(Label.class);
-        Label label2 = mock(Label.class);
-        when(index.lookup(baseURI.resolve(URI.create(path1)).toASCIIString())).thenReturn(label1);
-        when(index.lookup(baseURI.resolve(URI.create(path2)).getPath())).thenReturn(label2);
-        when(urlCalculator.calculateURL(label1, baseURI)).thenReturn(new URI("http://a.b/c"));
-        when(urlCalculator.calculateURL(label2, baseURI)).thenReturn(new URI("http://d.e/f"));
-
-        URI uri1 = engine.rewrite(URI.create(path1), baseURI, contextPath);
-        assertNotNull(uri1);
-        assertEquals("http://a.b/c", uri1.toString());
-
-        URI uri2 = engine.rewrite(URI.create(path2), baseURI, contextPath);
-        assertNotNull(uri2);
-        assertEquals("http://d.e/f", uri2.toString());
-
-        verify(index, times(1)).lookup(baseURI.resolve(URI.create(path1)).toASCIIString());
-        verify(index, times(1)).lookup(baseURI.resolve(URI.create(path2)).toASCIIString());
-        verify(urlCalculator, times(1)).calculateURL(label1, baseURI);
-        verify(urlCalculator, times(1)).calculateURL(label2, baseURI);
     }
 
     @Test
@@ -161,54 +127,37 @@ public class RewriteEngineTest {
     //--
 
 
-    private File nodesFile;
-
-    @Rule
-    public TemporaryFolder tempFolder = new TemporaryFolder();
-
-    @Before
-    public void setup() throws IOException, DecoderException {
-        nodesFile = new File(tempFolder.getRoot(), "lavender.nodes");
-        String data = "";
-        data += "http://s1.uicdn.net/m1" + IOUtils.LINE_SEPARATOR;
-        data += "https://s1.uicdn.net/m1" + IOUtils.LINE_SEPARATOR;
-        data += "http://s2.uicdn.net/m1/" + IOUtils.LINE_SEPARATOR;
-        data += "https://s2.uicdn.net/m1/" + IOUtils.LINE_SEPARATOR;
-        data += IOUtils.LINE_SEPARATOR;
-        FileUtils.writeStringToFile(nodesFile, data);
-    }
-
     @Test
-    public void testConstructor() throws IOException {
-        RewriteEngine engine = new RewriteEngine(new Index(), nodesFile.toURI().toURL());
-        assertNotNull(engine.httpNodes);
-        assertEquals(2, engine.httpNodes.size());
-        assertTrue(engine.httpNodes.keySet().contains("s1.uicdn.net"));
-        assertTrue(engine.httpNodes.keySet().contains("s2.uicdn.net"));
-        assertNotNull(engine.httpsNodes);
-        assertEquals(2, engine.httpsNodes.size());
-        assertTrue(engine.httpsNodes.keySet().contains("s1.uicdn.net"));
-        assertTrue(engine.httpsNodes.keySet().contains("s2.uicdn.net"));
-    }
-
-    @Test
-    public void testCalculateURL() throws IOException {
+    public void calculateURL() throws IOException {
         RewriteEngine engine;
+        byte[] md5;
+        String md5str;
+        Label label;
+        URI baseURI;
+        URI uri;
+        String pattern;
 
-        engine = new RewriteEngine(new Index(), nodesFile.toURI().toURL());
+        engine = testEngine();
+        baseURI = URI.create("http://somehost.somedomain.net/abc/def/xyz.html?a=b");
         for (char c = 'A'; c <= 'Z'; c++) {
-            byte[] md5 = DigestUtils.md5("" + c);
-            String md5hex = DigestUtils.md5Hex("" + c);
-
-            Label label = mock(Label.class);
-            when(label.getLavendelizedPath()).thenReturn(md5hex + ".png");
-            when(label.getOriginalPath()).thenReturn("logo.png");
-            when(label.md5()).thenReturn(md5);
-
-            URI baseURI = URI.create("http://somehost.somedomain.net/abc/def/xyz.html?a=b");
-            URI uri = engine.calculateURL(label, baseURI);
-            String pattern = "http://s[1-2]\\.uicdn\\.net/m1/" + md5hex + "\\.png";
+            md5 = Resource.md5((byte) c);
+            md5str = Hex.encodeString(md5);
+            label = new Label("logo.png", md5str + "/logo.png", md5);
+            uri = engine.calculateURL(label, baseURI);
+            pattern = "http://s[1-2]\\.uicdn\\.net/m1/" + md5str + "/logo\\.png";
             assertTrue(uri.toString().matches(pattern));
         }
     }
+
+    private RewriteEngine testEngine() {
+        RewriteEngine engine;
+
+        engine = new RewriteEngine(new Index());
+        engine.add(URI.create("http://s1.uicdn.net/m1/"));
+        engine.add(URI.create("https://s1.uicdn.net/m1/"));
+        engine.add(URI.create("http://s2.uicdn.net/m1/"));
+        engine.add(URI.create("https://s2.uicdn.net/m1/"));
+        return engine;
+    }
+
 }
