@@ -17,7 +17,7 @@ package net.oneandone.lavender.filter;
 
 import net.oneandone.lavender.filter.processor.ProcessorFactory;
 import net.oneandone.lavender.filter.processor.Processor;
-import org.apache.commons.io.output.NullWriter;
+import net.oneandone.sushi.io.MultiWriter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -71,7 +71,7 @@ public class LavendelizeHttpServletResponseTest {
 
     @Test
     public void testGetWriter() throws IOException {
-        PrintWriter wrappedWriter = new PrintWriter(new NullWriter());
+        PrintWriter wrappedWriter = new PrintWriter(MultiWriter.createNullWriter());
         when(wrappedResponse.getWriter()).thenReturn(wrappedWriter);
 
         PrintWriter writer = response.getWriter();
@@ -83,7 +83,7 @@ public class LavendelizeHttpServletResponseTest {
 
     @Test
     public void testGetLavendelizedWriter() throws IOException {
-        PrintWriter wrappedWriter = new PrintWriter(new NullWriter());
+        PrintWriter wrappedWriter = new PrintWriter(MultiWriter.createNullWriter());
         when(wrappedResponse.getWriter()).thenReturn(wrappedWriter);
         Processor processor = mock(Processor.class);
         when(processorFactory.createProcessor(anyString(), any(URI.class), anyString())).thenReturn(processor);
@@ -100,7 +100,7 @@ public class LavendelizeHttpServletResponseTest {
 
     @Test(expected = IllegalStateException.class)
     public void testGetOutputStreamAfterGetWriter() throws IOException {
-        PrintWriter wrappedWriter = new PrintWriter(new NullWriter());
+        PrintWriter wrappedWriter = new PrintWriter(MultiWriter.createNullWriter());
         when(wrappedResponse.getWriter()).thenReturn(wrappedWriter);
 
         response.getWriter();
@@ -109,7 +109,7 @@ public class LavendelizeHttpServletResponseTest {
 
     @Test
     public void testGetOutputStream() throws IOException {
-        PrintWriter wrappedWriter = new PrintWriter(new NullWriter());
+        PrintWriter wrappedWriter = new PrintWriter(MultiWriter.createNullWriter());
         when(wrappedResponse.getWriter()).thenReturn(wrappedWriter);
         when(wrappedResponse.getCharacterEncoding()).thenReturn("UTF-8");
         ServletOutputStream outputStream = response.getOutputStream();

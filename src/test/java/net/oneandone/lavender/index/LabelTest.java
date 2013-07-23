@@ -15,7 +15,6 @@
  */
 package net.oneandone.lavender.index;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,8 +28,8 @@ public class LabelTest {
     @Before
     public void setup() {
         byte[] data = new byte[] { 0x00, 0x01, 0x7F, (byte) 0x80, (byte) 0x81, (byte) 0xFF };
-        byte[] md5 = DigestUtils.md5(data);
-        String md5hex = DigestUtils.md5Hex(data);
+        byte[] md5 = Resource.md5(data);
+        String md5hex = Hex.encodeString(md5);
         label = new Label("modules/x/img/close.gif", "x/" + md5hex + "-close.gif", md5);
     }
 

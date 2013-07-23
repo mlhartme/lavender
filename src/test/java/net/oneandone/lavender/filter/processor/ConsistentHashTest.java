@@ -15,8 +15,8 @@
  */
 package net.oneandone.lavender.filter.processor;
 
-import net.oneandone.lavender.filter.processor.ConsistentHash;
-import org.apache.commons.codec.digest.DigestUtils;
+import net.oneandone.lavender.index.Hex;
+import net.oneandone.lavender.index.Resource;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -55,37 +55,26 @@ public class ConsistentHashTest {
     @Test(expected = IllegalStateException.class)
     public void testEmptyCircle() {
         ConsistentHash consistentHash = new ConsistentHash(200, new String[] {});
-
-        String s = "";
-        byte[] md5 = DigestUtils.md5(s);
+        byte[] md5 = Resource.md5();
         consistentHash.getNodeForHash(md5);
     }
 
     @Test
     public void testKeyString() {
-        String s = "";
-        String md5Hex = DigestUtils.md5Hex(s);
+        String md5Hex = Hex.encodeString(Resource.md5());
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", md5Hex);
 
-        Integer key = ch.key(s);
+        Integer key = ch.key("");
 
         String keyHex = Integer.toHexString(key);
         assertEquals("d41d8cd9", keyHex);
         assertTrue(md5Hex.startsWith(keyHex));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testKeyByteArrayNoMd5() {
-        // sha is 16 bytes
-        byte[] sha = DigestUtils.sha("");
-        ch.key(sha);
-    }
-
     @Test
     public void testKeyByteArray() {
-        String s = "";
-        byte[] md5 = DigestUtils.md5(s);
-        String md5Hex = DigestUtils.md5Hex(s);
+        byte[] md5 = Resource.md5();
+        String md5Hex = Hex.encodeString(md5);
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", md5Hex);
 
         Integer key = ch.key(md5);
@@ -104,7 +93,7 @@ public class ConsistentHashTest {
         // count how often a node is used
         for (int i = 0; i < 1000000; i++) {
             String s = "" + i;
-            byte[] md5 = DigestUtils.md5(s);
+            byte[] md5 = Resource.md5(s.getBytes());
             String node = ch.getNodeForHash(md5);
 
             if (!map.containsKey(node)) {

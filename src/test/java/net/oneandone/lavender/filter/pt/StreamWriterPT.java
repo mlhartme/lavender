@@ -15,7 +15,8 @@
  */
 package net.oneandone.lavender.filter.pt;
 
-import org.apache.commons.io.output.NullOutputStream;
+import net.oneandone.sushi.io.MultiOutputStream;
+import net.oneandone.sushi.io.MultiWriter;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -23,6 +24,7 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 @Ignore
@@ -144,8 +146,7 @@ public class StreamWriterPT {
 
         long t0 = System.currentTimeMillis();
         for (int x = 0; x < 100; x++) {
-            NullOutputStream nos = new NullOutputStream();
-
+            OutputStream nos = MultiOutputStream.createNullStream();
             for (int i = 0; i < 1000000; i++) {
                 nos.write('a');
             }
