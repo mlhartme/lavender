@@ -15,8 +15,6 @@
  */
 package net.oneandone.lavender.index;
 
-import net.oneandone.lavender.index.Hex;
-import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.fs.LengthException;
 import net.oneandone.sushi.fs.Node;
 

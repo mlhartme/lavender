@@ -16,7 +16,6 @@
 package net.oneandone.lavender.filter.pt;
 
 import net.oneandone.sushi.io.MultiOutputStream;
-import net.oneandone.sushi.io.MultiWriter;
 import org.junit.Ignore;
 import org.junit.Test;
 

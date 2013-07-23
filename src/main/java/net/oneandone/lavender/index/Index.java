@@ -86,7 +86,7 @@ public class Index implements Iterable<Label> {
             throw new IllegalArgumentException("invalid lavendelizedPath" + lavendelized);
         }
         md5hex = Hex.encodeString(label.md5());
-        if (lavendelized.indexOf(DELIMITER) != -1) {
+        if (lavendelized.contains(DELIMITER)) {
             throw new IllegalArgumentException(lavendelized);
         }
         next = lavendelized + DELIMITER + md5hex;

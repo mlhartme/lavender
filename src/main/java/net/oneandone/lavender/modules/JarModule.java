@@ -15,8 +15,8 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.lavender.index.Resource;
 import net.oneandone.lavender.config.Filter;
+import net.oneandone.lavender.index.Resource;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Predicate;

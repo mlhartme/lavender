@@ -15,8 +15,6 @@
  */
 package net.oneandone.lavender.index;
 
-import net.oneandone.lavender.index.Hex;
-import net.oneandone.lavender.index.Resource;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import org.junit.Before;

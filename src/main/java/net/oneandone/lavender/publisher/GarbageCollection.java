@@ -16,13 +16,13 @@
 package net.oneandone.lavender.publisher;
 
 import com.jcraft.jsch.JSchException;
-import net.oneandone.lavender.index.Index;
-import net.oneandone.lavender.index.Label;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Host;
 import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Settings;
+import net.oneandone.lavender.index.Index;
+import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.cli.Option;
 import net.oneandone.sushi.cli.Value;

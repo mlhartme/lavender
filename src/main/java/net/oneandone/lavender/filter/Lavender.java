@@ -15,13 +15,13 @@
  */
 package net.oneandone.lavender.filter;
 
-import net.oneandone.lavender.index.Index;
+import net.oneandone.lavender.config.Settings;
 import net.oneandone.lavender.filter.processor.ProcessorFactory;
+import net.oneandone.lavender.filter.processor.RewriteEngine;
+import net.oneandone.lavender.index.Index;
+import net.oneandone.lavender.index.Resource;
 import net.oneandone.lavender.modules.Module;
 import net.oneandone.lavender.modules.PustefixModule;
-import net.oneandone.lavender.index.Resource;
-import net.oneandone.lavender.config.Settings;
-import net.oneandone.lavender.filter.processor.RewriteEngine;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import org.slf4j.Logger;
@@ -37,12 +37,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

@@ -15,11 +15,11 @@
  */
 package net.oneandone.lavender.publisher;
 
+import net.oneandone.lavender.config.Filter;
+import net.oneandone.lavender.config.Settings;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.PustefixModule;
-import net.oneandone.lavender.config.Filter;
-import net.oneandone.lavender.config.Settings;
 import net.oneandone.sushi.fs.LineFormat;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;

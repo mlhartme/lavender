@@ -1,4 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?><project-config xmlns:xalan="http://xml.apache.org/xalan" xmlns:ext="xalan://de.ui.devel.ant.billyboy.configupgrade.XsltExtensionFunctions" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.pustefix-framework.org/2008/namespace/project-config" xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/project-config                                          http://www.pustefix-framework.org/2008/namespace/project-config.xsd">
+<?xml version="1.0" encoding="utf-8"?>
+<project-config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xmlns="http://www.pustefix-framework.org/2008/namespace/project-config"
+                xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/project-config                                          http://www.pustefix-framework.org/2008/namespace/project-config.xsd">
 
   <project>
     <!-- Short project name, should equal the name 
