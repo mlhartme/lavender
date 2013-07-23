@@ -71,7 +71,7 @@ public class GarbageCollection extends Base {
                     console.info.println(host);
                     console.info.print("collecting references ...");
                     for (Node file : docrootObj.index(hostroot, "foo").getParent().list()) {
-                        index = new Index(file.createInputStream());
+                        index = Index.load(file);
                         for (Label label : index) {
                             if (!references.add(label.getLavendelizedPath())) {
                                 throw new IllegalStateException("duplicate path: " + label.getLavendelizedPath());

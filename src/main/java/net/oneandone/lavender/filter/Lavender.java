@@ -37,6 +37,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -55,8 +58,8 @@ import java.util.Map.Entry;
 public class Lavender implements Filter {
     private static final Logger LOG = LoggerFactory.getLogger(Lavender.class);
 
-    public static final String LAVENDEL_IDX = "/WEB-INF/lavender.idx";
-    public static final String LAVENDEL_NODES = "/WEB-INF/lavender.nodes";
+    public static final String LAVENDEL_IDX = "WEB-INF/lavender.idx";
+    public static final String LAVENDEL_NODES = "WEB-INF/lavender.nodes";
 
 
     private World world;
@@ -77,7 +80,7 @@ public class Lavender implements Filter {
      */
     public void lazyInit() throws ServletException {
         long started;
-        URL src;
+        Node src;
         Index index;
         RewriteEngine rewriteEngine;
         Settings settings;
@@ -87,14 +90,19 @@ public class Lavender implements Filter {
             return;
         }
         this.world = new World();
-        src = resourceOpt(LAVENDEL_IDX);
+        webapp = world.file(filterConfig.getServletContext().getRealPath(""));
+        src = webapp.join(LAVENDEL_IDX);
         LOG.info("init");
         try {
-            if (src == null) {
+            if (src.exists()) {
+                index = Index.load(src);
+                rewriteEngine = RewriteEngine.load(index, webapp.join(LAVENDEL_NODES));
+                processorFactory = new ProcessorFactory(rewriteEngine);
+                LOG.info("Lavender prod filter");
+            } else {
                 started = System.currentTimeMillis();
                 processorFactory = null;
                 settings = Settings.load(world);
-                webapp = world.file(filterConfig.getServletContext().getRealPath(""));
                 develResources = new HashMap<>();
                 for (Module source : PustefixModule.fromWebapp(webapp, settings.svnUsername, settings.svnPassword)) {
                     for (Resource resource : source) {
@@ -104,26 +112,13 @@ public class Lavender implements Filter {
                 }
                 LOG.info("Lavender devel filter for " + webapp + ", " + develResources.size()
                         + " resources. Init in " + (System.currentTimeMillis() - started + " ms"));
-            } else {
-                index = new Index(src);
-                rewriteEngine = RewriteEngine.load(index, resourceOpt(LAVENDEL_NODES));
-                processorFactory = new ProcessorFactory(rewriteEngine);
-                LOG.info("Lavender prod filter");
             }
         } catch (IOException ie) {
             LOG.error("Error in Lavendelizer.init()", ie);
             throw new ServletException("io error", ie);
-        } catch (ServletException | RuntimeException se) {
+        } catch (RuntimeException se) {
             LOG.error("Error in Lavendelizer.init()", se);
             throw se;
-        }
-    }
-
-    private URL resourceOpt(String path) throws ServletException {
-        try {
-            return filterConfig.getServletContext().getResource(path);
-        } catch (MalformedURLException e) {
-            throw new IllegalStateException(e);
         }
     }
 

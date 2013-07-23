@@ -39,8 +39,8 @@ public class LavenderTest {
         lavender.mkdir();
         lavender.join("WEB-INF").mkdir();
 
-        FileNode indexFile = root.join("lavender" + Lavender.LAVENDEL_IDX).mkfile();
-        FileNode nodesFile = root.join("lavender" + Lavender.LAVENDEL_NODES);
+        FileNode indexFile = root.join("lavender", Lavender.LAVENDEL_IDX).mkfile();
+        FileNode nodesFile = root.join("lavender", Lavender.LAVENDEL_NODES);
 
         nodesFile.writeLines("http://s1.uicdn.net/m1",
                 "https://s1.uicdn.net/m1",
@@ -49,8 +49,9 @@ public class LavenderTest {
 
         FilterConfig filterConfig = mock(FilterConfig.class);
         ServletContext servletContext = mock(ServletContext.class);
-        when(servletContext.getResource(Lavender.LAVENDEL_IDX)).thenReturn(indexFile.getURI().toURL());
-        when(servletContext.getResource(Lavender.LAVENDEL_NODES)).thenReturn(nodesFile.getURI().toURL());
+        when(servletContext.getResource("/" + Lavender.LAVENDEL_IDX)).thenReturn(indexFile.getURI().toURL());
+        when(servletContext.getResource("/" + Lavender.LAVENDEL_NODES)).thenReturn(nodesFile.getURI().toURL());
+        when(servletContext.getRealPath("")).thenReturn(lavender.getAbsolute());
         when(filterConfig.getServletContext()).thenReturn(servletContext);
 
         Lavender filter = new Lavender();

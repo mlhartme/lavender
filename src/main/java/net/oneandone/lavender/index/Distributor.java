@@ -65,9 +65,7 @@ public class Distributor {
             destroot = docroot.node(root);
             index = docroot.index(root, indexName);
             if (index.exists()) {
-                try (InputStream src = index.createInputStream()) {
-                    tmp = new Index(src);
-                }
+                tmp = Index.load(index);
             } else {
                 tmp = new Index();
             }

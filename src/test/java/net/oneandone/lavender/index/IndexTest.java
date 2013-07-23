@@ -20,9 +20,7 @@ import net.oneandone.sushi.fs.file.FileNode;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URL;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -97,24 +95,20 @@ public class IndexTest {
         assertNull(index.lookup("img/nonexisting.gif"));
     }
 
-    @Test(expected = FileNotFoundException.class)
+    @Test
+    public void testPropertiesConstructor() throws Exception {
+        Index.load(indexFile);
+    }
+
+    @Test(expected = IOException.class)
     public void testPropertiesConstructorNonExistingFile() throws Exception {
-        new Index(new URL("file:///nosuchfile"));
+        Index.load(indexFile.join("file:///nosuchfile"));
     }
 
     @Test(expected = RuntimeException.class)
     public void testPropertiesConstructorCorruptPropertiesFile() throws Exception {
         indexFile.writeString("\\u00");
-        new Index(indexFile.getURI().toURL());
+        Index.load(indexFile);
     }
 
-    @Test
-    public void testPropertiesConstructor() throws Exception {
-        new Index(indexFile.getURI().toURL());
-    }
-
-    @Test
-    public void testInputStreamConstructor() throws Exception {
-        new Index(indexFile.createInputStream());
-    }
 }

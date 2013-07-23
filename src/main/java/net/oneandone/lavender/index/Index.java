@@ -16,18 +16,12 @@
 package net.oneandone.lavender.index;
 
 import net.oneandone.sushi.fs.Node;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.io.Writer;
-import java.net.URL;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -45,9 +39,17 @@ import java.util.Properties;
 public class Index implements Iterable<Label> {
     public static final String ENCODING = "UTF-8";
 
-    private static final Logger LOG = LoggerFactory.getLogger(Index.class);
-
     private static final String DELIMITER = ":";
+
+    public static Index load(Node src) throws IOException {
+        Index index;
+
+        index = new Index();
+        try (Reader reader = src.createReader()) {
+            index.load(reader);
+        }
+        return index;
+    }
 
     //--
 
@@ -57,26 +59,8 @@ public class Index implements Iterable<Label> {
         properties = new Properties();
     }
 
-    public Index(File indexFile) throws IOException {
-        this(new FileInputStream(indexFile));
-    }
-
-    public Index(URL indexUrl) throws IOException {
-        this(indexUrl.openStream());
-        LOG.info("Successfully loaded index with from " + indexUrl);
-    }
-
-    public Index(InputStream in) throws IOException {
-        this();
-        load(in);
-    }
-
-    private void load(InputStream in) throws IOException {
-        InputStreamReader reader;
-
-        reader = new InputStreamReader(in, ENCODING);
-        properties.load(reader);
-        reader.close();
+    private void load(Reader in) throws IOException {
+        properties.load(in);
     }
 
     //--
