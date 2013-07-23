@@ -70,7 +70,7 @@ public class Index implements Iterable<Label> {
     }
 
     /** @return true if the entry was new */
-    public boolean add(Label label) throws IOException {
+    public boolean add(Label label) {
         String original;
         String lavendelized;
         String md5hex;

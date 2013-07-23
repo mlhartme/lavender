@@ -22,9 +22,7 @@ import net.oneandone.lavender.index.Resource;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -36,17 +34,48 @@ public class RewriteEngineTest {
 
     @Before
     public void setUp() {
-        engine = new RewriteEngine(new Index());
-    }
+        Index index;
 
-    @Test(expected = NullPointerException.class)
-    public void testDefaultRewriteEngineNullParameters() {
-        engine = new RewriteEngine(null);
-        engine.rewrite(URI.create("abc"), URI.create("http://a.b.c"), "");
+        index = new Index();
+        index.add(new Label("in.jpg", "out.jpg", Resource.md5()));
+        engine = new RewriteEngine(index);
+        engine.add(URI.create("http://s1.cdn.net/"));
+        engine.add(URI.create("http://s2.cdn.net/"));
     }
 
     @Test
-    public void testNoRewriteOfAbsoulteURI() {
+    public void rewriteNormal() {
+        assertEquals("http://s1.cdn.net/out.jpg", engine.rewrite("in.jpg", URI.create("http://localhost:80"), "/"));
+    }
+
+    @Test
+    public void rewriteQuoted() {
+        assertEquals("http://s1.cdn.net/out.jpg", engine.rewrite("'in.jpg'", URI.create("http://localhost:80"), "/"));
+    }
+
+    @Test
+    public void rewriteAbsolute() {
+        assertEquals("http://s1.cdn.net/out.jpg", engine.rewrite("http://localhost:80/in.jpg", URI.create("http://localhost:80"), "/"));
+    }
+
+    @Test
+    public void rewriteImplicitProtocol() {
+        assertEquals("http://s1.cdn.net/out.jpg", engine.rewrite("//localhost:80/in.jpg", URI.create("http://localhost:80"), "/"));
+    }
+
+    @Test
+    public void rewriteNotFound() {
+        assertEquals("unknown.jpg", engine.rewrite("unknown.jpg", URI.create("http://localhost:80"), "/"));
+    }
+
+    @Test
+    public void rewriteInvalidUri() {
+        // rewrite something where new URI(something) throws an exception
+        assertEquals("http:", engine.rewrite("http:", URI.create("http://localhost:80/app/img/"), "/app/"));
+    }
+
+    @Test
+    public void noRewriteOfAbsoulteURI() {
         URI reference = URI.create("http://x.y.z:1234/index.html");
         URI baseURI = URI.create("");
         String contextPath = "/";
@@ -55,69 +84,55 @@ public class RewriteEngineTest {
         assertSame(reference, uri);
     }
 
+
+    //-- resolve (an important helper method for rewrite)
+
     @Test
-    public void testResolve() {
-        URI reference = URI.create("img/close.gif");
-        URI baseURI = URI.create("http://localhost:80");
-        assertEquals("img/close.gif", engine.resolve(reference, baseURI, "/"));
+    public void resolveNormal() {
+        assertEquals("img/close.gif", doResolve("img/close.gif", "http://localhost:80", "/"));
     }
 
     @Test
-    public void testResolveWithNullPath() {
-        URI reference = URI.create("mailto:michael.hartmeier@1und1.de");
-        URI baseURI = URI.create("http://localhost:80");
-        assertNull(engine.resolve(reference, baseURI, "/"));
+    public void resolveNullPath() {
+        assertNull(doResolve("mailto:michael.hartmeier@1und1.de", "http://localhost:80", "/"));
     }
 
     @Test
-    public void testResolveRelativeReferenceRootcontext() {
-        URI reference = URI.create("img/close.gif");
-        URI baseURI = URI.create("http://localhost:80/");
-        assertEquals("img/close.gif", engine.resolve(reference, baseURI, "/"));
+    public void resolveRelativeReferenceRootcontext() {
+        assertEquals("img/close.gif", doResolve("img/close.gif", "http://localhost:80/", "/"));
     }
 
     @Test
-    public void testResolveAbsoluteReferenceRootContext() {
-        URI reference = URI.create("/img/close.gif");
-        URI baseURI = URI.create("http://localhost:80/");
-        assertEquals("img/close.gif", engine.resolve(reference, baseURI, "/"));
+    public void resolveAbsoluteReferenceRootContext() {
+        assertEquals("img/close.gif", doResolve("/img/close.gif", "http://localhost:80/", "/"));
     }
 
     @Test
-    public void testResolveRelativeReferenceSubContext() {
-        URI reference = URI.create("img/close.gif");
-        URI baseURI = URI.create("http://localhost:80/app/");
-        assertEquals("img/close.gif", engine.resolve(reference, baseURI, "/app/"));
+    public void resolveRelativeReferenceSubContext() {
+        assertEquals("img/close.gif", doResolve("img/close.gif", "http://localhost:80/app/", "/app/"));
     }
 
     @Test
-    public void testResolveAbsoluteReferenceSubContext() {
-        URI reference = URI.create("/app/img/close.gif");
-        URI baseURI = URI.create("http://localhost:80/app/");
-        assertEquals("img/close.gif", engine.resolve(reference, baseURI, "/app/"));
+    public void resolveAbsoluteReferenceSubContext() {
+        assertEquals("img/close.gif", doResolve("/app/img/close.gif", "http://localhost:80/app/", "/app/"));
     }
 
     @Test
-    public void testResolveChildRelativeReferenceSubContext() {
-        URI reference = URI.create("close.gif");
-        URI baseURI = URI.create("http://localhost:80/app/img/");
-        assertEquals("img/close.gif", engine.resolve(reference, baseURI, "/app/"));
+    public void resolveChildRelativeReferenceSubContext() {
+        assertEquals("img/close.gif", doResolve("close.gif", "http://localhost:80/app/img/", "/app/"));
     }
 
     @Test
-    public void testResolveParentRelativeReferenceSubContext() {
-        URI reference = URI.create("../img/close.gif");
-        URI baseURI = URI.create("http://localhost:80/app/img/");
-        assertEquals("img/close.gif", engine.resolve(reference, baseURI, "/app/"));
+    public void resolveParentRelativeReferenceSubContext() {
+        assertEquals("img/close.gif", doResolve("../img/close.gif", "http://localhost:80/app/img/", "/app/"));
     }
 
-    @Test
-    public void testInvalid() {
-        assertEquals("'", engine.rewrite("'", URI.create("http://localhost:80/app/img/"), "/app/"));
+    private String doResolve(String reference, String baseUri, String contextPath) {
+        return engine.resolve(URI.create(reference), URI.create(baseUri), contextPath);
     }
 
-    //--
 
+    //-- calculate URL
 
     @Test
     public void calculateURL() {

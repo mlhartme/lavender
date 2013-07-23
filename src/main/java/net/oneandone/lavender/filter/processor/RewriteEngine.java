@@ -116,7 +116,14 @@ public class RewriteEngine {
     public String rewrite(String uri, URI baseURI, String contextPath) {
         URI reference;
         String result;
+        int len;
 
+        len = uri.length();
+        if (len > 2) {
+            if ((uri.startsWith("\"") && uri.endsWith("\"")) || (uri.startsWith("'") && uri.endsWith("'"))) {
+                uri = uri.substring(1, len - 1);
+            }
+        }
         try {
             reference = new URI(uri);
         } catch (URISyntaxException e) {
@@ -176,6 +183,7 @@ public class RewriteEngine {
         return label;
     }
 
+    /** @return path, without contextPath */
     String resolve(URI reference, URI baseURI, String contextPath) {
         URI uri = baseURI.resolve(reference);
         String resolved = uri.getPath();
