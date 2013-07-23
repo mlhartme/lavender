@@ -121,6 +121,7 @@ public class RewriteEngine {
         len = uri.length();
         if (len > 2) {
             if ((uri.startsWith("\"") && uri.endsWith("\"")) || (uri.startsWith("'") && uri.endsWith("'"))) {
+                // this is a broken uri, but we fix it here because this error to way too common
                 uri = uri.substring(1, len - 1);
             }
         }
