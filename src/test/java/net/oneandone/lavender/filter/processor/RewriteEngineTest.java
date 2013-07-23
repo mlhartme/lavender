@@ -30,27 +30,23 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
 public class RewriteEngineTest {
-    private Index index;
     private RewriteEngine engine;
 
     @Before
-    public void setUp() throws IOException {
-        index = mock(Index.class);
-        engine = new RewriteEngine(index);
+    public void setUp() {
+        engine = new RewriteEngine(new Index());
     }
 
     @Test(expected = NullPointerException.class)
-    public void testDefaultRewriteEngineNullParameters() throws IOException, URISyntaxException {
+    public void testDefaultRewriteEngineNullParameters() {
         engine = new RewriteEngine(null);
-        engine.rewrite(new URI("abc"), new URI("http://a.b.c"), "");
+        engine.rewrite(URI.create("abc"), URI.create("http://a.b.c"), "");
     }
 
     @Test
-    public void testNoRewriteOfAbsoulteURI() throws IOException, URISyntaxException {
-
+    public void testNoRewriteOfAbsoulteURI() {
         URI reference = URI.create("http://x.y.z:1234/index.html");
         URI baseURI = URI.create("");
         String contextPath = "/";
@@ -60,63 +56,63 @@ public class RewriteEngineTest {
     }
 
     @Test
-    public void testResolve() throws Exception {
+    public void testResolve() {
         URI reference = URI.create("img/close.gif");
         URI baseURI = URI.create("http://localhost:80");
         assertEquals("img/close.gif", engine.resolve(reference, baseURI, "/"));
     }
 
     @Test
-    public void testResolveWithNullPath() throws Exception {
+    public void testResolveWithNullPath() {
         URI reference = URI.create("mailto:michael.hartmeier@1und1.de");
         URI baseURI = URI.create("http://localhost:80");
         assertNull(engine.resolve(reference, baseURI, "/"));
     }
 
     @Test
-    public void testResolveRelativeReferenceRootcontext() throws Exception {
+    public void testResolveRelativeReferenceRootcontext() {
         URI reference = URI.create("img/close.gif");
         URI baseURI = URI.create("http://localhost:80/");
         assertEquals("img/close.gif", engine.resolve(reference, baseURI, "/"));
     }
 
     @Test
-    public void testResolveAbsoluteReferenceRootContext() throws Exception {
+    public void testResolveAbsoluteReferenceRootContext() {
         URI reference = URI.create("/img/close.gif");
         URI baseURI = URI.create("http://localhost:80/");
         assertEquals("img/close.gif", engine.resolve(reference, baseURI, "/"));
     }
 
     @Test
-    public void testResolveRelativeReferenceSubContext() throws Exception {
+    public void testResolveRelativeReferenceSubContext() {
         URI reference = URI.create("img/close.gif");
         URI baseURI = URI.create("http://localhost:80/app/");
         assertEquals("img/close.gif", engine.resolve(reference, baseURI, "/app/"));
     }
 
     @Test
-    public void testResolveAbsoluteReferenceSubContext() throws Exception {
+    public void testResolveAbsoluteReferenceSubContext() {
         URI reference = URI.create("/app/img/close.gif");
         URI baseURI = URI.create("http://localhost:80/app/");
         assertEquals("img/close.gif", engine.resolve(reference, baseURI, "/app/"));
     }
 
     @Test
-    public void testResolveChildRelativeReferenceSubContext() throws Exception {
+    public void testResolveChildRelativeReferenceSubContext() {
         URI reference = URI.create("close.gif");
         URI baseURI = URI.create("http://localhost:80/app/img/");
         assertEquals("img/close.gif", engine.resolve(reference, baseURI, "/app/"));
     }
 
     @Test
-    public void testResolveParentRelativeReferenceSubContext() throws Exception {
+    public void testResolveParentRelativeReferenceSubContext() {
         URI reference = URI.create("../img/close.gif");
         URI baseURI = URI.create("http://localhost:80/app/img/");
         assertEquals("img/close.gif", engine.resolve(reference, baseURI, "/app/"));
     }
 
     @Test
-    public void testInvalid() throws Exception {
+    public void testInvalid() {
         assertEquals("'", engine.rewrite("'", URI.create("http://localhost:80/app/img/"), "/app/"));
     }
 
@@ -124,7 +120,7 @@ public class RewriteEngineTest {
 
 
     @Test
-    public void calculateURL() throws IOException {
+    public void calculateURL() {
         RewriteEngine engine;
         byte[] md5;
         String md5str;
