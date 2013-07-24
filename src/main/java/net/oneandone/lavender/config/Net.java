@@ -160,4 +160,14 @@ public class Net {
         }
         return result;
     }
+
+    public View view(String name) {
+        View result;
+
+        result = views.get(name);
+        if (result == null) {
+            throw new ArgumentException("unknown view: " + name);
+        }
+        return result;
+    }
 }

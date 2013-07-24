@@ -15,11 +15,10 @@
  */
 package net.oneandone.lavender.publisher;
 
-import net.oneandone.lavender.config.Alias;
-import net.oneandone.lavender.config.Cluster;
-import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Settings;
+import net.oneandone.lavender.config.Target;
+import net.oneandone.lavender.config.View;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.Module;
@@ -35,21 +34,20 @@ import java.util.Map;
 
 public class War extends Base {
     public static Map<String, Distributor> createDefaultStorages(
-            World world, Cluster cdn, Cluster flashEu, Cluster flashUs, String indexName) throws IOException {
+            World world, Target web, Target flash, String indexName) throws IOException {
         Map<String, Distributor> storages;
 
         storages = new HashMap<>();
-        storages.put(Module.DEFAULT_STORAGE, Distributor.forCdn(world, cdn, (Docroot) cdn.alias("fix")[0], indexName));
+        storages.put(Module.DEFAULT_STORAGE, Distributor.forCdn(world, web.cluster, web.docroot, indexName));
         String flashIdx = Strings.replace(Strings.replace(indexName, "-a.idx", ""), "-b.idx", "") + ".idx";
-        storages.put("flash-eu", Distributor.forCdn(world, flashEu, flashEu.docroots.get(0), flashIdx));
-        storages.put("flash-us", Distributor.forCdn(world, flashUs, flashUs.docroots.get(0), flashIdx));
+        storages.put("flash", Distributor.forCdn(world, flash.cluster, flash.docroot, flashIdx));
         return storages;
     }
 
     //--
 
-    @Value(name = "cluster", position = 1)
-    private String clusterAlias;
+    @Value(name = "view", position = 1)
+    private String viewName;
 
     @Value(name = "inputWar", position = 2)
     private FileNode inputWar;
@@ -72,10 +70,8 @@ public class War extends Base {
         FileNode outputNodesFile;
         WarEngine engine;
         Map<String, Distributor> storages;
-        Cluster cluster;
-        Alias alias;
-        Object[] t;
-        int idx;
+        View view;
+        Target web;
 
         inputWar.checkFile();
         outputWar.checkNotExists();
@@ -83,18 +79,11 @@ public class War extends Base {
         tmp = inputWar.getWorld().getTemp();
         outputIndex = new Index();
         outputNodesFile = tmp.createTempFile();
-        idx = clusterAlias.indexOf("/");
-        if (idx == -1) {
-            cluster = net.cluster(clusterAlias);
-            alias =  cluster.docroots.get(0).aliases.get(0);
-        } else {
-            cluster = net.cluster(clusterAlias.substring(0, idx));
-            t = cluster.alias(clusterAlias.substring(idx + 1));
-            alias = (Alias) t[1];
-        }
-        storages = createDefaultStorages(console.world, cluster, net.cluster("flash-eu"), net.cluster("flash-us"), indexName);
+        view = net.view(viewName);
+        web = view.get("web");
+        storages = createDefaultStorages(console.world, web, view.get("flash"), indexName);
         engine = new WarEngine(settings.svnUsername, settings.svnPassword,
-                inputWar, outputWar, storages, outputIndex, outputNodesFile, alias.nodesFile());
+                inputWar, outputWar, storages, outputIndex, outputNodesFile, web.alias.nodesFile());
         engine.run();
         outputNodesFile.deleteFile();
     }
