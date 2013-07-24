@@ -33,7 +33,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-@Ignore
 public class LavenderIT {
     private static final World WORLD = new World();
 
@@ -111,10 +110,15 @@ public class LavenderIT {
         net.add("flash-eu", new Cluster()
                 .addLocalhost(testhosts.join("flash-eu1"))
                 .addLocalhost(testhosts.join("flash-eu2"))
-                .addDocroot("htdocs", "htdocs/.lavender"));
+                .addDocroot("htdocs", "htdocs/.lavender",
+                        new Alias("main")));
         net.add("flash-us", new Cluster()
                 .addLocalhost(testhosts.join("flash-us"))
-                .addDocroot("htdocs", "htdocs/.lavender"));
+                .addDocroot("htdocs", "htdocs/.lavender",
+                        new Alias("main")));
+        net.addView("test",
+                "web", "test",
+                "flash", "flash-eu");
         return net;
     }
 

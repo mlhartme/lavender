@@ -52,10 +52,14 @@ public class Net {
                 .addDocroot("", ".lavender",
                         new Alias("flash")));
 
-        net.add("bazaar", new Cluster()
+        net.add("internal", new Cluster()
                 .addStatint("cdnfe01.schlund.de")
                 .addStatint("cdnfe02.schlund.de")
-                .addStatint("cdnfe03.schlund.de"));
+                .addStatint("cdnfe03.schlund.de")
+                .addDocroot("var/bazaarvoice", "indexes/bazaarvoice",
+                        new Alias("bazaar"))
+                .addDocroot("var/downloads", "indexes/downloads",
+                        new Alias("downloads")));
 
         net.add("walter", new Cluster()
                 .addHost("walter.websales.united.domain", "mhm")

@@ -32,6 +32,9 @@ public class Docroot {
     }
 
     public Docroot(String docroot, String indexes, List<Alias> aliases) {
+        if (aliases.isEmpty()) {
+            throw new IllegalArgumentException("missing alias for docroot " + docroot);
+        }
         if (docroot.startsWith("/") || docroot.endsWith("/")) {
             throw new IllegalArgumentException(docroot);
         }
