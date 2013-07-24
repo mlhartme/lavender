@@ -66,9 +66,9 @@ public class Net {
                 .addDocroot("Users/mhm/lavender/htdocs/fix", "Users/mhm/lavender/indexes",
                         new Alias("fix", "fix.lavender.walter.websales.united.domain"))
                 .addDocroot("Users/mhm/lavender/htdocs/flash", "Users/mhm/lavender/indexes",
-                        new Alias("flash", "var.lavender.walter.websales.united.domain"))
-                .addDocroot("Users/mhm/lavender/htdocs/var", "Users/mhm/lavender/indexes",
-                        new Alias("var", "var.lavender.walter.websales.united.domain")));
+                        new Alias("flash"))
+                .addDocroot("Users/mhm/lavender/htdocs/var/downloads", "Users/mhm/lavender/indexes/downloads",
+                        new Alias("downloads")));
 
         net.addSvn("downloads", "https://svn.1and1.org/svn/PFX/lavender/cors");
 
@@ -83,7 +83,10 @@ public class Net {
                 "flash", "flash-us");
         net.addView("test",
                 "web", "walter",
-                "flash", "walter/flash");
+                "flash", "walter/flash",
+                "svn", "walter/downloads");
+        net.addView("internal",
+                "svn", "internal/downloads");
         return net;
     }
 

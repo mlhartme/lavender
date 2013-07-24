@@ -20,6 +20,8 @@ import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Filter;
 import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Settings;
+import net.oneandone.lavender.config.Target;
+import net.oneandone.lavender.config.View;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.SvnModule;
@@ -32,7 +34,7 @@ import java.io.IOException;
 
 public class Svn extends Base {
     @Value(name = "cluster", position = 1)
-    private String clusterName;
+    private String viewName;
 
     @Value(name = "directory", position = 2)
     private String directory;
@@ -53,8 +55,8 @@ public class Svn extends Base {
     }
 
     private void invoke(String svnurl) throws IOException {
-        Cluster cluster;
-        Docroot docroot;
+        View view;
+        Target target;
         Filter filter;
         SvnModuleConfig ec;
         SvnModule e;
@@ -62,8 +64,8 @@ public class Svn extends Base {
         long changed;
         Index index;
 
-        cluster = net.cluster(clusterName);
-        docroot = (Docroot) cluster.alias("svn")[0];
+        view = net.view(viewName);
+        target = view.get("svn");
         filter = new Filter();
         filter.setIncludes("*");
         filter.setExcludes();
@@ -72,7 +74,7 @@ public class Svn extends Base {
         ec.svnurl = svnurl;
         ec.lavendelize = false;
         e = ec.create(console.world, settings.svnUsername, settings.svnPassword);
-        storage = Distributor.open(console.world, cluster.hosts, docroot, directory + ".idx");
+        storage = Distributor.open(console.world, target.cluster.hosts, target.docroot, directory + ".idx");
         changed = e.run(storage);
         index = storage.close();
         console.info.println("done: " + changed + "/" + index.size() + " files changed");
