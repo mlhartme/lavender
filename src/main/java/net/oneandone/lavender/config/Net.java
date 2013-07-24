@@ -31,35 +31,55 @@ public class Net {
             .addCdn("cdnfe02.schlund.de")
             .addCdn("cdnfe03.schlund.de")
             .addDocroot("home/wwwcdn/htdocs/fix", "home/wwwcdn/indexes",
-                    new Alias("s", "s1.uicdn.net", "s2.uicdn.net", "s3.uicdn.net", "s4.uicdn.net")));
+                    new Alias("fix", "s1.uicdn.net", "s2.uicdn.net", "s3.uicdn.net", "s4.uicdn.net")));
         net.add("us", new Cluster()
                 // see http://issue.tool.1and1.com/browse/ITOSHA-3624 and http://issue.tool.1and1.com/browse/ITOSHA-3667
                 .addCdn("wscdnfelxaa01.fe.server.lan")
                 .addCdn("wscdnfelxaa02.fe.server.lan")
                 .addCdn("wscdnfelxaa03.fe.server.lan")
                 .addDocroot("home/wwwcdn/htdocs/fix", "home/wwwcdn/indexes",
-                        new Alias("u", "u1.uicdn.net", "u2.uicdn.net", "u3.uicdn.net", "u4.uicdn.net"),
-                        new Alias("au", "au1.uicdn.net", "au2.uicdn.net", "au3.uicdn.net", "au4.uicdn.net")));
-        net.add("walter", new Cluster()
-                .addHost("walter.websales.united.domain", "mhm")
-                .addDocroot("Users/mhm/lavender/htdocs/fix", "Users/mhm/lavender/indexes",
-                        new Alias("fix", "fix.lavender.walter.websales.united.domain"))
-                .addDocroot("Users/mhm/lavender/htdocs/var", "Users/mhm/lavender/indexes",
-                        new Alias("svn", "var.lavender.walter.websales.united.domain")));
-        net.add("bazaar", new Cluster()
-                .addStatint("cdnfe01.schlund.de")
-                .addStatint("cdnfe02.schlund.de")
-                .addStatint("cdnfe03.schlund.de"));
+                        new Alias("fix", "u1.uicdn.net", "u2.uicdn.net", "u3.uicdn.net", "u4.uicdn.net"),
+                        new Alias("akamai", "au1.uicdn.net", "au2.uicdn.net", "au3.uicdn.net", "au4.uicdn.net")));
         net.add("flash-eu", new Cluster()
                 // see http://issue.tool.1and1.com/browse/ITOSHA-3624 and http://issue.tool.1and1.com/browse/ITOSHA-3668
                 .addFlash("winflasheu1.schlund.de")
                 .addFlash("winflasheu2.schlund.de")
-                .addDocroot("", ".lavender"));
+                .addDocroot("", ".lavender",
+                        new Alias("flash")));
         net.add("flash-us", new Cluster()
                 .addFlash("winflashus1.lxa.perfora.net")
                 .addFlash("winflashus2.lxa.perfora.net")
-                .addDocroot("", ".lavender"));
+                .addDocroot("", ".lavender",
+                        new Alias("flash")));
+
+        net.add("bazaar", new Cluster()
+                .addStatint("cdnfe01.schlund.de")
+                .addStatint("cdnfe02.schlund.de")
+                .addStatint("cdnfe03.schlund.de"));
+
+        net.add("walter", new Cluster()
+                .addHost("walter.websales.united.domain", "mhm")
+                .addDocroot("Users/mhm/lavender/htdocs/fix", "Users/mhm/lavender/indexes",
+                        new Alias("fix", "fix.lavender.walter.websales.united.domain"))
+                .addDocroot("Users/mhm/lavender/htdocs/flash", "Users/mhm/lavender/indexes",
+                        new Alias("flash", "var.lavender.walter.websales.united.domain"))
+                .addDocroot("Users/mhm/lavender/htdocs/var", "Users/mhm/lavender/indexes",
+                        new Alias("var", "var.lavender.walter.websales.united.domain")));
+
         net.addSvn("downloads", "https://svn.1and1.org/svn/PFX/lavender/cors");
+
+        net.addView("eu",
+                "web", "eu",
+                "flash", "flash-eu");
+        net.addView("us",
+                "web", "us",
+                "flash", "flash-us");
+        net.addView("akamai-us",
+                "web", "us/akamai",
+                "flash", "flash-us");
+        net.addView("test",
+                "web", "walter",
+                "flash", "walter/flash");
         return net;
     }
 
@@ -73,11 +93,46 @@ public class Net {
 
     public final Map<String, Cluster> clusters;
 
+    public final Map<String, View> views;
+
     public final Map<String, String> svn;
 
     public Net() {
         clusters = new HashMap<>();
+        views = new HashMap<>();
         svn = new HashMap<>();
+    }
+
+    public void addView(String name, String ... args) {
+        View view;
+        String reference;
+        int idx;
+        Cluster cluster;
+        Docroot docroot;
+        Alias alias;
+        Object[] tmp;
+
+        if ((args.length & 0x01) == 1) {
+            throw new IllegalArgumentException();
+        }
+        view = new View();
+        for (int i = 0; i < args.length; i += 2) {
+            reference = args[i + 1];
+            idx = reference.indexOf('/');
+            if (idx == -1) {
+                cluster = cluster(reference);
+                docroot = cluster.docroots.get(0);
+                alias = docroot.aliases.get(0);
+            } else {
+                cluster = cluster(reference.substring(0, idx));
+                tmp = cluster.alias(reference.substring(idx + 1));
+                docroot = (Docroot) tmp[0];
+                alias = (Alias) tmp[1];
+            }
+
+            view.add(args[i], cluster, docroot, alias);
+        }
+        add(name, view);
     }
 
     public void addSvn(String name, String url) {
@@ -87,6 +142,12 @@ public class Net {
     public void add(String name, Cluster cluster) {
         if (clusters.put(name, cluster) != null) {
             throw new IllegalArgumentException("duplicate cluster: " + name);
+        }
+    }
+
+    public void add(String name, View view) {
+        if (views.put(name, view) != null) {
+            throw new IllegalArgumentException("duplicate view: " + name);
         }
     }
 
