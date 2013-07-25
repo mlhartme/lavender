@@ -28,9 +28,9 @@ public class SvnModule extends Module {
     private final String folder;
     private final Node dest;
 
-    public SvnModule(Filter filter, String storage, boolean lavendelize, String pathPrefix,
+    public SvnModule(Filter filter, String type, boolean lavendelize, String pathPrefix,
                      List<Node> resources, String folder, Node dest) {
-        super(filter, storage, lavendelize, pathPrefix);
+        super(filter, type, lavendelize, pathPrefix);
         this.resources = resources;
         this.folder = folder;
         this.dest = dest;

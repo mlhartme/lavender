@@ -60,7 +60,7 @@ public class Svn extends Base {
         Filter filter;
         SvnModuleConfig ec;
         SvnModule e;
-        Distributor storage;
+        Distributor distributor;
         long changed;
         Index index;
 
@@ -74,9 +74,9 @@ public class Svn extends Base {
         ec.svnurl = svnurl;
         ec.lavendelize = false;
         e = ec.create(console.world, settings.svnUsername, settings.svnPassword);
-        storage = Distributor.open(console.world, target.cluster.hosts, target.docroot, directory + ".idx");
-        changed = e.run(storage);
-        index = storage.close();
+        distributor = Distributor.open(console.world, target.cluster.hosts, target.docroot, directory + ".idx");
+        changed = e.run(distributor);
+        index = distributor.close();
         console.info.println("done: " + changed + "/" + index.size() + " files changed");
     }
 }

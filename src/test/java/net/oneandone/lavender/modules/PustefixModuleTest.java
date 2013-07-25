@@ -40,8 +40,8 @@ public class PustefixModuleTest {
         URL url = getClass().getClassLoader().getResource("dummy.war");
 
         Map<String, Resource> resources = new HashMap<>();
-        PustefixModule source = PustefixModule.create(new Filter(), WORLD.file(new File(url.toURI())).openZip());
-        for (Resource resource : source) {
+        PustefixModule module = PustefixModule.create(new Filter(), WORLD.file(new File(url.toURI())).openZip());
+        for (Resource resource : module) {
             resources.put(resource.getPath(), resource);
         }
 

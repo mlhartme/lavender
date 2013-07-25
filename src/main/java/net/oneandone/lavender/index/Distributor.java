@@ -15,14 +15,10 @@
  */
 package net.oneandone.lavender.index;
 
-import net.oneandone.lavender.config.Alias;
-import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Host;
-import net.oneandone.lavender.config.Net;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
-import net.oneandone.sushi.fs.file.FileNode;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -34,21 +30,6 @@ import java.util.Map;
 
 /** Receives extracted files and uploads them */
 public class Distributor {
-    public static Distributor forCdn(World world, Cluster cluster, Docroot docroot, String indexName) throws IOException {
-        return open(world, cluster.hosts, docroot, indexName);
-    }
-
-    public static Distributor forTest(FileNode baseDirectory, String indexName) throws IOException {
-        Cluster cluster;
-        Docroot docroot;
-
-        cluster = new Cluster();
-        cluster.hosts.add(Net.local(baseDirectory));
-        docroot = new Docroot("", "", new Alias("dummy"));
-        cluster.docroots.add(docroot);
-        return Distributor.forCdn(baseDirectory.getWorld(), cluster, docroot, indexName);
-    }
-
     public static Distributor open(World world, List<Host> hosts, Docroot docroot, String indexName) throws IOException {
         Node root;
         Node destroot;

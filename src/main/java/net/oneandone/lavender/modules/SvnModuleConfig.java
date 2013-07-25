@@ -41,7 +41,7 @@ public class SvnModuleConfig {
     public final String folder;
     public final Filter filter;
     public String svnurl;
-    public String storage = Module.DEFAULT_STORAGE;
+    public String type = "web";
     public boolean lavendelize = true;
     public String pathPrefix = "";
 
@@ -81,8 +81,8 @@ public class SvnModuleConfig {
                 } else {
                     if (key.equals("pathPrefix")) {
                         config.pathPrefix = value;
-                    } else if (key.equals("storage")) {
-                        config.storage = value;
+                    } else if (key.equals("type")) {
+                        config.type = value;
                     } else if (key.equals("lavendelize")) {
                         if ("true".equals(value)) {
                             config.lavendelize = true;
@@ -141,7 +141,7 @@ public class SvnModuleConfig {
                 resources.add(file);
             }
         }
-        return new SvnModule(filter, storage, lavendelize, pathPrefix, resources, folder, dest);
+        return new SvnModule(filter, type, lavendelize, pathPrefix, resources, folder, dest);
     }
 
     private static final String TAGS = "/tags/";

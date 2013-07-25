@@ -1,12 +1,10 @@
 package net.oneandone.lavender.config;
 
-/**
-* Created with IntelliJ IDEA.
-* User: mhm
-* Date: 24.07.13
-* Time: 16:00
-* To change this template use File | Settings | File Templates.
-*/
+import net.oneandone.lavender.index.Distributor;
+import net.oneandone.sushi.fs.World;
+
+import java.io.IOException;
+
 public class Target {
     public final Cluster cluster;
     public final Docroot docroot;
@@ -17,4 +15,9 @@ public class Target {
         this.docroot = docroot;
         this.alias = alias;
     }
+
+    public Distributor open(World world, String indexName) throws IOException {
+        return Distributor.open(world, cluster.hosts, docroot, indexName);
+    }
+
 }

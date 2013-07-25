@@ -24,27 +24,23 @@ import java.io.IOException;
 
 /** Contains resources. */
 public abstract class Module implements Iterable<Resource> {
-    public static final String DEFAULT_STORAGE = "lavender";
-
-    //--
-
     private final Filter filter;
-    private final String storage;
+    private final String type;
     private final boolean lavendelize;
     private final String pathPrefix;
 
-    public Module(Filter filter, String storage, boolean lavendelize, String pathPrefix) {
+    public Module(Filter filter, String type, boolean lavendelize, String pathPrefix) {
         if (filter == null) {
             throw new IllegalArgumentException();
         }
         this.filter = filter;
-        this.storage = storage;
+        this.type = type;
         this.lavendelize = lavendelize;
         this.pathPrefix = pathPrefix;
     }
 
-    public String getStorage() {
-        return storage;
+    public String getType() {
+        return type;
     }
 
     public Filter getFilter() {

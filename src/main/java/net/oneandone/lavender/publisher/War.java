@@ -17,35 +17,15 @@ package net.oneandone.lavender.publisher;
 
 import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Settings;
-import net.oneandone.lavender.config.Target;
 import net.oneandone.lavender.config.View;
-import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
-import net.oneandone.lavender.modules.Module;
 import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.cli.Value;
-import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
-import net.oneandone.sushi.util.Strings;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class War extends Base {
-    public static Map<String, Distributor> createDefaultStorages(
-            World world, Target web, Target flash, String indexName) throws IOException {
-        Map<String, Distributor> storages;
-
-        storages = new HashMap<>();
-        storages.put(Module.DEFAULT_STORAGE, Distributor.forCdn(world, web.cluster, web.docroot, indexName));
-        String flashIdx = Strings.replace(Strings.replace(indexName, "-a.idx", ""), "-b.idx", "") + ".idx";
-        storages.put("flash", Distributor.forCdn(world, flash.cluster, flash.docroot, flashIdx));
-        return storages;
-    }
-
-    //--
-
     @Value(name = "view", position = 1)
     private String viewName;
 
@@ -69,21 +49,16 @@ public class War extends Base {
         Index outputIndex;
         FileNode outputNodesFile;
         WarEngine engine;
-        Map<String, Distributor> storages;
         View view;
-        Target web;
 
         inputWar.checkFile();
         outputWar.checkNotExists();
-
         tmp = inputWar.getWorld().getTemp();
         outputIndex = new Index();
         outputNodesFile = tmp.createTempFile();
         view = net.view(viewName);
-        web = view.get("web");
-        storages = createDefaultStorages(console.world, web, view.get("flash"), indexName);
-        engine = new WarEngine(settings.svnUsername, settings.svnPassword,
-                inputWar, outputWar, storages, outputIndex, outputNodesFile, web.alias.nodesFile());
+        engine = new WarEngine(view, indexName, settings.svnUsername, settings.svnPassword,
+                inputWar, outputWar, outputIndex, outputNodesFile, view.get(View.WEB).alias.nodesFile());
         engine.run();
         outputNodesFile.deleteFile();
     }

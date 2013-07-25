@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public class PustefixResourceIterator implements Iterator<Resource> {
-    private final PustefixModule source;
+    private final PustefixModule module;
     private final Node webapp;
     private List<Node> files;
 
@@ -37,16 +37,16 @@ public class PustefixResourceIterator implements Iterator<Resource> {
     private int nextFile;
 
 
-    public static PustefixResourceIterator create(PustefixModule source, Node webapp) throws IOException {
+    public static PustefixResourceIterator create(PustefixModule module, Node webapp) throws IOException {
         Filter filter;
 
         filter = webapp.getWorld().filter().include("**/*").predicate(Predicate.FILE);
-        return new PustefixResourceIterator(source, webapp, webapp.find(filter));
+        return new PustefixResourceIterator(module, webapp, webapp.find(filter));
     }
 
 
-    public PustefixResourceIterator(PustefixModule source, Node webapp, List<Node> files) {
-        this.source = source;
+    public PustefixResourceIterator(PustefixModule module, Node webapp, List<Node> files) {
+        this.module = module;
         this.webapp = webapp;
         this.files = files;
         this.nextFile = 0;
@@ -65,14 +65,14 @@ public class PustefixResourceIterator implements Iterator<Resource> {
         while (nextFile < files.size()) {
             file = files.get(nextFile++);
             path = file.getRelative(webapp);
-            if (source.isPublicResource(path)) {
+            if (module.isPublicResource(path)) {
                 String folder;
                 int end;
 
                 if (path.startsWith(MODULES_PREFIX) && ((end = path.indexOf('/', MODULES_PREFIX_LENGTH)) != -1)) {
                     folder = path.substring(MODULES_PREFIX_LENGTH, end);
                 } else {
-                    folder = source.getProjectName();
+                    folder = module.getProjectName();
                 }
                 next = new Resource(file, path, folder);
                 return true;

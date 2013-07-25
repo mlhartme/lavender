@@ -28,8 +28,8 @@ public class JarModule extends Module {
     private final PustefixModuleConfig config;
     private final Node jar;
 
-    public JarModule(Filter filter, PustefixModuleConfig config, Node jar) {
-        super(filter, DEFAULT_STORAGE, true, "");
+    public JarModule(Filter filter, String type, PustefixModuleConfig config, Node jar) {
+        super(filter, type, true, "");
         this.config = config;
         this.jar = jar;
     }

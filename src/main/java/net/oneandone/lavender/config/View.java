@@ -6,23 +6,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class View {
+    public static final String WEB = "web";
+    public static final String FLASH = "flash";
 
+    /** maps type to target */
     private final Map<String, Target> map;
 
     public View() {
         this.map = new HashMap<>();
     }
 
-    public void add(String name, Cluster cluster, Docroot docroot, Alias alias) {
-        map.put(name, new Target(cluster, docroot, alias));
+    public void add(String type, Cluster cluster, Docroot docroot, Alias alias) {
+        map.put(type, new Target(cluster, docroot, alias));
     }
 
-    public Target get(String name) {
+    public Target get(String type) {
         Target target;
 
-        target = map.get(name);
+        target = map.get(type);
         if (target == null) {
-            throw new ArgumentException("no such target: " + target);
+            throw new ArgumentException("no such type: " + type);
         }
         return target;
     }

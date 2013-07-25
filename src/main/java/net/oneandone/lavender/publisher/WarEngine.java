@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.publisher;
 
+import net.oneandone.lavender.config.View;
 import net.oneandone.lavender.filter.Lavender;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
@@ -37,49 +38,33 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 /**
- * Drives the war publishing process: Extracts resources from a war files to FileStorage and creates a new war file with Lavendelizer
- * configured. Main class of this module, used by Cli and the Publisher plugin.
+ * Drives the war publishing process: Extracts resources from a war files to distributors and creates a new war file with an index and a
+ * nodes files.
  */
 public class WarEngine {
     private static final Logger LOG = LoggerFactory.getLogger(WarEngine.class);
 
+    private final View view;
+    private final String indexName;
     private final String svnUsername;
     private final String svnPassword;
     private final FileNode inputWar;
     private final FileNode outputWar;
-    private final Map<String, Distributor> storages;
+    /** maps type to distributor */
+    public final Map<String, Distributor> distributors;
     private final Index outputIndex;
     private final FileNode outputNodesFile;
     private final String nodes;
 
-    public WarEngine(String svnUsername, String svnPassword,
-                     FileNode inputWar, FileNode outputWar, Distributor lavendelStorage,
-                     Index outputIndex, FileNode outputNodesFile, String nodes) {
-        this(svnUsername, svnPassword, inputWar, outputWar, defaultStorage(lavendelStorage), outputIndex, outputNodesFile, nodes);
-    }
-
-    /**
-     * @param inputWar
-     *            the existing original WAR file
-     * @param outputWar
-     *            the file where the updated WAR file is saved to
-     * @param storages
-     * @param outputIndex
-     *            Index of the resources for this war
-     * @param outputNodesFile
-     *            the file where the nodes file is saved to
-     * @param nodes
-     *            the lavender nodes. Each URI must contain the scheme (http or https), hostname, optional port, and
-     *            optional path. The collection must contain separate URIs for http and https.
-     */
-    public WarEngine(String svnUsername, String svnPassword,
-                     FileNode inputWar, FileNode outputWar, Map<String, Distributor> storages,
-                     Index outputIndex, FileNode outputNodesFile, String nodes) {
+    public WarEngine(View view, String indexName, String svnUsername, String svnPassword,
+                     FileNode inputWar, FileNode outputWar, Index outputIndex, FileNode outputNodesFile, String nodes) {
+        this.view = view;
+        this.indexName = indexName;
         this.svnUsername = svnUsername;
         this.svnPassword = svnPassword;
         this.inputWar = inputWar;
         this.outputWar = outputWar;
-        this.storages = storages;
+        this.distributors = new HashMap<>();
         this.outputIndex = outputIndex;
         this.outputNodesFile = outputNodesFile;
         this.nodes = nodes;
@@ -92,17 +77,17 @@ public class WarEngine {
      */
     public void run() throws IOException {
         long started;
-        List<Module> sources;
+        List<Module> modules;
         Index index;
         long changed;
 
         started = System.currentTimeMillis();
-        sources = PustefixModule.fromWebapp(inputWar.openZip(), svnUsername, svnPassword);
-        changed = extract(sources);
-        for (Map.Entry<String, Distributor> entry : storages.entrySet()) {
+        modules = PustefixModule.fromWebapp(inputWar.openZip(), svnUsername, svnPassword);
+        changed = extract(modules);
+        for (Map.Entry<String, Distributor> entry : distributors.entrySet()) {
             index = entry.getValue().close();
             //  TODO
-            if (!entry.getKey().contains("flash") && index != null /* for tests */) {
+            if (View.WEB.equals(entry.getKey()) && index != null /* for tests */) {
                 for (Label label : index) {
                     outputIndex.add(label);
                 }
@@ -113,21 +98,24 @@ public class WarEngine {
         LOG.info("done: " + changed + "/" + outputIndex.size() + " files changed (" + (System.currentTimeMillis() - started) + " ms)");
     }
 
-    public long extract(Module... sources) throws IOException {
-        return extract(Arrays.asList(sources));
+    public long extract(Module... modules) throws IOException {
+        return extract(Arrays.asList(modules));
     }
 
-    public long extract(List<Module> sources) throws IOException {
-        Distributor storage;
+    public long extract(List<Module> modules) throws IOException {
+        Distributor distributor;
+        String type;
         long changed;
 
         changed = 0;
-        for (Module source : sources) {
-            storage = storages.get(source.getStorage());
-            if (storage == null) {
-                throw new IllegalStateException("storage not found: " + source.getStorage());
+        for (Module module : modules) {
+            type = module.getType();
+            distributor = distributors.get(type);
+            if (distributor == null) {
+                distributor = view.get(type).open(inputWar.getWorld(), indexName);
+                distributors.put(type, distributor);
             }
-            changed += source.run(storage);
+            changed += module.run(distributor);
         }
         return changed;
     }
@@ -162,15 +150,5 @@ public class WarEngine {
         out.closeEntry();
 
         out.close();
-    }
-
-    //--
-
-    private static Map<String, Distributor> defaultStorage(Distributor lavendelStorage) {
-        Map<String, Distributor> storages;
-
-        storages = new HashMap<>();
-        storages.put(Module.DEFAULT_STORAGE, lavendelStorage);
-        return storages;
     }
 }

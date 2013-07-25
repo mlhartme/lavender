@@ -32,11 +32,11 @@ import java.util.zip.ZipInputStream;
  */
 public class PustefixModuleConfig {
 
-    private PustefixModule source;
+    private PustefixModule module;
     private ModuleDescriptorType config;
 
-    public PustefixModuleConfig(PustefixModule source, ZipInputStream jarInputStream) throws JAXBException, IOException {
-        this.source = source;
+    public PustefixModuleConfig(PustefixModule module, ZipInputStream jarInputStream) throws JAXBException, IOException {
+        this.module = module;
         loadModuleXml(jarInputStream);
     }
 
@@ -59,7 +59,7 @@ public class PustefixModuleConfig {
         }
 
         String mappedName = getPath(resourceName);
-        return source.isPublicResource(mappedName);
+        return module.isPublicResource(mappedName);
     }
 
     private static final String MODULES = "modules/";

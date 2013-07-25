@@ -99,8 +99,8 @@ public class Lavender implements Filter {
                 processorFactory = null;
                 settings = Settings.load(world);
                 develResources = new HashMap<>();
-                for (Module source : PustefixModule.fromWebapp(webapp, settings.svnUsername, settings.svnPassword)) {
-                    for (Resource resource : source) {
+                for (Module module : PustefixModule.fromWebapp(webapp, settings.svnUsername, settings.svnPassword)) {
+                    for (Resource resource : module) {
                         LOG.debug("resource: " + resource);
                         develResources.put(resource.getPath(), resource);
                     }

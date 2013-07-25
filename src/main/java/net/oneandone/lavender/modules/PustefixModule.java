@@ -16,6 +16,7 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.config.Filter;
+import net.oneandone.lavender.config.View;
 import net.oneandone.lavender.index.Resource;
 import net.oneandone.lavender.modules.project.ProjectConfig;
 import net.oneandone.sushi.fs.Node;
@@ -60,17 +61,17 @@ public class PustefixModule extends Module {
         for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
             mc = loadModuleXml(ps, jar);
             if (mc != null) {
-                result.add(new JarModule(ps.getFilter(), mc, jar));
+                result.add(new JarModule(ps.getFilter(), View.WEB, mc, jar));
             }
         }
         for (SvnModuleConfig config : SvnModuleConfig.parse(properties)) {
-            LOG.info("adding svn source " + config.folder);
+            LOG.info("adding svn module " + config.folder);
             result.add(config.create(webapp.getWorld(), svnUsername, svnPassword));
         }
         return result;
     }
 
-    private static PustefixModuleConfig loadModuleXml(PustefixModule source, Node jar) throws IOException {
+    private static PustefixModuleConfig loadModuleXml(PustefixModule module, Node jar) throws IOException {
         ZipInputStream jarInputStream;
         ZipEntry jarEntry;
 
@@ -78,7 +79,7 @@ public class PustefixModule extends Module {
         while ((jarEntry = jarInputStream.getNextEntry()) != null) {
             if (isModuleXml(jarEntry)) {
                 try {
-                    return new PustefixModuleConfig(source, jarInputStream);
+                    return new PustefixModuleConfig(module, jarInputStream);
                 } catch (JAXBException e) {
                     throw new IOException("cannot load module descriptor", e);
                 }
@@ -117,7 +118,7 @@ public class PustefixModule extends Module {
     private final Node webapp;
 
     public PustefixModule(Filter filter, ProjectConfig config, Node webapp) throws IOException {
-        super(filter, DEFAULT_STORAGE, true, "");
+        super(filter, View.WEB, true, "");
 
         this.config = config;
         this.webapp = webapp;
