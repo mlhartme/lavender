@@ -70,10 +70,6 @@ public class Distributor {
     private final Index prev;
     private final Index next;
 
-    public Distributor() {
-        this(new HashMap<Node, Node>(), new Index());
-    }
-
     public Distributor(Map<Node, Node> targets, Index prev) {
         this.targets = targets;
         this.prev = prev;

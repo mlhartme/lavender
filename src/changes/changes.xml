@@ -5,6 +5,9 @@
         Added verify command.
       </action>
       <action date="2013-07-25" dev="mhm" type="update">
+        Move indexes for 'fix' into 'indexes/fix'.
+      </action>
+      <action date="2013-07-25" dev="mhm" type="update">
         Changed svn.storage to svn.type.
       </action>
       <action date="2013-07-23" dev="mhm" type="update">
