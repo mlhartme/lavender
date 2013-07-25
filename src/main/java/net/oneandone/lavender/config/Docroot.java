@@ -53,4 +53,8 @@ public class Docroot {
     public Node index(Node host, String indexName) {
         return host.join(indexes, indexName);
     }
+
+    public Node indexDirectory(Node host) {
+        return host.join(indexes);
+    }
 }

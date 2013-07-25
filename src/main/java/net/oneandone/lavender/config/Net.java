@@ -52,6 +52,7 @@ public class Net {
                 .addDocroot("", ".lavender",
                         new Alias("flash")));
 
+        // this cluster is only accessible from within 1&1
         net.add("internal", new Cluster()
                 .addStatint("cdnfe01.schlund.de")
                 .addStatint("cdnfe02.schlund.de")
@@ -84,7 +85,7 @@ public class Net {
                 "flash", "flash-us");
         net.addView("walter",
                 "web", "walter",
-                "flash", "walter/flash",
+                "flash-eu", "walter/flash",
                 "svn", "walter/downloads");
         net.addView("internal",
                 "svn", "internal/downloads");

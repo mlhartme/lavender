@@ -65,7 +65,6 @@ public class Main extends Cli implements Command {
         // disable them for integration tests, because I don't have .ssh on pearl/gems
     }
 
-
     private final Net net;
     private final Settings settings;
 
@@ -101,6 +100,11 @@ public class Main extends Cli implements Command {
         return new GarbageCollection(console, settings, net);
     }
 
+    @Child("verify")
+    public Command verfiy() {
+        return new Verify(console, settings, net);
+    }
+
     @Override
     public void printHelp() {
         console.info.println("usage: 'lavender' command");
@@ -115,6 +119,7 @@ public class Main extends Cli implements Command {
         console.info.println("  'bazaar'                  publishes Bazaar Voice files to eu cluster.");
         console.info.println("                            actually publish to the specified cluster");
         console.info.println("  'direct' cluster arg+     executes the specified command on all machines of the cluster");
+        console.info.println("  'verify' cluster          checks if all files are indexed and indexes match");
         console.info.println("  'gc' ['-dryrun'] cluster  removes unreferenced resources and empty directories from the");
         console.info.println("                            specified host(s); default: all hosts");
     }

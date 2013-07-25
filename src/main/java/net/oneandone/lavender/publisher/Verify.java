@@ -24,10 +24,11 @@ import net.oneandone.lavender.config.Settings;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.cli.Console;
-import net.oneandone.sushi.cli.Option;
 import net.oneandone.sushi.cli.Value;
 import net.oneandone.sushi.fs.Node;
+import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.ssh.SshNode;
+import net.oneandone.sushi.fs.ssh.SshRoot;
 import net.oneandone.sushi.io.OS;
 import net.oneandone.sushi.util.Strings;
 
@@ -37,18 +38,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Traverses all docroots to delete unreferenced files and empty directory.
- * References a defined by the lavendelized paths in the indexes.
- */
-public class GarbageCollection extends Base {
+public class Verify extends Base {
     @Value(name = "cluster", position = 1)
     private String clusterName;
 
-    @Option("dryrun")
-    private boolean dryrun = false;
-
-    public GarbageCollection(Console console, Settings settings, Net net) {
+    public Verify(Console console, Settings settings, Net net) {
         super(console, settings, net);
     }
 
@@ -57,9 +51,13 @@ public class GarbageCollection extends Base {
         Cluster cluster;
         Node hostroot;
         Index index;
+        List<String> files;
         Set<String> references;
         Node docroot;
+        List<String> tmp;
+        boolean problem;
 
+        problem = false;
         cluster = net.cluster(clusterName);
         for (Host host : cluster.hosts) {
             hostroot = host.open(console.world);
@@ -68,77 +66,64 @@ public class GarbageCollection extends Base {
                 if (docroot.exists()) {
                     references = new HashSet<>();
                     console.info.println(host);
+                    console.info.print("collecting files ...");
+                    files = find(docroot, "-type", "f");
+                    console.info.println("done: " + files.size());
                     console.info.print("collecting references ...");
                     for (Node file : docrootObj.indexDirectory(hostroot).list()) {
                         index = Index.load(file);
                         for (Label label : index) {
-                            if (!references.add(label.getLavendelizedPath())) {
-                                throw new IllegalStateException("duplicate path: " + label.getLavendelizedPath());
-                            }
+                            references.add(label.getLavendelizedPath());
                         }
                     }
                     console.info.println("done: " + references.size());
-                    gc(docroot, references);
+
+                    tmp = new ArrayList<>(references);
+                    tmp.removeAll(files);
+                    if (!tmp.isEmpty()) {
+                        problem = true;
+                        console.error.println("not existing references: " + tmp);
+                    }
+                    tmp = new ArrayList<>(files);
+                    tmp.removeAll(references);
+                    if (!tmp.isEmpty()) {
+                        problem = true;
+                        console.error.println("not referenced files: " + tmp);
+                    }
                 }
             }
         }
+        if (problem) {
+            throw new IOException("verify failed");
+        }
     }
 
-    private void gc(Node base, Set<String> references) throws IOException {
-        gcFiles(base, references);
-        gcDirectories(base);
-    }
+    public static List<String> find(Node base, String ... args) throws IOException {
+        String str;
+        List<String> lst;
 
-    private void gcFiles(Node base, Set<String> references) throws IOException {
-        List<String> paths;
-        int found;
-
-        console.info.print("scanning files ...");
-        paths = Verify.find(base, "-type", "f");
-        console.info.println(" done: " + paths.size());
-        found = 0;
-        for (String path : paths) {
-            if (references.contains(path)) {
-                found++;
+        try {
+            if (base instanceof SshNode) {
+                str = ((SshRoot) base.getRoot()).exec(Strings.append(
+                        new String[] { "cd", "/" + base.getPath(), "&&", "find", "." }, args));
+            } else if (base instanceof FileNode) {
+                str = ((FileNode) base).exec(Strings.append(new String[] { "find", "." }, args));
             } else {
-                console.verbose.println("rm " + path);
-                if (!dryrun) {
-                    base.join(path).deleteFile();
-                }
+                throw new UnsupportedOperationException("find on " + base.getClass());
+            }
+        } catch (JSchException e) {
+            throw new IOException("error obtaining file list: " + e.getMessage(), e);
+        }
+        lst = new ArrayList<>();
+        for (String path : OS.CURRENT.lineSeparator.split(str)) {
+            if (path.startsWith("./")) {
+                path = path.substring(2);
+            }
+            path = path.trim();
+            if (!path.isEmpty()) {
+                lst.add(path);
             }
         }
-        if (found != references.size()) {
-            throw new IllegalStateException(found + "/" + references.size() + " files found in " + base);
-        }
-        console.info.println((paths.size() - references.size()) + " unreferenced files deleted.");
-    }
-
-    private void gcDirectories(Node base) throws IOException {
-        List<String> paths;
-
-        console.info.print("scanning empty directories ...");
-        paths = Verify.find(base, "-type", "d", "-empty");
-        console.info.println(" done: " + paths.size());
-        for (String path : paths) {
-            rmdir(base, base.join(path));
-        }
-        console.info.println(paths.size() + " empty directories deleted.");
-    }
-
-    private void rmdir(Node base, Node dir) throws IOException {
-        while (true) {
-            if (dir.equals(base)) {
-                return;
-            }
-            console.verbose.println("rmdir " + dir.getPath());
-            if (dryrun) {
-                return;
-            }
-            dir.deleteDirectory();
-            dir = dir.getParent();
-            if (dir.list().size() > 0) {
-                return;
-            }
-        }
+        return lst;
     }
 }
