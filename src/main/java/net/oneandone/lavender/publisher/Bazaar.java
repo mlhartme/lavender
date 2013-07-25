@@ -59,7 +59,7 @@ public class Bazaar extends Base {
         Node destFinal;
 
         view = net.view("internal");
-        // CAUTION: i cannot have bazaarvoice - it would be garbage collected
+        // CAUTION: I cannot have bazaarvoice - it would be garbage collected
         target = view.get("svn");
         srcdir = feeds(console.world);
         if (!srcdir.join("bv_1und1_smartseo.zip.ready").isFile()) {
