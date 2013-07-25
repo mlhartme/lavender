@@ -16,10 +16,13 @@
 package net.oneandone.lavender.publisher;
 
 import com.jcraft.jsch.JSchException;
+import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Host;
 import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Settings;
+import net.oneandone.lavender.config.Target;
+import net.oneandone.lavender.config.View;
 import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
@@ -46,25 +49,30 @@ public class Bazaar extends Base {
 
     @Override
     public void invoke() throws Exception {
-        SshNode dir;
-        SshNode src;
+        View view;
+        Target target;
+        SshNode srcdir;
+        SshNode srcfile;
         FileNode local;
         ZipNode root;
         Node destTmp;
         Node destFinal;
 
-        dir = feeds(console.world);
-        if (!dir.join("bv_1und1_smartseo.zip.ready").isFile()) {
+        view = net.view("internal");
+        // CAUTION: i cannot have bazaarvoice - it would be garbage collected
+        target = view.get("svn");
+        srcdir = feeds(console.world);
+        if (!srcdir.join("bv_1und1_smartseo.zip.ready").isFile()) {
             throw new IOException("not ready");
         }
         local = console.world.getTemp().createTempFile();
-        src = dir.join("bv_1und1_smartseo.zip");
-        src.copyFile(local);
-        console.info.println("downloaded " + local.length() + " bytes from " + src.getURI());
+        srcfile = srcdir.join("bv_1und1_smartseo.zip");
+        srcfile.copyFile(local);
+        console.info.println("downloaded " + local.length() + " bytes from " + srcfile.getURI());
         root = local.openZip();
-        for (Host host : net.cluster("bazaar").hosts) {
+        for (Host host : target.cluster.hosts) {
             console.info.println(host);
-            destTmp = new Docroot("var/bazaarvoice/tmp", "var/bazaarvoice/tmp").node(host.open(console.world));
+            destTmp = target.docroot.node(host.open(console.world)).getParent().join("bazaarvoice/tmp").mkdirsOpt();
             destFinal = destTmp.getParent().join("latest");
             destFinal.checkDirectory();
             destTmp.mkdir();

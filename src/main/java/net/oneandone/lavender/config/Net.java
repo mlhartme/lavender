@@ -57,10 +57,11 @@ public class Net {
                 .addStatint("cdnfe01.schlund.de")
                 .addStatint("cdnfe02.schlund.de")
                 .addStatint("cdnfe03.schlund.de")
+                /* the following is excludes to avoid garbage collection of the file inside:
                 .addDocroot("var/bazaarvoice", "indexes/bazaarvoice",
-                        new Alias("bazaar"))
-                .addDocroot("var/downloads", "indexes/downloads",
-                        new Alias("downloads")));
+                        new Alias("bazaar")) */
+                .addDocroot("var/svn", "indexes/svn",
+                        new Alias("svn")));
 
         net.add("walter", new Cluster()
                 .addHost("walter.websales.united.domain", "mhm")
@@ -68,8 +69,8 @@ public class Net {
                         new Alias("fix", "fix.lavender.walter.websales.united.domain"))
                 .addDocroot("Users/mhm/lavender/htdocs/flash", "Users/mhm/lavender/indexes/flash",
                         new Alias("flash"))
-                .addDocroot("Users/mhm/lavender/htdocs/var/downloads", "Users/mhm/lavender/indexes/downloads",
-                        new Alias("downloads")));
+                .addDocroot("Users/mhm/lavender/htdocs/var/svn", "Users/mhm/lavender/indexes/svn",
+                        new Alias("svn")));
 
         // views
         net.addView("eu",
@@ -84,9 +85,9 @@ public class Net {
         net.addView("walter",
                 "web", "walter",
                 "flash-eu", "walter/flash",
-                "svn", "walter/downloads");
+                "svn", "walter/svn");
         net.addView("internal",
-                "svn", "internal/downloads");
+                "svn", "internal/svn");
         return net;
     }
 
