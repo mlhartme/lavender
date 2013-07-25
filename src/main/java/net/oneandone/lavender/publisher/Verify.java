@@ -95,6 +95,8 @@ public class Verify extends Base {
         }
         if (problem) {
             throw new IOException("verify failed");
+        } else {
+            console.info.println("verify ok");
         }
     }
 
