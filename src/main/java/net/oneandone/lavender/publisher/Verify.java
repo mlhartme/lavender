@@ -60,16 +60,17 @@ public class Verify extends Base {
         problem = false;
         cluster = net.cluster(clusterName);
         for (Host host : cluster.hosts) {
+            console.info.println(host);
             hostroot = host.open(console.world);
             for (Docroot docrootObj : cluster.docroots) {
                 docroot = docrootObj.node(hostroot);
                 if (docroot.exists()) {
                     references = new HashSet<>();
-                    console.info.println(host);
-                    console.info.print("collecting files ...");
+                    console.info.println(docroot.getURI().toString());
+                    console.info.print("  collecting files ...");
                     files = find(docroot, "-type", "f");
                     console.info.println("done: " + files.size());
-                    console.info.print("collecting references ...");
+                    console.info.print("  collecting references ...");
                     for (Node file : docrootObj.indexDirectory(hostroot).list()) {
                         index = Index.load(file);
                         for (Label label : index) {

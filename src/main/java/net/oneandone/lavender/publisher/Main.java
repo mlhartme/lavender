@@ -112,7 +112,7 @@ public class Main extends Cli implements Command {
         console.info.println("publishing commands");
         console.info.println("  'war' view inputWar outputWar idxName");
         console.info.println("                            publish resources from the specified war.");
-        console.info.println("  'svn' directory           publish resources from svn");
+        console.info.println("  'svn' view directory      publish resources from svn");
         console.info.println("other commands");
         console.info.println("  'help'                    print this message");
         console.info.println("  'version'                 print version information");

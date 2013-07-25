@@ -15,8 +15,6 @@
  */
 package net.oneandone.lavender.publisher;
 
-import net.oneandone.lavender.config.Cluster;
-import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Filter;
 import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Settings;
@@ -33,7 +31,7 @@ import net.oneandone.sushi.cli.Value;
 import java.io.IOException;
 
 public class Svn extends Base {
-    @Value(name = "cluster", position = 1)
+    @Value(name = "view", position = 1)
     private String viewName;
 
     @Value(name = "directory", position = 2)
@@ -45,13 +43,8 @@ public class Svn extends Base {
 
     @Override
     public void invoke() throws IOException {
-        String url;
-
-        url = net.svn.get(directory);
-        if (url == null) {
-            throw new ArgumentException("unknown svn directory: " + directory);
-        }
-        invoke(url);
+        // TODO: configurable
+        invoke("https://svn.1and1.org/svn/PFX/lavender/data/" + directory);
     }
 
     private void invoke(String svnurl) throws IOException {
@@ -64,17 +57,20 @@ public class Svn extends Base {
         long changed;
         Index index;
 
+        if (directory.isEmpty() || directory.contains("/")) {
+            throw new ArgumentException("invalid directory: " + directory);
+        }
         view = net.view(viewName);
         target = view.get("svn");
         filter = new Filter();
         filter.setIncludes("*");
         filter.setExcludes();
         ec = new SvnModuleConfig("svn", filter);
-        ec.pathPrefix = "";
+        ec.pathPrefix = directory + "/";
         ec.svnurl = svnurl;
         ec.lavendelize = false;
         e = ec.create(console.world, settings.svnUsername, settings.svnPassword);
-        distributor = Distributor.open(console.world, target.cluster.hosts, target.docroot, directory + ".idx");
+        distributor = target.open(console.world, directory + ".idx");
         changed = e.run(distributor);
         index = distributor.close();
         console.info.println("done: " + changed + "/" + index.size() + " files changed");

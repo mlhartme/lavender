@@ -71,8 +71,6 @@ public class Net {
                 .addDocroot("Users/mhm/lavender/htdocs/var/downloads", "Users/mhm/lavender/indexes/downloads",
                         new Alias("downloads")));
 
-        net.addSvn("downloads", "https://svn.1and1.org/svn/PFX/lavender/cors");
-
         // views
         net.addView("eu",
                 "web", "eu",
@@ -104,12 +102,9 @@ public class Net {
 
     public final Map<String, View> views;
 
-    public final Map<String, String> svn;
-
     public Net() {
         clusters = new HashMap<>();
         views = new HashMap<>();
-        svn = new HashMap<>();
     }
 
     public void addView(String name, String ... args) {
@@ -142,10 +137,6 @@ public class Net {
             view.add(args[i], cluster, docroot, alias);
         }
         add(name, view);
-    }
-
-    public void addSvn(String name, String url) {
-        svn.put(name, url);
     }
 
     public void add(String name, Cluster cluster) {
