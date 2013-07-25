@@ -82,22 +82,18 @@ public class Distributor {
 
     public boolean write(Label label, byte[] data) throws IOException {
         Node dest;
+        String destPath;
         Label prevLabel;
         boolean changed;
 
         prevLabel = prev.lookup(label.getOriginalPath());
-        if (prevLabel == null) {
-            // add
+        if (prevLabel == null || !Arrays.equals(prevLabel.md5(), label.md5())) {
+            destPath = label.getLavendelizedPath();
             for (Node destroot : targets.values()) {
-                dest = destroot.join(label.getLavendelizedPath());
+                dest = destroot.join(destPath);
+                // always create parent, because even if the label exists: a changed md5 sum causes a changed path
                 dest.getParent().mkdirsOpt();
                 dest.writeBytes(data);
-            }
-            changed = true;
-        } else if (!Arrays.equals(prevLabel.md5(), label.md5())) {
-            // update
-            for (Node destroot : targets.values()) {
-                destroot.join(label.getLavendelizedPath()).writeBytes(data);
             }
             changed = true;
         } else {
