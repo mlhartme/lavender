@@ -15,7 +15,6 @@
  */
 package net.oneandone.lavender.publisher;
 
-import com.jcraft.jsch.JSchException;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Host;
@@ -27,12 +26,8 @@ import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.cli.Option;
 import net.oneandone.sushi.cli.Value;
 import net.oneandone.sushi.fs.Node;
-import net.oneandone.sushi.fs.ssh.SshNode;
-import net.oneandone.sushi.io.OS;
-import net.oneandone.sushi.util.Strings;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -72,9 +67,7 @@ public class GarbageCollection extends Base {
                     for (Node file : docrootObj.indexDirectory(hostroot).list()) {
                         index = Index.load(file);
                         for (Label label : index) {
-                            if (!references.add(label.getLavendelizedPath())) {
-                                throw new IllegalStateException("duplicate path: " + label.getLavendelizedPath());
-                            }
+                            references.add(label.getLavendelizedPath());
                         }
                     }
                     console.info.println("done: " + references.size());
