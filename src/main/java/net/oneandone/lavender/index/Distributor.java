@@ -116,7 +116,7 @@ public class Distributor {
         }
         for (Map.Entry<Node, Node> entry : targets.entrySet()) {
             index = entry.getKey();
-            index.getParent().mkdirOpt();
+            index.getParent().mkdirsOpt();
             try (OutputStream out = index.createOutputStream()) {
                 next.save(out);
             }

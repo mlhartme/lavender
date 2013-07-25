@@ -106,7 +106,7 @@ public class Main extends Cli implements Command {
         console.info.println("usage: 'lavender' command");
         console.info.println();
         console.info.println("publishing commands");
-        console.info.println("  'war' cluster inputWar outputWar idxName");
+        console.info.println("  'war' view inputWar outputWar idxName");
         console.info.println("                            publish resources from the specified war.");
         console.info.println("  'svn' directory           publish resources from svn");
         console.info.println("other commands");

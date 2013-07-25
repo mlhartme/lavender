@@ -72,6 +72,7 @@ public class Net {
 
         net.addSvn("downloads", "https://svn.1and1.org/svn/PFX/lavender/cors");
 
+        // views
         net.addView("eu",
                 "web", "eu",
                 "flash", "flash-eu");
