@@ -18,7 +18,6 @@ package net.oneandone.lavender.publisher;
 import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Settings;
 import net.oneandone.lavender.config.View;
-import net.oneandone.lavender.index.Index;
 import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.cli.Value;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -46,7 +45,6 @@ public class War extends Base {
     @Override
     public void invoke() throws IOException {
         FileNode tmp;
-        Index outputIndex;
         FileNode outputNodesFile;
         WarEngine engine;
         View view;
@@ -54,11 +52,10 @@ public class War extends Base {
         inputWar.checkFile();
         outputWar.checkNotExists();
         tmp = inputWar.getWorld().getTemp();
-        outputIndex = new Index();
         outputNodesFile = tmp.createTempFile();
         view = net.view(viewName);
         engine = new WarEngine(view, indexName, settings.svnUsername, settings.svnPassword,
-                inputWar, outputWar, outputIndex, outputNodesFile, view.get(View.WEB).alias.nodesFile());
+                inputWar, outputWar, outputNodesFile, view.get(View.WEB).alias.nodesFile());
         engine.run();
         outputNodesFile.deleteFile();
     }

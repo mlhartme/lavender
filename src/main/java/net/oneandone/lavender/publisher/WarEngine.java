@@ -19,7 +19,6 @@ import net.oneandone.lavender.config.View;
 import net.oneandone.lavender.filter.Lavender;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
-import net.oneandone.lavender.index.Label;
 import net.oneandone.lavender.modules.Module;
 import net.oneandone.lavender.modules.PustefixModule;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -29,7 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,14 +48,13 @@ public class WarEngine {
     private final String svnPassword;
     private final FileNode inputWar;
     private final FileNode outputWar;
-    /** maps type to distributor */
-    public final Map<String, Distributor> distributors;
-    private final Index outputIndex;
+    /** maps type to Distributor */
+    private final Map<String, Distributor> distributors;
     private final FileNode outputNodesFile;
     private final String nodes;
 
     public WarEngine(View view, String indexName, String svnUsername, String svnPassword,
-                     FileNode inputWar, FileNode outputWar, Index outputIndex, FileNode outputNodesFile, String nodes) {
+                     FileNode inputWar, FileNode outputWar, FileNode outputNodesFile, String nodes) {
         this.view = view;
         this.indexName = indexName;
         this.svnUsername = svnUsername;
@@ -65,7 +62,6 @@ public class WarEngine {
         this.inputWar = inputWar;
         this.outputWar = outputWar;
         this.distributors = new HashMap<>();
-        this.outputIndex = outputIndex;
         this.outputNodesFile = outputNodesFile;
         this.nodes = nodes;
     }
@@ -73,33 +69,30 @@ public class WarEngine {
     /**
      * Lavendelizes the WAR file and publishes resources.
      *
-     * @throws IOException
+     * @return types mapped to indexes
      */
-    public void run() throws IOException {
+    public Map<String, Index> run() throws IOException {
         long started;
         List<Module> modules;
         Index index;
+        long absolute;
         long changed;
+        Map<String, Index> result;
 
         started = System.currentTimeMillis();
         modules = PustefixModule.fromWebapp(inputWar.openZip(), svnUsername, svnPassword);
+        absolute = 0;
         changed = extract(modules);
+        result = new HashMap<>();
         for (Map.Entry<String, Distributor> entry : distributors.entrySet()) {
-            index = entry.getValue().close();
-            //  TODO
-            if (View.WEB.equals(entry.getKey()) && index != null /* for tests */) {
-                for (Label label : index) {
-                    outputIndex.add(label);
-                }
-            }
+            index =  entry.getValue().close();
+            absolute += index.size();
+            result.put(entry.getKey(), index);
         }
         outputNodesFile.writeString(nodes);
-        updateWarFile();
-        LOG.info("done: " + changed + "/" + outputIndex.size() + " files changed (" + (System.currentTimeMillis() - started) + " ms)");
-    }
-
-    public long extract(Module... modules) throws IOException {
-        return extract(Arrays.asList(modules));
+        updateWarFile(result.get(View.WEB));
+        LOG.info("done: " + changed + "/" + absolute + " files changed (" + (System.currentTimeMillis() - started) + " ms)");
+        return result;
     }
 
     public long extract(List<Module> modules) throws IOException {
@@ -120,7 +113,7 @@ public class WarEngine {
         return changed;
     }
 
-    private void updateWarFile() throws IOException {
+    private void updateWarFile(Index webIndex) throws IOException {
         ZipInputStream zin = new ZipInputStream(new FileInputStream(inputWar.toPath().toFile()));
         ZipOutputStream out = new ZipOutputStream(outputWar.createOutputStream());
         ZipEntry entry;
@@ -141,7 +134,7 @@ public class WarEngine {
 
         ZipEntry indexEntry = new ZipEntry(Lavender.LAVENDEL_IDX);
         out.putNextEntry(indexEntry);
-        outputIndex.save(out);
+        webIndex.save(out);
         out.closeEntry();
 
         ZipEntry nodesEntry = new ZipEntry(Lavender.LAVENDEL_NODES);

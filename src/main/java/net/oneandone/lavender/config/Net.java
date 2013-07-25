@@ -63,9 +63,9 @@ public class Net {
 
         net.add("walter", new Cluster()
                 .addHost("walter.websales.united.domain", "mhm")
-                .addDocroot("Users/mhm/lavender/htdocs/fix", "Users/mhm/lavender/indexes",
+                .addDocroot("Users/mhm/lavender/htdocs/fix", "Users/mhm/lavender/indexes/fix",
                         new Alias("fix", "fix.lavender.walter.websales.united.domain"))
-                .addDocroot("Users/mhm/lavender/htdocs/flash", "Users/mhm/lavender/indexes",
+                .addDocroot("Users/mhm/lavender/htdocs/flash", "Users/mhm/lavender/indexes/flash",
                         new Alias("flash"))
                 .addDocroot("Users/mhm/lavender/htdocs/var/downloads", "Users/mhm/lavender/indexes/downloads",
                         new Alias("downloads")));
@@ -81,7 +81,7 @@ public class Net {
         net.addView("akamai-us",
                 "web", "us/akamai",
                 "flash", "flash-us");
-        net.addView("test",
+        net.addView("walter",
                 "web", "walter",
                 "flash", "walter/flash",
                 "svn", "walter/downloads");

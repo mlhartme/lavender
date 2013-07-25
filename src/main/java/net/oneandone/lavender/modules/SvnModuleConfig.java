@@ -16,6 +16,7 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.config.Filter;
+import net.oneandone.lavender.config.View;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -41,7 +42,7 @@ public class SvnModuleConfig {
     public final String folder;
     public final Filter filter;
     public String svnurl;
-    public String type = "web";
+    public String type = View.WEB;
     public boolean lavendelize = true;
     public String pathPrefix = "";
 
@@ -83,6 +84,14 @@ public class SvnModuleConfig {
                         config.pathPrefix = value;
                     } else if (key.equals("type")) {
                         config.type = value;
+                    } else if (key.equals("storage")) {
+                        if (value.contains("flash")) {
+                            // TODO: dump
+                            LOG.warn("CAUTION: out-dated storage configured - use type instead");
+                            config.type = value;
+                        } else {
+                            throw new IllegalArgumentException("storage no longer supported: " + value);
+                        }
                     } else if (key.equals("lavendelize")) {
                         if ("true".equals(value)) {
                             config.lavendelize = true;
