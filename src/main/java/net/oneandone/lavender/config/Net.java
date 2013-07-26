@@ -30,14 +30,14 @@ public class Net {
             .addCdn("cdnfe01.schlund.de")
             .addCdn("cdnfe02.schlund.de")
             .addCdn("cdnfe03.schlund.de")
-            .addDocroot("home/wwwcdn/htdocs/fix", "home/wwwcdn/indexes",
+            .addDocroot("home/wwwcdn/htdocs/fix", "home/wwwcdn/indexes/fix",
                     new Alias("fix", "s1.uicdn.net", "s2.uicdn.net", "s3.uicdn.net", "s4.uicdn.net")));
         net.add("us", new Cluster()
                 // see http://issue.tool.1and1.com/browse/ITOSHA-3624 and http://issue.tool.1and1.com/browse/ITOSHA-3667
                 .addCdn("wscdnfelxaa01.fe.server.lan")
                 .addCdn("wscdnfelxaa02.fe.server.lan")
                 .addCdn("wscdnfelxaa03.fe.server.lan")
-                .addDocroot("home/wwwcdn/htdocs/fix", "home/wwwcdn/indexes",
+                .addDocroot("home/wwwcdn/htdocs/fix", "home/wwwcdn/indexes/fix",
                         new Alias("fix", "u1.uicdn.net", "u2.uicdn.net", "u3.uicdn.net", "u4.uicdn.net"),
                         new Alias("akamai", "au1.uicdn.net", "au2.uicdn.net", "au3.uicdn.net", "au4.uicdn.net")));
         net.add("flash-eu", new Cluster()
