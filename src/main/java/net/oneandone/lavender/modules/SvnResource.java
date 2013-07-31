@@ -50,6 +50,10 @@ public class SvnResource extends Resource {
         return path;
     }
 
+    public String getFolder() {
+        return folder;
+    }
+
     public long getSize() {
         return length;
     }
@@ -68,22 +72,5 @@ public class SvnResource extends Resource {
             dataNode = null;
         }
         return dataBytes;
-    }
-
-    public Label labelLavendelized(String pathPrefix) throws IOException {
-
-        String filename;
-        String md5str;
-
-        filename = path.substring(path.lastIndexOf('/') + 1); // ok when not found
-        md5str = Hex.encodeString(getMd5());
-        if (md5str.length() < 3) {
-            throw new IllegalArgumentException(md5str);
-        }
-        return new Label(path, pathPrefix + md5str.substring(0, 3) + "/" + md5str.substring(3) + "/" + folder + "/" + filename, getMd5());
-    }
-
-    public Label labelNormal(String pathPrefix) throws IOException {
-        return new Label(path, pathPrefix + path, getMd5());
     }
 }
