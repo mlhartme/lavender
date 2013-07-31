@@ -24,15 +24,11 @@ import java.security.NoSuchAlgorithmException;
 
 public class Resource {
     public static Resource forBytes(byte[] bytes, String path, String folder) {
-        return new Resource(URI.create("mem://" + path), path, bytes.length, System.currentTimeMillis(), folder, null, bytes);
+        return new Resource(URI.create("mem://" + path), path, bytes.length, System.currentTimeMillis(), folder, null, bytes, null);
     }
 
     public static Resource forNode(Node node, String path, String folder) throws IOException {
-        return forNode(node, path, node.length(), node.getLastModified(), folder);
-    }
-
-    public static Resource forNode(Node node, String path, long length, long lastModified, String folder) throws IOException {
-        return new Resource(node.getURI(), path, length, lastModified, folder, node, null);
+        return new Resource(node.getURI(), path, node.length(), node.getLastModified(), folder, node, null, null);
     }
 
     private final URI origin;
@@ -47,7 +43,8 @@ public class Resource {
 
     private byte[] lazyMd5;
 
-    private Resource(URI origin, String path, long length, long lastModified, String folder, Node dataNode, byte[] dataBytes) {
+    public Resource(URI origin, String path, long length, long lastModified, String folder,
+                    Node dataNode, byte[] dataBytes, byte[] lazyMd5) {
         this.origin = origin;
         this.path = path;
         this.length = length;
@@ -57,7 +54,7 @@ public class Resource {
         this.dataNode = dataNode;
         this.dataBytes = dataBytes;
 
-        this.lazyMd5 = null;
+        this.lazyMd5 = lazyMd5;
     }
 
     public String getPath() {

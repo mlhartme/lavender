@@ -60,16 +60,4 @@ public class SvnModuleConfigTest {
         result = SvnModuleConfig.parse(props);
         assertEquals(3, result.size());
     }
-
-    @Test
-    public void simplify() {
-        check("", "");
-        check("ab/cd/ef", "ab/cd/ef");
-        check("a/b", "a/trunk/b");
-        check("a/b", "a/tags/foo-1.2/b");
-    }
-
-    private void check(String expected, String orig) {
-        assertEquals(expected, SvnModuleConfig.simplify(orig));
-    }
 }

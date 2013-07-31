@@ -18,6 +18,7 @@ package net.oneandone.lavender.modules;
 import net.oneandone.lavender.config.Filter;
 import net.oneandone.lavender.config.View;
 import net.oneandone.lavender.index.Index;
+import net.oneandone.lavender.index.Label;
 import net.oneandone.lavender.index.Resource;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
@@ -30,17 +31,11 @@ import org.slf4j.LoggerFactory;
 import org.tmatesoft.svn.core.ISVNDirEntryHandler;
 import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNDirEntry;
-import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
-import org.tmatesoft.svn.core.internal.util.SVNXMLUtil;
-import org.tmatesoft.svn.core.internal.wc.SVNPath;
-import org.tmatesoft.svn.core.wc.SVNLogClient;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -125,6 +120,7 @@ public class SvnModuleConfig {
         FileNode cache;
         final SvnNode root;
         final List<Resource> resources;
+        final Index index;
 
         if (svnurl == null) {
             throw new IllegalArgumentException("missing svn url");
@@ -132,26 +128,39 @@ public class SvnModuleConfig {
         if (folder.startsWith("/") || folder.endsWith("/")) {
             throw new IllegalArgumentException(folder);
         }
-        cache = (FileNode) world.getHome().join(".cache/lavender");
-        cache.mkdirsOpt();
-        resources = new ArrayList<>();
         try {
             // TODO: ugly side-effect
             world.getFilesystem("svn", SvnFilesystem.class).setDefaultCredentials(svnUsername, svnPassword);
             root = (SvnNode) world.node("svn:" + svnurl);
+            cache = (FileNode) world.getHome().join(".cache/lavender",
+                    root.getRoot().getRepository().getRepositoryRoot(false).getHost(), root.getPath().replace('/', '.'));
+            if (cache.exists()) {
+                index = Index.load(cache);
+            } else {
+                cache.getParent().mkdirsOpt();
+                index = new Index();
+            }
+
+            resources = new ArrayList<>();
             root.getRoot().getClientMananger().getLogClient().doList(
                     root.getSvnurl(), null, SVNRevision.HEAD, true, SVNDepth.INFINITY, SVNDirEntry.DIRENT_ALL, new ISVNDirEntryHandler() {
                 @Override
                 public void handleDirEntry(SVNDirEntry entry) throws SVNException {
                     String path;
+                    Label label;
+                    byte[] md5;
+                    Node node;
 
                     if (entry.getKind() == SVNNodeKind.FILE) {
                         path = entry.getRelativePath();
-                        try {
-                            resources.add(Resource.forNode(root.join(path), path, entry.getSize(), entry.getDate().getTime(), folder));
-                        } catch (IOException e) {
-                            throw new RuntimeException("TODO", e);
+                        label = index.lookup(path);
+                        if (label != null && label.getLavendelizedPath().equals(Long.toString(entry.getRevision()))) {
+                            md5 = label.md5();
+                        } else {
+                            md5 = null;
                         }
+                        node = root.join(path);
+                        resources.add(new Resource(node.getURI(), path, entry.getSize(), entry.getDate().getTime(), folder, node, null, md5));
                     }
                 }
             });
@@ -161,20 +170,5 @@ public class SvnModuleConfig {
             throw new IOException("error scanning svn module " + svnurl + ": " + e.getMessage(), e);
         }
         return new SvnModule(filter, type, root, lavendelize, pathPrefix, resources, folder);
-    }
-
-    private static final String TAGS = "/tags/";
-
-    public static String simplify(String path) {
-        int idx;
-        int end;
-
-        path = path.replace("/trunk/", "/");
-        idx = path.indexOf(TAGS);
-        if (idx != -1) {
-            end = path.indexOf('/', idx + TAGS.length());
-            path = path.substring(0, idx) + path.substring(end);
-        }
-        return path;
     }
 }
