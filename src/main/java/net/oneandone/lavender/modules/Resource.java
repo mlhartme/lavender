@@ -19,14 +19,13 @@ import net.oneandone.lavender.index.Hex;
 import net.oneandone.lavender.index.Label;
 
 import java.io.IOException;
-import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public abstract class Resource {
     public abstract String getPath();
     public abstract long getLastModified() throws IOException;
-    public abstract URI getOrigin();
+    public abstract String getOrigin();
 
     public abstract long getSize();
 

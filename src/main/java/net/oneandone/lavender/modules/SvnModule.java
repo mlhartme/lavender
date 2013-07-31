@@ -54,7 +54,13 @@ public class SvnModule extends Module {
         return index;
     }
 
+    public String uri() {
+        return root.getURI().toString();
+    }
+
     public void saveCaches() throws IOException {
         index.save(indexFile);
     }
+
+
 }

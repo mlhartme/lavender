@@ -70,9 +70,6 @@ public class Lavender implements Filter {
         this.filterConfig = config;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public void lazyInit() throws ServletException {
         long started;
         Node src;

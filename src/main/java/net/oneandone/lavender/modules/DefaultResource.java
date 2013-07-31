@@ -15,25 +15,21 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.lavender.index.Hex;
-import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.fs.Node;
 
 import java.io.IOException;
 import java.net.URI;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class DefaultResource extends Resource {
     public static DefaultResource forBytes(byte[] bytes, String path, String folder) {
-        return new DefaultResource(URI.create("mem://" + path), path, bytes.length, System.currentTimeMillis(), folder, null, bytes, null);
+        return new DefaultResource("mem://" + path, path, bytes.length, System.currentTimeMillis(), folder, null, bytes, null);
     }
 
     public static DefaultResource forNode(Node node, String path, String folder) throws IOException {
-        return new DefaultResource(node.getURI(), path, node.length(), node.getLastModified(), folder, node, null, null);
+        return new DefaultResource(node.getURI().toString(), path, node.length(), node.getLastModified(), folder, node, null, null);
     }
 
-    private final URI origin;
+    private final String origin;
     private final String path;
     private final long length;
     private final long lastModified;
@@ -45,7 +41,7 @@ public class DefaultResource extends Resource {
 
     protected byte[] lazyMd5;
 
-    public DefaultResource(URI origin, String path, long length, long lastModified, String folder,
+    public DefaultResource(String origin, String path, long length, long lastModified, String folder,
                            Node dataNode, byte[] dataBytes, byte[] lazyMd5) {
         this.origin = origin;
         this.path = path;
@@ -75,7 +71,7 @@ public class DefaultResource extends Resource {
         return lastModified;
     }
 
-    public URI getOrigin() {
+    public String getOrigin() {
         return origin;
     }
 

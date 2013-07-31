@@ -1,23 +1,19 @@
 package net.oneandone.lavender.modules;
 
-import net.oneandone.lavender.index.Hex;
 import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.fs.Node;
 
 import java.io.IOException;
-import java.net.URI;
 
 public class SvnResource extends Resource {
     private final SvnModule module;
     private final long revision;
-    private final URI origin;
     private final String path;
     private final long length;
     private final long lastModified;
     private final String folder;
 
-    public SvnResource(SvnModule module, long revision, URI origin, String path, long length, long lastModified, String folder, Node dataNode, byte[] dataBytes, byte[] lazyMd5) {
-        this.origin = origin;
+    public SvnResource(SvnModule module, long revision, String path, long length, long lastModified, String folder, Node dataNode, byte[] dataBytes, byte[] lazyMd5) {
         this.path = path;
         this.length = length;
         this.lastModified = lastModified;
@@ -62,8 +58,8 @@ public class SvnResource extends Resource {
         return lastModified;
     }
 
-    public URI getOrigin() {
-        return origin;
+    public String getOrigin() {
+        return module.uri() + "/" + path;
     }
 
     public byte[] getData() throws IOException {

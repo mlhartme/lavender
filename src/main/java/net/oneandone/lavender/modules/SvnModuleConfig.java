@@ -165,7 +165,7 @@ public class SvnModuleConfig {
                         }
                         node = root.join(path);
                         resources.add(new SvnResource(module, entry.getRevision(),
-                                node.getURI(), path, entry.getSize(), entry.getDate().getTime(), folder, node, null, md5));
+                                path, entry.getSize(), entry.getDate().getTime(), folder, node, null, md5));
                     }
                 }
             });
