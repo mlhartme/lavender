@@ -26,6 +26,9 @@ public abstract class Resource {
     public abstract String getPath();
     public abstract long getLastModified() throws IOException;
     public abstract URI getOrigin();
+
+    public abstract long getSize();
+
     public abstract byte[] getMd5() throws IOException;
 
     public abstract byte[] getData() throws IOException;
@@ -33,6 +36,11 @@ public abstract class Resource {
     public abstract Label labelLavendelized(String pathPrefix) throws IOException;
 
     public abstract Label labelNormal(String pathPrefix) throws IOException;
+
+    @Override
+    public String toString() {
+        return getPath() + "[" + getSize() + "] ->" + getOrigin();
+    }
 
     //--
 

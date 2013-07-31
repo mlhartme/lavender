@@ -86,12 +86,6 @@ public class DefaultResource extends Resource {
         return dataBytes;
     }
 
-    @Override
-    public String toString() {
-        return path + "[" + length + "] ->" + origin;
-    }
-
-
     public Label labelLavendelized(String pathPrefix) throws IOException {
 
         String filename;
