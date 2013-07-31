@@ -74,7 +74,7 @@ public class PustefixResourceIterator implements Iterator<Resource> {
                     folder = module.getProjectName();
                 }
                 try {
-                    next = Resource.forNode(file, path, folder);
+                    next = DefaultResource.forNode(file, path, folder);
                 } catch (IOException e) {
                     throw new RuntimeException("TODO", e);
                 }
