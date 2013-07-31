@@ -31,10 +31,8 @@ public class ResourceTest {
 
     @Before
     public void setup() throws IOException {
-        Node node;
-
-        node = WORLD.memoryNode((byte) 0x00, (byte) 0x01, (byte) 0x7F, (byte) 0x80, (byte) 0x81, (byte) 0xFF);
-        resource = Resource.forNode(node, "modules/x/img/close.gif", "folder");
+        resource = Resource.forBytes(new byte[] {(byte) 0x00, (byte) 0x01, (byte) 0x7F, (byte) 0x80, (byte) 0x81, (byte) 0xFF},
+                "modules/x/img/close.gif", "folder");
     }
 
     @Test

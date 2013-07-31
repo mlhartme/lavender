@@ -52,7 +52,7 @@ public class JarStreamResourceIterator implements Iterator<Resource> {
                 path = entry.getName();
                 if (!entry.isDirectory() && moduleConfig.isPublicResource(path)) {
                     data = world.getBuffer().readBytes(moduleInputStream);
-                    next = Resource.forNode(world.memoryNode(data), moduleConfig.getPath(path), moduleConfig.getModuleName());
+                    next = Resource.forBytes(data, moduleConfig.getPath(path), moduleConfig.getModuleName());
                     return true;
                 }
             }

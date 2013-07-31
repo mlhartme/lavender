@@ -16,7 +16,6 @@
 package net.oneandone.lavender.index;
 
 import net.oneandone.sushi.fs.Node;
-import net.oneandone.sushi.fs.World;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -29,13 +28,9 @@ public class DistributorTest {
     @Test
     public void write() throws IOException {
         Index index;
-        World world;
-        Node node;
 
-        world = new World();
-        node = world.memoryNode("abcd");
-        Resource resource1 = Resource.forNode(node, "img/test.png", "folder");
-        Resource resource2 = Resource.forNode(node, "modules/stageassistent/img/test.gif", "stageassistent");
+        Resource resource1 = Resource.forBytes("abcd".getBytes(), "img/test.png", "folder");
+        Resource resource2 = Resource.forBytes("abcd".getBytes(), "modules/stageassistent/img/test.gif", "stageassistent");
         Distributor distributor = new Distributor(new HashMap<Node, Node>(), new Index());
         distributor.write(resource1.labelLavendelized(""), resource1.getData());
         distributor.write(resource2.labelLavendelized(""), resource1.getData());

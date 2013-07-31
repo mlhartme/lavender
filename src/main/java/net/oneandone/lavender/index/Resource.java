@@ -23,6 +23,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Resource {
+    public static Resource forBytes(byte[] bytes, String path, String folder) {
+        return new Resource(URI.create("mem://" + path), path, bytes.length, System.currentTimeMillis(), folder, null, bytes);
+    }
     public static Resource forNode(Node node, String path, String folder) throws IOException {
         return new Resource(node.getURI(), path, node.length(), node.getLastModified(), folder, node, null);
     }
