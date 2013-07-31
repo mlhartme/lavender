@@ -91,6 +91,9 @@ public class WarEngine {
         }
         outputNodesFile.writeString(nodes);
         updateWarFile(result.get(View.WEB));
+        for (Module module : modules) {
+            module.saveCaches();
+        }
         LOG.info("done: " + changed + "/" + absolute + " files changed (" + (System.currentTimeMillis() - started) + " ms)");
         return result;
     }

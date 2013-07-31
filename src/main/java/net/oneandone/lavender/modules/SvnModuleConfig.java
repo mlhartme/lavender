@@ -120,7 +120,9 @@ public class SvnModuleConfig {
         FileNode cache;
         final SvnNode root;
         final List<Resource> resources;
-        final Index index;
+        final Index oldIndex;
+        final Index newIndex;
+        final SvnModule module;
 
         if (svnurl == null) {
             throw new IllegalArgumentException("missing svn url");
@@ -135,13 +137,15 @@ public class SvnModuleConfig {
             cache = (FileNode) world.getHome().join(".cache/lavender",
                     root.getRoot().getRepository().getRepositoryRoot(false).getHost(), root.getPath().replace('/', '.'));
             if (cache.exists()) {
-                index = Index.load(cache);
+                oldIndex = Index.load(cache);
             } else {
                 cache.getParent().mkdirsOpt();
-                index = new Index();
+                oldIndex = new Index();
             }
 
+            newIndex = new Index();
             resources = new ArrayList<>();
+            module = new SvnModule(filter, type, newIndex, cache, root, lavendelize, pathPrefix, resources, folder);
             root.getRoot().getClientMananger().getLogClient().doList(
                     root.getSvnurl(), null, SVNRevision.HEAD, true, SVNDepth.INFINITY, SVNDirEntry.DIRENT_ALL, new ISVNDirEntryHandler() {
                 @Override
@@ -153,22 +157,24 @@ public class SvnModuleConfig {
 
                     if (entry.getKind() == SVNNodeKind.FILE) {
                         path = entry.getRelativePath();
-                        label = index.lookup(path);
+                        label = oldIndex.lookup(path);
                         if (label != null && label.getLavendelizedPath().equals(Long.toString(entry.getRevision()))) {
                             md5 = label.md5();
+                            newIndex.add(label);
                         } else {
                             md5 = null;
                         }
                         node = root.join(path);
-                        resources.add(new Resource(node.getURI(), path, entry.getSize(), entry.getDate().getTime(), folder, node, null, md5));
+                        resources.add(new SvnResource(module, entry.getRevision(),
+                                node.getURI(), path, entry.getSize(), entry.getDate().getTime(), folder, node, null, md5));
                     }
                 }
             });
+            return module;
         } catch (RuntimeException | IOException e) {
             throw e;
         } catch (Exception e) {
             throw new IOException("error scanning svn module " + svnurl + ": " + e.getMessage(), e);
         }
-        return new SvnModule(filter, type, root, lavendelize, pathPrefix, resources, folder);
     }
 }

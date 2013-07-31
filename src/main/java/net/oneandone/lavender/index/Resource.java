@@ -41,7 +41,7 @@ public class Resource {
     private Node dataNode;
     private byte[] dataBytes;
 
-    private byte[] lazyMd5;
+    protected byte[] lazyMd5;
 
     public Resource(URI origin, String path, long length, long lastModified, String folder,
                     Node dataNode, byte[] dataBytes, byte[] lazyMd5) {

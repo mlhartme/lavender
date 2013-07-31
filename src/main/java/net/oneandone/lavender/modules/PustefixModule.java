@@ -150,4 +150,8 @@ public class PustefixModule extends Module {
         return config.getProject().getName();
     }
 
+    @Override
+    public void saveCaches() {
+        // nothing to do
+    }
 }

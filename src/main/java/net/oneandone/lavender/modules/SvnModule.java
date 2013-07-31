@@ -16,27 +16,46 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.config.Filter;
+import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Resource;
+import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.svn.SvnNode;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
 /** Extracts resources from svn */
 public class SvnModule extends Module {
     private final SvnNode root;
+
+    // TODO: dump
     private final List<Resource> resources;
     private final String folder;
 
-    public SvnModule(Filter filter, String type, SvnNode root, boolean lavendelize, String pathPrefix,
+    private final Index index;
+    private final Node indexFile;
+
+    public SvnModule(Filter filter, String type, Index index, Node indexFile, SvnNode root, boolean lavendelize, String pathPrefix,
                      List<Resource> resources, String folder) {
         super(filter, type, lavendelize, pathPrefix);
         this.root = root;
         this.resources = resources;
         this.folder = folder;
+
+        this.index = index;
+        this.indexFile = indexFile;
     }
 
     public Iterator<Resource> iterator() {
         return resources.iterator();
+    }
+
+    public Index index() {
+        return index;
+    }
+
+    public void saveCaches() throws IOException {
+        index.save(indexFile);
     }
 }

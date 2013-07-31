@@ -45,4 +45,9 @@ public class JarModule extends Module {
             throw new IllegalStateException(e);
         }
     }
+
+    @Override
+    public void saveCaches() {
+        // nothing to do
+    }
 }

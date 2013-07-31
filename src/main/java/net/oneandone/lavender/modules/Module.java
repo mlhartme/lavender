@@ -69,4 +69,6 @@ public abstract class Module implements Iterable<Resource> {
         }
         return count;
     }
+
+    public abstract void saveCaches() throws IOException;
 }

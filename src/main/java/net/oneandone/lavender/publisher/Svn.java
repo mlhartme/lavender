@@ -52,7 +52,7 @@ public class Svn extends Base {
         Target target;
         Filter filter;
         SvnModuleConfig ec;
-        SvnModule e;
+        SvnModule module;
         Distributor distributor;
         long changed;
         Index index;
@@ -69,10 +69,11 @@ public class Svn extends Base {
         ec.pathPrefix = directory + "/";
         ec.svnurl = svnurl;
         ec.lavendelize = false;
-        e = ec.create(console.world, settings.svnUsername, settings.svnPassword);
+        module = ec.create(console.world, settings.svnUsername, settings.svnPassword);
         distributor = target.open(console.world, directory + ".idx");
-        changed = e.run(distributor);
+        changed = module.run(distributor);
         index = distributor.close();
+        module.saveCaches();
         console.info.println("done: " + changed + "/" + index.size() + " files changed");
     }
 }
