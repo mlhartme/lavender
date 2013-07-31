@@ -16,7 +16,7 @@
 package net.oneandone.lavender.filter.processor;
 
 import net.oneandone.lavender.index.Hex;
-import net.oneandone.lavender.index.Resource;
+import net.oneandone.lavender.modules.Resource;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -17,7 +17,6 @@ package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.config.Filter;
 import net.oneandone.lavender.config.View;
-import net.oneandone.lavender.index.Resource;
 import net.oneandone.lavender.modules.project.ProjectConfig;
 import net.oneandone.sushi.fs.Node;
 import org.slf4j.Logger;

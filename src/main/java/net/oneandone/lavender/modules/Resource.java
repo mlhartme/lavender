@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.oneandone.lavender.index;
+package net.oneandone.lavender.modules;
 
+import net.oneandone.lavender.index.Hex;
+import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.fs.Node;
 
 import java.io.IOException;

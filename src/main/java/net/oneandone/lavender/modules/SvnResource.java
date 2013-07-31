@@ -1,7 +1,6 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.index.Label;
-import net.oneandone.lavender.index.Resource;
 import net.oneandone.sushi.fs.Node;
 
 import java.io.IOException;

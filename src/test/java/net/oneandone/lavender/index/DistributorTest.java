@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.index;
 
+import net.oneandone.lavender.modules.Resource;
 import net.oneandone.sushi.fs.Node;
 import org.junit.Test;
 

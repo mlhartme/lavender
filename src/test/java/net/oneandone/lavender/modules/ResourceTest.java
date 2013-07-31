@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.oneandone.lavender.index;
+package net.oneandone.lavender.modules;
 
+import net.oneandone.lavender.index.Hex;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -61,7 +63,7 @@ public class ResourceTest {
         byte[] md5 = resource.md5(resource.getData());
         assertNotNull(md5);
         assertEquals(16, md5.length);
-        assertEquals("852e7d76cdb8af7395cd039c0ecc293a", Hex.encodeString(md5));
+        Assert.assertEquals("852e7d76cdb8af7395cd039c0ecc293a", Hex.encodeString(md5));
     }
 
     @Test

@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.index;
 
+import net.oneandone.lavender.modules.Resource;
 import org.junit.Before;
 import org.junit.Test;
 
