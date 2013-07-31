@@ -244,7 +244,7 @@ public class Lavender implements Filter {
         if (contentType != null) {
             response.setContentType(contentType);
         }
-        data = resource.readData();
+        data = resource.getData();
         contentLength = data.length;
         if (contentLength >= Integer.MAX_VALUE) {
             throw new IOException("file too big: " + contentLength);

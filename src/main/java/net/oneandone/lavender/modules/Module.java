@@ -52,21 +52,17 @@ public abstract class Module implements Iterable<Resource> {
         Filter filter;
         Label label;
         long count;
-        byte[] data;
-        byte[] md5;
 
         count = 0;
         filter = getFilter();
         for (Resource resource : this) {
             if (filter.isIncluded(resource.getPath())) {
-                data = resource.readData();
-                md5 = Resource.md5(data);
                 if (lavendelize) {
-                    label = resource.labelLavendelized(pathPrefix, md5);
+                    label = resource.labelLavendelized(pathPrefix);
                 } else {
-                    label = resource.labelNormal(pathPrefix, md5);
+                    label = resource.labelNormal(pathPrefix);
                 }
-                if (distributor.write(label, data)) {
+                if (distributor.write(label, resource.getData())) {
                     count++;
                 }
             }

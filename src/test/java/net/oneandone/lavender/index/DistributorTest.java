@@ -37,8 +37,8 @@ public class DistributorTest {
         Resource resource1 = new Resource(node, "img/test.png", "folder");
         Resource resource2 = new Resource(node, "modules/stageassistent/img/test.gif", "stageassistent");
         Distributor distributor = new Distributor(new HashMap<Node, Node>(), new Index());
-        distributor.write(resource1.labelLavendelized("", Resource.md5(node.readBytes())), resource1.readData());
-        distributor.write(resource2.labelLavendelized("", Resource.md5(node.readBytes())), resource1.readData());
+        distributor.write(resource1.labelLavendelized(""), resource1.getData());
+        distributor.write(resource2.labelLavendelized(""), resource1.getData());
         index = distributor.close();
         assertEquals("e2f/c714c4727ee9395f324cd2e7f331f/folder/test.png", index.lookup("img/test.png").getLavendelizedPath());
         assertEquals("e2f/c714c4727ee9395f324cd2e7f331f/stageassistent/test.gif",

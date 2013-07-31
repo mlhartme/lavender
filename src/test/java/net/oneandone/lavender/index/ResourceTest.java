@@ -39,7 +39,7 @@ public class ResourceTest {
 
     @Test
     public void testData() throws IOException {
-        byte[] data = resource.readData();
+        byte[] data = resource.getData();
         assertNotNull(data);
         assertEquals(6, data.length);
         assertEquals(0x00, data[0]);
@@ -58,12 +58,12 @@ public class ResourceTest {
     @Test
     public void testGetLavendelizedPath() throws IOException {
         assertEquals("852/e7d76cdb8af7395cd039c0ecc293a/folder/close.gif",
-                resource.labelLavendelized("", Resource.md5(resource.readData())).getLavendelizedPath());
+                resource.labelLavendelized("").getLavendelizedPath());
     }
 
     @Test
     public void testMd5() throws IOException {
-        byte[] md5 = resource.md5(resource.readData());
+        byte[] md5 = resource.md5(resource.getData());
         assertNotNull(md5);
         assertEquals(16, md5.length);
         assertEquals("852e7d76cdb8af7395cd039c0ecc293a", Hex.encodeString(md5));

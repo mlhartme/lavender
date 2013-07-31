@@ -24,14 +24,20 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Resource {
-    private final Node node;
+    private final Node origin;
     private final String path;
     private final String folder;
 
-    public Resource(Node node, String path, String folder) {
-        this.node = node;
+    private byte[] data;
+    private byte[] md5;
+
+    public Resource(Node origin, String path, String folder) {
+        this.origin = origin;
         this.path = path;
         this.folder = folder;
+
+        this.data = null;
+        this.md5 = null;
     }
 
     public String getPath() {
@@ -39,15 +45,25 @@ public class Resource {
     }
 
     public long getLastModified() throws IOException {
-        return node.getLastModified();
+        return origin.getLastModified();
     }
 
     public URI getOrigin() {
-        return node.getURI();
+        return origin.getURI();
     }
 
-    public byte[] readData() throws IOException {
-        return node.readBytes();
+    public byte[] getMd5() throws IOException {
+        if (md5 == null) {
+            md5 = md5(getData());
+        }
+        return md5;
+    }
+
+    public byte[] getData() throws IOException {
+        if (data == null) {
+            data = origin.readBytes();
+        }
+        return data;
     }
 
     @Override
@@ -55,28 +71,29 @@ public class Resource {
         String length;
 
         try {
-            length = Long.toString(node.length());
+            length = Long.toString(origin.length());
         } catch (LengthException e) {
             length = "?";
         }
-        return path + "[" + length + "] ->" + node.getURI();
+        return path + "[" + length + "] ->" + origin.getURI();
     }
 
 
-    public Label labelLavendelized(String pathPrefix, byte[] md5) {
+    public Label labelLavendelized(String pathPrefix) throws IOException {
+
         String filename;
         String md5str;
 
         filename = path.substring(path.lastIndexOf('/') + 1); // ok when not found
-        md5str = Hex.encodeString(md5);
+        md5str = Hex.encodeString(getMd5());
         if (md5str.length() < 3) {
             throw new IllegalArgumentException(md5str);
         }
-        return new Label(path, pathPrefix + md5str.substring(0, 3) + "/" + md5str.substring(3) + "/" + folder + "/" + filename, md5);
+        return new Label(path, pathPrefix + md5str.substring(0, 3) + "/" + md5str.substring(3) + "/" + folder + "/" + filename, getMd5());
     }
 
-    public Label labelNormal(String pathPrefix, byte[] md5) {
-        return new Label(path, pathPrefix + path, md5);
+    public Label labelNormal(String pathPrefix) throws IOException {
+        return new Label(path, pathPrefix + path, getMd5());
     }
 
     //-- utils
