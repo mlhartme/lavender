@@ -26,8 +26,13 @@ public class Resource {
     public static Resource forBytes(byte[] bytes, String path, String folder) {
         return new Resource(URI.create("mem://" + path), path, bytes.length, System.currentTimeMillis(), folder, null, bytes);
     }
+
     public static Resource forNode(Node node, String path, String folder) throws IOException {
-        return new Resource(node.getURI(), path, node.length(), node.getLastModified(), folder, node, null);
+        return forNode(node, path, node.length(), node.getLastModified(), folder);
+    }
+
+    public static Resource forNode(Node node, String path, long length, long lastModified, String folder) throws IOException {
+        return new Resource(node.getURI(), path, length, lastModified, folder, node, null);
     }
 
     private final URI origin;

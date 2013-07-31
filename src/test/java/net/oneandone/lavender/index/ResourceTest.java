@@ -15,8 +15,6 @@
  */
 package net.oneandone.lavender.index;
 
-import net.oneandone.sushi.fs.Node;
-import net.oneandone.sushi.fs.World;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,7 +24,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class ResourceTest {
-    private static final World WORLD = new World();
     private Resource resource;
 
     @Before

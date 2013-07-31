@@ -148,7 +148,7 @@ public class SvnModuleConfig {
                     if (entry.getKind() == SVNNodeKind.FILE) {
                         path = entry.getRelativePath();
                         try {
-                            resources.add(Resource.forNode(root.join(path), path, folder));
+                            resources.add(Resource.forNode(root.join(path), path, entry.getSize(), entry.getDate().getTime(), folder));
                         } catch (IOException e) {
                             throw new RuntimeException("TODO", e);
                         }
