@@ -17,27 +17,27 @@ package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.config.Filter;
 import net.oneandone.lavender.index.Resource;
-import net.oneandone.sushi.fs.Node;
+import net.oneandone.sushi.fs.svn.SvnNode;
 
 import java.util.Iterator;
 import java.util.List;
 
 /** Extracts resources from svn */
 public class SvnModule extends Module {
-    private final List<Node> resources;
+    private final SvnNode root;
+    private final List<SvnFile> resources;
     private final String folder;
-    private final Node dest;
 
-    public SvnModule(Filter filter, String type, boolean lavendelize, String pathPrefix,
-                     List<Node> resources, String folder, Node dest) {
+    public SvnModule(Filter filter, String type, SvnNode root, boolean lavendelize, String pathPrefix,
+                     List<SvnFile> resources, String folder) {
         super(filter, type, lavendelize, pathPrefix);
+        this.root = root;
         this.resources = resources;
         this.folder = folder;
-        this.dest = dest;
     }
 
     public Iterator<Resource> iterator() {
-        final Iterator<Node> base;
+        final Iterator<SvnFile> base;
 
         base = resources.iterator();
         return new Iterator<Resource>() {
@@ -46,10 +46,12 @@ public class SvnModule extends Module {
             }
 
             public Resource next() {
-                Node file;
+                SvnNode node;
+                SvnFile file;
 
                 file = base.next();
-                return new Resource(file, file.getRelative(dest), folder);
+                node = root.join(file.path);
+                return new Resource(node, file.path, folder);
             }
 
             public void remove() {

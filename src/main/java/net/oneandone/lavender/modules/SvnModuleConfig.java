@@ -17,12 +17,25 @@ package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.config.Filter;
 import net.oneandone.lavender.config.View;
+import net.oneandone.lavender.index.Index;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
+import net.oneandone.sushi.fs.svn.SvnFilesystem;
+import net.oneandone.sushi.fs.svn.SvnNode;
 import net.oneandone.sushi.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tmatesoft.svn.core.ISVNDirEntryHandler;
+import org.tmatesoft.svn.core.SVNDepth;
+import org.tmatesoft.svn.core.SVNDirEntry;
+import org.tmatesoft.svn.core.SVNErrorCode;
+import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.SVNNodeKind;
+import org.tmatesoft.svn.core.internal.util.SVNXMLUtil;
+import org.tmatesoft.svn.core.internal.wc.SVNPath;
+import org.tmatesoft.svn.core.wc.SVNLogClient;
+import org.tmatesoft.svn.core.wc.SVNRevision;
 
 import java.io.IOException;
 import java.net.URI;
@@ -108,49 +121,38 @@ public class SvnModuleConfig {
     }
 
     public SvnModule create(World world, String svnUsername, String svnPassword) throws IOException {
-        FileNode lavender;
-        String svnpath;
-        FileNode dest;
-        List<Node> resources;
+        SvnNode root;
+        FileNode cache;
+        final List<SvnFile> resources;
 
         if (svnurl == null) {
             throw new IllegalArgumentException("missing svn url");
         }
         if (folder.startsWith("/") || folder.endsWith("/")) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(folder);
         }
-        lavender = (FileNode) world.getHome().join(".cache/lavender");
-        lavender.mkdirsOpt();
-        try {
-            svnpath = simplify(new URI(svnurl).getPath());
-            svnpath = svnpath.replace('/', '.');
-            svnpath = Strings.removeLeftOpt(svnpath, ".svn.");
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException(svnurl, e);
-        }
-        dest = lavender.join(svnpath);
-        try {
-            LOG.info("using svn cache at " + dest);
-            if (dest.exists()) {
-                LOG.info("svn switch " + svnurl);
-                LOG.info(dest.exec("svn", "switch", "--non-interactive", "--no-auth-cache",
-                        "--username", svnUsername, "--password", svnPassword, svnurl));
-            } else {
-                LOG.info("svn checkout " + svnurl);
-                LOG.info(lavender.exec("svn", "checkout", "--non-interactive", "--no-auth-cache",
-                        "--username", svnUsername, "--password", svnPassword, svnurl, dest.getName()));
-            }
-        } catch (IOException e) {
-            throw new IOException("error creating/updating svn checkout at " + dest + ": " + e.getMessage(), e);
-        }
-        dest.checkDirectory();
+        cache = (FileNode) world.getHome().join(".cache/lavender");
+        cache.mkdirsOpt();
         resources = new ArrayList<>();
-        for (Node file : dest.find("**/*")) {
-            if (file.isFile()) {
-                resources.add(file);
-            }
+        try {
+            // TODO: ugly side-effect
+            world.getFilesystem("svn", SvnFilesystem.class).setDefaultCredentials(svnUsername, svnPassword);
+            root = (SvnNode) world.node("svn:" + svnurl);
+            root.getRoot().getClientMananger().getLogClient().doList(
+                    root.getSvnurl(), null, SVNRevision.HEAD, true, SVNDepth.INFINITY, SVNDirEntry.DIRENT_ALL, new ISVNDirEntryHandler() {
+                @Override
+                public void handleDirEntry(SVNDirEntry entry) throws SVNException {
+                    if (entry.getKind() == SVNNodeKind.FILE) {
+                        resources.add(new SvnFile(entry.getRelativePath(), entry.getRevision()));
+                    }
+                }
+            });
+        } catch (RuntimeException | IOException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IOException("error scanning svn module " + svnurl + ": " + e.getMessage(), e);
         }
-        return new SvnModule(filter, type, lavendelize, pathPrefix, resources, folder, dest);
+        return new SvnModule(filter, type, root, lavendelize, pathPrefix, resources, folder);
     }
 
     private static final String TAGS = "/tags/";
