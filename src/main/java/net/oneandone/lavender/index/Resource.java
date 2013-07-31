@@ -24,6 +24,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Resource {
+    public static Resource forNode(Node node, String path, String folder) {
+        return new Resource(node, path, folder);
+    }
+
     private final Node origin;
     private final String path;
     private final String folder;
@@ -31,7 +35,7 @@ public class Resource {
     private byte[] data;
     private byte[] md5;
 
-    public Resource(Node origin, String path, String folder) {
+    private Resource(Node origin, String path, String folder) {
         this.origin = origin;
         this.path = path;
         this.folder = folder;

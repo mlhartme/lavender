@@ -34,7 +34,7 @@ public class ResourceTest {
         Node node;
 
         node = WORLD.memoryNode((byte) 0x00, (byte) 0x01, (byte) 0x7F, (byte) 0x80, (byte) 0x81, (byte) 0xFF);
-        resource = new Resource(node, "modules/x/img/close.gif", "folder");
+        resource = Resource.forNode(node, "modules/x/img/close.gif", "folder");
     }
 
     @Test

@@ -51,7 +51,7 @@ public class JarFileResourceIterator implements Iterator<Resource> {
             nextModuleJarFile++;
             path = file.getPath();
             if (moduleConfig.isPublicResource(path)) {
-                next = new Resource(file, moduleConfig.getPath(path), moduleConfig.getModuleName());
+                next = Resource.forNode(file, moduleConfig.getPath(path), moduleConfig.getModuleName());
                 return true;
             }
         }

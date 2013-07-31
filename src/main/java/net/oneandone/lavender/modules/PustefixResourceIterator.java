@@ -74,7 +74,7 @@ public class PustefixResourceIterator implements Iterator<Resource> {
                 } else {
                     folder = module.getProjectName();
                 }
-                next = new Resource(file, path, folder);
+                next = Resource.forNode(file, path, folder);
                 return true;
             }
         }

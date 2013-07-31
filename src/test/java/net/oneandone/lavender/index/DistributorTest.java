@@ -34,8 +34,8 @@ public class DistributorTest {
 
         world = new World();
         node = world.memoryNode("abcd");
-        Resource resource1 = new Resource(node, "img/test.png", "folder");
-        Resource resource2 = new Resource(node, "modules/stageassistent/img/test.gif", "stageassistent");
+        Resource resource1 = Resource.forNode(node, "img/test.png", "folder");
+        Resource resource2 = Resource.forNode(node, "modules/stageassistent/img/test.gif", "stageassistent");
         Distributor distributor = new Distributor(new HashMap<Node, Node>(), new Index());
         distributor.write(resource1.labelLavendelized(""), resource1.getData());
         distributor.write(resource2.labelLavendelized(""), resource1.getData());

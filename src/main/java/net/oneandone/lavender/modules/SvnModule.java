@@ -51,7 +51,7 @@ public class SvnModule extends Module {
 
                 file = base.next();
                 node = root.join(file.path);
-                return new Resource(node, file.path, folder);
+                return Resource.forNode(node, file.path, folder);
             }
 
             public void remove() {
