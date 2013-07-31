@@ -148,12 +148,12 @@ public class Lavender implements Filter {
         }
         switch (request.getMethod()) {
             case "GET":
-                LOG.info("GET " + path + " -> " + resource.getNode().getURI());
-                develGet(resource.getNode(), response, true);
+                LOG.info("GET " + path + " -> " + resource.getOrigin());
+                develGet(resource, response, true);
                 return true;
             case "HEAD":
-                LOG.info("HEAD " + path + " -> " + resource.getNode().getURI());
-                develGet(resource.getNode(), response, false);
+                LOG.info("HEAD " + path + " -> " + resource.getOrigin());
+                develGet(resource, response, false);
                 return true;
             default:
                 return false;
@@ -232,18 +232,20 @@ public class Lavender implements Filter {
     //--
 
 
-    public void develGet(Node file, HttpServletResponse response, boolean withBody) throws IOException {
+    public void develGet(Resource resource, HttpServletResponse response, boolean withBody) throws IOException {
         String contentType;
         long contentLength;
         ServletOutputStream out;
+        byte[] data;
 
         setCacheExpireDate(response, 10);
-        response.setDateHeader("Last-Modified", file.getLastModified());
-        contentType = filterConfig.getServletContext().getMimeType(file.getName());
+        response.setDateHeader("Last-Modified", resource.getLastModified());
+        contentType = filterConfig.getServletContext().getMimeType(resource.getPath());
         if (contentType != null) {
             response.setContentType(contentType);
         }
-        contentLength = file.length();
+        data = resource.readData();
+        contentLength = data.length;
         if (contentLength >= Integer.MAX_VALUE) {
             throw new IOException("file too big: " + contentLength);
         }
@@ -255,7 +257,7 @@ public class Lavender implements Filter {
             } catch (IllegalStateException e) {
                 // Silent catch
             }
-            file.writeTo(out);
+            out.write(data);
         }
     }
 

@@ -19,6 +19,7 @@ import net.oneandone.sushi.fs.LengthException;
 import net.oneandone.sushi.fs.Node;
 
 import java.io.IOException;
+import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -37,8 +38,12 @@ public class Resource {
         return path;
     }
 
-    public Node getNode() {
-        return node;
+    public long getLastModified() throws IOException {
+        return node.getLastModified();
+    }
+
+    public URI getOrigin() {
+        return node.getURI();
     }
 
     public byte[] readData() throws IOException {
