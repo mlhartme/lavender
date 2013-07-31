@@ -60,7 +60,7 @@ public class Net {
                 /* the following is excludes to avoid garbage collection of the file inside:
                 .addDocroot("var/bazaarvoice", "indexes/bazaarvoice",
                         new Alias("bazaar")) */
-                .addDocroot("var/svn", "indexes/svn",
+                .addDocroot("home/wwwstatint/htdocs/var/svn", "home/wwwstatint/indexes/svn",
                         new Alias("svn")));
 
         net.add("walter", new Cluster()
