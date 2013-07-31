@@ -19,6 +19,7 @@ import net.oneandone.lavender.config.Filter;
 import net.oneandone.lavender.index.Resource;
 import net.oneandone.sushi.fs.svn.SvnNode;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -51,7 +52,11 @@ public class SvnModule extends Module {
 
                 file = base.next();
                 node = root.join(file.path);
-                return Resource.forNode(node, file.path, folder);
+                try {
+                    return Resource.forNode(node, file.path, folder);
+                } catch (IOException e) {
+                    throw new RuntimeException("TODO", e);
+                }
             }
 
             public void remove() {

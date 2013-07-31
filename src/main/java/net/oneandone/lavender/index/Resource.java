@@ -15,7 +15,6 @@
  */
 package net.oneandone.lavender.index;
 
-import net.oneandone.sushi.fs.LengthException;
 import net.oneandone.sushi.fs.Node;
 
 import java.io.IOException;
@@ -24,24 +23,33 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Resource {
-    public static Resource forNode(Node node, String path, String folder) {
-        return new Resource(node, path, folder);
+    public static Resource forNode(Node node, String path, String folder) throws IOException {
+        return new Resource(node.getURI(), path, node.length(), node.getLastModified(), folder, node, null);
     }
 
-    private final Node origin;
+    private final URI origin;
     private final String path;
+    private final long length;
+    private final long lastModified;
     private final String folder;
 
-    private byte[] data;
-    private byte[] md5;
+    // dataNode xor dataBytes is null
+    private Node dataNode;
+    private byte[] dataBytes;
 
-    private Resource(Node origin, String path, String folder) {
+    private byte[] lazyMd5;
+
+    private Resource(URI origin, String path, long length, long lastModified, String folder, Node dataNode, byte[] dataBytes) {
         this.origin = origin;
         this.path = path;
+        this.length = length;
+        this.lastModified = lastModified;
         this.folder = folder;
 
-        this.data = null;
-        this.md5 = null;
+        this.dataNode = dataNode;
+        this.dataBytes = dataBytes;
+
+        this.lazyMd5 = null;
     }
 
     public String getPath() {
@@ -49,37 +57,31 @@ public class Resource {
     }
 
     public long getLastModified() throws IOException {
-        return origin.getLastModified();
+        return lastModified;
     }
 
     public URI getOrigin() {
-        return origin.getURI();
+        return origin;
     }
 
     public byte[] getMd5() throws IOException {
-        if (md5 == null) {
-            md5 = md5(getData());
+        if (lazyMd5 == null) {
+            lazyMd5 = md5(getData());
         }
-        return md5;
+        return lazyMd5;
     }
 
     public byte[] getData() throws IOException {
-        if (data == null) {
-            data = origin.readBytes();
+        if (dataBytes == null) {
+            dataBytes = dataNode.readBytes();
+            dataNode = null;
         }
-        return data;
+        return dataBytes;
     }
 
     @Override
     public String toString() {
-        String length;
-
-        try {
-            length = Long.toString(origin.length());
-        } catch (LengthException e) {
-            length = "?";
-        }
-        return path + "[" + length + "] ->" + origin.getURI();
+        return path + "[" + length + "] ->" + origin;
     }
 
 
