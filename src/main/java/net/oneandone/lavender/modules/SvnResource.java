@@ -13,14 +13,14 @@ public class SvnResource extends Resource {
     private final long lastModified;
     private final String folder;
 
-    public SvnResource(SvnModule module, long revision, String path, long length, long lastModified, String folder, Node dataNode, byte[] dataBytes, byte[] lazyMd5) {
+    public SvnResource(SvnModule module, long revision, String path, long length, long lastModified, String folder, Node dataNode, byte[] lazyMd5) {
         this.path = path;
         this.length = length;
         this.lastModified = lastModified;
         this.folder = folder;
 
         this.dataNode = dataNode;
-        this.dataBytes = dataBytes;
+        this.dataBytes = null;
 
         this.lazyMd5 = lazyMd5;
         this.module = module;
