@@ -50,6 +50,10 @@ public class SvnResource extends Resource {
         return path;
     }
 
+    public long getSize() {
+        return length;
+    }
+
     public long getLastModified() throws IOException {
         return lastModified;
     }

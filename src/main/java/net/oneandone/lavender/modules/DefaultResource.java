@@ -59,6 +59,10 @@ public class DefaultResource extends Resource {
         this.lazyMd5 = lazyMd5;
     }
 
+    public long getSize() {
+        return length;
+    }
+
     public String getPath() {
         return path;
     }
