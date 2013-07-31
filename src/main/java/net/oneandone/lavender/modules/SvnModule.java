@@ -19,18 +19,17 @@ import net.oneandone.lavender.config.Filter;
 import net.oneandone.lavender.index.Resource;
 import net.oneandone.sushi.fs.svn.SvnNode;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
 /** Extracts resources from svn */
 public class SvnModule extends Module {
     private final SvnNode root;
-    private final List<SvnFile> resources;
+    private final List<Resource> resources;
     private final String folder;
 
     public SvnModule(Filter filter, String type, SvnNode root, boolean lavendelize, String pathPrefix,
-                     List<SvnFile> resources, String folder) {
+                     List<Resource> resources, String folder) {
         super(filter, type, lavendelize, pathPrefix);
         this.root = root;
         this.resources = resources;
@@ -38,30 +37,6 @@ public class SvnModule extends Module {
     }
 
     public Iterator<Resource> iterator() {
-        final Iterator<SvnFile> base;
-
-        base = resources.iterator();
-        return new Iterator<Resource>() {
-            public boolean hasNext() {
-                return base.hasNext();
-            }
-
-            public Resource next() {
-                SvnNode node;
-                SvnFile file;
-
-                file = base.next();
-                node = root.join(file.path);
-                try {
-                    return Resource.forNode(node, file.path, folder);
-                } catch (IOException e) {
-                    throw new RuntimeException("TODO", e);
-                }
-            }
-
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
+        return resources.iterator();
     }
 }

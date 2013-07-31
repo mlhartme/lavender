@@ -18,6 +18,7 @@ package net.oneandone.lavender.modules;
 import net.oneandone.lavender.config.Filter;
 import net.oneandone.lavender.config.View;
 import net.oneandone.lavender.index.Index;
+import net.oneandone.lavender.index.Resource;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -121,9 +122,9 @@ public class SvnModuleConfig {
     }
 
     public SvnModule create(World world, String svnUsername, String svnPassword) throws IOException {
-        SvnNode root;
         FileNode cache;
-        final List<SvnFile> resources;
+        final SvnNode root;
+        final List<Resource> resources;
 
         if (svnurl == null) {
             throw new IllegalArgumentException("missing svn url");
@@ -142,8 +143,15 @@ public class SvnModuleConfig {
                     root.getSvnurl(), null, SVNRevision.HEAD, true, SVNDepth.INFINITY, SVNDirEntry.DIRENT_ALL, new ISVNDirEntryHandler() {
                 @Override
                 public void handleDirEntry(SVNDirEntry entry) throws SVNException {
+                    String path;
+
                     if (entry.getKind() == SVNNodeKind.FILE) {
-                        resources.add(new SvnFile(entry.getRelativePath(), entry.getRevision()));
+                        path = entry.getRelativePath();
+                        try {
+                            resources.add(Resource.forNode(root.join(path), path, folder));
+                        } catch (IOException e) {
+                            throw new RuntimeException("TODO", e);
+                        }
                     }
                 }
             });
