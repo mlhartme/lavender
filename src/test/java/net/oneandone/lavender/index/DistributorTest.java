@@ -33,7 +33,7 @@ public class DistributorTest {
 
         Resource resource1 = DefaultResource.forBytes("abcd".getBytes(), "img/test.png", "folder");
         Resource resource2 = DefaultResource.forBytes("abcd".getBytes(), "modules/stageassistent/img/test.gif", "stageassistent");
-        Distributor distributor = new Distributor(new HashMap<Node, Node>(), new Index());
+        Distributor distributor = new Distributor(new HashMap<Node, Node>(), new Index(), new Index());
         distributor.write(resource1.labelLavendelized(""), resource1.getData());
         distributor.write(resource2.labelLavendelized(""), resource1.getData());
         index = distributor.close();

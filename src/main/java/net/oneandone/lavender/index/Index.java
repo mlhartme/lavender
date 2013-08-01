@@ -102,6 +102,48 @@ public class Index implements Iterable<Label> {
         }
     }
 
+    //-- Index with reference counts
+
+    public void addReference(String path, byte[] md5) {
+        String value;
+        int idx;
+        int count;
+        String md5hex;
+
+        value = properties.getProperty(path);
+        md5hex = Hex.encodeString(md5);
+        if (value != null) {
+            idx = value.indexOf(DELIMITER);
+            count = Integer.parseInt(value.substring(0, idx)) + 1;
+            if (!md5hex.equals(value.substring(idx + 1))) {
+                throw new IllegalArgumentException("md5 mismatch for file " + path);
+            }
+        } else {
+            count = 1;
+        }
+        properties.setProperty(path, Integer.toString(count) + DELIMITER + md5hex);
+    }
+
+    public void removeReference(String path) {
+        String value;
+        int idx;
+        int count;
+
+        value = properties.getProperty(path);
+        if (value == null) {
+            throw new IllegalArgumentException("path not found: " + path);
+        }
+        idx = value.indexOf(DELIMITER);
+        count = Integer.parseInt(value.substring(0, idx)) - 1;
+        if (count == 0) {
+            properties.remove(path);
+        } else {
+            properties.setProperty(path, Integer.toString(count) + DELIMITER + value.substring(idx + 1));
+        }
+    }
+
+    //--
+
     public Iterator<Label> iterator() {
         final Iterator<String> iter = properties.stringPropertyNames().iterator();
         return new Iterator<Label>() {

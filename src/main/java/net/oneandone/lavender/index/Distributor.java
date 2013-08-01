@@ -21,7 +21,6 @@ import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,48 +28,62 @@ import java.util.Map;
 
 /** Receives extracted files and uploads them */
 public class Distributor {
+    private static final String ALL_IDX = ".all.idx";
+
     public static Distributor open(World world, List<Host> hosts, Docroot docroot, String indexName) throws IOException {
         Node root;
         Node destroot;
-        Node index;
+        Node file;
         Map<Node, Node> targets;
+        Index all;
         Index prev;
-        Index tmp;
 
         targets = new LinkedHashMap<>(); // to preserve order
-        prev = null;
-        for (Host host : hosts) {
-            root = host.open(world);
-            destroot = docroot.node(root);
-            index = docroot.index(root, indexName);
-            if (index.exists()) {
-                tmp = Index.load(index);
-            } else {
-                tmp = new Index();
+        if (hosts.isEmpty()) {
+            prev = new Index();
+            all = new Index();
+        } else {
+            all = null;
+            prev = null;
+            for (Host host : hosts) {
+                root = host.open(world);
+                destroot = docroot.node(root);
+                file = docroot.index(root, indexName);
+                prev = loadSame(file, prev);
+                targets.put(file, destroot);
+                all = loadSame(docroot.index(root, ALL_IDX), all);
             }
-            if (prev == null) {
-                prev = tmp;
-            } else {
-                if (!prev.equals(tmp)) {
-                    throw new IOException("index mismatch");
-                }
-            }
-            targets.put(index, destroot);
+        }
+        return new Distributor(targets, all, prev);
+    }
+
+    private static Index loadSame(Node src, Index prev) throws IOException {
+        Index tmp;
+
+        if (src.exists()) {
+            tmp = Index.load(src);
+        } else {
+            tmp = new Index();
         }
         if (prev == null) {
-            // no hosts!
-            prev = new Index();
+            return tmp;
+        } else {
+            if (!prev.equals(tmp)) {
+                throw new IOException("index mismatch");
+            }
+            return prev;
         }
-        return new Distributor(targets, prev);
     }
 
     /** left: index location; right: docroot */
     private final Map<Node, Node> targets;
+    private final Index all;
     private final Index prev;
     private final Index next;
 
-    public Distributor(Map<Node, Node> targets, Index prev) {
+    public Distributor(Map<Node, Node> targets, Index all, Index prev) {
         this.targets = targets;
+        this.all = all;
         this.prev = prev;
         this.next = new Index();
     }
@@ -78,21 +91,22 @@ public class Distributor {
     public boolean write(Label label, byte[] data) throws IOException {
         Node dest;
         String destPath;
-        Label prevLabel;
+        Label allLabel;
         boolean changed;
 
-        prevLabel = prev.lookup(label.getOriginalPath());
-        if (prevLabel == null || !Arrays.equals(prevLabel.md5(), label.md5())) {
-            destPath = label.getLavendelizedPath();
+        destPath = label.getLavendelizedPath();
+        allLabel = all.lookup(destPath);
+        if (allLabel != null && Arrays.equals(allLabel.md5(), label.md5())) {
+            changed = false;
+        } else {
             for (Node destroot : targets.values()) {
                 dest = destroot.join(destPath);
-                // always create parent, because even if the label exists: a changed md5 sum causes a changed path
-                dest.getParent().mkdirsOpt();
+                if (allLabel == null) {
+                    dest.getParent().mkdirsOpt();
+                }
                 dest.writeBytes(data);
             }
             changed = true;
-        } else {
-            changed = false;
         }
         next.add(label);
         return changed;
@@ -100,17 +114,21 @@ public class Distributor {
 
     /** return next index */
     public Index close() throws IOException {
+        Node directory;
         Node index;
 
-        if (next.size() == 0) {
-            return next;
+        for (Label label : prev) {
+            all.removeReference(label.getLavendelizedPath());
+        }
+        for (Label label : next) {
+            all.addReference(label.getLavendelizedPath(), label.md5());
         }
         for (Map.Entry<Node, Node> entry : targets.entrySet()) {
             index = entry.getKey();
-            index.getParent().mkdirsOpt();
-            try (OutputStream out = index.createOutputStream()) {
-                next.save(out);
-            }
+            directory = index.getParent();
+            directory.mkdirsOpt();
+            next.save(index);
+            all.save(directory.join(ALL_IDX));
         }
         return next;
     }
