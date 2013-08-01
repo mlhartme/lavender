@@ -28,7 +28,7 @@ public class JarModule extends Module {
     private final Node jar;
 
     public JarModule(Filter filter, String type, PustefixModuleConfig config, Node jar) {
-        super(filter, type, true, "");
+        super(filter, type, config.getModuleName(), true, "");
         this.config = config;
         this.jar = jar;
     }

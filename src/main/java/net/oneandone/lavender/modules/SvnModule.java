@@ -30,17 +30,15 @@ public class SvnModule extends Module {
 
     // TODO: dump
     private final List<Resource> resources;
-    private final String folder;
 
     private final Index index;
     private final Node indexFile;
 
     public SvnModule(Filter filter, String type, Index index, Node indexFile, SvnNode root, boolean lavendelize, String pathPrefix,
                      List<Resource> resources, String folder) {
-        super(filter, type, lavendelize, pathPrefix);
+        super(filter, type, folder, lavendelize, pathPrefix);
         this.root = root;
         this.resources = resources;
-        this.folder = folder;
 
         this.index = index;
         this.indexFile = indexFile;

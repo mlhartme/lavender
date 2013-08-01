@@ -51,9 +51,6 @@ public class PustefixResourceIterator implements Iterator<Resource> {
         this.nextFile = 0;
     }
 
-    private static final String MODULES_PREFIX = "modules/";
-    private static final int MODULES_PREFIX_LENGTH = MODULES_PREFIX.length();
-
     public boolean hasNext() {
         Node file;
         String path;
@@ -65,16 +62,8 @@ public class PustefixResourceIterator implements Iterator<Resource> {
             file = files.get(nextFile++);
             path = file.getRelative(webapp);
             if (module.isPublicResource(path)) {
-                String folder;
-                int end;
-
-                if (path.startsWith(MODULES_PREFIX) && ((end = path.indexOf('/', MODULES_PREFIX_LENGTH)) != -1)) {
-                    folder = path.substring(MODULES_PREFIX_LENGTH, end);
-                } else {
-                    folder = module.getProjectName();
-                }
                 try {
-                    next = DefaultResource.forNode(file, path, folder);
+                    next = DefaultResource.forNode(file, path);
                 } catch (IOException e) {
                     throw new RuntimeException("TODO", e);
                 }

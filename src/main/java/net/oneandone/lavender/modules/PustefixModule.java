@@ -117,7 +117,7 @@ public class PustefixModule extends Module {
     private final Node webapp;
 
     public PustefixModule(Filter filter, ProjectConfig config, Node webapp) throws IOException {
-        super(filter, View.WEB, true, "");
+        super(filter, View.WEB, config.getProject().getName(), true, "");
 
         this.config = config;
         this.webapp = webapp;

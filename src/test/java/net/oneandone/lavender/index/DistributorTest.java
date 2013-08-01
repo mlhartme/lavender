@@ -31,11 +31,11 @@ public class DistributorTest {
     public void write() throws IOException {
         Index index;
 
-        Resource resource1 = DefaultResource.forBytes("abcd".getBytes(), "img/test.png", "folder");
-        Resource resource2 = DefaultResource.forBytes("abcd".getBytes(), "modules/stageassistent/img/test.gif", "stageassistent");
+        Resource resource1 = DefaultResource.forBytes("abcd".getBytes(), "img/test.png");
+        Resource resource2 = DefaultResource.forBytes("abcd".getBytes(), "modules/stageassistent/img/test.gif");
         Distributor distributor = new Distributor(new HashMap<Node, Node>(), new Index(), new Index());
-        distributor.write(resource1.labelLavendelized(""), resource1.getData());
-        distributor.write(resource2.labelLavendelized(""), resource1.getData());
+        distributor.write(resource1.labelLavendelized("", "folder"), resource1.getData());
+        distributor.write(resource2.labelLavendelized("", "stageassistent"), resource1.getData());
         index = distributor.close();
         assertEquals("e2f/c714c4727ee9395f324cd2e7f331f/folder/test.png", index.lookup("img/test.png").getLavendelizedPath());
         assertEquals("e2f/c714c4727ee9395f324cd2e7f331f/stageassistent/test.gif",

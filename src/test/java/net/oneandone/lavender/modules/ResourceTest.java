@@ -31,7 +31,7 @@ public class ResourceTest {
     @Before
     public void setup() throws IOException {
         resource = DefaultResource.forBytes(new byte[] {(byte) 0x00, (byte) 0x01, (byte) 0x7F, (byte) 0x80, (byte) 0x81, (byte) 0xFF},
-                "modules/x/img/close.gif", "folder");
+                "modules/x/img/close.gif");
     }
 
     @Test
@@ -55,7 +55,7 @@ public class ResourceTest {
     @Test
     public void testGetLavendelizedPath() throws IOException {
         assertEquals("852/e7d76cdb8af7395cd039c0ecc293a/folder/close.gif",
-                resource.labelLavendelized("").getLavendelizedPath());
+                resource.labelLavendelized("", "folder").getLavendelizedPath());
     }
 
     @Test

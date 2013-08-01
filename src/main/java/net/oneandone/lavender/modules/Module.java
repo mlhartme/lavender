@@ -25,15 +25,17 @@ import java.io.IOException;
 public abstract class Module implements Iterable<Resource> {
     private final Filter filter;
     private final String type;
+    private final String folder;
     private final boolean lavendelize;
     private final String pathPrefix;
 
-    public Module(Filter filter, String type, boolean lavendelize, String pathPrefix) {
+    public Module(Filter filter, String type, String folder, boolean lavendelize, String pathPrefix) {
         if (filter == null) {
             throw new IllegalArgumentException();
         }
         this.filter = filter;
         this.type = type;
+        this.folder = folder;
         this.lavendelize = lavendelize;
         this.pathPrefix = pathPrefix;
     }
@@ -57,7 +59,7 @@ public abstract class Module implements Iterable<Resource> {
         for (Resource resource : this) {
             if (filter.isIncluded(resource.getPath())) {
                 if (lavendelize) {
-                    label = resource.labelLavendelized(pathPrefix);
+                    label = resource.labelLavendelized(pathPrefix, folder);
                 } else {
                     label = resource.labelNormal(pathPrefix);
                 }
