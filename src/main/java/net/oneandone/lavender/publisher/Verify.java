@@ -71,7 +71,7 @@ public class Verify extends Base {
                     files = find(docroot, "-type", "f");
                     console.info.println("done: " + files.size());
                     console.info.print("  collecting references ...");
-                    for (Node file : docrootObj.indexDirectory(hostroot).list()) {
+                    for (Node file : docrootObj.indexList(hostroot)) {
                         index = Index.load(file);
                         for (Label label : index) {
                             references.add(label.getLavendelizedPath());

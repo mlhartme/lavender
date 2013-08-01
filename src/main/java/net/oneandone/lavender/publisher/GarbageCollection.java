@@ -20,6 +20,7 @@ import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Host;
 import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Settings;
+import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.cli.Console;
@@ -64,7 +65,7 @@ public class GarbageCollection extends Base {
                     references = new HashSet<>();
                     console.info.println(host);
                     console.info.print("collecting references ...");
-                    for (Node file : docrootObj.indexDirectory(hostroot).list()) {
+                    for (Node file : docrootObj.indexList(hostroot)) {
                         index = Index.load(file);
                         for (Label label : index) {
                             references.add(label.getLavendelizedPath());

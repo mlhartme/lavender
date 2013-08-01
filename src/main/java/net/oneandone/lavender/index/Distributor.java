@@ -28,7 +28,7 @@ import java.util.Map;
 
 /** Receives extracted files and uploads them */
 public class Distributor {
-    private static final String ALL_IDX = ".all.idx";
+    public static final String ALL_IDX = ".all.idx";
 
     public static Distributor open(World world, List<Host> hosts, Docroot docroot, String indexName) throws IOException {
         Node root;

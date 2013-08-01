@@ -15,9 +15,13 @@
  */
 package net.oneandone.lavender.config;
 
+import net.oneandone.lavender.index.Distributor;
+import net.oneandone.sushi.fs.DirectoryNotFoundException;
+import net.oneandone.sushi.fs.ListException;
 import net.oneandone.sushi.fs.Node;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 public class Docroot {
@@ -54,7 +58,17 @@ public class Docroot {
         return host.join(indexes, indexName);
     }
 
-    public Node indexDirectory(Node host) {
-        return host.join(indexes);
+    public List<? extends Node> indexList(Node host) throws ListException, DirectoryNotFoundException {
+        List<? extends Node> result;
+        Iterator<? extends Node> iter;
+
+        result = host.join(indexes).list();
+        iter = result.iterator();
+        while (iter.hasNext()) {
+            if (iter.next().getName().equals(Distributor.ALL_IDX)) {
+                iter.remove();
+            }
+        }
+        return result;
     }
 }
