@@ -19,6 +19,8 @@ import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Host;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -28,6 +30,8 @@ import java.util.Map;
 
 /** Receives extracted files and uploads them */
 public class Distributor {
+    private static final Logger LOG = LoggerFactory.getLogger(Distributor.class);
+
     public static Distributor open(World world, List<Host> hosts, Docroot docroot, String indexName) throws IOException {
         Node root;
         Node destroot;
@@ -100,7 +104,10 @@ public class Distributor {
             for (Node destroot : targets.values()) {
                 dest = destroot.join(destPath);
                 if (allLabel == null) {
+                    LOG.info("A " + destPath);
                     dest.getParent().mkdirsOpt();
+                } else {
+                    LOG.info("U " + destPath);
                 }
                 dest.writeBytes(data);
             }

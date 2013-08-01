@@ -89,12 +89,13 @@ public class WarEngine {
             absolute += index.size();
             result.put(entry.getKey(), index);
         }
+        LOG.info("lavendel servers updated: "
+                + changed + "/" + absolute + " files changed (" + (System.currentTimeMillis() - started) + " ms)");
         outputNodesFile.writeString(nodes);
         updateWarFile(result.get(View.WEB));
         for (Module module : modules) {
             module.saveCaches();
         }
-        LOG.info("done: " + changed + "/" + absolute + " files changed (" + (System.currentTimeMillis() - started) + " ms)");
         return result;
     }
 
@@ -119,19 +120,16 @@ public class WarEngine {
     private void updateWarFile(Index webIndex) throws IOException {
         ZipInputStream zin = new ZipInputStream(new FileInputStream(inputWar.toPath().toFile()));
         ZipOutputStream out = new ZipOutputStream(outputWar.createOutputStream());
-        ZipEntry entry;
         Buffer buffer;
         String name;
 
-        entry = zin.getNextEntry();
         buffer = outputWar.getWorld().getBuffer();
-        while (entry != null) {
+        for (ZipEntry entry = zin.getNextEntry(); entry != null; entry = zin.getNextEntry()) {
             name = entry.getName();
             ZipEntry outEntry = new ZipEntry(name);
             out.putNextEntry(outEntry);
             buffer.copy(zin, out);
             out.closeEntry();
-            entry = zin.getNextEntry();
         }
         zin.close();
 
