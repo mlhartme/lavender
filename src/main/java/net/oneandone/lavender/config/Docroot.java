@@ -15,7 +15,7 @@
  */
 package net.oneandone.lavender.config;
 
-import net.oneandone.lavender.index.Distributor;
+import net.oneandone.lavender.index.Index;
 import net.oneandone.sushi.fs.DirectoryNotFoundException;
 import net.oneandone.sushi.fs.ListException;
 import net.oneandone.sushi.fs.Node;
@@ -65,7 +65,7 @@ public class Docroot {
         result = host.join(indexes).list();
         iter = result.iterator();
         while (iter.hasNext()) {
-            if (iter.next().getName().equals(Distributor.ALL_IDX)) {
+            if (iter.next().getName().equals(Index.ALL_IDX)) {
                 iter.remove();
             }
         }

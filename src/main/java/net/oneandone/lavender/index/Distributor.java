@@ -28,8 +28,6 @@ import java.util.Map;
 
 /** Receives extracted files and uploads them */
 public class Distributor {
-    public static final String ALL_IDX = ".all.idx";
-
     public static Distributor open(World world, List<Host> hosts, Docroot docroot, String indexName) throws IOException {
         Node root;
         Node destroot;
@@ -51,7 +49,7 @@ public class Distributor {
                 file = docroot.index(root, indexName);
                 prev = loadSame(file, prev);
                 targets.put(file, destroot);
-                all = loadSame(docroot.index(root, ALL_IDX), all);
+                all = loadSame(docroot.index(root, Index.ALL_IDX), all);
             }
         }
         return new Distributor(targets, all, prev);
@@ -128,7 +126,7 @@ public class Distributor {
             directory = index.getParent();
             directory.mkdirsOpt();
             next.save(index);
-            all.save(directory.join(ALL_IDX));
+            all.save(directory.join(Index.ALL_IDX));
         }
         return next;
     }

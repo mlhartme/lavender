@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.Properties;
@@ -37,6 +38,8 @@ import java.util.Properties;
  *   md5               md5 sum of the resource
  */
 public class Index implements Iterable<Label> {
+    public static final String ALL_IDX = ".all.idx";
+
     public static final String ENCODING = "UTF-8";
 
     private static final String DELIMITER = ":";
@@ -209,5 +212,17 @@ public class Index implements Iterable<Label> {
     /** dest will not be closed */
     public void save(Writer writer) throws IOException {
         properties.store(writer, null);
+    }
+
+    public String toString() {
+        StringWriter result;
+
+        result = new StringWriter();
+        try {
+            save(result);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+        return result.toString();
     }
 }

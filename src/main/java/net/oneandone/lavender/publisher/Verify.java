@@ -30,6 +30,7 @@ import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.ssh.SshNode;
 import net.oneandone.sushi.fs.ssh.SshRoot;
 import net.oneandone.sushi.io.OS;
+import net.oneandone.sushi.util.Diff;
 import net.oneandone.sushi.util.Strings;
 
 import java.io.IOException;
@@ -50,11 +51,7 @@ public class Verify extends Base {
     public void invoke() throws IOException {
         Cluster cluster;
         Node hostroot;
-        Index index;
-        List<String> files;
-        Set<String> references;
         Node docroot;
-        List<String> tmp;
         boolean problem;
 
         problem = false;
@@ -65,31 +62,8 @@ public class Verify extends Base {
             for (Docroot docrootObj : cluster.docroots) {
                 docroot = docrootObj.node(hostroot);
                 if (docroot.exists()) {
-                    references = new HashSet<>();
-                    console.info.println(docroot.getURI().toString());
-                    console.info.print("  collecting files ...");
-                    files = find(docroot, "-type", "f");
-                    console.info.println("done: " + files.size());
-                    console.info.print("  collecting references ...");
-                    for (Node file : docrootObj.indexList(hostroot)) {
-                        index = Index.load(file);
-                        for (Label label : index) {
-                            references.add(label.getLavendelizedPath());
-                        }
-                    }
-                    console.info.println("done: " + references.size());
-
-                    tmp = new ArrayList<>(references);
-                    tmp.removeAll(files);
-                    if (!tmp.isEmpty()) {
+                    if (filesAndReferences(hostroot, docroot, docrootObj)) {
                         problem = true;
-                        console.error.println("not existing references: " + tmp);
-                    }
-                    tmp = new ArrayList<>(files);
-                    tmp.removeAll(references);
-                    if (!tmp.isEmpty()) {
-                        problem = true;
-                        console.error.println("not referenced files: " + tmp);
                     }
                 }
             }
@@ -99,6 +73,53 @@ public class Verify extends Base {
         } else {
             console.info.println("verify ok");
         }
+    }
+
+    private boolean filesAndReferences(Node hostroot, Node docroot, Docroot docrootObj) throws IOException {
+        boolean problem;
+        Set<String> references;
+        List<String> files;
+        Index index;
+        List<String> tmp;
+        Index all;
+        Index allLoaded;
+
+        problem = false;
+        references = new HashSet<>();
+        console.info.println(docroot.getURI().toString());
+        console.info.print("  collecting files ...");
+        files = find(docroot, "-type", "f");
+        console.info.println("done: " + files.size());
+        console.info.print("  collecting references ...");
+        all = new Index();
+        for (Node file : docrootObj.indexList(hostroot)) {
+            index = Index.load(file);
+            for (Label label : index) {
+                references.add(label.getLavendelizedPath());
+                all.addReference(label.getLavendelizedPath(), label.md5());
+            }
+        }
+        allLoaded = Index.load(docrootObj.index(hostroot, Index.ALL_IDX));
+        if (!all.equals(allLoaded)) {
+            console.error.println("all-index is broken:");
+            console.error.println(Diff.diff(all.toString(), allLoaded.toString()));
+            problem = true;
+        }
+        console.info.println("done: " + references.size());
+
+        tmp = new ArrayList<>(references);
+        tmp.removeAll(files);
+        if (!tmp.isEmpty()) {
+            problem = true;
+            console.error.println("not existing references: " + tmp);
+        }
+        tmp = new ArrayList<>(files);
+        tmp.removeAll(references);
+        if (!tmp.isEmpty()) {
+            problem = true;
+            console.error.println("not referenced files: " + tmp);
+        }
+        return problem;
     }
 
     public static List<String> find(Node base, String ... args) throws IOException {
