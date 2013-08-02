@@ -131,6 +131,19 @@ public class PustefixModule extends Module {
         }
     }
 
+    public Resource probeIncluded(String path) throws IOException {
+        Node node;
+
+        if (!isPublicResource(path)) {
+            return null;
+        }
+        node = webapp.join(path);
+        if (!node.exists()) {
+            return null;
+        }
+        return DefaultResource.forNode(node, path);
+    }
+
     public boolean isPublicResource(String resourceName) {
         if (resourceName.startsWith("WEB-INF")) {
             return false;

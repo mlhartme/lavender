@@ -50,12 +50,10 @@ public abstract class Module implements Iterable<Resource> {
 
     /** @return number of changed (updated or added) files */
     public long run(Distributor distributor) throws IOException {
-        Filter filter;
         Label label;
         long count;
 
         count = 0;
-        filter = getFilter();
         for (Resource resource : this) {
             if (filter.isIncluded(resource.getPath())) {
                 if (lavendelize) {
@@ -70,6 +68,12 @@ public abstract class Module implements Iterable<Resource> {
         }
         return count;
     }
+
+    public Resource probe(String path) throws IOException {
+        return filter.isIncluded(path) ? probeIncluded(path) : null;
+    }
+
+    protected abstract Resource probeIncluded(String path) throws IOException;
 
     public abstract void saveCaches() throws IOException;
 }

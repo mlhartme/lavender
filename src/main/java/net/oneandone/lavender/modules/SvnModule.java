@@ -19,8 +19,6 @@ import net.oneandone.lavender.config.Filter;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.fs.Node;
-import net.oneandone.sushi.fs.file.FileNode;
-import net.oneandone.sushi.fs.svn.SvnFilesystem;
 import net.oneandone.sushi.fs.svn.SvnNode;
 import org.tmatesoft.svn.core.ISVNDirEntryHandler;
 import org.tmatesoft.svn.core.SVNDepth;
@@ -82,7 +80,6 @@ public class SvnModule extends Module {
                 String path;
                 Label label;
                 byte[] md5;
-                Node node;
 
                 entry = base.next();
                 path = entry.getRelativePath();
@@ -93,12 +90,7 @@ public class SvnModule extends Module {
                 } else {
                     md5 = null;
                 }
-                node = root.join(path);
-                if (entry.getSize() > Integer.MAX_VALUE) {
-                    throw new UnsupportedOperationException("file too big: " + entry.getRelativePath());
-                }
-                return new SvnResource(SvnModule.this, entry.getRevision(),
-                        path, (int) entry.getSize(), entry.getDate().getTime(), node, md5);
+                return createResource(entry, md5);
             }
 
             @Override
@@ -106,6 +98,30 @@ public class SvnModule extends Module {
                 throw new UnsupportedOperationException();
             }
         };
+    }
+
+    private SvnResource createResource(SVNDirEntry entry, byte[] md5) {
+        String path;
+
+        if (entry.getSize() > Integer.MAX_VALUE) {
+            throw new UnsupportedOperationException("file too big: " + entry.getRelativePath());
+        }
+        path = entry.getRelativePath();
+        return new SvnResource(this, entry.getRevision(), path, (int) entry.getSize(), entry.getDate().getTime(), root.join(path), md5);
+    }
+
+    public SvnResource probeIncluded(String path) throws IOException {
+        SVNDirEntry entry;
+
+        try {
+            entry = root.getRoot().getRepository().info(path, -1);
+        } catch (SVNException e) {
+            throw new IOException("cannot probe " + path, e);
+        }
+        if (entry == null) {
+            return null;
+        }
+        return createResource(entry, null);
     }
 
     public Index index() {

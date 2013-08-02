@@ -45,6 +45,16 @@ public class JarModule extends Module {
         }
     }
 
+    // TODO: expensive
+    public Resource probeIncluded(String path) {
+        for (Resource resource : this) {
+            if (path.equals(resource.getPath())) {
+                return resource;
+            }
+        }
+        return null;
+    }
+
     @Override
     public void saveCaches() {
         // nothing to do
