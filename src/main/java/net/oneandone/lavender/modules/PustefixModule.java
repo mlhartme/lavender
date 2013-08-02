@@ -131,6 +131,10 @@ public class PustefixModule extends Module {
         }
     }
 
+    public Resource probeIncluded(String path) {
+        webapp.read
+    }
+
     public boolean isPublicResource(String resourceName) {
         if (resourceName.startsWith("WEB-INF")) {
             return false;
