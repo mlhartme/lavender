@@ -43,6 +43,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -64,6 +65,7 @@ public class Lavender implements Filter {
 
     protected ProcessorFactory processorFactory;
 
+    protected List<Module> develModules;
     protected Map<String, Resource> develResources;
 
     public void init(FilterConfig config) {
@@ -96,13 +98,8 @@ public class Lavender implements Filter {
                 processorFactory = null;
                 settings = Settings.load(world);
                 develResources = new HashMap<>();
-                for (Module module : PustefixModule.fromWebapp(webapp, settings.svnUsername, settings.svnPassword)) {
-                    for (Resource resource : module) {
-                        LOG.debug("resource: " + resource);
-                        develResources.put(resource.getPath(), resource);
-                    }
-                }
-                LOG.info("Lavender devel filter for " + webapp + ", " + develResources.size()
+                develModules = PustefixModule.fromWebapp(webapp, settings.svnUsername, settings.svnPassword);
+                LOG.info("Lavender devel filter for " + webapp + ", " + develModules.size()
                         + " resources. Init in " + (System.currentTimeMillis() - started + " ms"));
             }
         } catch (IOException ie) {
@@ -139,10 +136,21 @@ public class Lavender implements Filter {
         if (!path.startsWith("/")) {
             return false;
         }
-        resource = develResources.get(path.substring(1));
+        path = path.substring(1);
+        resource = develResources.get(path);
         if (resource == null) {
-            return false;
+            for (Module module : develModules) {
+                resource = module.probe(path);
+                if (resource != null) {
+                    develResources.put(path, resource);
+                    break;
+                }
+            }
+            if (resource == null) {
+                return false;
+            }
         }
+
         switch (request.getMethod()) {
             case "GET":
                 LOG.info("GET " + path + " -> " + resource.getOrigin());
