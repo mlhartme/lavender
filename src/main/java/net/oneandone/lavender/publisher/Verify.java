@@ -21,6 +21,7 @@ import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Host;
 import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Settings;
+import net.oneandone.lavender.index.Hex;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.cli.Console;
@@ -31,6 +32,7 @@ import net.oneandone.sushi.fs.ssh.SshNode;
 import net.oneandone.sushi.fs.ssh.SshRoot;
 import net.oneandone.sushi.io.OS;
 import net.oneandone.sushi.util.Diff;
+import net.oneandone.sushi.util.Separator;
 import net.oneandone.sushi.util.Strings;
 
 import java.io.IOException;
@@ -83,6 +85,8 @@ public class Verify extends Base {
         List<String> tmp;
         Index all;
         Index allLoaded;
+        Node fixed;
+        String md5;
 
         problem = false;
         references = new HashSet<>();
@@ -101,12 +105,15 @@ public class Verify extends Base {
         }
         allLoaded = Index.load(docrootObj.index(hostroot, Index.ALL_IDX));
         if (!all.equals(allLoaded)) {
-            console.error.println("all-index is broken:");
-            console.error.println(Diff.diff(all.toString(), allLoaded.toString()));
+            fixed = docrootObj.index(hostroot, Index.ALL_IDX + ".fixed");
+            console.error.println("all-index is broken, saving fixed to " + fixed);
+            all.save(fixed);
             problem = true;
         }
         console.info.println("done: " + references.size());
-
+        if (md5check(docroot, all)) {
+            problem = true;
+        }
         tmp = new ArrayList<>(references);
         tmp.removeAll(files);
         if (!tmp.isEmpty()) {
@@ -122,6 +129,70 @@ public class Verify extends Base {
         return problem;
     }
 
+    private boolean md5check(Node docroot, Index index) throws IOException {
+        boolean problem;
+        List<String> paths;
+        List<String> expecteds;
+
+        problem = false;
+        console.info.println("md5 check ...");
+        paths = new ArrayList<>();
+        expecteds = new ArrayList<>();
+        for (Label label : index) {
+            paths.add(label.getOriginalPath());
+            expecteds.add(Hex.encodeString(label.md5()));
+            if (paths.size() > 500) {
+                if (md5check(docroot, paths, expecteds)) {
+                    problem = true;
+                }
+                paths.clear();
+                expecteds.clear();
+            }
+        }
+        if (paths.size() > 0) {
+            if (md5check(docroot, paths, expecteds)) {
+                problem = true;
+            }
+        }
+        console.info.println("done");
+        return problem;
+    }
+
+    private static final Separator SEPARATOR = Separator.RAW_LINE;
+
+    private boolean md5check(Node docroot, List<String> paths, List<String> expecteds) throws IOException {
+        String md5all;
+        List<String> computeds;
+        boolean problem;
+        int i;
+        String expected;
+
+        problem = false;
+        md5all = exec(docroot, Strings.append(new String[] { "md5", "-q" }, Strings.toArray(paths)));
+        computeds = SEPARATOR.split(md5all);
+        if (expecteds.size() != computeds.size()) {
+            throw new IllegalStateException(expecteds + " vs " + computeds);
+        }
+        i = 0;
+        for (String computed : computeds) {
+            computed = computed.trim();
+            expected = expecteds.get(i);
+            if (!expected.equals(computed)) {
+                console.error.println(paths.get(i)+ ": md5 broken: expected " + expected + ", got " + computed);
+                problem = true;
+            }
+            i++;
+        }
+        return problem;
+    }
+
+    private static String exec(Node node, String ... cmd) throws IOException {
+        try {
+            return ((SshNode) node).getRoot().exec(false, Strings.append(new String[] { "cd", "/" + node.getPath(), "&&" }, cmd));
+        } catch (JSchException e) {
+            throw new IOException();
+        }
+    }
     public static List<String> find(Node base, String ... args) throws IOException {
         String str;
         List<String> lst;

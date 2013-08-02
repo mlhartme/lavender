@@ -19,6 +19,8 @@ import net.oneandone.lavender.config.Filter;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.fs.Node;
+import net.oneandone.sushi.fs.file.FileNode;
+import net.oneandone.sushi.fs.svn.SvnFilesystem;
 import net.oneandone.sushi.fs.svn.SvnNode;
 import org.tmatesoft.svn.core.ISVNDirEntryHandler;
 import org.tmatesoft.svn.core.SVNDepth;
@@ -28,6 +30,7 @@ import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -35,17 +38,14 @@ import java.util.List;
 public class SvnModule extends Module {
     private final SvnNode root;
 
-    private final List<SVNDirEntry> entries;
-
     private final Index oldIndex;
     private final Index index;
     private final Node indexFile;
 
-    public SvnModule(Filter filter, String type, Index oldIndex, Index index, Node indexFile, SvnNode root, boolean lavendelize, String pathPrefix,
-                     List<SVNDirEntry> entries, String folder) {
+    public SvnModule(Filter filter, String type, Index oldIndex, Index index, Node indexFile, SvnNode root,
+                     boolean lavendelize, String pathPrefix, String folder) {
         super(filter, type, folder, lavendelize, pathPrefix);
         this.root = root;
-        this.entries = entries;
         this.oldIndex = oldIndex;
         this.index = index;
         this.indexFile = indexFile;
@@ -53,7 +53,22 @@ public class SvnModule extends Module {
 
     public Iterator<Resource> iterator() {
         final Iterator<SVNDirEntry> base;
+        final List<SVNDirEntry> entries;
 
+        entries = new ArrayList<>();
+        try {
+            root.getRoot().getClientMananger().getLogClient().doList(
+                    root.getSvnurl(), null, SVNRevision.HEAD, true, SVNDepth.INFINITY, SVNDirEntry.DIRENT_ALL, new ISVNDirEntryHandler() {
+                @Override
+                public void handleDirEntry(SVNDirEntry entry) throws SVNException {
+                    if (entry.getKind() == SVNNodeKind.FILE) {
+                        entries.add(entry);
+                    }
+                }
+            });
+        } catch (SVNException e) {
+            throw new RuntimeException("todo", e);
+        }
         base = entries.iterator();
         return new Iterator<Resource>() {
             @Override

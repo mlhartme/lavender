@@ -65,7 +65,7 @@ public class Docroot {
         result = host.join(indexes).list();
         iter = result.iterator();
         while (iter.hasNext()) {
-            if (iter.next().getName().equals(Index.ALL_IDX)) {
+            if (iter.next().getName().startsWith(".")) {
                 iter.remove();
             }
         }

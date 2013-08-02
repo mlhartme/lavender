@@ -15,6 +15,8 @@ public class SvnResource extends Resource {
     private final long lastModified;
 
     public SvnResource(SvnModule module, long revision, String path, int length, long lastModified, Node dataNode, byte[] lazyMd5) {
+        this.module = module;
+        this.revision = revision;
         this.path = path;
         this.length = length;
         this.lastModified = lastModified;
@@ -23,8 +25,6 @@ public class SvnResource extends Resource {
         this.dataBytes = null;
 
         this.lazyMd5 = lazyMd5;
-        this.module = module;
-        this.revision = revision;
     }
 
     @Override

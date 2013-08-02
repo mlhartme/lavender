@@ -118,10 +118,7 @@ public class SvnModuleConfig {
     public SvnModule create(World world, String svnUsername, String svnPassword) throws IOException {
         FileNode cache;
         final SvnNode root;
-        final List<SVNDirEntry> entries;
         final Index oldIndex;
-        final Index newIndex;
-        final SvnModule module;
 
         if (svnurl == null) {
             throw new IllegalArgumentException("missing svn url");
@@ -141,20 +138,7 @@ public class SvnModuleConfig {
                 cache.getParent().mkdirsOpt();
                 oldIndex = new Index();
             }
-
-            newIndex = new Index();
-            entries = new ArrayList<>();
-            module = new SvnModule(filter, type, oldIndex, newIndex, cache, root, lavendelize, pathPrefix, entries, folder);
-            root.getRoot().getClientMananger().getLogClient().doList(
-                    root.getSvnurl(), null, SVNRevision.HEAD, true, SVNDepth.INFINITY, SVNDirEntry.DIRENT_ALL, new ISVNDirEntryHandler() {
-                @Override
-                public void handleDirEntry(SVNDirEntry entry) throws SVNException {
-                    if (entry.getKind() == SVNNodeKind.FILE) {
-                        entries.add(entry);
-                    }
-                }
-            });
-            return module;
+            return new SvnModule(filter, type, oldIndex, new Index(), cache, root, lavendelize, pathPrefix, folder);
         } catch (RuntimeException | IOException e) {
             throw e;
         } catch (Exception e) {
