@@ -118,7 +118,7 @@ public class SvnModuleConfig {
     public SvnModule create(World world, String svnUsername, String svnPassword) throws IOException {
         FileNode cache;
         final SvnNode root;
-        final List<Resource> resources;
+        final List<SVNDirEntry> entries;
         final Index oldIndex;
         final Index newIndex;
         final SvnModule module;
@@ -143,29 +143,14 @@ public class SvnModuleConfig {
             }
 
             newIndex = new Index();
-            resources = new ArrayList<>();
-            module = new SvnModule(filter, type, newIndex, cache, root, lavendelize, pathPrefix, resources, folder);
+            entries = new ArrayList<>();
+            module = new SvnModule(filter, type, oldIndex, newIndex, cache, root, lavendelize, pathPrefix, entries, folder);
             root.getRoot().getClientMananger().getLogClient().doList(
                     root.getSvnurl(), null, SVNRevision.HEAD, true, SVNDepth.INFINITY, SVNDirEntry.DIRENT_ALL, new ISVNDirEntryHandler() {
                 @Override
                 public void handleDirEntry(SVNDirEntry entry) throws SVNException {
-                    String path;
-                    Label label;
-                    byte[] md5;
-                    Node node;
-
                     if (entry.getKind() == SVNNodeKind.FILE) {
-                        path = entry.getRelativePath();
-                        label = oldIndex.lookup(path);
-                        if (label != null && label.getLavendelizedPath().equals(Long.toString(entry.getRevision()))) {
-                            md5 = label.md5();
-                            newIndex.add(label);
-                        } else {
-                            md5 = null;
-                        }
-                        node = root.join(path);
-                        resources.add(new SvnResource(module, entry.getRevision(),
-                                path, entry.getSize(), entry.getDate().getTime(), node, md5));
+                        entries.add(entry);
                     }
                 }
             });
