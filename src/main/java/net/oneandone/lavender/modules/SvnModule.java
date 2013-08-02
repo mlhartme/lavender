@@ -79,8 +79,11 @@ public class SvnModule extends Module {
                     md5 = null;
                 }
                 node = root.join(path);
+                if (entry.getSize() > Integer.MAX_VALUE) {
+                    throw new UnsupportedOperationException("file too big: " + entry.getRelativePath());
+                }
                 return new SvnResource(SvnModule.this, entry.getRevision(),
-                        path, entry.getSize(), entry.getDate().getTime(), node, md5);
+                        path, (int) entry.getSize(), entry.getDate().getTime(), node, md5);
             }
 
             @Override

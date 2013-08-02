@@ -17,6 +17,7 @@ package net.oneandone.lavender.index;
 
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Host;
+import net.oneandone.lavender.modules.Resource;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import org.slf4j.Logger;
@@ -90,7 +91,7 @@ public class Distributor {
         this.next = new Index();
     }
 
-    public boolean write(Label label, byte[] data) throws IOException {
+    public boolean write(Label label, Resource resource) throws IOException {
         Node dest;
         String destPath;
         Label allLabel;
@@ -109,7 +110,7 @@ public class Distributor {
                 } else {
                     LOG.info("U " + destPath);
                 }
-                dest.writeBytes(data);
+                dest.writeBytes(resource.getData());
             }
             changed = true;
         }

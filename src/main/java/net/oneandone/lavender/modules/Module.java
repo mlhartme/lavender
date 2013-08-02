@@ -63,7 +63,7 @@ public abstract class Module implements Iterable<Resource> {
                 } else {
                     label = resource.labelNormal(pathPrefix);
                 }
-                if (distributor.write(label, resource.getData())) {
+                if (distributor.write(label, resource)) {
                     count++;
                 }
             }

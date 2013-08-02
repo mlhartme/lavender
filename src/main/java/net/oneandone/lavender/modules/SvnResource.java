@@ -2,17 +2,19 @@ package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.fs.Node;
+import net.oneandone.sushi.io.Buffer;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 public class SvnResource extends Resource {
     private final SvnModule module;
     private final long revision;
     private final String path;
-    private final long length;
+    private final int length;
     private final long lastModified;
 
-    public SvnResource(SvnModule module, long revision, String path, long length, long lastModified, Node dataNode, byte[] lazyMd5) {
+    public SvnResource(SvnModule module, long revision, String path, int length, long lastModified, Node dataNode, byte[] lazyMd5) {
         this.path = path;
         this.length = length;
         this.lastModified = lastModified;
@@ -58,7 +60,15 @@ public class SvnResource extends Resource {
 
     public byte[] getData() throws IOException {
         if (dataBytes == null) {
-            dataBytes = dataNode.readBytes();
+            dataBytes = new byte[length];
+            try (InputStream src = dataNode.createInputStream()) {
+                if (length != Buffer.fill(src, dataBytes)) {
+                    throw new IllegalStateException();
+                }
+                if (src.read() != -1) {
+                    throw new IllegalStateException();
+                }
+            }
             dataNode = null;
         }
         return dataBytes;
