@@ -35,7 +35,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * Iterates static resources from a Pustefix application. Valid static resource path are defined in WEB-INF/project.xml.
+ * Iterates static resources of the Pustefix application. Valid static resource path are defined in WEB-INF/project.xml.
  * Resources can be found in the WAR or in nested JARs.
  */
 public class PustefixModule extends Module {
