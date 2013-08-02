@@ -25,13 +25,12 @@ import net.oneandone.lavender.index.Hex;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.cli.Console;
+import net.oneandone.sushi.cli.Option;
 import net.oneandone.sushi.cli.Value;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.ssh.SshNode;
-import net.oneandone.sushi.fs.ssh.SshRoot;
 import net.oneandone.sushi.io.OS;
-import net.oneandone.sushi.util.Diff;
 import net.oneandone.sushi.util.Separator;
 import net.oneandone.sushi.util.Strings;
 
@@ -42,6 +41,12 @@ import java.util.List;
 import java.util.Set;
 
 public class Verify extends Base {
+    @Option("md5")
+    private boolean md5check;
+
+    @Option("mac")
+    private boolean mac;
+
     @Value(name = "cluster", position = 1)
     private String clusterName;
 
@@ -86,7 +91,6 @@ public class Verify extends Base {
         Index all;
         Index allLoaded;
         Node fixed;
-        String md5;
 
         problem = false;
         references = new HashSet<>();
@@ -111,9 +115,6 @@ public class Verify extends Base {
             problem = true;
         }
         console.info.println("done: " + references.size());
-        if (md5check(docroot, all)) {
-            problem = true;
-        }
         tmp = new ArrayList<>(references);
         tmp.removeAll(files);
         if (!tmp.isEmpty()) {
@@ -126,6 +127,11 @@ public class Verify extends Base {
             problem = true;
             console.error.println("not referenced files: " + tmp);
         }
+        if (md5check) {
+            if (md5check(docroot, all)) {
+                problem = true;
+            }
+        }
         return problem;
     }
 
@@ -135,7 +141,7 @@ public class Verify extends Base {
         List<String> expecteds;
 
         problem = false;
-        console.info.println("md5 check ...");
+        console.info.println("  md5 check ...");
         paths = new ArrayList<>();
         expecteds = new ArrayList<>();
         for (Label label : index) {
@@ -154,7 +160,7 @@ public class Verify extends Base {
                 problem = true;
             }
         }
-        console.info.println("done");
+        console.info.println("  done");
         return problem;
     }
 
@@ -168,7 +174,7 @@ public class Verify extends Base {
         String expected;
 
         problem = false;
-        md5all = exec(docroot, Strings.append(new String[] { "md5", "-q" }, Strings.toArray(paths)));
+        md5all = exec(docroot, Strings.append(mac ? new String[] { "md5", "-q" } : new String[] { "md5sum" }, Strings.toArray(paths)));
         computeds = SEPARATOR.split(md5all);
         if (expecteds.size() != computeds.size()) {
             throw new IllegalStateException(expecteds + " vs " + computeds);
@@ -176,6 +182,10 @@ public class Verify extends Base {
         i = 0;
         for (String computed : computeds) {
             computed = computed.trim();
+            if (!mac) {
+                // because md5sum prints the checksum followed by the path
+                computed = computed.substring(0, computed.indexOf(' '));
+            }
             expected = expecteds.get(i);
             if (!expected.equals(computed)) {
                 console.error.println(paths.get(i)+ ": md5 broken: expected " + expected + ", got " + computed);
@@ -186,29 +196,11 @@ public class Verify extends Base {
         return problem;
     }
 
-    private static String exec(Node node, String ... cmd) throws IOException {
-        try {
-            return ((SshNode) node).getRoot().exec(false, Strings.append(new String[] { "cd", "/" + node.getPath(), "&&" }, cmd));
-        } catch (JSchException e) {
-            throw new IOException();
-        }
-    }
     public static List<String> find(Node base, String ... args) throws IOException {
         String str;
         List<String> lst;
 
-        try {
-            if (base instanceof SshNode) {
-                str = ((SshRoot) base.getRoot()).exec(Strings.append(
-                        new String[] { "cd", "/" + base.getPath(), "&&", "find", "." }, args));
-            } else if (base instanceof FileNode) {
-                str = ((FileNode) base).exec(Strings.append(new String[] { "find", "." }, args));
-            } else {
-                throw new UnsupportedOperationException("find on " + base.getClass());
-            }
-        } catch (JSchException e) {
-            throw new IOException("error obtaining file list: " + e.getMessage(), e);
-        }
+        str = exec(base, Strings.append(new String[] { "find", "." }, args));
         lst = new ArrayList<>();
         for (String path : OS.CURRENT.lineSeparator.split(str)) {
             if (path.startsWith("./")) {
@@ -220,5 +212,35 @@ public class Verify extends Base {
             }
         }
         return lst;
+    }
+
+    private static String exec(Node dir, String ... cmd) throws IOException {
+        if (dir instanceof SshNode) {
+            try {
+                return ((SshNode) dir).getRoot().exec(Strings.append(new String[] { "cd", "/" + dir.getPath(), "&&" }, escape(cmd)));
+            } catch (JSchException e) {
+                throw new IOException();
+            }
+        } else if (dir instanceof FileNode) {
+            return ((FileNode) dir).exec(cmd);
+        } else {
+            throw new UnsupportedOperationException("exec on " + dir.getClass());
+        }
+    }
+
+    // TODO: jsch problem -- it takes the argument as a string ...
+    private static String[] escape(String[] args) {
+        String[] result;
+        String arg;
+
+        result = new String[args.length];
+        for (int i = 0; i < result.length; i++) {
+            arg = args[i];
+            if (arg.contains(" ")) {
+                arg = "\"" + arg + "\"";
+            }
+            result[i] = arg;
+        }
+        return result;
     }
 }
