@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.config;
 
+import net.oneandone.sushi.cli.ArgumentException;
 import net.oneandone.sushi.fs.DirectoryNotFoundException;
 import net.oneandone.sushi.fs.ListException;
 import net.oneandone.sushi.fs.Node;
@@ -28,9 +29,9 @@ public class Docroot {
     public static final String FLASH = "flash";
     public static final String SVN = "svn";
 
-    public final String docroot;
-
     public final String type;
+
+    public final String docroot;
 
     public final String indexes;
 
@@ -50,10 +51,19 @@ public class Docroot {
         if (indexes.startsWith("/") || indexes.endsWith("/")) {
             throw new IllegalArgumentException(indexes);
         }
-        this.docroot = docroot;
         this.type = type;
+        this.docroot = docroot;
         this.indexes = indexes;
         this.aliases = aliases;
+    }
+
+    public Alias alias(String name) {
+        for (Alias alias : aliases) {
+            if (name.equals(alias.name)) {
+                return alias;
+            }
+        }
+        throw new ArgumentException("alias not found: " + name);
     }
 
     public Node node(Node host) {

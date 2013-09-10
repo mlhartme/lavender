@@ -15,29 +15,67 @@
  */
 package net.oneandone.lavender.cli;
 
+import net.oneandone.lavender.config.Alias;
+import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Settings;
-import net.oneandone.lavender.config.View;
+import net.oneandone.lavender.config.Target;
+import net.oneandone.lavender.index.Distributor;
+import net.oneandone.sushi.cli.ArgumentException;
 import net.oneandone.sushi.cli.Console;
+import net.oneandone.sushi.cli.Remaining;
 import net.oneandone.sushi.cli.Value;
 import net.oneandone.sushi.fs.file.FileNode;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class War extends Base {
-    @Value(name = "view", position = 1)
-    private String viewName;
-
-    @Value(name = "inputWar", position = 2)
+    @Value(name = "inputWar", position = 1)
     private FileNode inputWar;
 
-    @Value(name = "outputWar", position = 3)
+    @Value(name = "outputWar", position = 2)
     private FileNode outputWar;
 
-    @Value(name = "idxName", position = 4)
+    @Value(name = "idxName", position = 3)
     private String indexName;
 
+    private Map<String, Target> targets;
+    private String nodes;
+
+    @Remaining
+    public void target(String keyvalue) {
+        int idx;
+        String type;
+        String clusterName;
+        String aliasName;
+        Cluster cluster;
+        Docroot docroot;
+        Alias alias;
+
+        idx = keyvalue.indexOf('=');
+        if (idx == -1) {
+            throw new ArgumentException(keyvalue);
+        }
+        type = keyvalue.substring(0, idx);
+        clusterName = keyvalue.substring(idx + 1);
+        idx = clusterName.indexOf('/');
+        if (idx == -1) {
+            aliasName = null;
+        } else {
+            aliasName = clusterName.substring(idx + 1);
+            clusterName = clusterName.substring(idx);
+        }
+        cluster = net.cluster(clusterName);
+        docroot = cluster.docroot(type);
+        alias = aliasName == null ? docroot.aliases.get(0) : docroot.alias(aliasName);
+        if (Docroot.WEB.equals(type)) {
+            nodes = alias.nodesFile();
+        }
+        targets.put(type, new Target(cluster, docroot, alias));
+    }
 
     public War(Console console, Settings settings, Net net) {
         super(console, settings, net);
@@ -48,16 +86,32 @@ public class War extends Base {
         FileNode tmp;
         FileNode outputNodesFile;
         WarEngine engine;
-        View view;
+        Map<String, Distributor> distributors;
 
+        if (targets.isEmpty()) {
+            throw new ArgumentException("missing targets");
+        }
+        if (nodes == null) {
+            throw new ArgumentException("missing web target");
+        }
         inputWar.checkFile();
         outputWar.checkNotExists();
         tmp = inputWar.getWorld().getTemp();
         outputNodesFile = tmp.createTempFile();
-        view = net.view(viewName);
-        engine = new WarEngine(view, indexName, settings.svnUsername, settings.svnPassword,
-                inputWar, outputWar, outputNodesFile, view.get(Docroot.WEB).alias.nodesFile());
+        distributors = distributors();
+        engine = new WarEngine(distributors, indexName, settings.svnUsername, settings.svnPassword,
+                inputWar, outputWar, outputNodesFile, nodes);
         engine.run();
         outputNodesFile.deleteFile();
+    }
+
+    private Map<String, Distributor> distributors() throws IOException {
+        Map<String, Distributor> result;
+
+        result = new HashMap<>();
+        for (Map.Entry<String, Target> entry : targets.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().open(console.world, indexName));
+        }
+        return result;
     }
 }

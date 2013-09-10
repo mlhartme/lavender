@@ -16,7 +16,6 @@
 package net.oneandone.lavender.cli;
 
 import net.oneandone.lavender.config.Docroot;
-import net.oneandone.lavender.config.View;
 import net.oneandone.lavender.filter.Lavender;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
@@ -43,26 +42,24 @@ import java.util.zip.ZipOutputStream;
 public class WarEngine {
     private static final Logger LOG = LoggerFactory.getLogger(WarEngine.class);
 
-    private final View view;
+    /** maps type to Distributor */
+    private final Map<String, Distributor> distributors;
     private final String indexName;
     private final String svnUsername;
     private final String svnPassword;
     private final FileNode inputWar;
     private final FileNode outputWar;
-    /** maps type to Distributor */
-    private final Map<String, Distributor> distributors;
     private final FileNode outputNodesFile;
     private final String nodes;
 
-    public WarEngine(View view, String indexName, String svnUsername, String svnPassword,
+    public WarEngine(Map<String, Distributor> distributors, String indexName, String svnUsername, String svnPassword,
                      FileNode inputWar, FileNode outputWar, FileNode outputNodesFile, String nodes) {
-        this.view = view;
+        this.distributors = distributors;
         this.indexName = indexName;
         this.svnUsername = svnUsername;
         this.svnPassword = svnPassword;
         this.inputWar = inputWar;
         this.outputWar = outputWar;
-        this.distributors = new HashMap<>();
         this.outputNodesFile = outputNodesFile;
         this.nodes = nodes;
     }
@@ -110,10 +107,10 @@ public class WarEngine {
             type = module.getType();
             distributor = distributors.get(type);
             if (distributor == null) {
-                distributor = view.get(type).open(inputWar.getWorld(), indexName);
-                distributors.put(type, distributor);
+                // nothing to do - this type is not published
+            } else {
+                changed += module.publish(distributor);
             }
-            changed += module.publish(distributor);
         }
         return changed;
     }

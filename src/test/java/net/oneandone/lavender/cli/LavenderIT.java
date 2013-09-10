@@ -117,9 +117,6 @@ public class LavenderIT {
                 .addLocalhost(testhosts.join("flash-us"))
                 .addDocroot("flash", "htdocs", "htdocs/.lavender",
                         new Alias("main")));
-        net.addView("test",
-                "web", "test",
-                "flash", "flash-eu");
         return net;
     }
 

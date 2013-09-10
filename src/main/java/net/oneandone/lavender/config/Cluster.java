@@ -45,6 +45,15 @@ public class Cluster {
         this.docroots = new ArrayList<>();
     }
 
+    public Docroot docroot(String type) {
+        for (Docroot docroot : docroots) {
+            if (type.equals(docroot.type)) {
+                return docroot;
+            }
+        }
+        throw new IllegalArgumentException("no docroot for type " + type);
+    }
+
     public Cluster addCdn(String name) {
         return addHost(name, "wwwcdn");
     }
@@ -74,16 +83,5 @@ public class Cluster {
     public Cluster addDocroot(String type, String docroot, String indexes, Alias... aliases) {
         docroots.add(new Docroot(type, docroot, indexes, Arrays.asList(aliases)));
         return this;
-    }
-
-    public Object[] alias(String name) {
-        for (Docroot docroot : docroots) {
-            for (Alias alias : docroot.aliases) {
-                if (name.equals(alias.name)) {
-                    return new Object[] { docroot, alias };
-                }
-            }
-        }
-        throw new ArgumentException("alias not found: " + name);
     }
 }

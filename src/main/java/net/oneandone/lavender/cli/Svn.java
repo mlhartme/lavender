@@ -15,11 +15,12 @@
  */
 package net.oneandone.lavender.cli;
 
+import net.oneandone.lavender.config.Cluster;
+import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Filter;
 import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Settings;
 import net.oneandone.lavender.config.Target;
-import net.oneandone.lavender.config.View;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.SvnModule;
@@ -31,11 +32,11 @@ import net.oneandone.sushi.cli.Value;
 import java.io.IOException;
 
 public class Svn extends Base {
-    @Value(name = "view", position = 1)
-    private String viewName;
-
-    @Value(name = "directory", position = 2)
+    @Value(name = "directory", position = 1)
     private String directory;
+
+    @Value(name = "cluster", position = 2)
+    private String clusterName;
 
     public Svn(Console console, Settings settings, Net net) {
         super(console, settings, net);
@@ -48,7 +49,8 @@ public class Svn extends Base {
     }
 
     private void invoke(String svnurl) throws IOException {
-        View view;
+        Cluster cluster;
+        Docroot docroot;
         Target target;
         Filter filter;
         SvnModuleConfig ec;
@@ -60,8 +62,9 @@ public class Svn extends Base {
         if (directory.isEmpty() || directory.contains("/")) {
             throw new ArgumentException("invalid directory: " + directory);
         }
-        view = net.view(viewName);
-        target = view.get("svn");
+        cluster = net.cluster(clusterName);
+        docroot = cluster.docroot(Docroot.SVN);
+        target = new Target(cluster, docroot, docroot.aliases.get(0));
         filter = new Filter();
         filter.setIncludes("*");
         filter.setExcludes();

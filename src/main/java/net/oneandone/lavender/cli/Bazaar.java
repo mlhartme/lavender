@@ -16,11 +16,12 @@
 package net.oneandone.lavender.cli;
 
 import com.jcraft.jsch.JSchException;
+import net.oneandone.lavender.config.Cluster;
+import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Host;
 import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Settings;
 import net.oneandone.lavender.config.Target;
-import net.oneandone.lavender.config.View;
 import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
@@ -47,7 +48,8 @@ public class Bazaar extends Base {
 
     @Override
     public void invoke() throws Exception {
-        View view;
+        Cluster cluster;
+        Docroot docroot;
         Target target;
         SshNode srcdir;
         SshNode srcfile;
@@ -56,9 +58,9 @@ public class Bazaar extends Base {
         Node destTmp;
         Node destFinal;
 
-        view = net.view("internal");
-        // CAUTION: I cannot have bazaarvoice - it would be garbage collected
-        target = view.get("svn");
+        cluster = net.cluster("internal");
+        docroot = cluster.docroot(Docroot.SVN);
+        target = new Target(cluster, docroot, docroot.aliases.get(0));
         srcdir = feeds(console.world);
         if (!srcdir.join("bv_1und1_smartseo.zip.ready").isFile()) {
             throw new IOException("not ready");
