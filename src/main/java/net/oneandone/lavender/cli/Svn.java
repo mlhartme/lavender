@@ -62,9 +62,9 @@ public class Svn extends Base {
         if (directory.isEmpty() || directory.contains("/")) {
             throw new ArgumentException("invalid directory: " + directory);
         }
-        cluster = net.cluster(clusterName);
+        cluster = net.get(clusterName);
         docroot = cluster.docroot(Docroot.SVN);
-        target = new Target(cluster, docroot, docroot.aliases.get(0));
+        target = new Target(cluster, docroot, docroot.aliases().get(0));
         filter = new Filter();
         filter.setIncludes("*");
         filter.setExcludes();

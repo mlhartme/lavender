@@ -62,11 +62,11 @@ public class Verify extends Base {
         boolean problem;
 
         problem = false;
-        cluster = net.cluster(clusterName);
-        for (Host host : cluster.hosts) {
+        cluster = net.get(clusterName);
+        for (Host host : cluster.hosts()) {
             console.info.println(host);
             hostroot = host.open(console.world);
-            for (Docroot docrootObj : cluster.docroots) {
+            for (Docroot docrootObj : cluster.docroots()) {
                 docroot = docrootObj.node(hostroot);
                 if (docroot.exists()) {
                     if (filesAndReferences(hostroot, docroot, docrootObj)) {

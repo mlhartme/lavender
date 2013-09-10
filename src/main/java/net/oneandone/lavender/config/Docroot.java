@@ -19,23 +19,35 @@ import net.oneandone.sushi.cli.ArgumentException;
 import net.oneandone.sushi.fs.DirectoryNotFoundException;
 import net.oneandone.sushi.fs.ListException;
 import net.oneandone.sushi.fs.Node;
+import net.oneandone.sushi.metadata.annotation.Sequence;
+import net.oneandone.sushi.metadata.annotation.Type;
+import net.oneandone.sushi.metadata.annotation.Value;
 
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+@Type
 public class Docroot {
     public static final String WEB = "web";
     public static final String FLASH = "flash";
     public static final String SVN = "svn";
 
-    public final String type;
+    @Value
+    private String type;
 
-    public final String docroot;
+    @Value
+    private String docroot;
 
-    public final String indexes;
+    @Value
+    private String indexes;
 
-    public final List<Alias> aliases;
+    @Sequence(Alias.class)
+    private final List<Alias> aliases;
+
+    public Docroot() {
+        this(WEB, "", "");
+    }
 
     public Docroot(String type, String docroot, String indexes, Alias... aliases) {
         this(type, docroot, indexes, Arrays.asList(aliases));
@@ -57,9 +69,38 @@ public class Docroot {
         this.aliases = aliases;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getDocroot() {
+        return docroot;
+    }
+
+    public void setDocroot(String docroot) {
+        this.docroot = docroot;
+    }
+
+    public String getIndexes() {
+        return indexes;
+    }
+
+    public void setIndexes(String indexes) {
+        this.indexes = indexes;
+    }
+
+    public List<Alias> aliases() {
+        return aliases;
+    }
+
+
     public Alias alias(String name) {
         for (Alias alias : aliases) {
-            if (name.equals(alias.name)) {
+            if (name.equals(alias.getName())) {
                 return alias;
             }
         }

@@ -103,17 +103,17 @@ public class LavenderIT {
         testhosts.deleteTreeOpt();
         testhosts.mkdir();
         net = new Net();
-        net.add("test", new Cluster()
+        net.add(new Cluster("test")
                 .addLocalhost(testhosts.join("cdn1"))
                 .addLocalhost(testhosts.join("cdn2"))
                 .addDocroot("web", "htdocs/fix", "indexes",
                         new Alias("fix", "/fix", "fix1.uicdn.net", "fix2.uicdn.net", "fix3.uicdn.net", "fix4.uicdn.net")));
-        net.add("flash-eu", new Cluster()
+        net.add(new Cluster("flash-eu")
                 .addLocalhost(testhosts.join("flash-eu1"))
                 .addLocalhost(testhosts.join("flash-eu2"))
                 .addDocroot("flash", "htdocs", "htdocs/.lavender",
                         new Alias("main")));
-        net.add("flash-us", new Cluster()
+        net.add(new Cluster("flash-us")
                 .addLocalhost(testhosts.join("flash-us"))
                 .addDocroot("flash", "htdocs", "htdocs/.lavender",
                         new Alias("main")));

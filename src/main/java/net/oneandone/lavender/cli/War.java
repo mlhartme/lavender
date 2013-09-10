@@ -68,9 +68,9 @@ public class War extends Base {
             aliasName = clusterName.substring(idx + 1);
             clusterName = clusterName.substring(idx);
         }
-        cluster = net.cluster(clusterName);
+        cluster = net.get(clusterName);
         docroot = cluster.docroot(type);
-        alias = aliasName == null ? docroot.aliases.get(0) : docroot.alias(aliasName);
+        alias = aliasName == null ? docroot.aliases().get(0) : docroot.alias(aliasName);
         if (Docroot.WEB.equals(type)) {
             nodes = alias.nodesFile();
         }

@@ -17,7 +17,7 @@ public class Target {
     }
 
     public Distributor open(World world, String indexName) throws IOException {
-        return Distributor.open(world, cluster.hosts, docroot, indexName);
+        return Distributor.open(world, cluster.hosts(), docroot, indexName);
     }
 
 }

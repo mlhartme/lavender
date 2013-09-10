@@ -55,10 +55,10 @@ public class GarbageCollection extends Base {
         Set<String> references;
         Node docroot;
 
-        cluster = net.cluster(clusterName);
-        for (Host host : cluster.hosts) {
+        cluster = net.get(clusterName);
+        for (Host host : cluster.hosts()) {
             hostroot = host.open(console.world);
-            for (Docroot docrootObj : cluster.docroots) {
+            for (Docroot docrootObj : cluster.docroots()) {
                 docroot = docrootObj.node(hostroot);
                 if (docroot.exists()) {
                     references = new HashSet<>();

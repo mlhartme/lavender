@@ -58,9 +58,9 @@ public class Bazaar extends Base {
         Node destTmp;
         Node destFinal;
 
-        cluster = net.cluster("internal");
+        cluster = net.get("internal");
         docroot = cluster.docroot(Docroot.SVN);
-        target = new Target(cluster, docroot, docroot.aliases.get(0));
+        target = new Target(cluster, docroot, docroot.aliases().get(0));
         srcdir = feeds(console.world);
         if (!srcdir.join("bv_1und1_smartseo.zip.ready").isFile()) {
             throw new IOException("not ready");
@@ -70,7 +70,7 @@ public class Bazaar extends Base {
         srcfile.copyFile(local);
         console.info.println("downloaded " + local.length() + " bytes from " + srcfile.getURI());
         root = local.openZip();
-        for (Host host : target.cluster.hosts) {
+        for (Host host : target.cluster.hosts()) {
             console.info.println(host);
             destTmp = target.docroot.node(host.open(console.world)).getParent().join("bazaarvoice/tmp").mkdirsOpt();
             destFinal = destTmp.getParent().join("latest");

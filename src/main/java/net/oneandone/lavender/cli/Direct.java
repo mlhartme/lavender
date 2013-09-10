@@ -57,7 +57,7 @@ public class Direct extends Base {
             throw new ArgumentException("missing command");
         }
         fs = (SshFilesystem) console.world.getFilesystem("ssh");
-        for (Host host : net.cluster(cluster).hosts) {
+        for (Host host : net.get(cluster).hosts()) {
             root = (SshRoot) host.open(console.world).getRoot();
             console.info.println(host.toString());
             try {

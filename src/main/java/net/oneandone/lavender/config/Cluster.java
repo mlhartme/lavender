@@ -16,16 +16,20 @@
 package net.oneandone.lavender.config;
 
 import net.oneandone.sushi.fs.file.FileNode;
+import net.oneandone.sushi.metadata.annotation.Sequence;
+import net.oneandone.sushi.metadata.annotation.Type;
+import net.oneandone.sushi.metadata.annotation.Value;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Type
 public class Cluster {
     public Host findHost(String name) {
         for (Host host : hosts) {
-            if (name.equals(host.name)) {
+            if (name.equals(host.getName())) {
                 return host;
             }
         }
@@ -34,19 +38,46 @@ public class Cluster {
 
     //--
 
-    public final List<Host> hosts;
+    @Value
+    private String name;
 
-    /** pointing to "fix" docroot */
-    public final List<Docroot> docroots;
+    @Sequence(Host.class)
+    private final List<Host> hosts;
+
+    @Sequence(Docroot.class)
+    private final List<Docroot> docroots;
 
     public Cluster() {
+        this("dummy");
+    }
+
+    public Cluster(String name) {
+        this.name = name;
         this.hosts = new ArrayList<>();
         this.docroots = new ArrayList<>();
     }
 
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<Host> hosts() {
+        return hosts;
+    }
+
+    public List<Docroot> docroots() {
+        return docroots;
+    }
+
+
     public Docroot docroot(String type) {
         for (Docroot docroot : docroots) {
-            if (type.equals(docroot.type)) {
+            if (type.equals(docroot.getType())) {
                 return docroot;
             }
         }

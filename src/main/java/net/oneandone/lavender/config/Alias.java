@@ -15,18 +15,29 @@
  */
 package net.oneandone.lavender.config;
 
+import net.oneandone.sushi.metadata.annotation.Sequence;
+import net.oneandone.sushi.metadata.annotation.Type;
+import net.oneandone.sushi.metadata.annotation.Value;
+
 import java.util.Arrays;
 import java.util.List;
 
 /** multiple vhost may share the same docroot. */
+@Type
 public class Alias {
     public static Alias one(String name) {
         return new Alias(name, name);
     }
 
-    public final String name;
+    @Value
+    private String name;
 
-    public final List<String> domains;
+    @Sequence(String.class)
+    private List<String> domains;
+
+    public Alias() {
+        this("dummy");
+    }
 
     public Alias(String name, String ... domains) {
         this(name, Arrays.asList(domains));
@@ -35,6 +46,18 @@ public class Alias {
     public Alias(String name, List<String> domains) {
         this.name = name;
         this.domains = domains;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<String> domains() {
+        return domains;
     }
 
     public String nodesFile() {

@@ -19,10 +19,13 @@ import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.NodeInstantiationException;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
+import net.oneandone.sushi.metadata.annotation.Type;
+import net.oneandone.sushi.metadata.annotation.Value;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
+@Type
 public class Host {
     public static Host remote(String name, String login) {
         try {
@@ -36,14 +39,27 @@ public class Host {
         return new Host("localhost", basedir.getURI());
     }
 
-    public final String name;
+    @Value
+    private String name;
 
     public final URI uri;
+
+    public Host() {
+        this(null, null);
+    }
 
     public Host(String name, URI uri) {
         this.name = name;
         this.uri = uri;
-   }
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     /** @return root node of this host */
     public Node open(World world) throws NodeInstantiationException {
