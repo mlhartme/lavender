@@ -27,30 +27,30 @@ import java.net.URISyntaxException;
 
 @Type
 public class Host {
+    private static final String LOCALHOST = "localhost";
+
     public static Host remote(String name, String login) {
-        try {
-            return new Host(name, new URI("ssh://" + login + "@" + name));
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException(e);
-        }
+        return new Host(name, login);
     }
 
     public static Host local(FileNode basedir) {
-        return new Host("localhost", basedir.getURI());
+        return new Host(LOCALHOST, basedir.getAbsolute());
     }
 
     @Value
     private String name;
 
-    public final URI uri;
+    /** or path for if name is localhost */
+    @Value
+    private String login;
 
     public Host() {
         this(null, null);
     }
 
-    public Host(String name, URI uri) {
+    public Host(String name, String login) {
         this.name = name;
-        this.uri = uri;
+        this.login = login;
     }
 
     public String getName() {
@@ -61,9 +61,21 @@ public class Host {
         this.name = name;
     }
 
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
     /** @return root node of this host */
     public Node open(World world) throws NodeInstantiationException {
-        return world.node(uri);
+        if (name.equals(LOCALHOST)) {
+            return world.file(login);
+        } else {
+            return world.validNode("ssh://" + login + "@" + name);
+        }
     }
 
     public String toString() {
