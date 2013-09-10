@@ -42,7 +42,7 @@
         as a consequence, indexes on flash servers map to plain paths now.
       </action>
       <action date="2013-07-04" dev="mhm" type="update">
-        Index without lavendelized on flash servers is no longer lavendelized.
+        Index on flash servers no longer contains lavendelized paths.
       </action>
       <action date="2013-07-04" dev="mhm" type="add">
         Added "svn" command to publish svn directories.

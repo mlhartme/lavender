@@ -131,7 +131,7 @@ public class SvnModuleConfig {
             world.getFilesystem("svn", SvnFilesystem.class).setDefaultCredentials(svnUsername, svnPassword);
             root = (SvnNode) world.node("svn:" + svnurl);
             cache = (FileNode) world.getHome().join(".cache/lavender",
-                    root.getRoot().getRepository().getRepositoryRoot(false).getHost(), root.getPath().replace('/', '.'));
+                    root.getRoot().getRepository().getRepositoryRoot(false).getHost(), root.getPath().replace('/', '.') + ".idx");
             if (cache.exists()) {
                 oldIndex = Index.load(cache);
             } else {
