@@ -71,7 +71,7 @@ public class Svn extends Base {
         ec.lavendelize = false;
         module = ec.create(console.world, settings.svnUsername, settings.svnPassword);
         distributor = target.open(console.world, directory + ".idx");
-        changed = module.run(distributor);
+        changed = module.publish(distributor);
         index = distributor.close();
         module.saveCaches();
         console.info.println("done: " + changed + "/" + index.size() + " files changed");

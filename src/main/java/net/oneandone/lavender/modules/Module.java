@@ -48,8 +48,8 @@ public abstract class Module implements Iterable<Resource> {
         return filter;
     }
 
-    /** @return number of changed (updated or added) files */
-    public long run(Distributor distributor) throws IOException {
+    /** @return number of changed (updated or added) resources */
+    public long publish(Distributor distributor) throws IOException {
         Label label;
         long count;
 

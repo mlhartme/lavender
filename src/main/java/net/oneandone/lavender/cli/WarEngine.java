@@ -112,7 +112,7 @@ public class WarEngine {
                 distributor = view.get(type).open(inputWar.getWorld(), indexName);
                 distributors.put(type, distributor);
             }
-            changed += module.run(distributor);
+            changed += module.publish(distributor);
         }
         return changed;
     }
