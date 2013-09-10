@@ -21,7 +21,13 @@ import net.oneandone.lavender.index.Label;
 
 import java.io.IOException;
 
-/** Contains resources. */
+/**
+ * Contains resources. Can iterate all resources and probe for existing ones.
+ * Type describes what kind of resources it contains; you usually have many modules
+ * in one application, and the type selects which of the you want to - e.g. - publish.
+ * Current types are "web" and "flash". Modules have a descriptor the specifies the
+ * type.
+ */
 public abstract class Module implements Iterable<Resource> {
     private final Filter filter;
     private final String type;

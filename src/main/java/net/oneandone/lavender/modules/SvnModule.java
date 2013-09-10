@@ -65,7 +65,7 @@ public class SvnModule extends Module {
                 }
             });
         } catch (SVNException e) {
-            throw new RuntimeException("todo", e);
+            throw new RuntimeException("TODO", e);
         }
         base = entries.iterator();
         return new Iterator<Resource>() {
