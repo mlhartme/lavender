@@ -15,7 +15,6 @@
  */
 package net.oneandone.lavender.config;
 
-import net.oneandone.sushi.cli.ArgumentException;
 import net.oneandone.sushi.fs.file.FileNode;
 
 import java.io.IOException;
@@ -70,7 +69,7 @@ public class Cluster {
         basedir.mkdir();
         basedir.join("indexes").mkdirs();
         basedir.join("htdocs").mkdirOpt();
-        hosts.add(Net.local(basedir));
+        hosts.add(Host.local(basedir));
         return this;
     }
 

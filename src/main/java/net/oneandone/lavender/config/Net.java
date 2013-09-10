@@ -77,12 +77,6 @@ public class Net {
 
     //--
 
-    public static Host local(FileNode basedir) {
-        return Host.local(basedir);
-    }
-
-    //--
-
     public final Map<String, Cluster> clusters;
 
     public Net() {
