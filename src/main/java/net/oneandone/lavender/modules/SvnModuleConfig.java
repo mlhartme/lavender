@@ -15,11 +15,9 @@
  */
 package net.oneandone.lavender.modules;
 
+import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Filter;
-import net.oneandone.lavender.config.View;
 import net.oneandone.lavender.index.Index;
-import net.oneandone.lavender.index.Label;
-import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.svn.SvnFilesystem;
@@ -27,18 +25,10 @@ import net.oneandone.sushi.fs.svn.SvnNode;
 import net.oneandone.sushi.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tmatesoft.svn.core.ISVNDirEntryHandler;
-import org.tmatesoft.svn.core.SVNDepth;
-import org.tmatesoft.svn.core.SVNDirEntry;
-import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.SVNNodeKind;
-import org.tmatesoft.svn.core.wc.SVNRevision;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -50,7 +40,7 @@ public class SvnModuleConfig {
     public final String folder;
     public final Filter filter;
     public String svnurl;
-    public String type = View.WEB;
+    public String type = Docroot.WEB;
     public boolean lavendelize = true;
     public String pathPrefix = "";
 

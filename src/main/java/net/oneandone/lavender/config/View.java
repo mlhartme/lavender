@@ -6,10 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class View {
-    public static final String WEB = "web";
-    public static final String FLASH = "flash";
-    public static final String SVN = "svn";
-
     /** maps type to target */
     private final Map<String, Target> map;
 

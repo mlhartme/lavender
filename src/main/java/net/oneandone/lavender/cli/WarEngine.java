@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.cli;
 
+import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.View;
 import net.oneandone.lavender.filter.Lavender;
 import net.oneandone.lavender.index.Distributor;
@@ -92,7 +93,7 @@ public class WarEngine {
         LOG.info("lavendel servers updated: "
                 + changed + "/" + absolute + " files changed (" + (System.currentTimeMillis() - started) + " ms)");
         outputNodesFile.writeString(nodes);
-        updateWarFile(result.get(View.WEB));
+        updateWarFile(result.get(Docroot.WEB));
         for (Module module : modules) {
             module.saveCaches();
         }

@@ -71,8 +71,8 @@ public class Cluster {
         return this;
     }
 
-    public Cluster addDocroot(String docroot, String indexes, Alias ... aliases) {
-        docroots.add(new Docroot(docroot, indexes, Arrays.asList(aliases)));
+    public Cluster addDocroot(String type, String docroot, String indexes, Alias... aliases) {
+        docroots.add(new Docroot(type, docroot, indexes, Arrays.asList(aliases)));
         return this;
     }
 

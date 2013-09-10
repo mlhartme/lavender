@@ -18,7 +18,6 @@ package net.oneandone.lavender.modules;
 import net.oneandone.sushi.fs.Node;
 
 import java.io.IOException;
-import java.net.URI;
 
 public class DefaultResource extends Resource {
     public static DefaultResource forBytes(byte[] bytes, String path) {

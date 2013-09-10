@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.cli;
 
+import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Settings;
 import net.oneandone.lavender.config.View;
@@ -55,7 +56,7 @@ public class War extends Base {
         outputNodesFile = tmp.createTempFile();
         view = net.view(viewName);
         engine = new WarEngine(view, indexName, settings.svnUsername, settings.svnPassword,
-                inputWar, outputWar, outputNodesFile, view.get(View.WEB).alias.nodesFile());
+                inputWar, outputWar, outputNodesFile, view.get(Docroot.WEB).alias.nodesFile());
         engine.run();
         outputNodesFile.deleteFile();
     }

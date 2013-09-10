@@ -24,17 +24,23 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Docroot {
+    public static final String WEB = "web";
+    public static final String FLASH = "flash";
+    public static final String SVN = "svn";
+
     public final String docroot;
+
+    public final String type;
 
     public final String indexes;
 
     public final List<Alias> aliases;
 
-    public Docroot(String docroot, String indexes, Alias ... aliases) {
-        this(docroot, indexes, Arrays.asList(aliases));
+    public Docroot(String type, String docroot, String indexes, Alias... aliases) {
+        this(type, docroot, indexes, Arrays.asList(aliases));
     }
 
-    public Docroot(String docroot, String indexes, List<Alias> aliases) {
+    public Docroot(String type, String docroot, String indexes, List<Alias> aliases) {
         if (aliases.isEmpty()) {
             throw new IllegalArgumentException("missing alias for docroot " + docroot);
         }
@@ -45,6 +51,7 @@ public class Docroot {
             throw new IllegalArgumentException(indexes);
         }
         this.docroot = docroot;
+        this.type = type;
         this.indexes = indexes;
         this.aliases = aliases;
     }

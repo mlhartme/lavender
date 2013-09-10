@@ -15,8 +15,8 @@
  */
 package net.oneandone.lavender.modules;
 
+import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Filter;
-import net.oneandone.lavender.config.View;
 import net.oneandone.lavender.modules.project.ProjectConfig;
 import net.oneandone.sushi.fs.Node;
 import org.slf4j.Logger;
@@ -60,7 +60,7 @@ public class PustefixModule extends Module {
         for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
             mc = loadModuleXml(ps, jar);
             if (mc != null) {
-                result.add(new JarModule(ps.getFilter(), View.WEB, mc, jar));
+                result.add(new JarModule(ps.getFilter(), Docroot.WEB, mc, jar));
             }
         }
         for (SvnModuleConfig config : SvnModuleConfig.parse(properties)) {
@@ -117,7 +117,7 @@ public class PustefixModule extends Module {
     private final Node webapp;
 
     public PustefixModule(Filter filter, ProjectConfig config, Node webapp) throws IOException {
-        super(filter, View.WEB, config.getProject().getName(), true, "");
+        super(filter, Docroot.WEB, config.getProject().getName(), true, "");
 
         this.config = config;
         this.webapp = webapp;

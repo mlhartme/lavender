@@ -30,26 +30,26 @@ public class Net {
             .addCdn("cdnfe01.schlund.de")
             .addCdn("cdnfe02.schlund.de")
             .addCdn("cdnfe03.schlund.de")
-            .addDocroot("home/wwwcdn/htdocs/fix", "home/wwwcdn/indexes/fix",
+            .addDocroot("web", "home/wwwcdn/htdocs/fix", "home/wwwcdn/indexes/fix",
                     new Alias("fix", "s1.uicdn.net", "s2.uicdn.net", "s3.uicdn.net", "s4.uicdn.net")));
         net.add("us", new Cluster()
                 // see http://issue.tool.1and1.com/browse/ITOSHA-3624 and http://issue.tool.1and1.com/browse/ITOSHA-3667
                 .addCdn("wscdnfelxaa01.fe.server.lan")
                 .addCdn("wscdnfelxaa02.fe.server.lan")
                 .addCdn("wscdnfelxaa03.fe.server.lan")
-                .addDocroot("home/wwwcdn/htdocs/fix", "home/wwwcdn/indexes/fix",
+                .addDocroot("web", "home/wwwcdn/htdocs/fix", "home/wwwcdn/indexes/fix",
                         new Alias("fix", "u1.uicdn.net", "u2.uicdn.net", "u3.uicdn.net", "u4.uicdn.net"),
                         new Alias("akamai", "au1.uicdn.net", "au2.uicdn.net", "au3.uicdn.net", "au4.uicdn.net")));
         net.add("flash-eu", new Cluster()
                 // see http://issue.tool.1and1.com/browse/ITOSHA-3624 and http://issue.tool.1and1.com/browse/ITOSHA-3668
                 .addFlash("winflasheu1.schlund.de")
                 .addFlash("winflasheu2.schlund.de")
-                .addDocroot("", ".lavender",
+                .addDocroot("flash", "", ".lavender",
                         new Alias("flash")));
         net.add("flash-us", new Cluster()
                 .addFlash("winflashus1.lxa.perfora.net")
                 .addFlash("winflashus2.lxa.perfora.net")
-                .addDocroot("", ".lavender",
+                .addDocroot("flash", "", ".lavender",
                         new Alias("flash")));
 
         // this cluster is only accessible from within 1&1
@@ -60,34 +60,22 @@ public class Net {
                 /* the following is excludes to avoid garbage collection of the file inside:
                 .addDocroot("var/bazaarvoice", "indexes/bazaarvoice",
                         new Alias("bazaar")) */
-                .addDocroot("home/wwwstatint/htdocs/var/svn", "home/wwwstatint/indexes/svn",
+                .addDocroot("svn", "home/wwwstatint/htdocs/var/svn", "home/wwwstatint/indexes/svn",
                         new Alias("svn")));
 
         net.add("walter", new Cluster()
                 .addHost("walter.websales.united.domain", "mhm")
-                .addDocroot("Users/mhm/lavender/htdocs/fix", "Users/mhm/lavender/indexes/fix",
+                .addDocroot("web", "Users/mhm/lavender/htdocs/fix", "Users/mhm/lavender/indexes/fix",
                         new Alias("fix", "fix.lavender.walter.websales.united.domain"))
-                .addDocroot("Users/mhm/lavender/htdocs/flash", "Users/mhm/lavender/indexes/flash",
+                .addDocroot("flash", "Users/mhm/lavender/htdocs/flash", "Users/mhm/lavender/indexes/flash",
                         new Alias("flash"))
-                .addDocroot("Users/mhm/lavender/htdocs/var/svn", "Users/mhm/lavender/indexes/svn",
+                .addDocroot("svn", "Users/mhm/lavender/htdocs/var/svn", "Users/mhm/lavender/indexes/svn",
                         new Alias("svn")));
 
         // views
-        net.addView("eu",
-                "web", "eu",
-                "flash", "flash-eu");
-        net.addView("us",
-                "web", "us",
-                "flash", "flash-us");
         net.addView("akamai-us",
                 "web", "us/akamai",
                 "flash", "flash-us");
-        net.addView("walter",
-                "web", "walter",
-                "flash-eu", "walter/flash",
-                "svn", "walter/svn");
-        net.addView("internal",
-                "svn", "internal/svn");
         return net;
     }
 

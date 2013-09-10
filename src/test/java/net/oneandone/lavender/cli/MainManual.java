@@ -36,7 +36,7 @@ public class MainManual {
         Main.initWorld(world, Settings.load(world), null);
         for (Cluster cluster : net.clusters.values()) {
             for (Host host : cluster.hosts) {
-                node = new Docroot("", "").node(host.open(world));
+                node = new Docroot("", "", "").node(host.open(world));
                 System.out.println(host + ":\n  " + node.list());
             }
         }
