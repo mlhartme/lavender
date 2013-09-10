@@ -27,17 +27,6 @@ import java.util.List;
 
 @Type
 public class Cluster {
-    public Host findHost(String name) {
-        for (Host host : hosts) {
-            if (name.equals(host.getName())) {
-                return host;
-            }
-        }
-        return null;
-    }
-
-    //--
-
     @Value
     private String name;
 
@@ -75,6 +64,15 @@ public class Cluster {
     }
 
 
+    public Host host(String name) {
+        for (Host host : hosts) {
+            if (name.equals(host.getName())) {
+                return host;
+            }
+        }
+        throw new IllegalArgumentException("host not found: " + name);
+    }
+
     public Docroot docroot(String type) {
         for (Docroot docroot : docroots) {
             if (type.equals(docroot.getType())) {
@@ -84,29 +82,11 @@ public class Cluster {
         throw new IllegalArgumentException("no docroot for type " + type);
     }
 
-    public Cluster addCdn(String name) {
-        return addHost(name, "wwwcdn");
-    }
-
-    public Cluster addStatint(String name) {
-        return addHost(name, "wwwstatint");
-    }
-
-    public Cluster addFlash(String name) {
-        return addHost(name, "flash");
-    }
-
     public Cluster addLocalhost(FileNode basedir) throws IOException {
         basedir.mkdir();
         basedir.join("indexes").mkdirs();
         basedir.join("htdocs").mkdirOpt();
         hosts.add(Host.local(basedir));
-        return this;
-    }
-
-
-    public Cluster addHost(String name, String login) {
-        hosts.add(Host.remote(name, login));
         return this;
     }
 

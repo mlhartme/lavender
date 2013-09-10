@@ -19,6 +19,7 @@ import net.oneandone.sushi.metadata.annotation.Sequence;
 import net.oneandone.sushi.metadata.annotation.Type;
 import net.oneandone.sushi.metadata.annotation.Value;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class Alias {
     }
 
     public Alias(String name, String ... domains) {
-        this(name, Arrays.asList(domains));
+        this(name, new ArrayList<>(Arrays.asList(domains)));
     }
 
     public Alias(String name, List<String> domains) {

@@ -31,8 +31,8 @@ public class MainManual {
         World world;
         Node node;
 
-        net = Net.normal();
         world = new World();
+        net = Net.normal(world);
         Main.initWorld(world, Settings.load(world), null);
         for (Cluster cluster : net.clusters()) {
             for (Host host : cluster.hosts()) {

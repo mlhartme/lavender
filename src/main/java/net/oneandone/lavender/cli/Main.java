@@ -31,13 +31,16 @@ import java.io.IOException;
 
 public class Main extends Cli implements Command {
     public static void main(String[] args) throws IOException {
-        System.exit(doMain(Net.normal(), null, args));
+        World world;
+
+        world = new World();
+        System.exit(doMain(world, Net.normal(world), null, args));
     }
 
-    public static int doMain(Net net, String logspath, String... args) throws IOException {
+    public static int doMain(World world, Net net, String logspath, String... args) throws IOException {
         Main main;
 
-        main = new Main(net, logspath);
+        main = new Main(world, net, logspath);
         return main.run(args);
     }
 
@@ -68,8 +71,8 @@ public class Main extends Cli implements Command {
     private final Net net;
     private final Settings settings;
 
-    public Main(Net net, String logs) throws IOException {
-        super(new World());
+    public Main(World world, Net net, String logs) throws IOException {
+        super(world);
         this.settings = Settings.load(console.world);
         initWorld(console.world, settings, logs);
         this.net = net;

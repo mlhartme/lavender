@@ -23,6 +23,7 @@ import net.oneandone.sushi.metadata.annotation.Sequence;
 import net.oneandone.sushi.metadata.annotation.Type;
 import net.oneandone.sushi.metadata.annotation.Value;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -46,22 +47,24 @@ public class Docroot {
     private final List<Alias> aliases;
 
     public Docroot() {
-        this(WEB, "", "");
+        this(null, "", "");
     }
 
     public Docroot(String type, String docroot, String indexes, Alias... aliases) {
-        this(type, docroot, indexes, Arrays.asList(aliases));
+        this(type, docroot, indexes, new ArrayList<>(Arrays.asList(aliases)));
     }
 
     public Docroot(String type, String docroot, String indexes, List<Alias> aliases) {
-        if (aliases.isEmpty()) {
-            throw new IllegalArgumentException("missing alias for docroot " + docroot);
-        }
-        if (docroot.startsWith("/") || docroot.endsWith("/")) {
-            throw new IllegalArgumentException(docroot);
-        }
-        if (indexes.startsWith("/") || indexes.endsWith("/")) {
-            throw new IllegalArgumentException(indexes);
+        if (type != null) {
+            if (aliases.isEmpty()) {
+                throw new IllegalArgumentException("missing alias for docroot " + docroot);
+            }
+            if (docroot.startsWith("/") || docroot.endsWith("/")) {
+                throw new IllegalArgumentException(docroot);
+            }
+            if (indexes.startsWith("/") || indexes.endsWith("/")) {
+                throw new IllegalArgumentException(indexes);
+            }
         }
         this.type = type;
         this.docroot = docroot;
