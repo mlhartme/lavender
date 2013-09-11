@@ -30,10 +30,12 @@ import java.util.Properties;
 
 public class Settings {
     public static Settings load() throws IOException {
-        World world;
+        return load(new World());
+    }
+
+    public static Settings load(World world) throws IOException {
         Settings settings;
 
-        world = new World();
         settings = settings(world);
         settings.initWorld();
         return settings;

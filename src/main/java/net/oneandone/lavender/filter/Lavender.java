@@ -85,8 +85,7 @@ public class Lavender implements Filter {
         }
         try {
             LOG.info("init");
-            settings = Settings.load();
-            this.world = settings.world;
+            this.world = new World();
             webapp = world.file(filterConfig.getServletContext().getRealPath(""));
             src = webapp.join(LAVENDEL_IDX);
             if (src.exists()) {
@@ -96,6 +95,7 @@ public class Lavender implements Filter {
                 LOG.info("Lavender prod filter");
             } else {
                 started = System.currentTimeMillis();
+                settings = Settings.load(world);
                 processorFactory = null;
                 develResources = new HashMap<>();
                 develModules = PustefixModule.fromWebapp(webapp, settings.svnUsername, settings.svnPassword);
