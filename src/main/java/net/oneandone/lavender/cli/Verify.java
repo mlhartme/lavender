@@ -36,8 +36,10 @@ import net.oneandone.sushi.util.Strings;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Verify extends Base {
@@ -60,17 +62,40 @@ public class Verify extends Base {
         Node hostroot;
         Node docroot;
         boolean problem;
+        Map<String, Index> prevIndexes;
+        Map<String, Index> indexes;
+        Index left;
+        Index right;
 
         problem = false;
         cluster = net.get(clusterName);
+        prevIndexes = null;
         for (Host host : cluster.hosts()) {
             console.info.println(host);
             hostroot = host.open(console.world);
             for (Docroot docrootObj : cluster.docroots()) {
                 docroot = docrootObj.node(hostroot);
                 if (docroot.exists()) {
-                    if (filesAndReferences(hostroot, docroot, docrootObj)) {
+                    indexes = filesAndReferences(hostroot, docroot, docrootObj);
+                    if (indexes == null) {
                         problem = true;
+                    } else {
+                        if (prevIndexes != null) {
+                            if (!prevIndexes.keySet().equals(indexes.keySet())) {
+                                console.error.println("index file list differs: " + prevIndexes.keySet() + " vs " + indexes.keySet());
+                                problem = true;
+                            } else {
+                                for (String name : prevIndexes.keySet()) {
+                                    left = prevIndexes.get(name);
+                                    right = indexes.get(name);
+                                    if (!left.equals(right)) {
+                                        console.error.println("index files differ: " + name);
+                                        problem = true;
+                                    }
+                                }
+                            }
+                        }
+                        prevIndexes = indexes;
                     }
                 }
             }
@@ -82,7 +107,8 @@ public class Verify extends Base {
         }
     }
 
-    private boolean filesAndReferences(Node hostroot, Node docroot, Docroot docrootObj) throws IOException {
+    /** @return Indexes on this docroot (file name mapped to Index object). Null if a problem was detected. */
+    private Map<String, Index> filesAndReferences(Node hostroot, Node docroot, Docroot docrootObj) throws IOException {
         boolean problem;
         Set<String> references;
         List<String> files;
@@ -91,7 +117,9 @@ public class Verify extends Base {
         Index all;
         Index allLoaded;
         Node fixed;
+        Map<String, Index> result;
 
+        result = new HashMap<>();
         problem = false;
         references = new HashSet<>();
         console.info.println(docroot.getURI().toString());
@@ -102,6 +130,7 @@ public class Verify extends Base {
         all = new Index();
         for (Node file : docrootObj.indexList(hostroot)) {
             index = Index.load(file);
+            result.put(file.getName(), index);
             for (Label label : index) {
                 references.add(label.getLavendelizedPath());
                 all.addReference(label.getLavendelizedPath(), label.md5());
@@ -132,7 +161,7 @@ public class Verify extends Base {
                 problem = true;
             }
         }
-        return problem;
+        return problem ? null : result;
     }
 
     private boolean md5check(Node docroot, Index index) throws IOException {
