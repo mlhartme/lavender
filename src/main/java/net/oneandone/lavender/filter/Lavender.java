@@ -83,11 +83,12 @@ public class Lavender implements Filter {
         if (world != null) {
             return;
         }
-        this.world = new World();
-        webapp = world.file(filterConfig.getServletContext().getRealPath(""));
-        src = webapp.join(LAVENDEL_IDX);
-        LOG.info("init");
         try {
+            LOG.info("init");
+            settings = Settings.load();
+            this.world = settings.world;
+            webapp = world.file(filterConfig.getServletContext().getRealPath(""));
+            src = webapp.join(LAVENDEL_IDX);
             if (src.exists()) {
                 index = Index.load(src);
                 rewriteEngine = RewriteEngine.load(index, webapp.join(LAVENDEL_NODES));
@@ -96,7 +97,6 @@ public class Lavender implements Filter {
             } else {
                 started = System.currentTimeMillis();
                 processorFactory = null;
-                settings = Settings.loadAndInit(world, null);
                 develResources = new HashMap<>();
                 develModules = PustefixModule.fromWebapp(webapp, settings.svnUsername, settings.svnPassword);
                 LOG.info("Lavender devel filter for " + webapp + ", " + develModules.size()

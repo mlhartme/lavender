@@ -33,7 +33,7 @@ public class MainManual {
 
         world = new World();
         net = Net.normal(world);
-        Settings.loadAndInit(world, null);
+        Settings.load();
         for (Cluster cluster : net.clusters()) {
             for (Host host : cluster.hosts()) {
                 node = new Docroot("", "", "").node(host.open(world));

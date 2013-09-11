@@ -15,41 +15,35 @@
  */
 package net.oneandone.lavender.cli;
 
-import com.jcraft.jsch.JSchException;
 import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Settings;
 import net.oneandone.sushi.cli.Child;
 import net.oneandone.sushi.cli.Cli;
 import net.oneandone.sushi.cli.Command;
-import net.oneandone.sushi.fs.Node;
-import net.oneandone.sushi.fs.World;
-import net.oneandone.sushi.fs.file.FileNode;
-import net.oneandone.sushi.fs.ssh.SshFilesystem;
-import net.oneandone.sushi.fs.svn.SvnFilesystem;
 
 import java.io.IOException;
 
 public class Main extends Cli implements Command {
     public static void main(String[] args) throws IOException {
-        World world;
+        Settings settings;
 
-        world = new World();
-        System.exit(doMain(world, Net.normal(world), null, args));
+        settings = Settings.load();
+        System.exit(doMain(settings, Net.normal(settings.world), args));
     }
 
-    public static int doMain(World world, Net net, String logspath, String... args) throws IOException {
+    public static int doMain(Settings settings, Net net, String ... args) throws IOException {
         Main main;
 
-        main = new Main(world, net, logspath);
+        main = new Main(settings, net);
         return main.run(args);
     }
 
     private final Net net;
     private final Settings settings;
 
-    public Main(World world, Net net, String logs) throws IOException {
-        super(world);
-        this.settings = Settings.loadAndInit(console.world, logs);
+    public Main(Settings settings, Net net) throws IOException {
+        super(settings.world);
+        this.settings = settings;
         this.net = net;
     }
 

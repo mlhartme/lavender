@@ -18,6 +18,7 @@ package net.oneandone.lavender.cli;
 import net.oneandone.lavender.config.Alias;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Net;
+import net.oneandone.lavender.config.Settings;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -35,8 +36,6 @@ import static org.junit.Assert.assertEquals;
 
 @Ignore
 public class LavenderIT {
-    private static final World WORLD = new World();
-
     @Test
     public void warOnly() throws Exception {
         check("war", "67f812dc689928f9d8ed4dc271143c62", "com/oneandone/sales/dslcancel-de/1.4.7/dslcancel-de-1.4.7.war");
@@ -67,6 +66,8 @@ public class LavenderIT {
     private static final String INDEX_NAME = "indexfilefortests.idx";
 
     public void check(String name, String expected, String warUrl) throws Exception {
+        Settings settings;
+        World world;
         Node src;
         FileNode target;
         FileNode testhosts;
@@ -75,19 +76,21 @@ public class LavenderIT {
         long started;
         Net net;
 
+        settings = Settings.load();
+        world = settings.world;
         System.out.println(name + " started: ");
-        src = WORLD.node("http://mavenrepo.united.domain:8081/nexus/content/repositories/1und1-stable/" + warUrl);
-        war = WORLD.getTemp().createTempFile();
-        warModified = WORLD.getTemp().createTempFile();
+        src = world.node("http://mavenrepo.united.domain:8081/nexus/content/repositories/1und1-stable/" + warUrl);
+        war = world.getTemp().createTempFile();
+        warModified = world.getTemp().createTempFile();
         warModified.deleteFile();
         src.copyFile(war);
-        target = WORLD.guessProjectHome(getClass()).join("target");
+        target = world.guessProjectHome(getClass()).join("target");
         testhosts = target.join("it", name);
         testhosts.getParent().mkdirsOpt();
         started = System.currentTimeMillis();
         net = net(testhosts);
-        assertEquals(0, Main.doMain(WORLD, net, target.join("itlogs").getAbsolute(),
-                "-e", "war", "test", war.getAbsolute(), warModified.getAbsolute(), INDEX_NAME));
+        settings.initLogs(target.join("itlogs"));
+        assertEquals(0, Main.doMain(settings, net, "-e", "war", "test", war.getAbsolute(), warModified.getAbsolute(), INDEX_NAME));
         System.out.println(name + " done: " + (System.currentTimeMillis() - started) + " ms");
 
         // tmp space on pearls is very restricted

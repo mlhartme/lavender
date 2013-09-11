@@ -29,15 +29,17 @@ import java.util.List;
 import java.util.Properties;
 
 public class Settings {
-    public static Settings loadAndInit(World world, String logs) throws IOException {
+    public static Settings load() throws IOException {
+        World world;
         Settings settings;
 
-        settings = Settings.load(world);
-        initWorld(world, settings, logs);
+        world = new World();
+        settings = settings(world);
+        settings.initWorld();
         return settings;
     }
 
-    private static Settings load(World world) throws IOException {
+    private static Settings settings(World world) throws IOException {
         String path;
         Node file;
         Properties properties;
@@ -53,27 +55,40 @@ public class Settings {
             }
         }
         try {
-            return new Settings(world.node(properties.getProperty("net")), properties.getProperty("svn.username"), properties.getProperty("svn.password"), sshKeys);
+            return new Settings(world, world.node(properties.getProperty("net")), properties.getProperty("svn.username"), properties.getProperty("svn.password"), sshKeys);
         } catch (URISyntaxException e) {
             throw new IOException("invalid settings file " + file + ": " + e.getMessage(), e);
         }
     }
 
-    private static void initWorld(World world, Settings settings, String logspath) throws IOException {
-        SshFilesystem ssh;
-        FileNode logs;
+    //--
 
-        if (logspath == null) {
-            logs = (FileNode) world.getHome().join("logs/lavender");
-        } else {
-            logs = world.file(logspath);
-        }
-        // /var/log is too small on pumamma64
+    public final World world;
+    public final Node net;
+    public final String svnUsername;
+    public final String svnPassword;
+    public final List<Node> sshKeys;
+
+    public Settings(World world, Node net, String svnUsername, String svnPassword, List<Node> sshKeys) {
+        this.world = world;
+        this.net = net;
+        this.svnUsername = svnUsername;
+        this.svnPassword = svnPassword;
+        this.sshKeys = sshKeys;
+    }
+
+    public void initLogs(FileNode logs) throws IOException {
         world.setTemp((FileNode) logs.mkdirOpt());
+    }
 
-        world.getFilesystem("svn", SvnFilesystem.class).setDefaultCredentials(settings.svnUsername, settings.svnPassword);
+    private void initWorld() throws IOException {
+        SshFilesystem ssh;
+
+        initLogs((FileNode) world.getHome().join("logs/lavender"));
+
+        world.getFilesystem("svn", SvnFilesystem.class).setDefaultCredentials(svnUsername, svnPassword);
         ssh = world.getFilesystem("ssh", SshFilesystem.class);
-        for (Node node : settings.sshKeys) {
+        for (Node node : sshKeys) {
             try {
                 ssh.addIdentity(node, null);
             } catch (JSchException | IOException e) {
@@ -81,19 +96,5 @@ public class Settings {
             }
         }
         // disable them for integration tests, because I don't have .ssh on pearl/gems
-    }
-
-    //--
-
-    public final Node net;
-    public final String svnUsername;
-    public final String svnPassword;
-    public final List<Node> sshKeys;
-
-    public Settings(Node net, String svnUsername, String svnPassword, List<Node> sshKeys) {
-        this.net = net;
-        this.svnUsername = svnUsername;
-        this.svnPassword = svnPassword;
-        this.sshKeys = sshKeys;
     }
 }
