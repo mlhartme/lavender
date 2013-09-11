@@ -35,10 +35,14 @@ public class Settings {
     }
 
     public static Settings load(World world) throws IOException {
+        String path;
+        Node file;
         Properties properties;
         List<Node> sshKeys;
 
-        properties = world.getHome().join(".lavender.settings").readProperties();
+        path = System.getenv("LAVENDER_SETTINGS");
+        file = path != null ? world.file(path) : world.getHome().join(".lavender.settings");
+        properties = file.readProperties();
         sshKeys = new ArrayList<>();
         for (String key : properties.stringPropertyNames()) {
             if (key.startsWith("ssh.")) {
