@@ -96,7 +96,7 @@ public class Lavender implements Filter {
             } else {
                 started = System.currentTimeMillis();
                 processorFactory = null;
-                settings = Settings.load(world);
+                settings = Settings.loadAndInit(world, null);
                 develResources = new HashMap<>();
                 develModules = PustefixModule.fromWebapp(webapp, settings.svnUsername, settings.svnPassword);
                 LOG.info("Lavender devel filter for " + webapp + ", " + develModules.size()

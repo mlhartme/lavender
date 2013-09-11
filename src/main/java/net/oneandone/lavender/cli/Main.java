@@ -44,37 +44,12 @@ public class Main extends Cli implements Command {
         return main.run(args);
     }
 
-    public static void initWorld(World world, Settings settings, String logspath) throws IOException {
-        SshFilesystem ssh;
-        FileNode logs;
-
-        if (logspath == null) {
-            logs = (FileNode) world.getHome().join("logs/lavender");
-        } else {
-            logs = world.file(logspath);
-        }
-        // /var/log is too small on pumamma64
-        world.setTemp((FileNode) logs.mkdirOpt());
-
-        world.getFilesystem("svn", SvnFilesystem.class).setDefaultCredentials(settings.svnUsername, settings.svnPassword);
-        ssh = world.getFilesystem("ssh", SshFilesystem.class);
-        for (Node node : settings.sshKeys) {
-            try {
-                ssh.addIdentity(node, null);
-            } catch (JSchException | IOException e) {
-                throw new IllegalStateException("cannot connect to flash server: " + e.getMessage(), e);
-            }
-        }
-        // disable them for integration tests, because I don't have .ssh on pearl/gems
-    }
-
     private final Net net;
     private final Settings settings;
 
     public Main(World world, Net net, String logs) throws IOException {
         super(world);
-        this.settings = Settings.load(console.world);
-        initWorld(console.world, settings, logs);
+        this.settings = Settings.loadAndInit(console.world, logs);
         this.net = net;
     }
 

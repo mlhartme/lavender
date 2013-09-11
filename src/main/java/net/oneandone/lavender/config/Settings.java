@@ -15,8 +15,12 @@
  */
 package net.oneandone.lavender.config;
 
+import com.jcraft.jsch.JSchException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.file.FileNode;
+import net.oneandone.sushi.fs.ssh.SshFilesystem;
+import net.oneandone.sushi.fs.svn.SvnFilesystem;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -25,7 +29,15 @@ import java.util.List;
 import java.util.Properties;
 
 public class Settings {
-    public static Settings load(World world) throws IOException {
+    public static Settings loadAndInit(World world, String logs) throws IOException {
+        Settings settings;
+
+        settings = Settings.load(world);
+        initWorld(world, settings, logs);
+        return settings;
+    }
+
+    private static Settings load(World world) throws IOException {
         String path;
         Node file;
         Properties properties;
@@ -47,6 +59,30 @@ public class Settings {
         }
     }
 
+    private static void initWorld(World world, Settings settings, String logspath) throws IOException {
+        SshFilesystem ssh;
+        FileNode logs;
+
+        if (logspath == null) {
+            logs = (FileNode) world.getHome().join("logs/lavender");
+        } else {
+            logs = world.file(logspath);
+        }
+        // /var/log is too small on pumamma64
+        world.setTemp((FileNode) logs.mkdirOpt());
+
+        world.getFilesystem("svn", SvnFilesystem.class).setDefaultCredentials(settings.svnUsername, settings.svnPassword);
+        ssh = world.getFilesystem("ssh", SshFilesystem.class);
+        for (Node node : settings.sshKeys) {
+            try {
+                ssh.addIdentity(node, null);
+            } catch (JSchException | IOException e) {
+                throw new IllegalStateException("cannot connect to flash server: " + e.getMessage(), e);
+            }
+        }
+        // disable them for integration tests, because I don't have .ssh on pearl/gems
+    }
+
     //--
 
     public final Node net;
@@ -54,8 +90,8 @@ public class Settings {
     public final String svnPassword;
     public final List<Node> sshKeys;
 
-    public Settings(Node netXml, String svnUsername, String svnPassword, List<Node> sshKeys) {
-        this.net = netXml;
+    public Settings(Node net, String svnUsername, String svnPassword, List<Node> sshKeys) {
+        this.net = net;
         this.svnUsername = svnUsername;
         this.svnPassword = svnPassword;
         this.sshKeys = sshKeys;

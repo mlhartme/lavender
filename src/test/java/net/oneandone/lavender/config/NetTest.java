@@ -7,11 +7,6 @@ import java.io.IOException;
 
 public class NetTest {
     @Test
-    public void settings() throws IOException {
-        Settings.load(new World());
-    }
-
-    @Test
     public void normal() throws IOException {
         Net.normal(new World());
     }
