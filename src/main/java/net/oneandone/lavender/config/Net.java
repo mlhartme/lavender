@@ -32,10 +32,6 @@ public class Net {
     public static final Schema SCHEMA = new AnnotationSchema();
     public static final ComplexType TYPE = SCHEMA.complex(Net.class);
 
-    public static Net normal(World world) throws IOException {
-        return (Net) TYPE.loadXml(world.resource("net.xml")).get();
-    }
-
     //--
 
     @Sequence(Cluster.class)

@@ -28,7 +28,7 @@ public class Main extends Cli implements Command {
         Settings settings;
 
         settings = Settings.load();
-        System.exit(doMain(settings, Net.normal(settings.world), args));
+        System.exit(doMain(settings, settings.loadNet(), args));
     }
 
     public static int doMain(Settings settings, Net net, String ... args) throws IOException {

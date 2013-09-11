@@ -27,16 +27,15 @@ import org.junit.Test;
 public class MainManual {
     @Test
     public void sshAccess() throws Exception {
+        Settings settings;
         Net net;
-        World world;
         Node node;
 
-        world = new World();
-        net = Net.normal(world);
-        Settings.load();
+        settings = Settings.load();
+        net = settings.loadNet();
         for (Cluster cluster : net.clusters()) {
             for (Host host : cluster.hosts()) {
-                node = new Docroot("", "", "").node(host.open(world));
+                node = new Docroot("", "", "").node(host.open(settings.world));
                 System.out.println(host + ":\n  " + node.list());
             }
         }

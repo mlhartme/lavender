@@ -64,14 +64,14 @@ public class Settings {
     //--
 
     public final World world;
-    public final Node net;
+    private final Node netNode;
     public final String svnUsername;
     public final String svnPassword;
-    public final List<Node> sshKeys;
+    private final List<Node> sshKeys;
 
-    public Settings(World world, Node net, String svnUsername, String svnPassword, List<Node> sshKeys) {
+    public Settings(World world, Node netNode, String svnUsername, String svnPassword, List<Node> sshKeys) {
         this.world = world;
-        this.net = net;
+        this.netNode = netNode;
         this.svnUsername = svnUsername;
         this.svnPassword = svnPassword;
         this.sshKeys = sshKeys;
@@ -96,5 +96,9 @@ public class Settings {
             }
         }
         // disable them for integration tests, because I don't have .ssh on pearl/gems
+    }
+
+    public Net loadNet() throws IOException {
+        return (Net) Net.TYPE.loadXml(netNode).get();
     }
 }
