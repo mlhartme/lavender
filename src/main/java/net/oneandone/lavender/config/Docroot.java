@@ -118,6 +118,7 @@ public class Docroot {
         return host.join(indexes, indexName);
     }
 
+    /** @return all indexes without the all index */
     public List<? extends Node> indexList(Node host) throws ListException, DirectoryNotFoundException {
         List<? extends Node> result;
         Iterator<? extends Node> iter;

@@ -16,6 +16,7 @@
 package net.oneandone.lavender.config;
 
 import net.oneandone.sushi.cli.ArgumentException;
+import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.metadata.ComplexType;
 import net.oneandone.sushi.metadata.Schema;
@@ -29,8 +30,12 @@ import java.util.List;
 
 @Type
 public class Net {
-    public static final Schema SCHEMA = new AnnotationSchema();
-    public static final ComplexType TYPE = SCHEMA.complex(Net.class);
+    private static final Schema SCHEMA = new AnnotationSchema();
+    private static final ComplexType TYPE = SCHEMA.complex(Net.class);
+
+    public static Net load(Node src) throws IOException {
+        return (Net) Net.TYPE.loadXml(src).get();
+    }
 
     //--
 

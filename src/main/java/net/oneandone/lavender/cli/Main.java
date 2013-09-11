@@ -20,6 +20,7 @@ import net.oneandone.lavender.config.Settings;
 import net.oneandone.sushi.cli.Child;
 import net.oneandone.sushi.cli.Cli;
 import net.oneandone.sushi.cli.Command;
+import net.oneandone.sushi.cli.Option;
 
 import java.io.IOException;
 
@@ -28,53 +29,56 @@ public class Main extends Cli implements Command {
         Settings settings;
 
         settings = Settings.load();
-        System.exit(doMain(settings, settings.loadNet(), args));
+        System.exit(doMain(settings, null, args));
     }
 
-    public static int doMain(Settings settings, Net net, String ... args) throws IOException {
+    public static int doMain(Settings settings, Net net, String ... args) {
         Main main;
 
         main = new Main(settings, net);
         return main.run(args);
     }
 
-    private final Net net;
+    @Option("lastconfig")
+    private boolean lastConfig;
+
+    private Net lazyNet;
     private final Settings settings;
 
-    public Main(Settings settings, Net net) throws IOException {
+    public Main(Settings settings, Net net) {
         super(settings.world);
         this.settings = settings;
-        this.net = net;
+        this.lazyNet = net;
     }
 
     @Child("war")
-    public Command war() {
-        return new War(console, settings, net);
+    public Command war() throws IOException {
+        return new War(console, settings, net());
     }
 
     @Child("svn")
-    public Command svn() {
-        return new Svn(console, settings, net);
+    public Command svn() throws IOException {
+        return new Svn(console, settings, net());
     }
 
     @Child("direct")
-    public Command direct() {
-        return new Direct(console, settings, net);
+    public Command direct() throws IOException {
+        return new Direct(console, settings, net());
     }
 
     @Child("bazaar")
-    public Command bazaar() {
-        return new Bazaar(console, settings, net);
+    public Command bazaar() throws IOException {
+        return new Bazaar(console, settings, net());
     }
 
     @Child("gc")
-    public Command gc() {
-        return new GarbageCollection(console, settings, net);
+    public Command gc() throws IOException {
+        return new GarbageCollection(console, settings, net());
     }
 
     @Child("verify")
-    public Command verfiy() {
-        return new Verify(console, settings, net);
+    public Command verfiy() throws IOException {
+        return new Verify(console, settings, net());
     }
 
     @Override
@@ -100,5 +104,12 @@ public class Main extends Cli implements Command {
     @Override
     public void invoke() {
         printHelp();
+    }
+
+    private Net net() throws IOException {
+        if (lazyNet == null) {
+            lazyNet = lastConfig ? settings.loadLastNet() : settings.loadNet();
+        }
+        return lazyNet;
     }
 }

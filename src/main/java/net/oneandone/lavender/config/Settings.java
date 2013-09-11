@@ -99,6 +99,23 @@ public class Settings {
     }
 
     public Net loadNet() throws IOException {
-        return (Net) Net.TYPE.loadXml(netNode).get();
+        FileNode local;
+        FileNode tmp;
+        Net result;
+
+        local = lastNetNode();
+        tmp = local.getParent().createTempFile();
+        netNode.copyFile(tmp);
+        result = Net.load(tmp);
+        tmp.move(local.deleteFileOpt());
+        return result;
+    }
+
+    public Net loadLastNet() throws IOException {
+        return Net.load(lastNetNode());
+    }
+
+    private FileNode lastNetNode() {
+        return (FileNode) world.getHome().join(".lavender.net.xml");
     }
 }

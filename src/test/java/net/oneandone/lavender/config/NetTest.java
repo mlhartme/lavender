@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class NetTest {
     @Test
-    public void normal() throws IOException {
+    public void load() throws IOException {
         Settings.load().loadNet();
     }
 }
