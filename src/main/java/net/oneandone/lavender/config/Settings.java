@@ -19,21 +19,12 @@ import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 public class Settings {
-    public final String svnUsername;
-    public final String svnPassword;
-    public final List<Node> sshKeys;
-
-    public Settings(String svnUsername, String svnPassword, List<Node> sshKeys) {
-        this.svnUsername = svnUsername;
-        this.svnPassword = svnPassword;
-        this.sshKeys = sshKeys;
-    }
-
     public static Settings load(World world) throws IOException {
         String path;
         Node file;
@@ -49,6 +40,24 @@ public class Settings {
                 sshKeys.add(world.file(properties.getProperty(key)));
             }
         }
-        return new Settings(properties.getProperty("svn.username"), properties.getProperty("svn.password"), sshKeys);
+        try {
+            return new Settings(world.node(properties.getProperty("net")), properties.getProperty("svn.username"), properties.getProperty("svn.password"), sshKeys);
+        } catch (URISyntaxException e) {
+            throw new IOException("invalid settings file " + file + ": " + e.getMessage(), e);
+        }
+    }
+
+    //--
+
+    public final Node net;
+    public final String svnUsername;
+    public final String svnPassword;
+    public final List<Node> sshKeys;
+
+    public Settings(Node netXml, String svnUsername, String svnPassword, List<Node> sshKeys) {
+        this.net = netXml;
+        this.svnUsername = svnUsername;
+        this.svnPassword = svnPassword;
+        this.sshKeys = sshKeys;
     }
 }
