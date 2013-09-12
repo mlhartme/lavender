@@ -19,8 +19,8 @@ import net.oneandone.lavender.config.Settings;
 import net.oneandone.lavender.filter.processor.ProcessorFactory;
 import net.oneandone.lavender.filter.processor.RewriteEngine;
 import net.oneandone.lavender.index.Index;
+import net.oneandone.lavender.modules.ApplicationModule;
 import net.oneandone.lavender.modules.Module;
-import net.oneandone.lavender.modules.PustefixModule;
 import net.oneandone.lavender.modules.Resource;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
-import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
@@ -106,7 +105,7 @@ public class Lavender implements Filter, LavenderMBean {
                 settings = Settings.load(world);
                 processorFactory = null;
                 develResources = new HashMap<>();
-                develModules = PustefixModule.fromWebapp(webapp, settings.svnUsername, settings.svnPassword);
+                develModules = ApplicationModule.fromWebapp(webapp, settings.svnUsername, settings.svnPassword);
                 LOG.info("Lavender devel filter for " + webapp + ", " + develModules.size()
                         + " resources. Init in " + (System.currentTimeMillis() - started + " ms"));
             }

@@ -30,12 +30,12 @@ import java.util.zip.ZipInputStream;
 /**
  * META-INF/pustefix-module.xml.
  */
-public class PustefixModuleConfig {
+public class ApplicationModuleConfig {
 
-    private PustefixModule module;
+    private ApplicationModule module;
     private ModuleDescriptorType config;
 
-    public PustefixModuleConfig(PustefixModule module, ZipInputStream jarInputStream) throws JAXBException, IOException {
+    public ApplicationModuleConfig(ApplicationModule module, ZipInputStream jarInputStream) throws JAXBException, IOException {
         this.module = module;
         loadModuleXml(jarInputStream);
     }

@@ -25,14 +25,14 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public class JarFileResourceIterator implements Iterator<Resource> {
-    private final PustefixModuleConfig moduleConfig;
+    private final ApplicationModuleConfig moduleConfig;
     private final List<Node> moduleJarFiles;
 
     // iterating data
     private int nextModuleJarFile;
     private Resource next;
 
-    public JarFileResourceIterator(PustefixModuleConfig moduleConfig, FileNode file, Filter fileFilter) throws IOException {
+    public JarFileResourceIterator(ApplicationModuleConfig moduleConfig, FileNode file, Filter fileFilter) throws IOException {
         this.moduleConfig = moduleConfig;
         this.moduleJarFiles = file.openZip().find(fileFilter);
         this.nextModuleJarFile = 0;

@@ -24,10 +24,10 @@ import java.io.IOException;
 import java.util.Iterator;
 
 public class JarModule extends Module {
-    private final PustefixModuleConfig config;
+    private final ApplicationModuleConfig config;
     private final Node jar;
 
-    public JarModule(Filter filter, String type, PustefixModuleConfig config, Node jar) {
+    public JarModule(Filter filter, String type, ApplicationModuleConfig config, Node jar) {
         super(filter, type, config.getModuleName(), true, "");
         this.config = config;
         this.jar = jar;

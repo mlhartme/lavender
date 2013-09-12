@@ -37,8 +37,10 @@ import java.util.zip.ZipInputStream;
 /**
  * Iterates static resources of the Pustefix application. Valid static resource path are defined in WEB-INF/project.xml.
  * Resources can be found in the WAR or in nested JARs.
+ *
+ * This class is *not* called PustefixModule, because that term is also used by pustefix for it's modules.
  */
-public class PustefixModule extends Module {
+public class ApplicationModule extends Module {
     private static final Logger LOG = LoggerFactory.getLogger(Module.class);
 
     private static final List<String> DEFAULT_INCLUDE_EXTENSIONS = new ArrayList<>(Arrays.asList(
@@ -49,8 +51,8 @@ public class PustefixModule extends Module {
     public static List<Module> fromWebapp(Node webapp, String svnUsername, String svnPassword) throws IOException {
         List<Module> result;
         Properties properties;
-        PustefixModule ps;
-        PustefixModuleConfig mc;
+        ApplicationModule ps;
+        ApplicationModuleConfig mc;
 
         LOG.trace("scanning " + webapp);
         result = new ArrayList<>();
@@ -70,7 +72,7 @@ public class PustefixModule extends Module {
         return result;
     }
 
-    private static PustefixModuleConfig loadModuleXml(PustefixModule module, Node jar) throws IOException {
+    private static ApplicationModuleConfig loadModuleXml(ApplicationModule module, Node jar) throws IOException {
         ZipInputStream jarInputStream;
         ZipEntry jarEntry;
 
@@ -78,7 +80,7 @@ public class PustefixModule extends Module {
         while ((jarEntry = jarInputStream.getNextEntry()) != null) {
             if (isModuleXml(jarEntry)) {
                 try {
-                    return new PustefixModuleConfig(module, jarInputStream);
+                    return new ApplicationModuleConfig(module, jarInputStream);
                 } catch (JAXBException e) {
                     throw new IOException("cannot load module descriptor", e);
                 }
@@ -102,13 +104,13 @@ public class PustefixModule extends Module {
         return src.readProperties();
     }
 
-    public static PustefixModule create(Filter filter, Node webapp) throws IOException {
+    public static ApplicationModule create(Filter filter, Node webapp) throws IOException {
         ProjectConfig config;
 
         try (InputStream src = webapp.join("WEB-INF/project.xml").createInputStream()) {
             config = JAXB.unmarshal(src, ProjectConfig.class);
         }
-        return new PustefixModule(filter, config, webapp);
+        return new ApplicationModule(filter, config, webapp);
     }
 
     //--
@@ -116,7 +118,7 @@ public class PustefixModule extends Module {
     private final ProjectConfig config;
     private final Node webapp;
 
-    public PustefixModule(Filter filter, ProjectConfig config, Node webapp) throws IOException {
+    public ApplicationModule(Filter filter, ProjectConfig config, Node webapp) throws IOException {
         super(filter, Docroot.WEB, config.getProject().getName(), true, "");
 
         this.config = config;
@@ -125,7 +127,7 @@ public class PustefixModule extends Module {
 
     public Iterator<Resource> iterator() {
         try {
-            return PustefixResourceIterator.create(this, webapp);
+            return ApplicationResourceIterator.create(this, webapp);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }

@@ -27,12 +27,12 @@ import java.util.zip.ZipInputStream;
 public class JarStreamResourceIterator implements Iterator<Resource> {
     private final World world;
     private final ZipInputStream moduleInputStream;
-    private final PustefixModuleConfig moduleConfig;
+    private final ApplicationModuleConfig moduleConfig;
 
     // iterating data
     private Resource next;
 
-    public JarStreamResourceIterator(PustefixModuleConfig moduleConfig, Node file) throws IOException {
+    public JarStreamResourceIterator(ApplicationModuleConfig moduleConfig, Node file) throws IOException {
         this.world = file.getWorld();
         this.moduleConfig = moduleConfig;
         this.moduleInputStream = new ZipInputStream(file.createInputStream());
