@@ -27,6 +27,12 @@ import net.oneandone.sushi.fs.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.MBeanRegistrationException;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
+import javax.management.ObjectName;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -37,6 +43,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.net.URI;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -47,11 +54,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 /**
  * A servlet filter that <em>lavendelizes</em> the response content.
  */
-public class Lavender implements Filter {
+public class Lavender implements Filter, LavenderMBean {
     private static final Logger LOG = LoggerFactory.getLogger(Lavender.class);
 
     public static final String LAVENDEL_IDX = "WEB-INF/lavender.idx";
@@ -109,6 +117,15 @@ public class Lavender implements Filter {
             LOG.error("Error in Lavendelizer.init()", se);
             throw se;
         }
+
+        try {
+            ManagementFactory.getPlatformMBeanServer().registerMBean(this,
+                    new ObjectName("com.oneandone:type=Lavender,name=" + UUID.randomUUID().toString()));
+        } catch (InstanceAlreadyExistsException | NotCompliantMBeanException | MalformedObjectNameException e) {
+            throw new IllegalStateException(e);
+        } catch (MBeanRegistrationException e) {
+            LOG.error("MBean initialization failure", e);
+        }
     }
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -163,6 +180,14 @@ public class Lavender implements Filter {
             default:
                 return false;
         }
+    }
+
+    public boolean getProd() {
+        return processorFactory != null;
+    }
+
+    public int getModules() {
+        return develModules != null ? -1 : develModules.size();
     }
 
     public void doProdFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
