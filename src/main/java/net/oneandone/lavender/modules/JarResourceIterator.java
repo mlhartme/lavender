@@ -24,17 +24,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public class JarFileResourceIterator implements Iterator<Resource> {
-    private final JarModuleConfig moduleConfig;
-    private final List<Node> moduleJarFiles;
+public class JarResourceIterator implements Iterator<Resource> {
+    private final JarModuleConfig config;
+    private final List<Node> files;
 
     // iterating data
     private int nextModuleJarFile;
     private Resource next;
 
-    public JarFileResourceIterator(JarModuleConfig moduleConfig, FileNode file, Filter fileFilter) throws IOException {
-        this.moduleConfig = moduleConfig;
-        this.moduleJarFiles = file.openZip().find(fileFilter);
+    public JarResourceIterator(JarModuleConfig config, FileNode file, Filter filter) throws IOException {
+        this.config = config;
+        this.files = file.openZip().find(filter);
         this.nextModuleJarFile = 0;
     }
 
@@ -45,13 +45,13 @@ public class JarFileResourceIterator implements Iterator<Resource> {
         if (next != null) {
             return true;
         }
-        while (nextModuleJarFile < moduleJarFiles.size()) {
-            file = moduleJarFiles.get(nextModuleJarFile);
+        while (nextModuleJarFile < files.size()) {
+            file = files.get(nextModuleJarFile);
             nextModuleJarFile++;
             path = file.getPath();
-            if (moduleConfig.isPublicResource(path)) {
+            if (config.isPublicResource(path)) {
                 try {
-                    next = DefaultResource.forNode(file, moduleConfig.getPath(path));
+                    next = DefaultResource.forNode(file, config.getPath(path));
                 } catch (IOException e) {
                     throw new RuntimeException("TODO", e);
                 }
