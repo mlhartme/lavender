@@ -30,14 +30,15 @@ import java.util.zip.ZipInputStream;
 /**
  * META-INF/pustefix-module.xml.
  */
-public class ApplicationModuleConfig {
+public class JarModuleConfig {
+    private final ApplicationModule parent;
+    private final ModuleDescriptorType config;
 
-    private ApplicationModule module;
-    private ModuleDescriptorType config;
-
-    public ApplicationModuleConfig(ApplicationModule module, ZipInputStream jarInputStream) throws JAXBException, IOException {
-        this.module = module;
-        loadModuleXml(jarInputStream);
+    public JarModuleConfig(ApplicationModule parent, ZipInputStream jarInputStream) throws JAXBException, IOException {
+        this.parent = parent;
+        // Use a shield to prevent the original stream from being closed
+        // because JAXB.unmarshall() calls close() on the stream
+        this.config = JAXB.unmarshal(doNotClose(jarInputStream), ModuleDescriptorType.class);
     }
 
     public String getModuleName() {
@@ -59,7 +60,7 @@ public class ApplicationModuleConfig {
         }
 
         String mappedName = getPath(resourceName);
-        return module.isPublicResource(mappedName);
+        return parent.isPublicResource(mappedName);
     }
 
     private static final String MODULES = "modules/";
@@ -139,12 +140,6 @@ public class ApplicationModuleConfig {
             }
         }
         return name;
-    }
-
-    private void loadModuleXml(InputStream jarInputStream) throws JAXBException, IOException {
-        // Use a shield to prevent the original stream from being closed
-        // because JAXB.unmarshall() calls close() on the stream
-        config = JAXB.unmarshal(doNotClose(jarInputStream), ModuleDescriptorType.class);
     }
 
     //--

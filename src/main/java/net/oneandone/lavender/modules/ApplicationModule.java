@@ -53,7 +53,7 @@ public class ApplicationModule extends Module {
         List<Module> result;
         Properties properties;
         ApplicationModule ps;
-        ApplicationModuleConfig mc;
+        JarModuleConfig mc;
 
         webapp = lifeWebapp(webappOrig);
         LOG.trace("scanning " + webapp);
@@ -86,7 +86,7 @@ public class ApplicationModule extends Module {
 
     //--
 
-    private static ApplicationModuleConfig loadModuleXml(ApplicationModule module, Node jar) throws IOException {
+    private static JarModuleConfig loadModuleXml(ApplicationModule parent, Node jar) throws IOException {
         ZipInputStream jarInputStream;
         ZipEntry jarEntry;
 
@@ -94,7 +94,7 @@ public class ApplicationModule extends Module {
         while ((jarEntry = jarInputStream.getNextEntry()) != null) {
             if (isModuleXml(jarEntry)) {
                 try {
-                    return new ApplicationModuleConfig(module, jarInputStream);
+                    return new JarModuleConfig(parent, jarInputStream);
                 } catch (JAXBException e) {
                     throw new IOException("cannot load module descriptor", e);
                 }
