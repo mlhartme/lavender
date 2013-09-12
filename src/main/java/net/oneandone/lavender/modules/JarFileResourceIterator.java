@@ -32,9 +32,9 @@ public class JarFileResourceIterator implements Iterator<Resource> {
     private int nextModuleJarFile;
     private Resource next;
 
-    public JarFileResourceIterator(JarModuleConfig config, FileNode file, Filter filter) throws IOException {
+    public JarFileResourceIterator(JarModuleConfig config, List<Node> files) throws IOException {
         this.config = config;
-        this.files = file.openZip().find(filter);
+        this.files = files;
         this.nextModuleJarFile = 0;
     }
 

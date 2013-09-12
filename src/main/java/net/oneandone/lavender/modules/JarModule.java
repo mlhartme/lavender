@@ -22,6 +22,7 @@ import net.oneandone.sushi.fs.filter.Predicate;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 
 public class JarModule extends Module {
     private final JarModuleConfig config;
@@ -34,9 +35,11 @@ public class JarModule extends Module {
     }
 
     public Iterator<Resource> iterator() {
+        List<Node> files;
         try {
             if (jar instanceof FileNode) {
-                return new JarFileResourceIterator(config, (FileNode) jar, jar.getWorld().filter().includeAll().predicate(Predicate.FILE));
+                files = ((FileNode) jar).openZip().find(jar.getWorld().filter().includeAll().predicate(Predicate.FILE));
+                return new JarFileResourceIterator(config, files);
             } else {
                 return new JarStreamResourceIterator(config, jar);
             }
