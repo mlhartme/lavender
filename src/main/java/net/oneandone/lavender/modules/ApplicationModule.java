@@ -48,12 +48,14 @@ public class ApplicationModule extends Module {
 
     private static final String PROPERTIES = "WEB-INF/lavender.properties";
 
-    public static List<Module> fromWebapp(Node webapp, String svnUsername, String svnPassword) throws IOException {
+    public static List<Module> fromWebapp(Node webappOrig, String svnUsername, String svnPassword) throws IOException {
+        Node webapp;
         List<Module> result;
         Properties properties;
         ApplicationModule ps;
         ApplicationModuleConfig mc;
 
+        webapp = lifeWebapp(webappOrig);
         LOG.trace("scanning " + webapp);
         result = new ArrayList<>();
         properties = getProperties(webapp);
@@ -62,7 +64,7 @@ public class ApplicationModule extends Module {
         for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
             mc = loadModuleXml(ps, jar);
             if (mc != null) {
-                result.add(new JarModule(ps.getFilter(), Docroot.WEB, mc, jar));
+                result.add(new JarModule(ps.getFilter(), Docroot.WEB, mc, lifeJar(jar)));
             }
         }
         for (SvnModuleConfig config : SvnModuleConfig.parse(properties)) {
@@ -71,6 +73,18 @@ public class ApplicationModule extends Module {
         }
         return result;
     }
+
+    //-- TODO
+
+    private static Node lifeJar(Node jarOrig) {
+        return jarOrig;
+    }
+
+    private static Node lifeWebapp(Node webappOrig) {
+        return webappOrig;
+    }
+
+    //--
 
     private static ApplicationModuleConfig loadModuleXml(ApplicationModule module, Node jar) throws IOException {
         ZipInputStream jarInputStream;
@@ -115,14 +129,14 @@ public class ApplicationModule extends Module {
 
     //--
 
-    private final ProjectConfig config;
     private final Node webapp;
+    private final ProjectConfig config;
 
     public ApplicationModule(Filter filter, ProjectConfig config, Node webapp) throws IOException {
         super(filter, Docroot.WEB, config.getProject().getName(), true, "");
 
-        this.config = config;
         this.webapp = webapp;
+        this.config = config;
     }
 
     public Iterator<Resource> iterator() {
