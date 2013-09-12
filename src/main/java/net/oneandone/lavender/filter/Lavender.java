@@ -19,7 +19,7 @@ import net.oneandone.lavender.config.Settings;
 import net.oneandone.lavender.filter.processor.ProcessorFactory;
 import net.oneandone.lavender.filter.processor.RewriteEngine;
 import net.oneandone.lavender.index.Index;
-import net.oneandone.lavender.modules.ApplicationModule;
+import net.oneandone.lavender.modules.WarModule;
 import net.oneandone.lavender.modules.Module;
 import net.oneandone.lavender.modules.Resource;
 import net.oneandone.sushi.fs.Node;
@@ -105,7 +105,7 @@ public class Lavender implements Filter, LavenderMBean {
                 settings = Settings.load(world);
                 processorFactory = null;
                 develResources = new HashMap<>();
-                develModules = ApplicationModule.fromWebapp(webapp, settings.svnUsername, settings.svnPassword);
+                develModules = WarModule.fromWebapp(webapp, settings.svnUsername, settings.svnPassword);
                 LOG.info("Lavender devel filter for " + webapp + ", " + develModules.size()
                         + " resources. Init in " + (System.currentTimeMillis() - started + " ms"));
             }

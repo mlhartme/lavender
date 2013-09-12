@@ -31,10 +31,10 @@ import java.util.zip.ZipInputStream;
  * META-INF/pustefix-module.xml.
  */
 public class JarModuleConfig {
-    private final ApplicationModule parent;
+    private final WarModule parent;
     private final ModuleDescriptorType config;
 
-    public JarModuleConfig(ApplicationModule parent, ZipInputStream jarInputStream) throws JAXBException, IOException {
+    public JarModuleConfig(WarModule parent, ZipInputStream jarInputStream) throws JAXBException, IOException {
         this.parent = parent;
         // Use a shield to prevent the original stream from being closed
         // because JAXB.unmarshall() calls close() on the stream

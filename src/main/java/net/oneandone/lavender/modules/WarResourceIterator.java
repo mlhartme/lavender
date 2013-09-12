@@ -24,8 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public class ApplicationResourceIterator implements Iterator<Resource> {
-    private final ApplicationModule module;
+public class WarResourceIterator implements Iterator<Resource> {
+    private final WarModule module;
     private final Node webapp;
     private List<Node> files;
 
@@ -36,15 +36,15 @@ public class ApplicationResourceIterator implements Iterator<Resource> {
     private int nextFile;
 
 
-    public static ApplicationResourceIterator create(ApplicationModule module, Node webapp) throws IOException {
+    public static WarResourceIterator create(WarModule module, Node webapp) throws IOException {
         Filter filter;
 
         filter = webapp.getWorld().filter().include("**/*").predicate(Predicate.FILE);
-        return new ApplicationResourceIterator(module, webapp, webapp.find(filter));
+        return new WarResourceIterator(module, webapp, webapp.find(filter));
     }
 
 
-    public ApplicationResourceIterator(ApplicationModule module, Node webapp, List<Node> files) {
+    public WarResourceIterator(WarModule module, Node webapp, List<Node> files) {
         this.module = module;
         this.webapp = webapp;
         this.files = files;

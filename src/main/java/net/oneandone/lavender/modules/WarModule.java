@@ -40,7 +40,7 @@ import java.util.zip.ZipInputStream;
  *
  * This class is *not* called PustefixModule, because that term is also used by pustefix for it's modules.
  */
-public class ApplicationModule extends Module {
+public class WarModule extends Module {
     private static final Logger LOG = LoggerFactory.getLogger(Module.class);
 
     private static final List<String> DEFAULT_INCLUDE_EXTENSIONS = new ArrayList<>(Arrays.asList(
@@ -52,7 +52,7 @@ public class ApplicationModule extends Module {
         Node webapp;
         List<Module> result;
         Properties properties;
-        ApplicationModule ps;
+        WarModule ps;
         JarModuleConfig mc;
 
         webapp = lifeWebapp(webappOrig);
@@ -86,7 +86,7 @@ public class ApplicationModule extends Module {
 
     //--
 
-    private static JarModuleConfig loadModuleXml(ApplicationModule parent, Node jar) throws IOException {
+    private static JarModuleConfig loadModuleXml(WarModule parent, Node jar) throws IOException {
         ZipInputStream jarInputStream;
         ZipEntry jarEntry;
 
@@ -118,13 +118,13 @@ public class ApplicationModule extends Module {
         return src.readProperties();
     }
 
-    public static ApplicationModule create(Filter filter, Node webapp) throws IOException {
+    public static WarModule create(Filter filter, Node webapp) throws IOException {
         ProjectConfig config;
 
         try (InputStream src = webapp.join("WEB-INF/project.xml").createInputStream()) {
             config = JAXB.unmarshal(src, ProjectConfig.class);
         }
-        return new ApplicationModule(filter, config, webapp);
+        return new WarModule(filter, config, webapp);
     }
 
     //--
@@ -132,7 +132,7 @@ public class ApplicationModule extends Module {
     private final Node webapp;
     private final ProjectConfig config;
 
-    public ApplicationModule(Filter filter, ProjectConfig config, Node webapp) throws IOException {
+    public WarModule(Filter filter, ProjectConfig config, Node webapp) throws IOException {
         super(filter, Docroot.WEB, config.getProject().getName(), true, "");
 
         this.webapp = webapp;
@@ -141,7 +141,7 @@ public class ApplicationModule extends Module {
 
     public Iterator<Resource> iterator() {
         try {
-            return ApplicationResourceIterator.create(this, webapp);
+            return WarResourceIterator.create(this, webapp);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
