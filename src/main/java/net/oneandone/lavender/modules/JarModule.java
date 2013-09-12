@@ -36,7 +36,7 @@ public class JarModule extends Module {
     public Iterator<Resource> iterator() {
         try {
             if (jar instanceof FileNode) {
-                return new JarResourceIterator(config, (FileNode) jar, jar.getWorld().filter().includeAll().predicate(Predicate.FILE));
+                return new JarFileResourceIterator(config, (FileNode) jar, jar.getWorld().filter().includeAll().predicate(Predicate.FILE));
             } else {
                 return new JarStreamResourceIterator(config, jar);
             }

@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public class JarResourceIterator implements Iterator<Resource> {
+public class JarFileResourceIterator implements Iterator<Resource> {
     private final JarModuleConfig config;
     private final List<Node> files;
 
@@ -32,7 +32,7 @@ public class JarResourceIterator implements Iterator<Resource> {
     private int nextModuleJarFile;
     private Resource next;
 
-    public JarResourceIterator(JarModuleConfig config, FileNode file, Filter filter) throws IOException {
+    public JarFileResourceIterator(JarModuleConfig config, FileNode file, Filter filter) throws IOException {
         this.config = config;
         this.files = file.openZip().find(filter);
         this.nextModuleJarFile = 0;
