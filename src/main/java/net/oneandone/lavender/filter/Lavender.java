@@ -105,7 +105,7 @@ public class Lavender implements Filter, LavenderMBean {
                 settings = Settings.load(world);
                 processorFactory = null;
                 develResources = new HashMap<>();
-                develModules = WarModule.fromWebapp(webapp, settings.svnUsername, settings.svnPassword);
+                develModules = WarModule.fromWebapp(false, webapp, settings.svnUsername, settings.svnPassword);
                 LOG.info("Lavender devel filter for " + webapp + ", " + develModules.size()
                         + " resources. Init in " + (System.currentTimeMillis() - started + " ms"));
             }

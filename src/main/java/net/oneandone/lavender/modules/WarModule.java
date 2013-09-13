@@ -19,11 +19,15 @@ import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Filter;
 import net.oneandone.lavender.modules.project.ProjectConfig;
 import net.oneandone.sushi.fs.Node;
+import net.oneandone.sushi.fs.file.FileNode;
+import net.oneandone.sushi.fs.zip.ZipNode;
+import org.pustefixframework.live.LiveResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBException;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -48,23 +52,23 @@ public class WarModule extends Module {
 
     private static final String PROPERTIES = "WEB-INF/lavender.properties";
 
-    public static List<Module> fromWebapp(Node webappOrig, String svnUsername, String svnPassword) throws IOException {
-        Node webapp;
+    public static List<Module> fromWebapp(boolean prod, Node webapp, String svnUsername, String svnPassword) throws IOException {
+        Node webappSource;
         List<Module> result;
         Properties properties;
-        WarModule ps;
+        WarModule root;
         JarModuleConfig mc;
 
-        webapp = lifeWebapp(webappOrig);
         LOG.trace("scanning " + webapp);
-        result = new ArrayList<>();
         properties = getProperties(webapp);
-        ps = create(Filter.forProperties(properties, "pustefix", DEFAULT_INCLUDE_EXTENSIONS), webapp);
-        result.add(ps);
+        result = new ArrayList<>();
+        webappSource = prod ? webapp : live(webapp);
+        root = create(Filter.forProperties(properties, "pustefix", DEFAULT_INCLUDE_EXTENSIONS), webappSource);
+        result.add(root);
         for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
-            mc = loadModuleXml(ps, jar);
+            mc = loadModuleXml(root, jar);
             if (mc != null) {
-                result.add(new JarModule(ps.getFilter(), Docroot.WEB, mc, lifeJar(jar)));
+                result.add(new JarModule(root.getFilter(), Docroot.WEB, mc, prod ? jar : live(jar)));
             }
         }
         for (SvnModuleConfig config : SvnModuleConfig.parse(properties)) {
@@ -74,14 +78,21 @@ public class WarModule extends Module {
         return result;
     }
 
-    //-- TODO
+    private static Node live(Node root) throws IOException {
+        File resolved;
 
-    private static Node lifeJar(Node jarOrig) {
-        return jarOrig;
-    }
-
-    private static Node lifeWebapp(Node webappOrig) {
-        return webappOrig;
+        try {
+            if (root instanceof FileNode) {
+                resolved = LiveResolver.getInstance().resolveLiveRoot(((FileNode) root).getAbsolute(), "/foo");
+            } else if (root instanceof ZipNode) {
+                resolved = LiveResolver.getInstance().resolveLiveRoot(((ZipNode) root).getRoot().getZip().getName(), "/foo");
+            } else {
+                throw new IllegalArgumentException(root.toString());
+            }
+        } catch (Exception e) {
+            throw new IOException("cannot resolve life root", e);
+        }
+        return resolved == null ? root : root.getWorld().file(resolved);
     }
 
     //--

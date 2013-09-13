@@ -78,7 +78,7 @@ public class WarEngine {
         Map<String, Index> result;
 
         started = System.currentTimeMillis();
-        modules = WarModule.fromWebapp(inputWar.openZip(), svnUsername, svnPassword);
+        modules = WarModule.fromWebapp(true, inputWar.openZip(), svnUsername, svnPassword);
         absolute = 0;
         changed = extract(modules);
         result = new HashMap<>();
