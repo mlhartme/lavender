@@ -50,7 +50,7 @@ public class WarModule extends Module {
     public static final List<String> DEFAULT_INCLUDE_EXTENSIONS = new ArrayList<>(Arrays.asList(
             "gif", "png", "jpg", "jpeg", "ico", "swf", "css", "js"));
 
-    private static final String PROPERTIES = "WEB-INF/lavender.properties";
+    public static final String PROPERTIES = "WEB-INF/lavender.properties";
 
     public static List<Module> fromWebapp(boolean prod, Node webapp, String svnUsername, String svnPassword) throws IOException {
         Node webappSource;
@@ -85,6 +85,8 @@ public class WarModule extends Module {
                                          String svnUsername, String svnPassword) throws IOException {
         List<Module> result;
         Properties properties;
+        Module jarModule;
+        Resource propertiesResource;
 
         result = new ArrayList<>();
         if (jar instanceof FileNode) {
@@ -94,15 +96,19 @@ public class WarModule extends Module {
             if (jar.isFile()) {
                 jar = ((FileNode) jar).openJar();
             }
-            result.add(new JarFileModule(root.getFilter(), Docroot.WEB, config, jar));
+            jarModule = new JarFileModule(root.getFilter(), Docroot.WEB, config, jar);
         } else {
             if (!prod) {
                 throw new UnsupportedOperationException("live mechanism not supported for jar streams");
             }
-            result.add(new JarStreamModule(root.getFilter(), Docroot.WEB, config, jar));
+            jarModule = new JarStreamModule(root.getFilter(), Docroot.WEB, config, jar);
         }
-        properties = WarModule.getPropertiesOpt(jar);
-        if (properties != null) {
+        result.add(jarModule);
+        // TODO: hack
+        propertiesResource = jarModule.probe(PROPERTIES);
+        if (propertiesResource != null) {
+            properties = jar.getWorld().memoryNode(propertiesResource.getData()).readProperties();
+            // TODO: reject unknown properties
             for (SvnModuleConfig svnConfig : SvnModuleConfig.parse(properties)) {
                 result.add(svnConfig.create(jar.getWorld(), svnUsername, svnPassword));
             }
