@@ -118,7 +118,7 @@ public class SvnModule extends Module {
         } catch (SVNException e) {
             throw new IOException("cannot probe " + path, e);
         }
-        if (entry == null) {
+        if (entry == null || entry.getKind() == SVNNodeKind.DIR) {
             return null;
         }
         return createResource(entry, null);
