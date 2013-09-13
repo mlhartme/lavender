@@ -18,7 +18,6 @@ package net.oneandone.lavender.modules;
 import net.oneandone.lavender.config.Filter;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.filter.Predicate;
-import net.oneandone.sushi.fs.zip.ZipNode;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -26,14 +25,14 @@ import java.util.List;
 
 public class JarFileModule extends Module {
     private final JarModuleConfig config;
-    private final ZipNode opened;
+    private final Node exploded;
     private final List<Node> files;
 
-    public JarFileModule(Filter filter, String type, JarModuleConfig config, ZipNode opened) throws IOException {
+    public JarFileModule(Filter filter, String type, JarModuleConfig config, Node exploded) throws IOException {
         super(filter, type, config.getModuleName(), true, "");
         this.config = config;
-        this.opened = opened;
-        this.files = opened.find(opened.getWorld().filter().includeAll().predicate(Predicate.FILE));
+        this.exploded = exploded;
+        this.files = exploded.find(exploded.getWorld().filter().includeAll().predicate(Predicate.FILE));
     }
 
     public Iterator<Resource> iterator() {

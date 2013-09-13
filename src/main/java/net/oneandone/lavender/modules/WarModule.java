@@ -88,9 +88,18 @@ public class WarModule extends Module {
 
         result = new ArrayList<>();
         if (jar instanceof FileNode) {
-            result.add(new JarFileModule(root.getFilter(), Docroot.WEB, config, ((FileNode) (prod ? jar : WarModule.live(jar))).openZip()));
+            if (!prod) {
+                jar = live(jar);
+            }
+            if (jar.isFile()) {
+                jar = ((FileNode) jar).openJar();
+            }
+            result.add(new JarFileModule(root.getFilter(), Docroot.WEB, config, jar));
         } else {
-            result.add(new JarStreamModule(root.getFilter(), Docroot.WEB, config, prod ? jar : WarModule.live(jar)));
+            if (!prod) {
+                throw new UnsupportedOperationException("live mechanism not supported for jar streams");
+            }
+            result.add(new JarStreamModule(root.getFilter(), Docroot.WEB, config, jar));
         }
         properties = WarModule.getPropertiesOpt(jar);
         if (properties != null) {
