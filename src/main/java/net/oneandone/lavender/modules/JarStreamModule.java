@@ -42,14 +42,9 @@ public class JarStreamModule extends Module {
         }
     }
 
-    // TODO: expensive
     public Resource probeIncluded(String path) {
-        for (Resource resource : this) {
-            if (path.equals(resource.getPath())) {
-                return resource;
-            }
-        }
-        return null;
+        // that's ok because JarStreamModules are only used when publishing wars -- and that doesn't need probing
+        throw new UnsupportedOperationException();
     }
 
     @Override

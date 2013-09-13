@@ -212,10 +212,6 @@ public class WarModule extends Module {
         return false;
     }
 
-    public String getProjectName() {
-        return config.getProject().getName();
-    }
-
     @Override
     public void saveCaches() {
         // nothing to do
