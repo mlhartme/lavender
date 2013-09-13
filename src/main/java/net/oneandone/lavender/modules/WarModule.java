@@ -47,7 +47,7 @@ import java.util.zip.ZipInputStream;
 public class WarModule extends Module {
     private static final Logger LOG = LoggerFactory.getLogger(Module.class);
 
-    private static final List<String> DEFAULT_INCLUDE_EXTENSIONS = new ArrayList<>(Arrays.asList(
+    public static final List<String> DEFAULT_INCLUDE_EXTENSIONS = new ArrayList<>(Arrays.asList(
             "gif", "png", "jpg", "jpeg", "ico", "swf", "css", "js"));
 
     private static final String PROPERTIES = "WEB-INF/lavender.properties";
@@ -57,18 +57,21 @@ public class WarModule extends Module {
         List<Module> result;
         Properties properties;
         WarModule root;
-        JarModuleConfig mc;
+        JarModuleConfig jarConfig;
 
         LOG.trace("scanning " + webapp);
-        properties = getProperties(webapp);
+        properties = getPropertiesOpt(webapp);
+        if (properties == null) {
+            throw new IOException("lavender.properties not found");
+        }
         result = new ArrayList<>();
         webappSource = prod ? webapp : live(webapp);
         root = create(Filter.forProperties(properties, "pustefix", DEFAULT_INCLUDE_EXTENSIONS), webappSource);
         result.add(root);
         for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
-            mc = loadModuleXml(root, jar);
-            if (mc != null) {
-                result.add(new JarModule(root.getFilter(), Docroot.WEB, mc, prod ? jar : live(jar)));
+            jarConfig = loadModuleXml(root, jar);
+            if (jarConfig != null) {
+                result.addAll(jarModule(prod, root, jar, jarConfig, svnUsername, svnPassword));
             }
         }
         for (SvnModuleConfig config : SvnModuleConfig.parse(properties)) {
@@ -78,7 +81,28 @@ public class WarModule extends Module {
         return result;
     }
 
-    private static Node live(Node root) throws IOException {
+    public static List<Module> jarModule(boolean prod, WarModule root, Node jar, JarModuleConfig config,
+                                         String svnUsername, String svnPassword) throws IOException {
+        List<Module> result;
+        Properties properties;
+
+        result = new ArrayList<>();
+        if (jar instanceof FileNode) {
+            result.add(new JarFileModule(root.getFilter(), Docroot.WEB, config, ((FileNode) (prod ? jar : WarModule.live(jar))).openZip()));
+        } else {
+            result.add(new JarStreamModule(root.getFilter(), Docroot.WEB, config, prod ? jar : WarModule.live(jar)));
+        }
+        properties = WarModule.getPropertiesOpt(jar);
+        if (properties != null) {
+            for (SvnModuleConfig svnConfig : SvnModuleConfig.parse(properties)) {
+                result.add(svnConfig.create(jar.getWorld(), svnUsername, svnPassword));
+            }
+        }
+        return result;
+    }
+
+
+    public static Node live(Node root) throws IOException {
         File resolved;
 
         try {
@@ -118,13 +142,16 @@ public class WarModule extends Module {
         return entry.getName().equals("META-INF/pustefix-module.xml");
     }
 
-    private static Properties getProperties(Node webapp) throws IOException {
+    public static Properties getPropertiesOpt(Node webapp) throws IOException {
         Node src;
 
         src = webapp.join(PROPERTIES);
         if (!src.exists()) {
             // TODO: dump this compatibility check as soon as I have ITs with new wars
             src = webapp.join("WEB-INF/lavendel.properties");
+            if (!src.exists()) {
+                return null;
+            }
         }
         return src.readProperties();
     }

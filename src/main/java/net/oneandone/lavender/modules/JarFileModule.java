@@ -17,32 +17,29 @@ package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.config.Filter;
 import net.oneandone.sushi.fs.Node;
-import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Predicate;
+import net.oneandone.sushi.fs.zip.ZipNode;
 
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-public class JarModule extends Module {
+public class JarFileModule extends Module {
     private final JarModuleConfig config;
-    private final Node jar;
+    private final ZipNode opened;
 
-    public JarModule(Filter filter, String type, JarModuleConfig config, Node jar) {
+    public JarFileModule(Filter filter, String type, JarModuleConfig config, ZipNode opened) {
         super(filter, type, config.getModuleName(), true, "");
         this.config = config;
-        this.jar = jar;
+        this.opened = opened;
     }
 
     public Iterator<Resource> iterator() {
         List<Node> files;
+
         try {
-            if (jar instanceof FileNode) {
-                files = ((FileNode) jar).openZip().find(jar.getWorld().filter().includeAll().predicate(Predicate.FILE));
-                return new JarFileResourceIterator(config, files);
-            } else {
-                return new JarStreamResourceIterator(config, jar);
-            }
+            files = opened.find(opened.getWorld().filter().includeAll().predicate(Predicate.FILE));
+            return new JarFileResourceIterator(config, files);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
