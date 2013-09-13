@@ -27,22 +27,17 @@ import java.util.List;
 public class JarFileModule extends Module {
     private final JarModuleConfig config;
     private final ZipNode opened;
+    private final List<Node> files;
 
-    public JarFileModule(Filter filter, String type, JarModuleConfig config, ZipNode opened) {
+    public JarFileModule(Filter filter, String type, JarModuleConfig config, ZipNode opened) throws IOException {
         super(filter, type, config.getModuleName(), true, "");
         this.config = config;
         this.opened = opened;
+        this.files = opened.find(opened.getWorld().filter().includeAll().predicate(Predicate.FILE));
     }
 
     public Iterator<Resource> iterator() {
-        List<Node> files;
-
-        try {
-            files = opened.find(opened.getWorld().filter().includeAll().predicate(Predicate.FILE));
-            return new JarFileResourceIterator(config, files);
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
+        return new JarFileResourceIterator(config, files);
     }
 
     // TODO: expensive

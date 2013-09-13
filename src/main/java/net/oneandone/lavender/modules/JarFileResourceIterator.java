@@ -32,7 +32,7 @@ public class JarFileResourceIterator implements Iterator<Resource> {
     private int nextModuleJarFile;
     private Resource next;
 
-    public JarFileResourceIterator(JarModuleConfig config, List<Node> files) throws IOException {
+    public JarFileResourceIterator(JarModuleConfig config, List<Node> files) {
         this.config = config;
         this.files = files;
         this.nextModuleJarFile = 0;
