@@ -53,7 +53,7 @@ public class Svn extends Base {
         Docroot docroot;
         Target target;
         Filter filter;
-        SvnModuleConfig ec;
+        SvnModuleConfig moduleConfig;
         SvnModule module;
         Distributor distributor;
         long changed;
@@ -68,11 +68,11 @@ public class Svn extends Base {
         filter = new Filter();
         filter.setIncludes("*");
         filter.setExcludes();
-        ec = new SvnModuleConfig("svn", filter);
-        ec.pathPrefix = directory + "/";
-        ec.svnurl = svnurl;
-        ec.lavendelize = false;
-        module = ec.create(console.world, settings.svnUsername, settings.svnPassword);
+        moduleConfig = new SvnModuleConfig("svn", filter);
+        moduleConfig.pathPrefix = directory + "/";
+        moduleConfig.svnurl = svnurl;
+        moduleConfig.lavendelize = false;
+        module = moduleConfig.create(console.world, settings.svnUsername, settings.svnPassword);
         distributor = target.open(console.world, directory + ".idx");
         changed = module.publish(distributor);
         index = distributor.close();

@@ -140,7 +140,7 @@ public class WarModule extends Module {
         ZipInputStream jarInputStream;
         ZipEntry jarEntry;
 
-        jarInputStream = new ZipInputStream(jar.createInputStream());
+        jarInputStream = new ZipInputStream(jar.createInputStream()); // TODO: expensive!
         while ((jarEntry = jarInputStream.getNextEntry()) != null) {
             if (isModuleXml(jarEntry)) {
                 try {

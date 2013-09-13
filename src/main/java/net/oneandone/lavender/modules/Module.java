@@ -33,9 +33,11 @@ public abstract class Module implements Iterable<Resource> {
     private final String type;
     private final String folder;
     private final boolean lavendelize;
-    private final String pathPrefix;
 
-    public Module(Filter filter, String type, String folder, boolean lavendelize, String pathPrefix) {
+    /** where to write resources when publishing */
+    private final String targetPathPrefix;
+
+    public Module(Filter filter, String type, String folder, boolean lavendelize, String targetPathPrefix) {
         if (filter == null) {
             throw new IllegalArgumentException();
         }
@@ -43,7 +45,7 @@ public abstract class Module implements Iterable<Resource> {
         this.type = type;
         this.folder = folder;
         this.lavendelize = lavendelize;
-        this.pathPrefix = pathPrefix;
+        this.targetPathPrefix = targetPathPrefix;
     }
 
     public String getType() {
@@ -63,9 +65,9 @@ public abstract class Module implements Iterable<Resource> {
         for (Resource resource : this) {
             if (filter.isIncluded(resource.getPath())) {
                 if (lavendelize) {
-                    label = resource.labelLavendelized(pathPrefix, folder);
+                    label = resource.labelLavendelized(targetPathPrefix, folder);
                 } else {
-                    label = resource.labelNormal(pathPrefix);
+                    label = resource.labelNormal(targetPathPrefix);
                 }
                 if (distributor.write(label, resource)) {
                     count++;
