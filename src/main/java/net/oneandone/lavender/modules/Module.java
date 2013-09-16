@@ -24,7 +24,7 @@ import java.io.IOException;
 /**
  * Contains resources. Can iterate all resources and probe for existing ones.
  * Type describes what kind of resources it contains; you usually have many modules
- * in one application, and the type selects which of the you want to - e.g. - publish.
+ * in one application, and the type selects which of them you want to - e.g. - publish.
  * Current types are "web" and "flash". Modules have a descriptor the specifies the
  * type.
  */
@@ -34,7 +34,7 @@ public abstract class Module implements Iterable<Resource> {
     private final String folder;
     private final boolean lavendelize;
 
-    /** where to write resources when publishing */
+    /** Where to write resources when publishing. Used for flash publishing to add the application name. */
     private final String targetPathPrefix;
 
     public Module(Filter filter, String type, String folder, boolean lavendelize, String targetPathPrefix) {

@@ -4,6 +4,9 @@
       <action date="2013-07-25" dev="mhm" type="add">
         Added verify command.
       </action>
+      <action date="2013-09-16" dev="mhm" type="update">
+        Renamed pathPrefix to targetPathPrefix (the old config is still supported, but yields a warning).
+      </action>
       <action date="2013-07-25" dev="mhm" type="update">
         Move indexes for 'fix' into 'indexes/fix'.
       </action>

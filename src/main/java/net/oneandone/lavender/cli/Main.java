@@ -21,6 +21,7 @@ import net.oneandone.sushi.cli.Child;
 import net.oneandone.sushi.cli.Cli;
 import net.oneandone.sushi.cli.Command;
 import net.oneandone.sushi.cli.Option;
+import net.oneandone.sushi.util.Strings;
 
 import java.io.IOException;
 
@@ -58,7 +59,7 @@ public class Main extends Cli implements Command {
 
     @Child("svn")
     public Command svn() throws IOException {
-        return new Svn(console, settings, net());
+        return new Svn(console, settings, Strings.removeLeft(settings.svn.toString(), "svn:"), net());
     }
 
     @Child("direct")

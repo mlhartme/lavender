@@ -42,7 +42,7 @@ public class SvnModuleConfig {
     public String svnurl;
     public String type = Docroot.WEB;
     public boolean lavendelize = true;
-    public String pathPrefix = "";
+    public String targetPathPrefix = "";
 
     public SvnModuleConfig(String folder, Filter filter) {
         this.folder = folder;
@@ -78,15 +78,19 @@ public class SvnModuleConfig {
                 if (key == null) {
                     config.svnurl = Strings.removeLeftOpt((String) entry.getValue(), "scm:svn:");
                 } else {
-                    if (key.equals("pathPrefix")) {
-                        config.pathPrefix = value;
+                    if (key.equals("targetPathPrefix")) {
+                        config.targetPathPrefix = value;
+                    } else if (key.equals("pathPrefix")) {
+                        // TODO: dump
+                        LOG.warn("CAUTION: out-dated pathPrefix - use targetPathPrefix instead");
+                        config.targetPathPrefix = value;
                     } else if (key.equals("type")) {
                         config.type = value;
                     } else if (key.equals("storage")) {
-                        if (value.contains("flash")) {
+                        if (value.startsWith("flash-")) {
                             // TODO: dump
                             LOG.warn("CAUTION: out-dated storage configured - use type instead");
-                            config.type = value;
+                            config.type = Docroot.FLASH;
                         } else {
                             throw new IllegalArgumentException("storage no longer supported: " + value);
                         }
@@ -128,7 +132,7 @@ public class SvnModuleConfig {
                 cache.getParent().mkdirsOpt();
                 oldIndex = new Index();
             }
-            return new SvnModule(filter, type, oldIndex, new Index(), cache, root, lavendelize, pathPrefix, folder);
+            return new SvnModule(filter, type, oldIndex, new Index(), cache, root, lavendelize, targetPathPrefix, folder);
         } catch (RuntimeException | IOException e) {
             throw e;
         } catch (Exception e) {

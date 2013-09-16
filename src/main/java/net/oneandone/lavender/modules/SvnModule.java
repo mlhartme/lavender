@@ -41,8 +41,8 @@ public class SvnModule extends Module {
     private final Node indexFile;
 
     public SvnModule(Filter filter, String type, Index oldIndex, Index index, Node indexFile, SvnNode root,
-                     boolean lavendelize, String pathPrefix, String folder) {
-        super(filter, type, folder, lavendelize, pathPrefix);
+                     boolean lavendelize, String targetPathPrefix, String folder) {
+        super(filter, type, folder, lavendelize, targetPathPrefix);
         this.root = root;
         this.oldIndex = oldIndex;
         this.index = index;

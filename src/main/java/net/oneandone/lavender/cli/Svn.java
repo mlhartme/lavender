@@ -38,17 +38,15 @@ public class Svn extends Base {
     @Value(name = "cluster", position = 2)
     private String clusterName;
 
-    public Svn(Console console, Settings settings, Net net) {
+    private final String svn;
+
+    public Svn(Console console, Settings settings, String svn, Net net) {
         super(console, settings, net);
+        this.svn = svn;
     }
 
     @Override
     public void invoke() throws IOException {
-        // TODO: configurable
-        invoke("https://svn.1and1.org/svn/PFX/lavender/data/" + directory);
-    }
-
-    private void invoke(String svnurl) throws IOException {
         Cluster cluster;
         Docroot docroot;
         Target target;
@@ -70,7 +68,7 @@ public class Svn extends Base {
         filter.setExcludes();
         moduleConfig = new SvnModuleConfig("svn", filter);
         moduleConfig.pathPrefix = directory + "/";
-        moduleConfig.svnurl = svnurl;
+        moduleConfig.svnurl = svn + "/data/" + directory;
         moduleConfig.lavendelize = false;
         module = moduleConfig.create(console.world, settings.svnUsername, settings.svnPassword);
         distributor = target.open(console.world, directory + ".idx");

@@ -58,7 +58,7 @@ public class Settings {
             }
         }
         try {
-            return new Settings(world, new URI(properties.getProperty("net")), properties.getProperty("svn.username"), properties.getProperty("svn.password"), sshKeys);
+            return new Settings(world, new URI(properties.getProperty("svn")), properties.getProperty("svn.username"), properties.getProperty("svn.password"), sshKeys);
         } catch (URISyntaxException e) {
             throw new IOException("invalid settings file " + file + ": " + e.getMessage(), e);
         }
@@ -68,14 +68,14 @@ public class Settings {
 
     public final World world;
     /** don't store the node, so I can create settings without accessing svn (and thus without svn credentials) */
-    private final URI netUrl;
+    public final URI svn;
     public final String svnUsername;
     public final String svnPassword;
     private final List<Node> sshKeys;
 
-    public Settings(World world, URI netUrl, String svnUsername, String svnPassword, List<Node> sshKeys) {
+    public Settings(World world, URI svn, String svnUsername, String svnPassword, List<Node> sshKeys) {
         this.world = world;
-        this.netUrl = netUrl;
+        this.svn = svn;
         this.svnUsername = svnUsername;
         this.svnPassword = svnPassword;
         this.sshKeys = sshKeys;
@@ -109,7 +109,7 @@ public class Settings {
 
         local = lastNetNode();
         tmp = local.getParent().createTempFile();
-        world.node(netUrl).copyFile(tmp);
+        world.node(svn).join("net.xml").copyFile(tmp);
         result = Net.load(tmp);
         tmp.move(local.deleteFileOpt());
         return result;
