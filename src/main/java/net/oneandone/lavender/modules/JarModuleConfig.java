@@ -74,12 +74,15 @@ public class JarModuleConfig {
      */
     public String getPath(String resourceName) {
         String st;
+        String mapped;
+
 
         st = getStaticMapped(resourceName);
         if (st != null) {
             return st;
         }
-        if (!hasResourceMapping(resourceName)) {
+        mapped = getResourceMapping(resourceName);
+        if (mapped == null) {
             throw new IllegalArgumentException(resourceName);
         }
 
@@ -89,8 +92,7 @@ public class JarModuleConfig {
 
         sb.append(getModuleName());
         sb.append('/');
-
-        sb.append(getResourceMapping(resourceName));
+        sb.append(mapped);
 
         return sb.toString();
     }
