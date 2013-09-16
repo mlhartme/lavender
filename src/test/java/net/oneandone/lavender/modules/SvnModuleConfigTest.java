@@ -37,14 +37,14 @@ public class SvnModuleConfigTest {
 
         props = new Properties();
         props.put("svn.foo", "svn");
-        props.put("svn.foo.pathPrefix", "prefix");
+        props.put("svn.foo.targetPathPrefix", "prefix");
         props.put("svn.foo.lavendelize", "false");
         result = SvnModuleConfig.parse(props);
         assertEquals(1, result.size());
         config = result.iterator().next();
         assertEquals("foo", config.folder);
         assertFalse(config.lavendelize);
-        assertEquals("prefix", config.pathPrefix);
+        assertEquals("prefix", config.targetPathPrefix);
         assertEquals("svn", config.svnurl);
     }
 

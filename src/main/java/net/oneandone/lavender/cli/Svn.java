@@ -67,7 +67,7 @@ public class Svn extends Base {
         filter.setIncludes("*");
         filter.setExcludes();
         moduleConfig = new SvnModuleConfig("svn", filter);
-        moduleConfig.pathPrefix = directory + "/";
+        moduleConfig.targetPathPrefix = directory + "/";
         moduleConfig.svnurl = svn + "/data/" + directory;
         moduleConfig.lavendelize = false;
         module = moduleConfig.create(console.world, settings.svnUsername, settings.svnPassword);

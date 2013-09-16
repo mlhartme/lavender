@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?><document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
   <body>
     <release version="2.0.0">
+      <action date="2013-09-16" dev="mhm" type="update">
+        Renamed svn.pathPrefix to svn.targetPathPrefix. The old config is still supported, but yields a warning.
+      </action>
       <action date="2013-07-25" dev="mhm" type="add">
         Added verify command.
-      </action>
-      <action date="2013-09-16" dev="mhm" type="update">
-        Renamed pathPrefix to targetPathPrefix (the old config is still supported, but yields a warning).
       </action>
       <action date="2013-07-25" dev="mhm" type="update">
         Move indexes for 'fix' into 'indexes/fix'.
       </action>
       <action date="2013-07-25" dev="mhm" type="update">
-        Changed svn.storage to svn.type.
+        Changed svn.storage to svn.type. The old configuration is still supported, but yields a warning.
       </action>
       <action date="2013-07-23" dev="mhm" type="update">
         Rewrite engine removes quotes now.
