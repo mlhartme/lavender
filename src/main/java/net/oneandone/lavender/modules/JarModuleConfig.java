@@ -55,12 +55,7 @@ public class JarModuleConfig {
         if (getStaticMapped(resourceName) != null) {
             return true;
         }
-        if (getResourceMapping(resourceName) == null) {
-            return false;
-        }
-
-        String mappedName = getPath(resourceName);
-        return parent.isPublicResource(mappedName);
+        return parent.isPublicResource(getPath(resourceName));
     }
 
     private static final String MODULES = "modules/";
@@ -74,25 +69,18 @@ public class JarModuleConfig {
      */
     public String getPath(String resourceName) {
         String st;
-        String mapped;
-
 
         st = getStaticMapped(resourceName);
         if (st != null) {
             return st;
         }
-        mapped = getResourceMapping(resourceName);
-        if (mapped == null) {
-            throw new IllegalArgumentException(resourceName);
-        }
-
         StringBuilder sb = new StringBuilder();
 
         sb.append(MODULES);
 
         sb.append(getModuleName());
         sb.append('/');
-        sb.append(mapped);
+        sb.append(resourceName);
 
         return sb.toString();
     }
@@ -123,21 +111,6 @@ public class JarModuleConfig {
             }
         }
         return null;
-    }
-
-    private String getResourceMapping(String resourceName) {
-        String name = null;
-        if (config.getResources() != null) {
-            List<ResourceMappingType> resourceMappings = config.getResources().getResourceMapping();
-            for (ResourceMappingType resourceMapping : resourceMappings) {
-                String src = resourceMapping.getSrcpath();
-                String target = resourceMapping.getTargetpath();
-                if (src != null && target != null && resourceName.startsWith(src)) {
-                    name = resourceName.replace(src, target);
-                }
-            }
-        }
-        return name;
     }
 
     //--
