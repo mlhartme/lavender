@@ -187,26 +187,6 @@
           </execution>
         </executions>
       </plugin>
-      <!-- JAXB -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jaxb2-maven-plugin</artifactId>
-        <version>1.3</version>
-        <executions>
-          <execution>
-            <id>project-configs.xsd</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <schemaFiles>project-config.xsd</schemaFiles>
-              <packageName>net.oneandone.lavender.modules.project</packageName>
-              <staleFile>${project.build.directory}/generated-sources/jaxb/.staleFlag.project-configs.xsd</staleFile>
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution>
-       </executions>
-     </plugin>
     </plugins>
   </build>
 

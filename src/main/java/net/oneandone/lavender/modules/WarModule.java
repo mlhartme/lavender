@@ -17,21 +17,19 @@ package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Filter;
-import net.oneandone.lavender.modules.project.ProjectConfig;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.zip.ZipNode;
+import net.oneandone.sushi.xml.Selector;
 import net.oneandone.sushi.xml.XmlException;
 import org.pustefixframework.live.LiveResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXB;
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -68,10 +66,10 @@ public class WarModule extends Module {
         }
         result = new ArrayList<>();
         webappSource = prod ? webapp : live(webapp);
-        root = create(Filter.forProperties(properties, "pustefix", DEFAULT_INCLUDE_EXTENSIONS), webappSource);
+        root = fromXml(Filter.forProperties(properties, "pustefix", DEFAULT_INCLUDE_EXTENSIONS), webappSource);
         result.add(root);
         for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
-            jarConfig = loadModuleXml(root, jar);
+            jarConfig = loadJarModuleConfig(root, jar);
             if (jarConfig != null) {
                 result.addAll(jarModule(prod, root, jar, jarConfig, svnUsername, svnPassword));
             }
@@ -138,25 +136,22 @@ public class WarModule extends Module {
 
     //--
 
-    private static JarModuleConfig loadModuleXml(WarModule parent, Node jar) throws IOException {
-        ZipInputStream jarInputStream;
-        ZipEntry jarEntry;
+    private static JarModuleConfig loadJarModuleConfig(WarModule parent, Node jar) throws IOException {
+        ZipEntry entry;
 
-        jarInputStream = new ZipInputStream(jar.createInputStream()); // TODO: expensive!
-        while ((jarEntry = jarInputStream.getNextEntry()) != null) {
-            if (isModuleXml(jarEntry)) {
-                try {
-                    return JarModuleConfig.load(jar.getWorld().getXml(), parent, jarInputStream);
-                } catch (SAXException | XmlException e) {
-                    throw new IOException(jar + ": cannot load module descriptor:" + e.getMessage(), e);
+        // TODO: expensive
+        try (ZipInputStream jarInputStream = new ZipInputStream(jar.createInputStream())) {
+            while ((entry = jarInputStream.getNextEntry()) != null) {
+                if (entry.getName().equals("META-INF/pustefix-module.xml")) {
+                    try {
+                        return JarModuleConfig.load(jar.getWorld().getXml(), parent, jarInputStream);
+                    } catch (SAXException | XmlException e) {
+                        throw new IOException(jar + ": cannot load module descriptor:" + e.getMessage(), e);
+                    }
                 }
             }
         }
         return null;
-    }
-
-    private static boolean isModuleXml(ZipEntry entry) {
-        return entry.getName().equals("META-INF/pustefix-module.xml");
     }
 
     public static Properties getPropertiesOpt(Node webapp) throws IOException {
@@ -173,25 +168,45 @@ public class WarModule extends Module {
         return src.readProperties();
     }
 
-    public static WarModule create(Filter filter, Node webapp) throws IOException {
-        ProjectConfig config;
+    public static WarModule fromXml(Filter filter, Node webapp) throws IOException {
+        String path;
+        Element root;
+        Selector selector;
+        String name;
+        List<String> statics;
 
-        try (InputStream src = webapp.join("WEB-INF/project.xml").createInputStream()) {
-            config = JAXB.unmarshal(src, ProjectConfig.class);
+        try {
+            root = webapp.join("WEB-INF/project.xml").readXml().getDocumentElement();
+            selector = webapp.getWorld().getXml().getSelector();
+            name = selector.string(root, "project/name");
+            statics = new ArrayList<>();
+            for (Element element : selector.elements(root, "application/static/path")) {
+                path = element.getTextContent();
+                path = path.trim();
+                if (path.isEmpty() || path.startsWith("/")) {
+                    throw new IllegalStateException(path);
+                }
+                if (!path.endsWith("/")) {
+                    path = path + "/";
+                }
+                statics.add(path);
+            }
+            return new WarModule(filter, name, statics, webapp);
+        } catch (SAXException | XmlException e) {
+            throw new IOException("cannot load project descriptor: " + e);
         }
-        return new WarModule(filter, config, webapp);
     }
 
     //--
 
     private final Node webapp;
-    private final ProjectConfig config;
+    private final List<String> statics;
 
-    public WarModule(Filter filter, ProjectConfig config, Node webapp) throws IOException {
-        super(filter, Docroot.WEB, config.getProject().getName(), true, "");
+    public WarModule(Filter filter, String name, List<String> statics, Node webapp) throws IOException {
+        super(filter, Docroot.WEB, name, true, "");
 
         this.webapp = webapp;
-        this.config = config;
+        this.statics = statics;
     }
 
     public Iterator<Resource> iterator() {
@@ -220,7 +235,7 @@ public class WarModule extends Module {
             return false;
         }
 
-        for (String path : config.getApplication().getStatic().getPath()) {
+        for (String path : statics) {
             if (resourceName.startsWith(path)) {
                 return true;
             }
