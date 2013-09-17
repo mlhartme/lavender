@@ -55,7 +55,7 @@ public class JarModuleConfig {
         if (getStaticMapped(resourceName) != null) {
             return true;
         }
-        if (!hasResourceMapping(resourceName)) {
+        if (getResourceMapping(resourceName) == null) {
             return false;
         }
 
@@ -123,10 +123,6 @@ public class JarModuleConfig {
             }
         }
         return null;
-    }
-
-    private boolean hasResourceMapping(String resourceName) {
-        return getResourceMapping(resourceName) != null;
     }
 
     private String getResourceMapping(String resourceName) {
