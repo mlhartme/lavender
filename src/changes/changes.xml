@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?><document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
   <body>
     <release version="2.0.0">
+      <action date="2013-09-17" dev="mhm" type="fix">
+        Fix module config to read both old and new descriptors. Removed resourceMapping support since it was removed from pustefix long ago.
+      </action>
       <action date="2013-09-16" dev="mhm" type="update">
         Renamed svn.pathPrefix to svn.targetPathPrefix. The old config is still supported, but yields a warning.
       </action>

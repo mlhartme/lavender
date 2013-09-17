@@ -21,9 +21,11 @@ import net.oneandone.lavender.modules.project.ProjectConfig;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.zip.ZipNode;
+import net.oneandone.sushi.xml.XmlException;
 import org.pustefixframework.live.LiveResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBException;
@@ -144,9 +146,9 @@ public class WarModule extends Module {
         while ((jarEntry = jarInputStream.getNextEntry()) != null) {
             if (isModuleXml(jarEntry)) {
                 try {
-                    return new JarModuleConfig(parent, jarInputStream);
-                } catch (JAXBException e) {
-                    throw new IOException("cannot load module descriptor", e);
+                    return JarModuleConfig.load(jar.getWorld().getXml(), parent, jarInputStream);
+                } catch (SAXException | XmlException e) {
+                    throw new IOException(jar + ": cannot load module descriptor:" + e.getMessage(), e);
                 }
             }
         }

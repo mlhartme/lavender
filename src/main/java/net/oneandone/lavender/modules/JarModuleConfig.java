@@ -15,35 +15,67 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.lavender.modules.module.ModuleDescriptorType;
-import net.oneandone.lavender.modules.module.ResourceMappingType;
-import net.oneandone.lavender.modules.module.StaticType;
+import net.oneandone.sushi.xml.Selector;
+import net.oneandone.sushi.xml.Xml;
+import net.oneandone.sushi.xml.XmlException;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXB;
-import javax.xml.bind.JAXBException;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.ZipInputStream;
 
 /**
  * META-INF/pustefix-module.xml.
  */
 public class JarModuleConfig {
     private final WarModule parent;
-    private final ModuleDescriptorType config;
+    private final String name;
 
-    public JarModuleConfig(WarModule parent, ZipInputStream jarInputStream) throws JAXBException, IOException {
+    /** trimmed, without heading slash, with tailing slash */
+    private final List<String> statics;
+
+    public static JarModuleConfig load(Xml xml, WarModule parent, InputStream src) throws IOException, SAXException, XmlException {
+        String path;
+        Element root;
+        Selector selector;
+        String name;
+        List<String> statics;
+
+        root = xml.getBuilder().parse(doNotClose(src)).getDocumentElement();
+        selector = xml.getSelector();
+        name = selector.string(root, "module-name");
+        statics = new ArrayList<>();
+        for (Element element : selector.elements(root, "static/path")) {
+            path = element.getTextContent();
+            path = path.trim();
+            if (path.isEmpty() || path.startsWith("/")) {
+                throw new IllegalStateException(path);
+            }
+            if (!path.endsWith("/")) {
+                path = path + "/";
+            }
+            statics.add(path);
+        }
+        return new JarModuleConfig(parent, name, statics);
+    }
+
+    public JarModuleConfig(WarModule parent, String name, List<String> statics) {
         this.parent = parent;
-        // Use a shield to prevent the original stream from being closed
-        // because JAXB.unmarshall() calls close() on the stream
-        this.config = JAXB.unmarshal(doNotClose(jarInputStream), ModuleDescriptorType.class);
+        this.name = name;
+        this.statics = statics;
     }
 
     public String getModuleName() {
-        return config.getModuleName();
+        return name;
     }
+
+    public List<String> getStatics() {
+        return statics;
+    }
+
 
     /**
      * Checks if the given resource is public.
@@ -95,19 +127,9 @@ public class JarModuleConfig {
             return null;
         }
         resourceName = resourceName.substring(PUSTEFIX_INF.length());
-        StaticType st = config.getStatic();
-        if (st != null) {
-            for (String path : st.getPath()) {
-                path = path.trim();
-                if (path.isEmpty() || path.startsWith("/")) {
-                    throw new IllegalStateException(path);
-                }
-                if (!path.endsWith("/")) {
-                    path = path + "/";
-                }
-                if (resourceName.startsWith(path)) {
-                    return MODULES + getModuleName() + "/" + resourceName;
-                }
+        for (String path : statics) {
+            if (resourceName.startsWith(path)) {
+                return MODULES + getModuleName() + "/" + resourceName;
             }
         }
         return null;

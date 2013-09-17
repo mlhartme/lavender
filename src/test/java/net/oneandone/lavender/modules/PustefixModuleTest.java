@@ -17,6 +17,7 @@ package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.config.Filter;
 import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.xml.Xml;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -24,6 +25,7 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
@@ -33,6 +35,23 @@ import static org.junit.Assert.assertTrue;
 
 public class PustefixModuleTest {
     private static World WORLD = new World();
+
+    @Test
+    public void oldModule() throws Exception {
+        JarModuleConfig c;
+
+        c = JarModuleConfig.load(new Xml(), null, getClass().getResourceAsStream("/old-module.xml"));
+        assertEquals("ajax-addresscheck", c.getModuleName());
+        assertEquals(Arrays.asList("abc/", "xyz/"), c.getStatics());
+    }
+
+    @Test
+    public void newModule() throws Exception {
+        JarModuleConfig c;
+
+        c = JarModuleConfig.load(new Xml(), null, getClass().getResourceAsStream("/new-module.xml"));
+        assertEquals("access-java", c.getModuleName());
+    }
 
     @Test
     public void testExtract() throws Exception {
