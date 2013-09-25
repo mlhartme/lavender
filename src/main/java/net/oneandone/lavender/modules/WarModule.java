@@ -59,6 +59,7 @@ public class WarModule extends Module {
         Properties properties;
         WarModule root;
         JarModuleConfig jarConfig;
+        Filter filter;
 
         LOG.trace("scanning " + webapp);
         properties = getPropertiesOpt(webapp);
@@ -67,12 +68,13 @@ public class WarModule extends Module {
         }
         result = new ArrayList<>();
         webappSource = prod ? webapp : live(webapp);
-        root = fromXml(Filter.forProperties(properties, "pustefix", DEFAULT_INCLUDE_EXTENSIONS), webappSource);
+        filter = Filter.forProperties(properties, "pustefix", DEFAULT_INCLUDE_EXTENSIONS);
+        root = fromXml(filter, webappSource);
         result.add(root);
         for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
             jarConfig = loadJarModuleConfig(root, jar);
             if (jarConfig != null) {
-                result.addAll(jarModule(prod, root, jar, jarConfig, svnUsername, svnPassword));
+                result.addAll(jarModule(prod, jar, filter, jarConfig, svnUsername, svnPassword));
             }
         }
         for (SvnModuleConfig config : SvnModuleConfig.parse(properties)) {
@@ -82,7 +84,7 @@ public class WarModule extends Module {
         return result;
     }
 
-    public static List<Module> jarModule(boolean prod, WarModule root, Node jarOrig, JarModuleConfig config,
+    public static List<Module> jarModule(boolean prod, Node jarOrig, Filter filter, JarModuleConfig config,
                                          String svnUsername, String svnPassword) throws IOException {
         List<Module> result;
         Node jarLive;
@@ -104,12 +106,12 @@ public class WarModule extends Module {
             } else {
                 propertiesNode = ((FileNode) jarOrig).openJar().join(PROPERTIES);
             }
-            jarModule = new JarModule(root.getFilter(), Docroot.WEB, config, jarLive, files(config, jarLive));
+            jarModule = new JarModule(Docroot.WEB, config, jarLive, files(filter, config, jarLive));
         } else {
             if (!prod) {
                 throw new UnsupportedOperationException("live mechanism not supported for jar streams");
             }
-            tmp = JarModule.fromJar(root.getFilter(), Docroot.WEB, config, jarOrig);
+            tmp = JarModule.fromJar(filter, Docroot.WEB, config, jarOrig);
             jarModule = (Module) tmp[0];
             propertiesNode = (Node) tmp[1];
         }
@@ -125,11 +127,14 @@ public class WarModule extends Module {
         return result;
     }
 
-    private static List<Node> files(final JarModuleConfig config, final Node exploded) throws IOException {
+    private static List<Node> files(final Filter filter, final JarModuleConfig config, final Node exploded) throws IOException {
         return exploded.find(exploded.getWorld().filter().includeAll().predicate(new Predicate() {
             @Override
             public boolean matches(Node node, boolean isLink) throws IOException {
-                return node.isFile() && config.isPublicResource(node.getRelative(exploded));
+                String path;
+
+                path = node.getRelative(exploded);
+                return filter.isIncluded(path) && node.isFile() && config.isPublicResource(path);
             }
         }));
     }
@@ -218,12 +223,14 @@ public class WarModule extends Module {
 
     private final Node webapp;
     private final List<String> statics;
+    private final Filter filter;
 
     public WarModule(Filter filter, String name, List<String> statics, Node webapp) throws IOException {
-        super(filter, Docroot.WEB, name, true, "");
+        super(Docroot.WEB, name, true, "");
 
         this.webapp = webapp;
         this.statics = statics;
+        this.filter = filter;
     }
 
     public Iterator<Resource> iterator() {
@@ -234,8 +241,12 @@ public class WarModule extends Module {
         }
     }
 
-    public Resource probeIncluded(String path) throws IOException {
+    public Resource probe(String path) throws IOException {
         Node node;
+
+        if (!filter.isIncluded(path)) {
+            return null;
+        }
 
         if (!isPublicResource(path)) {
             return null;

@@ -49,7 +49,7 @@ public class JarModule extends Module {
             path = entry.getName();
             if (!entry.isDirectory()) {
                 isProperty = WarModule.PROPERTIES.equals(path);
-                if (config.isPublicResource(path) || isProperty) {
+                if (isProperty || (config.isPublicResource(path) && filter.isIncluded(path))) {
                     child = root.join(path);
                     child.getParent().mkdirsOpt();
                     world.getBuffer().copy(src, child);
@@ -61,15 +61,15 @@ public class JarModule extends Module {
                 }
             }
         }
-        return new Object[] { new JarModule(filter, type, config, root, files), propertyNode };
+        return new Object[] { new JarModule(type, config, root, files), propertyNode };
     }
 
     private final JarModuleConfig config;
     private final Node exploded;
     private final List<Node> files;
 
-    public JarModule(Filter filter, String type, JarModuleConfig config, Node exploded, List<Node> files) throws IOException {
-        super(filter, type, config.getModuleName(), true, "");
+    public JarModule(String type, JarModuleConfig config, Node exploded, List<Node> files) throws IOException {
+        super(type, config.getModuleName(), true, "");
         this.config = config;
         this.exploded = exploded;
         this.files = files;
@@ -80,7 +80,7 @@ public class JarModule extends Module {
     }
 
     // TODO: expensive
-    public Resource probeIncluded(String path) {
+    public Resource probe(String path) {
         for (Resource resource : this) {
             if (path.equals(resource.getPath())) {
                 return resource;

@@ -29,7 +29,6 @@ import java.io.IOException;
  * type.
  */
 public abstract class Module implements Iterable<Resource> {
-    private final Filter filter;
     private final String type;
     private final String folder;
     private final boolean lavendelize;
@@ -37,11 +36,7 @@ public abstract class Module implements Iterable<Resource> {
     /** Where to write resources when publishing. Used for flash publishing to add the application name. */
     private final String targetPathPrefix;
 
-    public Module(Filter filter, String type, String folder, boolean lavendelize, String targetPathPrefix) {
-        if (filter == null) {
-            throw new IllegalArgumentException();
-        }
-        this.filter = filter;
+    public Module(String type, String folder, boolean lavendelize, String targetPathPrefix) {
         this.type = type;
         this.folder = folder;
         this.lavendelize = lavendelize;
@@ -52,10 +47,6 @@ public abstract class Module implements Iterable<Resource> {
         return type;
     }
 
-    public Filter getFilter() {
-        return filter;
-    }
-
     /** @return number of changed (updated or added) resources */
     public long publish(Distributor distributor) throws IOException {
         Label label;
@@ -63,25 +54,19 @@ public abstract class Module implements Iterable<Resource> {
 
         count = 0;
         for (Resource resource : this) {
-            if (filter.isIncluded(resource.getPath())) {
-                if (lavendelize) {
-                    label = resource.labelLavendelized(targetPathPrefix, folder);
-                } else {
-                    label = resource.labelNormal(targetPathPrefix);
-                }
-                if (distributor.write(label, resource)) {
-                    count++;
-                }
+            if (lavendelize) {
+                label = resource.labelLavendelized(targetPathPrefix, folder);
+            } else {
+                label = resource.labelNormal(targetPathPrefix);
+            }
+            if (distributor.write(label, resource)) {
+                count++;
             }
         }
         return count;
     }
 
-    public Resource probe(String path) throws IOException {
-        return filter.isIncluded(path) ? probeIncluded(path) : null;
-    }
-
-    protected abstract Resource probeIncluded(String path) throws IOException;
+    public abstract Resource probe(String path) throws IOException;
 
     public abstract void saveCaches() throws IOException;
 }

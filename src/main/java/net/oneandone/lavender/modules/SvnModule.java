@@ -35,6 +35,7 @@ import java.util.List;
 /** Extracts resources from svn */
 public class SvnModule extends Module {
     private final SvnNode root;
+    private final Filter filter;
 
     private final Index oldIndex;
     private final Index index;
@@ -44,8 +45,9 @@ public class SvnModule extends Module {
 
     public SvnModule(Filter filter, String type, Index oldIndex, Index index, Node indexFile, SvnNode root,
                      boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, String folder) {
-        super(filter, type, folder, lavendelize, targetPathPrefix);
+        super(type, folder, lavendelize, targetPathPrefix);
         this.root = root;
+        this.filter = filter;
         this.oldIndex = oldIndex;
         this.index = index;
         this.indexFile = indexFile;
@@ -112,9 +114,12 @@ public class SvnModule extends Module {
                 (int) entry.getSize(), entry.getDate().getTime(), root.join(path), md5);
     }
 
-    public SvnResource probeIncluded(String path) throws IOException {
+    public SvnResource probe(String path) throws IOException {
         SVNDirEntry entry;
 
+        if (!filter.isIncluded(path)) {
+            return null;
+        }
         if (!path.startsWith(resourcePathPrefix)) {
             return null;
         }
