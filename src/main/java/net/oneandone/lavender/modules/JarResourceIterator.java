@@ -16,43 +16,30 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.sushi.fs.Node;
-import net.oneandone.sushi.fs.file.FileNode;
-import net.oneandone.sushi.fs.filter.Filter;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 public class JarResourceIterator implements Iterator<Resource> {
-    private final Node root;
-    private final JarModuleConfig config;
-    private final List<Node> files;
-
-    // iterating data
-    private int nextModuleJarFile;
+    private final Iterator<Map.Entry<String, Node>> files;
     private Resource next;
 
-    public JarResourceIterator(Node root, JarModuleConfig config, List<Node> files) {
-        this.root = root;
-        this.config = config;
+    public JarResourceIterator(Iterator<Map.Entry<String, Node>> files) {
         this.files = files;
-        this.nextModuleJarFile = 0;
     }
 
     public boolean hasNext() {
-        Node file;
-        String path;
+        Map.Entry<String, Node> entry;
 
         if (next != null) {
             return true;
         }
-        while (nextModuleJarFile < files.size()) {
-            file = files.get(nextModuleJarFile);
-            nextModuleJarFile++;
-            path = file.getRelative(root);
+        if (files.hasNext()) {
+            entry = files.next();
             try {
-                next = DefaultResource.forNode(file, config.getPath(path));
+                next = DefaultResource.forNode(entry.getValue(), entry.getKey());
             } catch (IOException e) {
                 throw new RuntimeException("TODO", e);
             }

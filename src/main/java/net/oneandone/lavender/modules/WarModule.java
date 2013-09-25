@@ -19,6 +19,7 @@ import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Filter;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
+import net.oneandone.sushi.fs.filter.Action;
 import net.oneandone.sushi.fs.filter.Predicate;
 import net.oneandone.sushi.fs.zip.ZipNode;
 import net.oneandone.sushi.xml.Selector;
@@ -33,8 +34,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -106,7 +109,7 @@ public class WarModule extends Module {
             } else {
                 propertiesNode = ((FileNode) jarOrig).openJar().join(PROPERTIES);
             }
-            jarModule = new JarModule(Docroot.WEB, config, jarLive, files(filter, config, jarLive));
+            jarModule = new JarModule(Docroot.WEB, config.getModuleName(), files(filter, config, jarLive));
         } else {
             if (!prod) {
                 throw new UnsupportedOperationException("live mechanism not supported for jar streams");
@@ -127,16 +130,37 @@ public class WarModule extends Module {
         return result;
     }
 
-    private static List<Node> files(final Filter filter, final JarModuleConfig config, final Node exploded) throws IOException {
-        return exploded.find(exploded.getWorld().filter().includeAll().predicate(new Predicate() {
-            @Override
-            public boolean matches(Node node, boolean isLink) throws IOException {
+    private static Map<String, Node> files(final Filter filter, final JarModuleConfig config, final Node exploded) throws IOException {
+        net.oneandone.sushi.fs.filter.Filter f;
+        final Map<String, Node> result;
+
+        result = new HashMap<>();
+        f = exploded.getWorld().filter().predicate(Predicate.FILE).includeAll();
+        f.invoke(exploded, new Action() {
+            public void enter(Node node, boolean isLink) {
+            }
+
+            public void enterFailed(Node node, boolean isLink, IOException e) throws IOException {
+                throw e;
+            }
+
+            public void leave(Node node, boolean isLink) {
+            }
+
+            public void select(Node node, boolean isLink) {
                 String path;
+                String resourcePath;
 
                 path = node.getRelative(exploded);
-                return filter.isIncluded(path) && node.isFile() && config.getPath(path) != null;
+                if (filter.isIncluded(path)) {
+                    resourcePath = config.getPath(path);
+                    if (resourcePath != null) {
+                        result.put(resourcePath, node);
+                    }
+                }
             }
-        }));
+        });
+        return result;
     }
 
     public static Node live(Node root) throws IOException {

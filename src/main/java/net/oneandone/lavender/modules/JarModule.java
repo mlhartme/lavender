@@ -21,8 +21,10 @@ import net.oneandone.sushi.fs.World;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -38,55 +40,50 @@ public class JarModule extends Module {
         Node child;
         boolean isProperty;
         Node propertyNode;
-        List<Node> files;
+        Map<String, Node> files;
+        String resourcePath;
 
         world = jar.getWorld();
         root = world.getMemoryFilesystem().root().node(UUID.randomUUID().toString(), null).mkdir();
         src = new ZipInputStream(jar.createInputStream());
         propertyNode = null;
-        files = new ArrayList<>();
+        files = new HashMap<>();
+        resourcePath = null; // definite assignment
         while ((entry = src.getNextEntry()) != null) {
             path = entry.getName();
             if (!entry.isDirectory()) {
                 isProperty = WarModule.PROPERTIES.equals(path);
-                if (isProperty || (config.getPath(path) != null && filter.isIncluded(path))) {
+                if (isProperty || ((resourcePath = config.getPath(path)) != null && filter.isIncluded(path))) {
                     child = root.join(path);
                     child.getParent().mkdirsOpt();
                     world.getBuffer().copy(src, child);
                     if (isProperty) {
                         propertyNode = child;
                     } else {
-                        files.add(child);
+                        files.put(resourcePath, child);
                     }
                 }
             }
         }
-        return new Object[] { new JarModule(type, config, root, files), propertyNode };
+        return new Object[] { new JarModule(type, config.getModuleName(), files), propertyNode };
     }
 
-    private final JarModuleConfig config;
-    private final Node exploded;
-    private final List<Node> files;
+    private final Map<String, Node> files;
 
-    public JarModule(String type, JarModuleConfig config, Node exploded, List<Node> files) throws IOException {
-        super(type, config.getModuleName(), true, "");
-        this.config = config;
-        this.exploded = exploded;
+    public JarModule(String type, String moduleName, Map<String, Node> files) throws IOException {
+        super(type, moduleName, true, "");
         this.files = files;
     }
 
     public Iterator<Resource> iterator() {
-        return new JarResourceIterator(exploded, config, files);
+        return new JarResourceIterator(files.entrySet().iterator());
     }
 
-    // TODO: expensive
-    public Resource probe(String path) {
-        for (Resource resource : this) {
-            if (path.equals(resource.getPath())) {
-                return resource;
-            }
-        }
-        return null;
+    public Resource probe(String path) throws IOException {
+        Node file;
+
+        file = files.get(path);
+        return file == null ? null : DefaultResource.forNode(file, path);
     }
 
     @Override
