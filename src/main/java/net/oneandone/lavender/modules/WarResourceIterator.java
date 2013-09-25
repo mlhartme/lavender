@@ -16,8 +16,6 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.sushi.fs.Node;
-import net.oneandone.sushi.fs.filter.Filter;
-import net.oneandone.sushi.fs.filter.Predicate;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -25,7 +23,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public class WarResourceIterator implements Iterator<Resource> {
-    private final WarModule module;
     private final Node webapp;
     private List<Node> files;
 
@@ -35,17 +32,7 @@ public class WarResourceIterator implements Iterator<Resource> {
 
     private int nextFile;
 
-
-    public static WarResourceIterator create(WarModule module, Node webapp) throws IOException {
-        Filter filter;
-
-        filter = webapp.getWorld().filter().include("**/*").predicate(Predicate.FILE);
-        return new WarResourceIterator(module, webapp, webapp.find(filter));
-    }
-
-
-    public WarResourceIterator(WarModule module, Node webapp, List<Node> files) {
-        this.module = module;
+    public WarResourceIterator(Node webapp, List<Node> files) {
         this.webapp = webapp;
         this.files = files;
         this.nextFile = 0;
@@ -61,14 +48,12 @@ public class WarResourceIterator implements Iterator<Resource> {
         while (nextFile < files.size()) {
             file = files.get(nextFile++);
             path = file.getRelative(webapp);
-            if (module.isPublicResource(path)) {
-                try {
-                    next = DefaultResource.forNode(file, path);
-                } catch (IOException e) {
-                    throw new RuntimeException("TODO", e);
-                }
-                return true;
+            try {
+                next = DefaultResource.forNode(file, path);
+            } catch (IOException e) {
+                throw new RuntimeException("TODO", e);
             }
+            return true;
         }
         return false;
     }
