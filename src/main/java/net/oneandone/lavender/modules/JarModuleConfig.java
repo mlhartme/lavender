@@ -31,6 +31,9 @@ import java.util.List;
  * META-INF/pustefix-module.xml.
  */
 public class JarModuleConfig {
+    private static final String MODULES = "modules/";
+    private static final String PUSTEFIX_INF = "PUSTEFIX-INF/";
+
     private final WarModule parent;
     private final String name;
 
@@ -76,36 +79,16 @@ public class JarModuleConfig {
         return statics;
     }
 
-    /**
-     * Checks if the given resource is public.
-     * @param resourceName
-     *            the resource name
-     * @return true if the resource is public
-     */
     public boolean isPublicResource(String resourceName) {
-        if (isStaticMapped(resourceName)) {
-            return true;
-        }
-        return parent.isPublicResource(getPath(resourceName));
+        return isStaticMapped(resourceName) || parent.isPublicResource(getPath(resourceName));
     }
 
-    private static final String MODULES = "modules/";
-
-    /**
-     * Maps the name within the JAR module to the Example: 'PUSTEFIX-INF/img/close.gif' is mapped to
-     * 'modules/stageassistent/img/close.gif'.
-     * @param resourceName
-     *            the resource name
-     * @return the mapped name
-     */
     public String getPath(String resourceName) {
         String r;
 
         r = isStaticMapped(resourceName) ? resourceName.substring(PUSTEFIX_INF.length()) : resourceName;
         return MODULES + getModuleName() + "/" + r;
     }
-
-    private static final String PUSTEFIX_INF = "PUSTEFIX-INF/";
 
     private boolean isStaticMapped(String resourceName) {
         if (resourceName.startsWith("/")) {
