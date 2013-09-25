@@ -134,7 +134,7 @@ public class WarModule extends Module {
                 String path;
 
                 path = node.getRelative(exploded);
-                return filter.isIncluded(path) && node.isFile() && config.isPublicResource(path);
+                return filter.isIncluded(path) && node.isFile() && config.getPath(path) != null;
             }
         }));
     }

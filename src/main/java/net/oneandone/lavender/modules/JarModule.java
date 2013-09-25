@@ -49,7 +49,7 @@ public class JarModule extends Module {
             path = entry.getName();
             if (!entry.isDirectory()) {
                 isProperty = WarModule.PROPERTIES.equals(path);
-                if (isProperty || (config.isPublicResource(path) && filter.isIncluded(path))) {
+                if (isProperty || (config.getPath(path) != null && filter.isIncluded(path))) {
                     child = root.join(path);
                     child.getParent().mkdirsOpt();
                     world.getBuffer().copy(src, child);

@@ -79,31 +79,34 @@ public class JarModuleConfig {
         return statics;
     }
 
-    public boolean isPublicResource(String resourceName) {
-        return isStaticMapped(resourceName) || parent.isPublicResource(getPath(resourceName));
-    }
-
+    /* @return null if not public */
     public String getPath(String resourceName) {
-        String r;
+        String result;
 
-        r = isStaticMapped(resourceName) ? resourceName.substring(PUSTEFIX_INF.length()) : resourceName;
-        return MODULES + getModuleName() + "/" + r;
+        result = getStaticMappedPath(resourceName);
+        if (result != null) {
+            return result;
+        }
+        if (parent.isPublicResource(resourceName)) {
+            return MODULES + getModuleName() + "/" + resourceName;
+        }
+        return null;
     }
 
-    private boolean isStaticMapped(String resourceName) {
+    private String getStaticMappedPath(String resourceName) {
         if (resourceName.startsWith("/")) {
             throw new IllegalArgumentException(resourceName);
         }
         if (!resourceName.startsWith(PUSTEFIX_INF)) {
-            return false;
+            return null;
         }
         resourceName = resourceName.substring(PUSTEFIX_INF.length());
         for (String path : statics) {
             if (resourceName.startsWith(path)) {
-                return true;
+                return MODULES + getModuleName() + "/" + resourceName;
             }
         }
-        return false;
+        return null;
     }
 
     //--
