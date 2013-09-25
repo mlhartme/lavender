@@ -50,7 +50,7 @@ public class WarModule extends Module {
     public static final List<String> DEFAULT_INCLUDE_EXTENSIONS = new ArrayList<>(Arrays.asList(
             "gif", "png", "jpg", "jpeg", "ico", "swf", "css", "js"));
 
-    public static final String PROPERTIES = "WEB-INF/lavender.properties";
+    public static final String PROPERTIES = "PUSTEFIX-INF/lavender.properties";
 
     public static List<Module> fromWebapp(boolean prod, Node webapp, String svnUsername, String svnPassword) throws IOException {
         Node webappSource;
