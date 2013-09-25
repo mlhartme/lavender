@@ -19,6 +19,7 @@ import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Filter;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
+import net.oneandone.sushi.fs.filter.Predicate;
 import net.oneandone.sushi.fs.zip.ZipNode;
 import net.oneandone.sushi.xml.Selector;
 import net.oneandone.sushi.xml.XmlException;
@@ -103,7 +104,7 @@ public class WarModule extends Module {
             } else {
                 propertiesNode = ((FileNode) jarOrig).openJar().join(PROPERTIES);
             }
-            jarModule = new JarModule(root.getFilter(), Docroot.WEB, config, jarLive);
+            jarModule = new JarModule(root.getFilter(), Docroot.WEB, config, jarLive, files(config, jarLive));
         } else {
             if (!prod) {
                 throw new UnsupportedOperationException("live mechanism not supported for jar streams");
@@ -124,6 +125,14 @@ public class WarModule extends Module {
         return result;
     }
 
+    private static List<Node> files(final JarModuleConfig config, final Node exploded) throws IOException {
+        return exploded.find(exploded.getWorld().filter().includeAll().predicate(new Predicate() {
+            @Override
+            public boolean matches(Node node, boolean isLink) throws IOException {
+                return node.isFile() && config.isPublicResource(node.getRelative(exploded));
+            }
+        }));
+    }
 
     public static Node live(Node root) throws IOException {
         File resolved;

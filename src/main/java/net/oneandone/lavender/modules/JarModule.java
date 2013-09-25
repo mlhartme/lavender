@@ -18,9 +18,9 @@ package net.oneandone.lavender.modules;
 import net.oneandone.lavender.config.Filter;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
-import net.oneandone.sushi.fs.filter.Predicate;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -38,38 +38,41 @@ public class JarModule extends Module {
         Node child;
         boolean isProperty;
         Node propertyNode;
+        List<Node> files;
 
         world = jar.getWorld();
         root = world.getMemoryFilesystem().root().node(UUID.randomUUID().toString(), null).mkdir();
         src = new ZipInputStream(jar.createInputStream());
         propertyNode = null;
+        files = new ArrayList<>();
         while ((entry = src.getNextEntry()) != null) {
             path = entry.getName();
             if (!entry.isDirectory()) {
                 isProperty = WarModule.PROPERTIES.equals(path);
                 if (config.isPublicResource(path) || isProperty) {
-                    System.out.println("mem jar " + path);
                     child = root.join(path);
                     child.getParent().mkdirsOpt();
                     world.getBuffer().copy(src, child);
                     if (isProperty) {
                         propertyNode = child;
+                    } else {
+                        files.add(child);
                     }
                 }
             }
         }
-        return new Object[] { new JarModule(filter, type, config, root), propertyNode };
+        return new Object[] { new JarModule(filter, type, config, root, files), propertyNode };
     }
 
     private final JarModuleConfig config;
     private final Node exploded;
     private final List<Node> files;
 
-    public JarModule(Filter filter, String type, JarModuleConfig config, Node exploded) throws IOException {
+    public JarModule(Filter filter, String type, JarModuleConfig config, Node exploded, List<Node> files) throws IOException {
         super(filter, type, config.getModuleName(), true, "");
         this.config = config;
         this.exploded = exploded;
-        this.files = exploded.find(exploded.getWorld().filter().includeAll().predicate(Predicate.FILE));
+        this.files = files;
     }
 
     public Iterator<Resource> iterator() {

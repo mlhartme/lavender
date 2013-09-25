@@ -51,14 +51,12 @@ public class JarResourceIterator implements Iterator<Resource> {
             file = files.get(nextModuleJarFile);
             nextModuleJarFile++;
             path = file.getRelative(root);
-            if (config.isPublicResource(path)) {
-                try {
-                    next = DefaultResource.forNode(file, config.getPath(path));
-                } catch (IOException e) {
-                    throw new RuntimeException("TODO", e);
-                }
-                return true;
+            try {
+                next = DefaultResource.forNode(file, config.getPath(path));
+            } catch (IOException e) {
+                throw new RuntimeException("TODO", e);
             }
+            return true;
         }
         return false;
     }
