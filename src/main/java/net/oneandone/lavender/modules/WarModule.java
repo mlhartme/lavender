@@ -190,7 +190,7 @@ public class WarModule extends Module {
             while ((entry = jarInputStream.getNextEntry()) != null) {
                 if (entry.getName().equals("META-INF/pustefix-module.xml")) {
                     try {
-                        return JarModuleConfig.load(jar.getWorld().getXml(), parent, jarInputStream);
+                        return JarModuleConfig.load(jar.getWorld().getXml(), parent.config, jarInputStream);
                     } catch (SAXException | XmlException e) {
                         throw new IOException(jar + ": cannot load module descriptor:" + e.getMessage(), e);
                     }
@@ -215,29 +215,15 @@ public class WarModule extends Module {
     }
 
     public static WarModule fromXml(Filter filter, Node webapp) throws IOException {
-        String path;
         Element root;
         Selector selector;
         String name;
-        List<String> statics;
 
         try {
             root = webapp.join("WEB-INF/project.xml").readXml().getDocumentElement();
             selector = webapp.getWorld().getXml().getSelector();
             name = selector.string(root, "project/name");
-            statics = new ArrayList<>();
-            for (Element element : selector.elements(root, "application/static/path")) {
-                path = element.getTextContent();
-                path = path.trim();
-                if (path.isEmpty() || path.startsWith("/")) {
-                    throw new IllegalStateException(path);
-                }
-                if (!path.endsWith("/")) {
-                    path = path + "/";
-                }
-                statics.add(path);
-            }
-            return new WarModule(filter, name, statics, webapp);
+            return new WarModule(filter, name, WarModuleConfig.fromXml(webapp), webapp);
         } catch (SAXException | XmlException e) {
             throw new IOException("cannot load project descriptor: " + e);
         }
@@ -246,14 +232,14 @@ public class WarModule extends Module {
     //--
 
     private final Node webapp;
-    private final List<String> statics;
+    private final WarModuleConfig config;
     private final Filter filter;
 
-    public WarModule(Filter filter, String name, List<String> statics, Node webapp) throws IOException {
+    public WarModule(Filter filter, String name, WarModuleConfig config, Node webapp) throws IOException {
         super(Docroot.WEB, name, true, "");
 
         this.webapp = webapp;
-        this.statics = statics;
+        this.config = config;
         this.filter = filter;
     }
 
@@ -279,7 +265,7 @@ public class WarModule extends Module {
                     String path;
 
                     path = node.getRelative(webapp);
-                    if (filter.isIncluded(path) && isPublicResource(path)) {
+                    if (filter.isIncluded(path) && config.isPublicResource(path)) {
                         result.put(path, node);
                     }
                 }
@@ -298,7 +284,7 @@ public class WarModule extends Module {
             return null;
         }
 
-        if (!isPublicResource(path)) {
+        if (!config.isPublicResource(path)) {
             return null;
         }
         node = webapp.join(path);
@@ -306,20 +292,6 @@ public class WarModule extends Module {
             return null;
         }
         return DefaultResource.forNode(node, path);
-    }
-
-    public boolean isPublicResource(String resourceName) {
-        if (resourceName.startsWith("WEB-INF")) {
-            return false;
-        }
-
-        for (String path : statics) {
-            if (resourceName.startsWith(path)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     @Override

@@ -34,13 +34,13 @@ public class JarModuleConfig {
     private static final String MODULES = "modules/";
     private static final String PUSTEFIX_INF = "PUSTEFIX-INF/";
 
-    private final WarModule parent;
+    private final WarModuleConfig parent;
     private final String name;
 
     /** trimmed, without heading slash, with tailing slash */
     private final List<String> statics;
 
-    public static JarModuleConfig load(Xml xml, WarModule parent, InputStream src) throws IOException, SAXException, XmlException {
+    public static JarModuleConfig load(Xml xml, WarModuleConfig parent, InputStream src) throws IOException, SAXException, XmlException {
         String path;
         Element root;
         Selector selector;
@@ -65,7 +65,7 @@ public class JarModuleConfig {
         return new JarModuleConfig(parent, name, statics);
     }
 
-    public JarModuleConfig(WarModule parent, String name, List<String> statics) {
+    public JarModuleConfig(WarModuleConfig parent, String name, List<String> statics) {
         this.parent = parent;
         this.name = name;
         this.statics = statics;
