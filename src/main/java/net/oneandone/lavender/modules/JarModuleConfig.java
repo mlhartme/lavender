@@ -76,7 +76,6 @@ public class JarModuleConfig {
         return statics;
     }
 
-
     /**
      * Checks if the given resource is public.
      * @param resourceName
@@ -84,7 +83,7 @@ public class JarModuleConfig {
      * @return true if the resource is public
      */
     public boolean isPublicResource(String resourceName) {
-        if (getStaticMapped(resourceName) != null) {
+        if (isStaticMapped(resourceName)) {
             return true;
         }
         return parent.isPublicResource(getPath(resourceName));
@@ -100,39 +99,28 @@ public class JarModuleConfig {
      * @return the mapped name
      */
     public String getPath(String resourceName) {
-        String st;
+        String r;
 
-        st = getStaticMapped(resourceName);
-        if (st != null) {
-            return st;
-        }
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(MODULES);
-
-        sb.append(getModuleName());
-        sb.append('/');
-        sb.append(resourceName);
-
-        return sb.toString();
+        r = isStaticMapped(resourceName) ? resourceName.substring(PUSTEFIX_INF.length()) : resourceName;
+        return MODULES + getModuleName() + "/" + r;
     }
 
     private static final String PUSTEFIX_INF = "PUSTEFIX-INF/";
 
-    private String getStaticMapped(String resourceName) {
+    private boolean isStaticMapped(String resourceName) {
         if (resourceName.startsWith("/")) {
             throw new IllegalArgumentException(resourceName);
         }
         if (!resourceName.startsWith(PUSTEFIX_INF)) {
-            return null;
+            return false;
         }
         resourceName = resourceName.substring(PUSTEFIX_INF.length());
         for (String path : statics) {
             if (resourceName.startsWith(path)) {
-                return MODULES + getModuleName() + "/" + resourceName;
+                return true;
             }
         }
-        return null;
+        return false;
     }
 
     //--
