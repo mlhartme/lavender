@@ -22,11 +22,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-public class JarResourceIterator implements Iterator<Resource> {
+public class ResourceIterator implements Iterator<Resource> {
     private final Iterator<Map.Entry<String, Node>> files;
     private Resource next;
 
-    public JarResourceIterator(Iterator<Map.Entry<String, Node>> files) {
+    public ResourceIterator(Iterator<Map.Entry<String, Node>> files) {
         this.files = files;
     }
 

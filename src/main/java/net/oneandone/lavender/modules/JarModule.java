@@ -74,7 +74,7 @@ public class JarModule extends Module {
     }
 
     public Iterator<Resource> iterator() {
-        return new JarResourceIterator(files.entrySet().iterator());
+        return new ResourceIterator(files.entrySet().iterator());
     }
 
     public Resource probe(String path) throws IOException {

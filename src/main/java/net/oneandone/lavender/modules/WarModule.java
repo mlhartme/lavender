@@ -287,7 +287,7 @@ public class WarModule extends Module {
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
-        return new JarResourceIterator(result.entrySet().iterator());
+        return new ResourceIterator(result.entrySet().iterator());
     }
 
 
