@@ -259,22 +259,37 @@ public class WarModule extends Module {
 
     public Iterator<Resource> iterator() {
         net.oneandone.sushi.fs.filter.Filter f;
+        final Map<String, Node> result;
 
+        result = new HashMap<>();
+        f = webapp.getWorld().filter().predicate(Predicate.FILE).includeAll();
         try {
-            f = webapp.getWorld().filter().include("**/*").predicate(new Predicate() {
-                @Override
-                public boolean matches(Node node, boolean isLink) throws IOException {
+            f.invoke(webapp, new Action() {
+                public void enter(Node node, boolean isLink) {
+                }
+
+                public void enterFailed(Node node, boolean isLink, IOException e) throws IOException {
+                    throw e;
+                }
+
+                public void leave(Node node, boolean isLink) {
+                }
+
+                public void select(Node node, boolean isLink) {
                     String path;
 
                     path = node.getRelative(webapp);
-                    return filter.isIncluded(path) && isPublicResource(path) && node.isFile();
+                    if (filter.isIncluded(path) && isPublicResource(path)) {
+                        result.put(path, node);
+                    }
                 }
             });
-            return new WarResourceIterator(webapp, webapp.find(f));
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
+        return new JarResourceIterator(result.entrySet().iterator());
     }
+
 
     public Resource probe(String path) throws IOException {
         Node node;
