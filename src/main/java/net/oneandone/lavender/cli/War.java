@@ -30,6 +30,7 @@ import net.oneandone.sushi.fs.file.FileNode;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class War extends Base {
@@ -42,7 +43,7 @@ public class War extends Base {
     @Value(name = "idxName", position = 3)
     private String indexName;
 
-    private Map<String, Target> targets;
+    private Map<String, Target> targets = new HashMap<>();
     private String nodes;
 
     @Remaining
@@ -57,7 +58,7 @@ public class War extends Base {
 
         idx = keyvalue.indexOf('=');
         if (idx == -1) {
-            throw new ArgumentException(keyvalue);
+            throw new ArgumentException("<type>=<cluster> expected, got " + keyvalue);
         }
         type = keyvalue.substring(0, idx);
         clusterName = keyvalue.substring(idx + 1);
