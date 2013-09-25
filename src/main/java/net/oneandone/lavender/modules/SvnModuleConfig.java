@@ -42,6 +42,7 @@ public class SvnModuleConfig {
     public String svnurl;
     public String type = Docroot.WEB;
     public boolean lavendelize = true;
+    public String sourcePathPrefix = "";
     public String targetPathPrefix = "";
 
     public SvnModuleConfig(String folder, Filter filter) {
@@ -84,6 +85,8 @@ public class SvnModuleConfig {
                         // TODO: dump
                         LOG.warn("CAUTION: out-dated pathPrefix - use targetPathPrefix instead");
                         config.targetPathPrefix = value;
+                    } else if (key.equals("sourcePathPrefix")) {
+                        config.sourcePathPrefix = value;
                     } else if (key.equals("type")) {
                         config.type = value;
                     } else if (key.equals("storage")) {
@@ -132,7 +135,7 @@ public class SvnModuleConfig {
                 cache.getParent().mkdirsOpt();
                 oldIndex = new Index();
             }
-            return new SvnModule(filter, type, oldIndex, new Index(), cache, root, lavendelize, targetPathPrefix, folder);
+            return new SvnModule(filter, type, oldIndex, new Index(), cache, root, lavendelize, sourcePathPrefix, targetPathPrefix, folder);
         } catch (RuntimeException | IOException e) {
             throw e;
         } catch (Exception e) {

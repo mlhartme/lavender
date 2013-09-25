@@ -140,7 +140,7 @@ public class Lavender implements Filter, LavenderMBean {
             throws IOException, ServletException {
         if (!develIntercept(request, response)) {
             chain.doFilter(request, response);
-            LOG.info("[" + request.getMethod() + " " + request.getRequestURI() + ": " + response.getStatus() + "]");
+            LOG.debug("[passed through: " + request.getMethod() + " " + request.getRequestURI() + ": " + response.getStatus() + "]");
         }
     }
 

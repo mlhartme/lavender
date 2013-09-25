@@ -40,13 +40,16 @@ public class SvnModule extends Module {
     private final Index index;
     private final Node indexFile;
 
+    private final String resourcePathPrefix;
+
     public SvnModule(Filter filter, String type, Index oldIndex, Index index, Node indexFile, SvnNode root,
-                     boolean lavendelize, String targetPathPrefix, String folder) {
+                     boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, String folder) {
         super(filter, type, folder, lavendelize, targetPathPrefix);
         this.root = root;
         this.oldIndex = oldIndex;
         this.index = index;
         this.indexFile = indexFile;
+        this.resourcePathPrefix = resourcePathPrefix;
     }
 
     public Iterator<Resource> iterator() {
@@ -90,7 +93,7 @@ public class SvnModule extends Module {
                 } else {
                     md5 = null;
                 }
-                return createResource(entry, md5);
+                return createResource(entry, path, md5);
             }
 
             @Override
@@ -100,28 +103,31 @@ public class SvnModule extends Module {
         };
     }
 
-    private SvnResource createResource(SVNDirEntry entry, byte[] md5) {
-        String path;
-
+    /** @param path relative to root */
+    private SvnResource createResource(SVNDirEntry entry, String path, byte[] md5) {
         if (entry.getSize() > Integer.MAX_VALUE) {
-            throw new UnsupportedOperationException("file too big: " + entry.getRelativePath());
+            throw new UnsupportedOperationException("file too big: " + path);
         }
-        path = entry.getRelativePath();
-        return new SvnResource(this, entry.getRevision(), path, (int) entry.getSize(), entry.getDate().getTime(), root.join(path), md5);
+        return new SvnResource(this, entry.getRevision(), resourcePathPrefix + path,
+                (int) entry.getSize(), entry.getDate().getTime(), root.join(path), md5);
     }
 
     public SvnResource probeIncluded(String path) throws IOException {
         SVNDirEntry entry;
 
+        if (!path.startsWith(resourcePathPrefix)) {
+            return null;
+        }
+        path = path.substring(resourcePathPrefix.length());
         try {
-            entry = root.getRoot().getRepository().info(path, -1);
+            entry = root.getRoot().getRepository().info(root.getPath() + "/" + path, -1);
         } catch (SVNException e) {
             throw new IOException("cannot probe " + path, e);
         }
         if (entry == null || entry.getKind() == SVNNodeKind.DIR) {
             return null;
         }
-        return createResource(entry, null);
+        return createResource(entry, path, null);
     }
 
     public Index index() {

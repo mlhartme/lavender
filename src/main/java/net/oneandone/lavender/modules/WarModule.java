@@ -81,36 +81,43 @@ public class WarModule extends Module {
         return result;
     }
 
-    public static List<Module> jarModule(boolean prod, WarModule root, Node jar, JarModuleConfig config,
+    public static List<Module> jarModule(boolean prod, WarModule root, Node jarOrig, JarModuleConfig config,
                                          String svnUsername, String svnPassword) throws IOException {
         List<Module> result;
+        Node jarLive;
         Properties properties;
         Module jarModule;
-        Resource propertiesResource;
+        Node propertiesNode;
 
         result = new ArrayList<>();
-        if (jar instanceof FileNode) {
-            if (!prod) {
-                jar = live(jar);
+        if (jarOrig instanceof FileNode) {
+            if (prod) {
+                jarLive = jarOrig;
+            } else {
+                jarLive = live(jarOrig);
             }
-            if (jar.isFile()) {
-                jar = ((FileNode) jar).openJar();
+            if (jarLive.isFile()) {
+                jarLive = ((FileNode) jarLive).openJar();
+                propertiesNode = jarLive.join(PROPERTIES);
+            } else {
+                propertiesNode = ((FileNode) jarOrig).openJar().join(PROPERTIES);
             }
-            jarModule = new JarFileModule(root.getFilter(), Docroot.WEB, config, jar);
+            jarModule = new JarFileModule(root.getFilter(), Docroot.WEB, config, jarLive);
         } else {
             if (!prod) {
                 throw new UnsupportedOperationException("live mechanism not supported for jar streams");
             }
-            jarModule = new JarStreamModule(root.getFilter(), Docroot.WEB, config, jar);
+            jarModule = new JarStreamModule(root.getFilter(), Docroot.WEB, config, jarOrig);
+            // TODO
+            propertiesNode = null;
         }
         result.add(jarModule);
-        // TODO: hack
-        propertiesResource = jarModule.probe(PROPERTIES);
-        if (propertiesResource != null) {
-            properties = jar.getWorld().memoryNode(propertiesResource.getData()).readProperties();
+
+        if (propertiesNode != null && propertiesNode.exists()) {
+            properties = propertiesNode.readProperties();
             // TODO: reject unknown properties
             for (SvnModuleConfig svnConfig : SvnModuleConfig.parse(properties)) {
-                result.add(svnConfig.create(jar.getWorld(), svnUsername, svnPassword));
+                result.add(svnConfig.create(propertiesNode.getWorld(), svnUsername, svnPassword));
             }
         }
         return result;
