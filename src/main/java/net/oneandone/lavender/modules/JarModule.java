@@ -16,23 +16,20 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.config.Filter;
-import net.oneandone.sushi.fs.CreateInputStreamException;
-import net.oneandone.sushi.fs.FileNotFoundException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.filter.Predicate;
-import net.oneandone.sushi.fs.memory.MemoryNode;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class JarFileModule extends Module {
-    public static Object[] fromJar(Filter filter, String type, JarModuleConfig config, Node file) throws IOException {
+public class JarModule extends Module {
+    /** To properly make jars available as a module, I have to load them into memory when the jar is itself packaged into a war. */
+    public static Object[] fromJar(Filter filter, String type, JarModuleConfig config, Node jar) throws IOException {
         World world;
         ZipEntry entry;
         String path;
@@ -42,9 +39,9 @@ public class JarFileModule extends Module {
         boolean isProperty;
         Node propertyNode;
 
-        world = file.getWorld();
+        world = jar.getWorld();
         root = world.getMemoryFilesystem().root().node(UUID.randomUUID().toString(), null).mkdir();
-        src = new ZipInputStream(file.createInputStream());
+        src = new ZipInputStream(jar.createInputStream());
         propertyNode = null;
         while ((entry = src.getNextEntry()) != null) {
             path = entry.getName();
@@ -61,14 +58,14 @@ public class JarFileModule extends Module {
                 }
             }
         }
-        return new Object[] { new JarFileModule(filter, type, config, root), propertyNode };
+        return new Object[] { new JarModule(filter, type, config, root), propertyNode };
     }
 
     private final JarModuleConfig config;
     private final Node exploded;
     private final List<Node> files;
 
-    public JarFileModule(Filter filter, String type, JarModuleConfig config, Node exploded) throws IOException {
+    public JarModule(Filter filter, String type, JarModuleConfig config, Node exploded) throws IOException {
         super(filter, type, config.getModuleName(), true, "");
         this.config = config;
         this.exploded = exploded;
@@ -76,7 +73,7 @@ public class JarFileModule extends Module {
     }
 
     public Iterator<Resource> iterator() {
-        return new JarFileResourceIterator(exploded, config, files);
+        return new JarResourceIterator(exploded, config, files);
     }
 
     // TODO: expensive

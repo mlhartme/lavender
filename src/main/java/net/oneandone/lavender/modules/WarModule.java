@@ -103,12 +103,12 @@ public class WarModule extends Module {
             } else {
                 propertiesNode = ((FileNode) jarOrig).openJar().join(PROPERTIES);
             }
-            jarModule = new JarFileModule(root.getFilter(), Docroot.WEB, config, jarLive);
+            jarModule = new JarModule(root.getFilter(), Docroot.WEB, config, jarLive);
         } else {
             if (!prod) {
                 throw new UnsupportedOperationException("live mechanism not supported for jar streams");
             }
-            tmp = JarFileModule.fromJar(root.getFilter(), Docroot.WEB, config, jarOrig);
+            tmp = JarModule.fromJar(root.getFilter(), Docroot.WEB, config, jarOrig);
             jarModule = (Module) tmp[0];
             propertiesNode = (Node) tmp[1];
         }

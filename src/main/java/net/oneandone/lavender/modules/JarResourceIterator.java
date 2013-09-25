@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public class JarFileResourceIterator implements Iterator<Resource> {
+public class JarResourceIterator implements Iterator<Resource> {
     private final Node root;
     private final JarModuleConfig config;
     private final List<Node> files;
@@ -33,7 +33,7 @@ public class JarFileResourceIterator implements Iterator<Resource> {
     private int nextModuleJarFile;
     private Resource next;
 
-    public JarFileResourceIterator(Node root, JarModuleConfig config, List<Node> files) {
+    public JarResourceIterator(Node root, JarModuleConfig config, List<Node> files) {
         this.root = root;
         this.config = config;
         this.files = files;
