@@ -88,6 +88,7 @@ public class WarModule extends Module {
         Properties properties;
         Module jarModule;
         Node propertiesNode;
+        Object[] tmp;
 
         result = new ArrayList<>();
         if (jarOrig instanceof FileNode) {
@@ -107,9 +108,9 @@ public class WarModule extends Module {
             if (!prod) {
                 throw new UnsupportedOperationException("live mechanism not supported for jar streams");
             }
-            jarModule = new JarStreamModule(root.getFilter(), Docroot.WEB, config, jarOrig);
-            // TODO
-            propertiesNode = null;
+            tmp = JarFileModule.fromJar(root.getFilter(), Docroot.WEB, config, jarOrig);
+            jarModule = (Module) tmp[0];
+            propertiesNode = (Node) tmp[1];
         }
         result.add(jarModule);
 

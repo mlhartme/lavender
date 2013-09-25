@@ -16,14 +16,54 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.config.Filter;
+import net.oneandone.sushi.fs.CreateInputStreamException;
+import net.oneandone.sushi.fs.FileNotFoundException;
 import net.oneandone.sushi.fs.Node;
+import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.filter.Predicate;
+import net.oneandone.sushi.fs.memory.MemoryNode;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class JarFileModule extends Module {
+    public static Object[] fromJar(Filter filter, String type, JarModuleConfig config, Node file) throws IOException {
+        World world;
+        ZipEntry entry;
+        String path;
+        ZipInputStream src;
+        Node root;
+        Node child;
+        boolean isProperty;
+        Node propertyNode;
+
+        world = file.getWorld();
+        root = world.getMemoryFilesystem().root().node(UUID.randomUUID().toString(), null).mkdir();
+        src = new ZipInputStream(file.createInputStream());
+        propertyNode = null;
+        while ((entry = src.getNextEntry()) != null) {
+            path = entry.getName();
+            if (!entry.isDirectory()) {
+                isProperty = WarModule.PROPERTIES.equals(path);
+                if (config.isPublicResource(path) || isProperty) {
+                    System.out.println("mem jar " + path);
+                    child = root.join(path);
+                    child.getParent().mkdirsOpt();
+                    world.getBuffer().copy(src, child);
+                    if (isProperty) {
+                        propertyNode = child;
+                    }
+                }
+            }
+        }
+        return new Object[] { new JarFileModule(filter, type, config, root), propertyNode };
+    }
+
     private final JarModuleConfig config;
     private final Node exploded;
     private final List<Node> files;
@@ -36,7 +76,7 @@ public class JarFileModule extends Module {
     }
 
     public Iterator<Resource> iterator() {
-        return new JarFileResourceIterator(config, files);
+        return new JarFileResourceIterator(exploded, config, files);
     }
 
     // TODO: expensive
