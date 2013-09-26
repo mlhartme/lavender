@@ -58,7 +58,7 @@ public class PustefixModuleTest {
     public void testExtract() throws Exception {
         Map<String, Resource> resources;
         URL url;
-        WarModule module;
+        JarModule module;
 
         resources = new HashMap<>();
         url = getClass().getClassLoader().getResource("dummy.war");

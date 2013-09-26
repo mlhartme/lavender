@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -48,7 +47,7 @@ import java.util.zip.ZipInputStream;
  *
  * This class is *not* called PustefixModule, because that term is also used by pustefix for it's modules.
  */
-public class WarModule extends Module {
+public class WarModule {
     private static final Logger LOG = LoggerFactory.getLogger(Module.class);
 
     public static final List<String> DEFAULT_INCLUDE_EXTENSIONS = new ArrayList<>(Arrays.asList(
@@ -61,7 +60,7 @@ public class WarModule extends Module {
         List<Module> result;
         Properties properties;
         WarModuleConfig rootConfig;
-        WarModule root;
+        JarModule root;
         JarModuleConfig jarConfig;
         Filter filter;
 
@@ -216,7 +215,7 @@ public class WarModule extends Module {
         return src.readProperties();
     }
 
-    public static WarModule fromXml(WarModuleConfig config, Filter filter, Node webapp) throws IOException {
+    public static JarModule fromXml(WarModuleConfig config, Filter filter, Node webapp) throws IOException {
         Element root;
         Selector selector;
         String name;
@@ -225,7 +224,7 @@ public class WarModule extends Module {
             root = webapp.join("WEB-INF/project.xml").readXml().getDocumentElement();
             selector = webapp.getWorld().getXml().getSelector();
             name = selector.string(root, "project/name");
-            return new WarModule(name, files(config, filter, webapp));
+            return new JarModule(Docroot.WEB, name, files(config, filter, webapp));
         } catch (SAXException | XmlException e) {
             throw new IOException("cannot load project descriptor: " + e);
         }
@@ -258,31 +257,5 @@ public class WarModule extends Module {
             }
         });
         return result;
-    }
-
-    //--
-
-    private final Map<String, Node> files;
-
-    public WarModule(String name, Map<String, Node> files) throws IOException {
-        super(Docroot.WEB, name, true, "");
-        this.files = files;
-    }
-
-    public Iterator<Resource> iterator() {
-        return new ResourceIterator(files.entrySet().iterator());
-    }
-
-
-    public Resource probe(String path) throws IOException {
-        Node file;
-
-        file = files.get(path);
-        return file == null ? null : DefaultResource.forNode(file, path);
-    }
-
-    @Override
-    public void saveCaches() {
-        // nothing to do
     }
 }

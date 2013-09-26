@@ -66,10 +66,12 @@ public class JarModule extends Module {
         return new Object[] { new JarModule(type, config.getModuleName(), files), propertyNode };
     }
 
+    //--
+
     private final Map<String, Node> files;
 
-    public JarModule(String type, String moduleName, Map<String, Node> files) throws IOException {
-        super(type, moduleName, true, "");
+    public JarModule(String type, String name, Map<String, Node> files) throws IOException {
+        super(type, name, true, "");
         this.files = files;
     }
 
