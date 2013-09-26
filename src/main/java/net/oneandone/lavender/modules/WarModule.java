@@ -60,6 +60,7 @@ public class WarModule extends Module {
         Node webappSource;
         List<Module> result;
         Properties properties;
+        WarModuleConfig rootConfig;
         WarModule root;
         JarModuleConfig jarConfig;
         Filter filter;
@@ -71,11 +72,12 @@ public class WarModule extends Module {
         }
         result = new ArrayList<>();
         webappSource = prod ? webapp : live(webapp);
+        rootConfig = WarModuleConfig.fromXml(webapp);
         filter = Filter.forProperties(properties, "pustefix", DEFAULT_INCLUDE_EXTENSIONS);
-        root = fromXml(filter, webappSource);
+        root = fromXml(rootConfig, filter, webappSource);
         result.add(root);
         for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
-            jarConfig = loadJarModuleConfig(root, jar);
+            jarConfig = loadJarModuleConfig(rootConfig, jar);
             if (jarConfig != null) {
                 result.addAll(jarModule(prod, jar, filter, jarConfig, svnUsername, svnPassword));
             }
@@ -182,7 +184,7 @@ public class WarModule extends Module {
 
     //--
 
-    private static JarModuleConfig loadJarModuleConfig(WarModule parent, Node jar) throws IOException {
+    private static JarModuleConfig loadJarModuleConfig(WarModuleConfig parent, Node jar) throws IOException {
         ZipEntry entry;
 
         // TODO: expensive
@@ -190,7 +192,7 @@ public class WarModule extends Module {
             while ((entry = jarInputStream.getNextEntry()) != null) {
                 if (entry.getName().equals("META-INF/pustefix-module.xml")) {
                     try {
-                        return JarModuleConfig.load(jar.getWorld().getXml(), parent.config, jarInputStream);
+                        return JarModuleConfig.load(jar.getWorld().getXml(), parent, jarInputStream);
                     } catch (SAXException | XmlException e) {
                         throw new IOException(jar + ": cannot load module descriptor:" + e.getMessage(), e);
                     }
@@ -214,7 +216,7 @@ public class WarModule extends Module {
         return src.readProperties();
     }
 
-    public static WarModule fromXml(Filter filter, Node webapp) throws IOException {
+    public static WarModule fromXml(WarModuleConfig config, Filter filter, Node webapp) throws IOException {
         Element root;
         Selector selector;
         String name;
@@ -223,75 +225,60 @@ public class WarModule extends Module {
             root = webapp.join("WEB-INF/project.xml").readXml().getDocumentElement();
             selector = webapp.getWorld().getXml().getSelector();
             name = selector.string(root, "project/name");
-            return new WarModule(filter, name, WarModuleConfig.fromXml(webapp), webapp);
+            return new WarModule(name, files(config, filter, webapp));
         } catch (SAXException | XmlException e) {
             throw new IOException("cannot load project descriptor: " + e);
         }
     }
 
-    //--
-
-    private final Node webapp;
-    private final WarModuleConfig config;
-    private final Filter filter;
-
-    public WarModule(Filter filter, String name, WarModuleConfig config, Node webapp) throws IOException {
-        super(Docroot.WEB, name, true, "");
-
-        this.webapp = webapp;
-        this.config = config;
-        this.filter = filter;
-    }
-
-    public Iterator<Resource> iterator() {
+    private static Map<String, Node> files(final WarModuleConfig config, final Filter filter, final Node webapp) throws IOException {
         net.oneandone.sushi.fs.filter.Filter f;
         final Map<String, Node> result;
 
         result = new HashMap<>();
         f = webapp.getWorld().filter().predicate(Predicate.FILE).includeAll();
-        try {
-            f.invoke(webapp, new Action() {
-                public void enter(Node node, boolean isLink) {
-                }
+        f.invoke(webapp, new Action() {
+            public void enter(Node node, boolean isLink) {
+            }
 
-                public void enterFailed(Node node, boolean isLink, IOException e) throws IOException {
-                    throw e;
-                }
+            public void enterFailed(Node node, boolean isLink, IOException e) throws IOException {
+                throw e;
+            }
 
-                public void leave(Node node, boolean isLink) {
-                }
+            public void leave(Node node, boolean isLink) {
+            }
 
-                public void select(Node node, boolean isLink) {
-                    String path;
+            public void select(Node node, boolean isLink) {
+                String path;
 
-                    path = node.getRelative(webapp);
-                    if (filter.isIncluded(path) && config.isPublicResource(path)) {
-                        result.put(path, node);
-                    }
+                path = node.getRelative(webapp);
+                if (filter.isIncluded(path) && config.isPublicResource(path)) {
+                    result.put(path, node);
                 }
-            });
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
-        return new ResourceIterator(result.entrySet().iterator());
+            }
+        });
+        return result;
+    }
+
+    //--
+
+    private final Map<String, Node> files;
+
+    public WarModule(String name, Map<String, Node> files) throws IOException {
+        super(Docroot.WEB, name, true, "");
+        this.files = files;
+    }
+
+    public Iterator<Resource> iterator() {
+        return new ResourceIterator(files.entrySet().iterator());
     }
 
 
     public Resource probe(String path) throws IOException {
-        Node node;
+        Node file;
 
-        if (!filter.isIncluded(path)) {
-            return null;
-        }
-
-        if (!config.isPublicResource(path)) {
-            return null;
-        }
-        node = webapp.join(path);
-        if (!node.exists()) {
-            return null;
-        }
-        return DefaultResource.forNode(node, path);
+        file = files.get(path);
+        return file == null ? null : DefaultResource.forNode(file, path);
     }
 
     @Override

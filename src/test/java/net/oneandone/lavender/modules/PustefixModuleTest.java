@@ -25,6 +25,7 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,15 +56,16 @@ public class PustefixModuleTest {
 
     @Test
     public void testExtract() throws Exception {
-        URL url = getClass().getClassLoader().getResource("dummy.war");
+        Map<String, Resource> resources;
+        URL url;
+        WarModule module;
 
-        Map<String, Resource> resources = new HashMap<>();
-        WarModule module = WarModule.fromXml(new Filter(), WORLD.file(new File(url.toURI())).openZip());
+        resources = new HashMap<>();
+        url = getClass().getClassLoader().getResource("dummy.war");
+        module = WarModule.fromXml(new WarModuleConfig(Arrays.asList("img", "modules")), new Filter(), WORLD.file(new File(url.toURI())).openZip());
         for (Resource resource : module) {
             resources.put(resource.getPath(), resource);
         }
-
-        assertEquals(9, resources.size());
 
         assertTrue(resources.containsKey("img/sub/check_grey.gif"));
         assertTrue(resources.containsKey("img/sub/check_green.gif"));
