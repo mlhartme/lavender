@@ -28,20 +28,23 @@ import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 
 /** Extracts resources from svn */
 public class SvnModule extends Module {
     private final SvnNode root;
     private final Filter filter;
 
+    // maps svn paths (relative to root) to revision numbers
     private final Index oldIndex;
     private final Index index;
     private final Node indexFile;
 
     private final String resourcePathPrefix;
+
+    private Map<String, SVNDirEntry> files;
 
     public SvnModule(Filter filter, String type, Index oldIndex, Index index, Node indexFile, SvnNode root,
                      boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, String folder) {
@@ -52,27 +55,15 @@ public class SvnModule extends Module {
         this.index = index;
         this.indexFile = indexFile;
         this.resourcePathPrefix = resourcePathPrefix;
+
+        this.files = null;
     }
 
     public Iterator<Resource> iterator() {
-        final Iterator<SVNDirEntry> base;
-        final List<SVNDirEntry> entries;
+        final Iterator<Map.Entry<String, SVNDirEntry>> base;
 
-        entries = new ArrayList<>();
-        try {
-            root.getRoot().getClientMananger().getLogClient().doList(
-                    root.getSvnurl(), null, SVNRevision.HEAD, true, SVNDepth.INFINITY, SVNDirEntry.DIRENT_ALL, new ISVNDirEntryHandler() {
-                @Override
-                public void handleDirEntry(SVNDirEntry entry) throws SVNException {
-                    if (entry.getKind() == SVNNodeKind.FILE) {
-                        entries.add(entry);
-                    }
-                }
-            });
-        } catch (SVNException e) {
-            throw new RuntimeException("TODO", e);
-        }
-        base = entries.iterator();
+        scan();
+        base = files.entrySet().iterator();
         return new Iterator<Resource>() {
             @Override
             public boolean hasNext() {
@@ -81,21 +72,19 @@ public class SvnModule extends Module {
 
             @Override
             public Resource next() {
-                SVNDirEntry entry;
-                String path;
+                Map.Entry<String, SVNDirEntry> entry;
                 Label label;
                 byte[] md5;
 
                 entry = base.next();
-                path = entry.getRelativePath();
-                label = oldIndex.lookup(path);
-                if (label != null && label.getLavendelizedPath().equals(Long.toString(entry.getRevision()))) {
+                label = oldIndex.lookup(entry.getValue().getRelativePath());
+                if (label != null && label.getLavendelizedPath().equals(Long.toString(entry.getValue().getRevision()))) {
                     md5 = label.md5();
                     index.add(label);
                 } else {
                     md5 = null;
                 }
-                return createResource(entry, path, md5);
+                return createResource(entry.getValue(), md5);
             }
 
             @Override
@@ -105,34 +94,49 @@ public class SvnModule extends Module {
         };
     }
 
-    /** @param path relative to root */
-    private SvnResource createResource(SVNDirEntry entry, String path, byte[] md5) {
-        if (entry.getSize() > Integer.MAX_VALUE) {
-            throw new UnsupportedOperationException("file too big: " + path);
+    public void scan() {
+        if (files != null) {
+            return;
         }
-        return new SvnResource(this, entry.getRevision(), resourcePathPrefix + path,
-                (int) entry.getSize(), entry.getDate().getTime(), root.join(path), md5);
+
+        files = new HashMap<>();
+        try {
+            root.getRoot().getClientMananger().getLogClient().doList(
+                    root.getSvnurl(), null, SVNRevision.HEAD, true, SVNDepth.INFINITY, SVNDirEntry.DIRENT_ALL, new ISVNDirEntryHandler() {
+                @Override
+                public void handleDirEntry(SVNDirEntry entry) throws SVNException {
+                    String path;
+
+                    if (entry.getKind() == SVNNodeKind.FILE) {
+                        path = entry.getRelativePath();
+                        if (filter.isIncluded(path)) {
+                            if (entry.getSize() > Integer.MAX_VALUE) {
+                                throw new UnsupportedOperationException("file too big: " + path);
+                            }
+                            files.put(resourcePathPrefix + path, entry);
+                        }
+                    }
+                }
+            });
+        } catch (SVNException e) {
+            throw new RuntimeException("TODO", e);
+        }
+    }
+
+    private SvnResource createResource(SVNDirEntry entry, byte[] md5) {
+        String svnPath;
+
+        svnPath = entry.getRelativePath();
+        return new SvnResource(this, entry.getRevision(), resourcePathPrefix + svnPath,
+                (int) entry.getSize(), entry.getDate().getTime(), root.join(svnPath), md5);
     }
 
     public SvnResource probe(String path) throws IOException {
         SVNDirEntry entry;
 
-        if (!filter.isIncluded(path)) {
-            return null;
-        }
-        if (!path.startsWith(resourcePathPrefix)) {
-            return null;
-        }
-        path = path.substring(resourcePathPrefix.length());
-        try {
-            entry = root.getRoot().getRepository().info(root.getPath() + "/" + path, -1);
-        } catch (SVNException e) {
-            throw new IOException("cannot probe " + path, e);
-        }
-        if (entry == null || entry.getKind() == SVNNodeKind.DIR) {
-            return null;
-        }
-        return createResource(entry, path, null);
+        scan();
+        entry = files.get(path);
+        return entry == null ? null : createResource(entry, null);
     }
 
     public Index index() {
