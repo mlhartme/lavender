@@ -57,11 +57,11 @@ public class PustefixModuleTest {
     public void testExtract() throws Exception {
         Map<String, Resource> resources;
         URL url;
-        NodeModule module;
+        DefaultModule module;
 
         resources = new HashMap<>();
         url = getClass().getClassLoader().getResource("dummy.war");
-        module = NodeModule.jarModule(new WarConfig(Arrays.asList("img", "modules")), new Filter(), WORLD.file(new File(url.toURI())).openZip());
+        module = DefaultModule.jarModule(new WarConfig(Arrays.asList("img", "modules")), new Filter(), WORLD.file(new File(url.toURI())).openZip());
         for (Resource resource : module) {
             resources.put(resource.getPath(), resource);
         }
