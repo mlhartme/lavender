@@ -44,7 +44,7 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class JarModule extends Module {
+public class NodeModule extends Module {
     private static final Logger LOG = LoggerFactory.getLogger(Module.class);
 
     public static final List<String> DEFAULT_INCLUDE_EXTENSIONS = new ArrayList<>(Arrays.asList(
@@ -56,9 +56,9 @@ public class JarModule extends Module {
         Node webappSource;
         List<Module> result;
         Properties properties;
-        WarModuleConfig rootConfig;
-        JarModule root;
-        JarModuleConfig jarConfig;
+        WarConfig rootConfig;
+        NodeModule root;
+        JarConfig jarConfig;
         Filter filter;
 
         LOG.trace("scanning " + webapp);
@@ -68,7 +68,7 @@ public class JarModule extends Module {
         }
         result = new ArrayList<>();
         webappSource = prod ? webapp : live(webapp);
-        rootConfig = WarModuleConfig.fromXml(webapp);
+        rootConfig = WarConfig.fromXml(webapp);
         filter = Filter.forProperties(properties, "pustefix", DEFAULT_INCLUDE_EXTENSIONS);
         root = jarModule(rootConfig, filter, webappSource);
         result.add(root);
@@ -85,7 +85,7 @@ public class JarModule extends Module {
         return result;
     }
 
-    public static List<Module> jarModule(boolean prod, Node jarOrig, Filter filter, JarModuleConfig config,
+    public static List<Module> jarModule(boolean prod, Node jarOrig, Filter filter, JarConfig config,
                                          String svnUsername, String svnPassword) throws IOException {
         List<Module> result;
         Node jarLive;
@@ -107,12 +107,12 @@ public class JarModule extends Module {
             } else {
                 propertiesNode = ((FileNode) jarOrig).openJar().join(PROPERTIES);
             }
-            jarModule = new JarModule(Docroot.WEB, config.getModuleName(), files(filter, config, jarLive));
+            jarModule = new NodeModule(Docroot.WEB, config.getModuleName(), files(filter, config, jarLive));
         } else {
             if (!prod) {
                 throw new UnsupportedOperationException("live mechanism not supported for jar streams");
             }
-            tmp = JarModule.fromJar(filter, Docroot.WEB, config, jarOrig);
+            tmp = NodeModule.fromJar(filter, Docroot.WEB, config, jarOrig);
             jarModule = (Module) tmp[0];
             propertiesNode = (Node) tmp[1];
         }
@@ -128,7 +128,7 @@ public class JarModule extends Module {
         return result;
     }
 
-    private static Map<String, Node> files(final Filter filter, final JarModuleConfig config, final Node exploded) throws IOException {
+    private static Map<String, Node> files(final Filter filter, final JarConfig config, final Node exploded) throws IOException {
         net.oneandone.sushi.fs.filter.Filter f;
         final Map<String, Node> result;
 
@@ -180,7 +180,7 @@ public class JarModule extends Module {
 
     //--
 
-    private static JarModuleConfig loadJarModuleConfig(WarModuleConfig parent, Node jar) throws IOException {
+    private static JarConfig loadJarModuleConfig(WarConfig parent, Node jar) throws IOException {
         ZipEntry entry;
 
         // TODO: expensive
@@ -188,7 +188,7 @@ public class JarModule extends Module {
             while ((entry = jarInputStream.getNextEntry()) != null) {
                 if (entry.getName().equals("META-INF/pustefix-module.xml")) {
                     try {
-                        return JarModuleConfig.load(jar.getWorld().getXml(), parent, jarInputStream);
+                        return JarConfig.load(jar.getWorld().getXml(), parent, jarInputStream);
                     } catch (SAXException | XmlException e) {
                         throw new IOException(jar + ": cannot load module descriptor:" + e.getMessage(), e);
                     }
@@ -212,7 +212,7 @@ public class JarModule extends Module {
         return src.readProperties();
     }
 
-    public static JarModule jarModule(WarModuleConfig config, Filter filter, Node webapp) throws IOException {
+    public static NodeModule jarModule(WarConfig config, Filter filter, Node webapp) throws IOException {
         Element root;
         Selector selector;
         String name;
@@ -221,13 +221,13 @@ public class JarModule extends Module {
             root = webapp.join("WEB-INF/project.xml").readXml().getDocumentElement();
             selector = webapp.getWorld().getXml().getSelector();
             name = selector.string(root, "project/name");
-            return new JarModule(Docroot.WEB, name, scanJar(config, filter, webapp));
+            return new NodeModule(Docroot.WEB, name, scanJar(config, filter, webapp));
         } catch (SAXException | XmlException e) {
             throw new IOException("cannot load project descriptor: " + e);
         }
     }
 
-    private static Map<String, Node> scanJar(final WarModuleConfig global, final Filter filter, final Node exploded) throws IOException {
+    private static Map<String, Node> scanJar(final WarConfig global, final Filter filter, final Node exploded) throws IOException {
         net.oneandone.sushi.fs.filter.Filter f;
         final Map<String, Node> result;
 
@@ -259,7 +259,7 @@ public class JarModule extends Module {
     //--
 
     /** To properly make jars available as a module, I have to load them into memory when the jar is itself packaged into a war. */
-    public static Object[] fromJar(Filter filter, String type, JarModuleConfig config, Node jar) throws IOException {
+    public static Object[] fromJar(Filter filter, String type, JarConfig config, Node jar) throws IOException {
         World world;
         ZipEntry entry;
         String path;
@@ -293,14 +293,14 @@ public class JarModule extends Module {
                 }
             }
         }
-        return new Object[] { new JarModule(type, config.getModuleName(), files), propertyNode };
+        return new Object[] { new NodeModule(type, config.getModuleName(), files), propertyNode };
     }
 
     //--
 
     private final Map<String, Node> files;
 
-    public JarModule(String type, String name, Map<String, Node> files) throws IOException {
+    public NodeModule(String type, String name, Map<String, Node> files) throws IOException {
         super(type, name, true, "");
         this.files = files;
     }

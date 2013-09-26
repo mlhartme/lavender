@@ -25,7 +25,6 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,18 +38,18 @@ public class PustefixModuleTest {
 
     @Test
     public void oldModule() throws Exception {
-        JarModuleConfig c;
+        JarConfig c;
 
-        c = JarModuleConfig.load(new Xml(), null, getClass().getResourceAsStream("/old-module.xml"));
+        c = JarConfig.load(new Xml(), null, getClass().getResourceAsStream("/old-module.xml"));
         assertEquals("ajax-addresscheck", c.getModuleName());
         assertEquals(Arrays.asList("abc/", "xyz/"), c.getStatics());
     }
 
     @Test
     public void newModule() throws Exception {
-        JarModuleConfig c;
+        JarConfig c;
 
-        c = JarModuleConfig.load(new Xml(), null, getClass().getResourceAsStream("/new-module.xml"));
+        c = JarConfig.load(new Xml(), null, getClass().getResourceAsStream("/new-module.xml"));
         assertEquals("access-java", c.getModuleName());
     }
 
@@ -58,11 +57,11 @@ public class PustefixModuleTest {
     public void testExtract() throws Exception {
         Map<String, Resource> resources;
         URL url;
-        JarModule module;
+        NodeModule module;
 
         resources = new HashMap<>();
         url = getClass().getClassLoader().getResource("dummy.war");
-        module = JarModule.jarModule(new WarModuleConfig(Arrays.asList("img", "modules")), new Filter(), WORLD.file(new File(url.toURI())).openZip());
+        module = NodeModule.jarModule(new WarConfig(Arrays.asList("img", "modules")), new Filter(), WORLD.file(new File(url.toURI())).openZip());
         for (Resource resource : module) {
             resources.put(resource.getPath(), resource);
         }

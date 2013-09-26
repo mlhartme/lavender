@@ -30,17 +30,17 @@ import java.util.List;
 /**
  * META-INF/pustefix-module.xml.
  */
-public class JarModuleConfig {
+public class JarConfig {
     private static final String MODULES = "modules/";
     private static final String PUSTEFIX_INF = "PUSTEFIX-INF/";
 
-    private final WarModuleConfig parent;
+    private final WarConfig parent;
     private final String name;
 
     /** trimmed, without heading slash, with tailing slash */
     private final List<String> statics;
 
-    public static JarModuleConfig load(Xml xml, WarModuleConfig parent, InputStream src) throws IOException, SAXException, XmlException {
+    public static JarConfig load(Xml xml, WarConfig parent, InputStream src) throws IOException, SAXException, XmlException {
         String path;
         Element root;
         Selector selector;
@@ -62,10 +62,10 @@ public class JarModuleConfig {
             }
             statics.add(path);
         }
-        return new JarModuleConfig(parent, name, statics);
+        return new JarConfig(parent, name, statics);
     }
 
-    public JarModuleConfig(WarModuleConfig parent, String name, List<String> statics) {
+    public JarConfig(WarConfig parent, String name, List<String> statics) {
         this.parent = parent;
         this.name = name;
         this.statics = statics;
