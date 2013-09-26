@@ -44,7 +44,7 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class NodeModule extends Module {
+public class DefaultModule extends Module {
     private static final Logger LOG = LoggerFactory.getLogger(Module.class);
 
     public static final List<String> DEFAULT_INCLUDE_EXTENSIONS = new ArrayList<>(Arrays.asList(
@@ -57,7 +57,7 @@ public class NodeModule extends Module {
         List<Module> result;
         Properties properties;
         WarConfig rootConfig;
-        NodeModule root;
+        DefaultModule root;
         JarConfig jarConfig;
         Filter filter;
 
@@ -107,12 +107,12 @@ public class NodeModule extends Module {
             } else {
                 propertiesNode = ((FileNode) jarOrig).openJar().join(PROPERTIES);
             }
-            jarModule = new NodeModule(Docroot.WEB, config.getModuleName(), files(filter, config, jarLive));
+            jarModule = new DefaultModule(Docroot.WEB, config.getModuleName(), files(filter, config, jarLive));
         } else {
             if (!prod) {
                 throw new UnsupportedOperationException("live mechanism not supported for jar streams");
             }
-            tmp = NodeModule.fromJar(filter, Docroot.WEB, config, jarOrig);
+            tmp = DefaultModule.fromJar(filter, Docroot.WEB, config, jarOrig);
             jarModule = (Module) tmp[0];
             propertiesNode = (Node) tmp[1];
         }
@@ -212,7 +212,7 @@ public class NodeModule extends Module {
         return src.readProperties();
     }
 
-    public static NodeModule jarModule(WarConfig config, Filter filter, Node webapp) throws IOException {
+    public static DefaultModule jarModule(WarConfig config, Filter filter, Node webapp) throws IOException {
         Element root;
         Selector selector;
         String name;
@@ -221,7 +221,7 @@ public class NodeModule extends Module {
             root = webapp.join("WEB-INF/project.xml").readXml().getDocumentElement();
             selector = webapp.getWorld().getXml().getSelector();
             name = selector.string(root, "project/name");
-            return new NodeModule(Docroot.WEB, name, scanJar(config, filter, webapp));
+            return new DefaultModule(Docroot.WEB, name, scanJar(config, filter, webapp));
         } catch (SAXException | XmlException e) {
             throw new IOException("cannot load project descriptor: " + e);
         }
@@ -293,14 +293,14 @@ public class NodeModule extends Module {
                 }
             }
         }
-        return new Object[] { new NodeModule(type, config.getModuleName(), files), propertyNode };
+        return new Object[] { new DefaultModule(type, config.getModuleName(), files), propertyNode };
     }
 
     //--
 
     private final Map<String, Node> files;
 
-    public NodeModule(String type, String name, Map<String, Node> files) throws IOException {
+    public DefaultModule(String type, String name, Map<String, Node> files) throws IOException {
         super(type, name, true, "");
         this.files = files;
     }
