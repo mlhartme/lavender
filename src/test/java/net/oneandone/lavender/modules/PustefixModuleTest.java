@@ -62,7 +62,7 @@ public class PustefixModuleTest {
 
         resources = new HashMap<>();
         url = getClass().getClassLoader().getResource("dummy.war");
-        module = WarModule.fromXml(new WarModuleConfig(Arrays.asList("img", "modules")), new Filter(), WORLD.file(new File(url.toURI())).openZip());
+        module = JarModule.jarModule(new WarModuleConfig(Arrays.asList("img", "modules")), new Filter(), WORLD.file(new File(url.toURI())).openZip());
         for (Resource resource : module) {
             resources.put(resource.getPath(), resource);
         }

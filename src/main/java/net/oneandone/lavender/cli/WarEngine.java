@@ -19,7 +19,7 @@ import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.filter.Lavender;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
-import net.oneandone.lavender.modules.WarModule;
+import net.oneandone.lavender.modules.JarModule;
 import net.oneandone.lavender.modules.Module;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.io.Buffer;
@@ -78,7 +78,7 @@ public class WarEngine {
         Map<String, Index> result;
 
         started = System.currentTimeMillis();
-        modules = WarModule.fromWebapp(true, inputWar.openZip(), svnUsername, svnPassword);
+        modules = JarModule.fromWebapp(true, inputWar.openZip(), svnUsername, svnPassword);
         absolute = 0;
         changed = extract(modules);
         result = new HashMap<>();
