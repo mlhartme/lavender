@@ -18,6 +18,7 @@ package net.oneandone.lavender.filter;
 import net.oneandone.lavender.config.Settings;
 import net.oneandone.lavender.filter.processor.ProcessorFactory;
 import net.oneandone.lavender.filter.processor.RewriteEngine;
+import net.oneandone.lavender.index.Hex;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.NodeModule;
 import net.oneandone.lavender.modules.Module;
@@ -44,13 +45,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.URI;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -169,12 +166,12 @@ public class Lavender implements Filter, LavenderMBean {
 
         switch (request.getMethod()) {
             case "GET":
-                LOG.info("GET " + path + " -> " + resource.getOrigin());
-                develGet(resource, response, true);
+                develGet(resource, request, response, true);
+                LOG.info(response.getStatus() + " GET " + path + " -> " + resource.getOrigin());
                 return true;
             case "HEAD":
-                LOG.info("HEAD " + path + " -> " + resource.getOrigin());
-                develGet(resource, response, false);
+                develGet(resource, request, response, false);
+                LOG.info(response.getStatus() + " HEAD " + path + " -> " + resource.getOrigin());
                 return true;
             default:
                 return false;
@@ -260,45 +257,42 @@ public class Lavender implements Filter, LavenderMBean {
 
     //--
 
-
-    public void develGet(Resource resource, HttpServletResponse response, boolean withBody) throws IOException {
+    public void develGet(Resource resource, HttpServletRequest request, HttpServletResponse response, boolean withBody) throws IOException {
+        String etag;
         String contentType;
         long contentLength;
         ServletOutputStream out;
         byte[] data;
+        String previousEtag;
 
-        setCacheExpireDate(response, 10);
+        etag = Hex.encodeString(resource.getMd5());
         response.setDateHeader("Last-Modified", resource.getLastModified());
+        response.setHeader("ETag", etag);
         contentType = filterConfig.getServletContext().getMimeType(resource.getPath());
         if (contentType != null) {
             response.setContentType(contentType);
         }
-        data = resource.getData();
-        contentLength = data.length;
-        if (contentLength >= Integer.MAX_VALUE) {
-            throw new IOException("file too big: " + contentLength);
-        }
-        if (withBody) {
-            response.setContentLength((int) contentLength);
-            out = response.getOutputStream();
-            try {
-                response.setBufferSize(4096);
-            } catch (IllegalStateException e) {
-                // Silent catch
+
+        previousEtag = request.getHeader("If-None-Match");
+        if (etag.equals(previousEtag)) {
+            LOG.debug("ETag match: returning 304 Not Modified: " + resource.getPath());
+            response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
+        } else  { 		// first time through - set last modified time to now
+            data = resource.getData();
+            contentLength = data.length;
+            if (contentLength >= Integer.MAX_VALUE) {
+                throw new IOException(resource.getPath() + ": resource too big: " + contentLength);
             }
-            out.write(data);
+            if (withBody) {
+                response.setContentLength((int) contentLength);
+                out = response.getOutputStream();
+                try {
+                    response.setBufferSize(4096);
+                } catch (IllegalStateException e) {
+                    // Silent catch
+                }
+                out.write(data);
+            }
         }
     }
-
-    private static void setCacheExpireDate(HttpServletResponse response, int years) {
-        Calendar cal = Calendar.getInstance();
-        long now = cal.getTimeInMillis();
-        cal.roll(Calendar.YEAR, years);
-        long seconds = (cal.getTimeInMillis() - now) / 1000;
-        response.setHeader("Cache-Control", "PUBLIC, max-age=" + seconds + ", strict-revalidate");
-        response.setHeader("Expires", EXPIRES_FORMAT.format(cal.getTime()));
-    }
-
-    private static final DateFormat EXPIRES_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
-
 }

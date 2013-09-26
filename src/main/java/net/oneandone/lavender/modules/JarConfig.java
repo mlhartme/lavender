@@ -34,7 +34,7 @@ public class JarConfig {
     private static final String MODULES = "modules/";
     private static final String PUSTEFIX_INF = "PUSTEFIX-INF/";
 
-    private final WarConfig parent;
+    private final WarConfig global;
     private final String name;
 
     /** trimmed, without heading slash, with tailing slash */
@@ -65,8 +65,8 @@ public class JarConfig {
         return new JarConfig(parent, name, statics);
     }
 
-    public JarConfig(WarConfig parent, String name, List<String> statics) {
-        this.parent = parent;
+    public JarConfig(WarConfig global, String name, List<String> statics) {
+        this.global = global;
         this.name = name;
         this.statics = statics;
     }
@@ -87,7 +87,7 @@ public class JarConfig {
         if (result != null) {
             return result;
         }
-        if (parent.isPublicResource(resourceName)) {
+        if (global.isPublicResource(resourceName)) {
             return MODULES + getModuleName() + "/" + resourceName;
         }
         return null;
