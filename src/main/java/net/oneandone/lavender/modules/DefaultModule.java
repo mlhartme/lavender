@@ -63,16 +63,9 @@ public class DefaultModule extends Module {
 
     private static List<String> get(Properties properties, String key, List<String> dflt) {
         String str;
-        List<String> extensions;
-        List<String> result;
 
         str = properties.getProperty(key);
-        extensions = str == null ? dflt : Separator.COMMA.split(str);
-        result = new ArrayList<>();
-        for (String extension : extensions) {
-            result.add("*." + extension);
-        }
-        return result;
+        return str == null ? dflt : Separator.COMMA.split(str);
     }
 
     //--
