@@ -90,6 +90,7 @@ public class Settings {
 
         initLogs((FileNode) world.getHome().join("logs/lavender"));
 
+        world.getMemoryFilesystem().setMaxInMemorySize(Integer.MAX_VALUE);
         world.getFilesystem("svn", SvnFilesystem.class).setDefaultCredentials(svnUsername, svnPassword);
         ssh = world.getFilesystem("ssh", SshFilesystem.class);
         for (Node node : sshKeys) {
