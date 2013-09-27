@@ -72,11 +72,8 @@ public class Lavender implements Filter, LavenderMBean {
     protected List<Module> develModules;
     protected Map<String, Resource> develResources;
 
-    public void init(FilterConfig config) {
-        this.filterConfig = config;
-    }
-
-    public void lazyInit() throws ServletException {
+    @Override
+    public void init(FilterConfig config) throws ServletException {
         long started;
         Node src;
         Index index;
@@ -84,12 +81,10 @@ public class Lavender implements Filter, LavenderMBean {
         Settings settings;
         Node webapp;
 
-        if (world != null) {
-            return;
-        }
         try {
             LOG.info("init");
-            this.world = new World();
+            filterConfig = config;
+            world = new World();
             webapp = world.file(filterConfig.getServletContext().getRealPath(""));
             src = webapp.join(LAVENDEL_IDX);
             if (src.exists()) {
@@ -125,7 +120,6 @@ public class Lavender implements Filter, LavenderMBean {
     }
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        lazyInit();
         if (processorFactory == null) {
             doDevelFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
         } else {
@@ -249,10 +243,17 @@ public class Lavender implements Filter, LavenderMBean {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void destroy() {
+        if (develModules != null) {
+            for (Module module : develModules) {
+                try {
+                    module.saveCaches();
+                } catch (IOException e) {
+                    LOG.error("cannot save caches for " + module.getName() + ": " + e.getMessage(), e);
+                }
+            }
+        }
     }
 
     //--

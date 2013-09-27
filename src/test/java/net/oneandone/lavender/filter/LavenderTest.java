@@ -56,7 +56,6 @@ public class LavenderTest {
 
         Lavender filter = new Lavender();
         filter.init(filterConfig);
-        filter.lazyInit();
         assertNotNull(filter.processorFactory);
     }
 }

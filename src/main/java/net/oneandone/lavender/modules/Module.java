@@ -29,21 +29,25 @@ import java.io.IOException;
  */
 public abstract class Module implements Iterable<Resource> {
     private final String type;
-    private final String folder;
+    private final String name;
     private final boolean lavendelize;
 
     /** Where to write resources when publishing. Used for flash publishing to add the application name. */
     private final String targetPathPrefix;
 
-    public Module(String type, String folder, boolean lavendelize, String targetPathPrefix) {
+    public Module(String type, String name, boolean lavendelize, String targetPathPrefix) {
         this.type = type;
-        this.folder = folder;
+        this.name = name;
         this.lavendelize = lavendelize;
         this.targetPathPrefix = targetPathPrefix;
     }
 
     public String getType() {
         return type;
+    }
+
+    public String getName() {
+        return name;
     }
 
     /** @return number of changed (updated or added) resources */
@@ -54,7 +58,7 @@ public abstract class Module implements Iterable<Resource> {
         count = 0;
         for (Resource resource : this) {
             if (lavendelize) {
-                label = resource.labelLavendelized(targetPathPrefix, folder);
+                label = resource.labelLavendelized(targetPathPrefix, name);
             } else {
                 label = resource.labelNormal(targetPathPrefix);
             }
