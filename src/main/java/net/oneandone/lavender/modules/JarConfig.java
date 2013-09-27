@@ -79,32 +79,27 @@ public class JarConfig {
         return statics;
     }
 
-    /* @return null if not public */
-    public String getPath(String resourceName) {
-        String result;
-
-        result = getStaticMappedPath(resourceName);
-        if (result != null) {
-            return result;
-        }
-        if (global.isPublicResource(resourceName)) {
-            return MODULES + getModuleName() + "/" + resourceName;
-        }
-        return null;
+    public String getResourcePathPrefix() {
+        return MODULES + getModuleName() + "/";
     }
 
-    private String getStaticMappedPath(String resourceName) {
-        if (resourceName.startsWith("/")) {
-            throw new IllegalArgumentException(resourceName);
+    /* @return null if not public */
+    public String getPath(String resourceNameOrig) {
+        String resourceName;
+
+        if (resourceNameOrig.startsWith("/")) {
+            throw new IllegalArgumentException(resourceNameOrig);
         }
-        if (!resourceName.startsWith(PUSTEFIX_INF)) {
-            return null;
-        }
-        resourceName = resourceName.substring(PUSTEFIX_INF.length());
-        for (String path : statics) {
-            if (resourceName.startsWith(path)) {
-                return MODULES + getModuleName() + "/" + resourceName;
+        if (resourceNameOrig.startsWith(PUSTEFIX_INF)) {
+            resourceName = resourceNameOrig.substring(PUSTEFIX_INF.length());
+            for (String path : statics) {
+                if (resourceName.startsWith(path)) {
+                    return resourceName;
+                }
             }
+        }
+        if (global.isPublicResource(resourceNameOrig)) {
+            return resourceNameOrig;
         }
         return null;
     }

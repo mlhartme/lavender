@@ -61,7 +61,7 @@ public class DefaultModuleTest {
 
         resources = new HashMap<>();
         url = getClass().getClassLoader().getResource("dummy.war");
-        module = DefaultModule.jarModule(new WarConfig(Arrays.asList("img", "modules")), new Filter().includeAll(),
+        module = DefaultModule.warModule(new WarConfig(Arrays.asList("img", "modules")), new Filter().includeAll(),
                 WORLD.file(new File(url.toURI())).openZip());
         for (Resource resource : module) {
             resources.put(resource.getPath(), resource);
