@@ -25,6 +25,8 @@ import java.security.NoSuchAlgorithmException;
 public abstract class Resource {
     public abstract String getPath();
     public abstract long getLastModified() throws IOException;
+
+    /** for logging purpose */
     public abstract String getOrigin();
 
     public abstract long getSize();
