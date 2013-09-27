@@ -17,7 +17,6 @@ package net.oneandone.lavender.cli;
 
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
-import net.oneandone.lavender.config.Filter;
 import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Settings;
 import net.oneandone.lavender.config.Target;
@@ -28,6 +27,7 @@ import net.oneandone.lavender.modules.SvnModuleConfig;
 import net.oneandone.sushi.cli.ArgumentException;
 import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.cli.Value;
+import net.oneandone.sushi.fs.filter.Filter;
 
 import java.io.IOException;
 
@@ -64,8 +64,7 @@ public class Svn extends Base {
         docroot = cluster.docroot(Docroot.SVN);
         target = new Target(cluster, docroot, docroot.aliases().get(0));
         filter = new Filter();
-        filter.setIncludes("*");
-        filter.setExcludes();
+        filter.includeAll();
         moduleConfig = new SvnModuleConfig("svn", filter);
         moduleConfig.targetPathPrefix = directory + "/";
         moduleConfig.svnurl = svn + "/data/" + directory;

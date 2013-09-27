@@ -15,8 +15,8 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.lavender.config.Filter;
 import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.xml.Xml;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -33,7 +33,7 @@ import java.util.zip.ZipInputStream;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class PustefixModuleTest {
+public class DefaultModuleTest {
     private static World WORLD = new World();
 
     @Test
@@ -61,7 +61,8 @@ public class PustefixModuleTest {
 
         resources = new HashMap<>();
         url = getClass().getClassLoader().getResource("dummy.war");
-        module = DefaultModule.jarModule(new WarConfig(Arrays.asList("img", "modules")), new Filter(), WORLD.file(new File(url.toURI())).openZip());
+        module = DefaultModule.jarModule(new WarConfig(Arrays.asList("img", "modules")), new Filter().includeAll(),
+                WORLD.file(new File(url.toURI())).openZip());
         for (Resource resource : module) {
             resources.put(resource.getPath(), resource);
         }

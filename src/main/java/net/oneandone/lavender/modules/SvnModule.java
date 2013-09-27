@@ -15,10 +15,10 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.lavender.config.Filter;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.fs.Node;
+import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.svn.SvnNode;
 import org.tmatesoft.svn.core.ISVNDirEntryHandler;
 import org.tmatesoft.svn.core.SVNDepth;
@@ -109,7 +109,7 @@ public class SvnModule extends Module {
 
                     if (entry.getKind() == SVNNodeKind.FILE) {
                         path = entry.getRelativePath();
-                        if (filter.isIncluded(path)) {
+                        if (filter.matches(path)) {
                             if (entry.getSize() > Integer.MAX_VALUE) {
                                 throw new UnsupportedOperationException("file too big: " + path);
                             }

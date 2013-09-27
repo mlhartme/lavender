@@ -16,13 +16,14 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.config.Docroot;
-import net.oneandone.lavender.config.Filter;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Action;
+import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.filter.Predicate;
 import net.oneandone.sushi.fs.zip.ZipNode;
+import net.oneandone.sushi.util.Separator;
 import net.oneandone.sushi.xml.Selector;
 import net.oneandone.sushi.xml.XmlException;
 import org.pustefixframework.live.LiveResolver;
@@ -35,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -45,10 +47,37 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class DefaultModule extends Module {
-    private static final Logger LOG = LoggerFactory.getLogger(Module.class);
+    //--
 
-    public static final List<String> DEFAULT_INCLUDE_EXTENSIONS = new ArrayList<>(Arrays.asList(
-            "gif", "png", "jpg", "jpeg", "ico", "swf", "css", "js"));
+    public static final List<String> DEFAULT_INCLUDES = new ArrayList<>(Arrays.asList(
+            "**/*.gif", "**/*.png", "**/*.jpg", "**/*.jpeg", "**/*.ico", "**/*.swf", "**/*.css", "**/*.js"));
+
+    public static Filter filterForProperties(Properties properties, String prefix, List<String> defaultIncludes) {
+        Filter result;
+
+        result = new Filter();
+        result.include(get(properties, prefix + ".includes", defaultIncludes));
+        result.exclude(get(properties, prefix + ".excludes", Collections.EMPTY_LIST));
+        return result;
+    }
+
+    private static List<String> get(Properties properties, String key, List<String> dflt) {
+        String str;
+        List<String> extensions;
+        List<String> result;
+
+        str = properties.getProperty(key);
+        extensions = str == null ? dflt : Separator.COMMA.split(str);
+        result = new ArrayList<>();
+        for (String extension : extensions) {
+            result.add("*." + extension);
+        }
+        return result;
+    }
+
+    //--
+
+    private static final Logger LOG = LoggerFactory.getLogger(Module.class);
 
     public static final String PROPERTIES = "PUSTEFIX-INF/lavender.properties";
 
@@ -69,7 +98,7 @@ public class DefaultModule extends Module {
         result = new ArrayList<>();
         webappSource = prod ? webapp : live(webapp);
         rootConfig = WarConfig.fromXml(webapp);
-        filter = Filter.forProperties(properties, "pustefix", DEFAULT_INCLUDE_EXTENSIONS);
+        filter = filterForProperties(properties, "pustefix", DEFAULT_INCLUDES);
         root = jarModule(rootConfig, filter, webappSource);
         result.add(root);
         for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
@@ -78,7 +107,7 @@ public class DefaultModule extends Module {
                 result.addAll(jarModule(prod, jar, filter, jarConfig, svnUsername, svnPassword));
             }
         }
-        for (SvnModuleConfig config : SvnModuleConfig.parse(properties)) {
+        for (SvnModuleConfig config : SvnModuleConfig.parse(properties, DEFAULT_INCLUDES)) {
             LOG.info("adding svn module " + config.folder);
             result.add(config.create(webapp.getWorld(), svnUsername, svnPassword));
         }
@@ -121,7 +150,7 @@ public class DefaultModule extends Module {
         if (propertiesNode != null && propertiesNode.exists()) {
             properties = propertiesNode.readProperties();
             // TODO: reject unknown properties
-            for (SvnModuleConfig svnConfig : SvnModuleConfig.parse(properties)) {
+            for (SvnModuleConfig svnConfig : SvnModuleConfig.parse(properties, DEFAULT_INCLUDES)) {
                 result.add(svnConfig.create(propertiesNode.getWorld(), svnUsername, svnPassword));
             }
         }
@@ -129,7 +158,7 @@ public class DefaultModule extends Module {
     }
 
     private static Map<String, Node> files(final Filter filter, final JarConfig config, final Node exploded) throws IOException {
-        net.oneandone.sushi.fs.filter.Filter f;
+        Filter f;
         final Map<String, Node> result;
 
         result = new HashMap<>();
@@ -150,7 +179,7 @@ public class DefaultModule extends Module {
                 String resourcePath;
 
                 path = node.getRelative(exploded);
-                if (filter.isIncluded(path)) {
+                if (filter.matches(path)) {
                     resourcePath = config.getPath(path);
                     if (resourcePath != null) {
                         result.put(resourcePath, node);
@@ -228,7 +257,7 @@ public class DefaultModule extends Module {
     }
 
     private static Map<String, Node> scanJar(final WarConfig global, final Filter filter, final Node exploded) throws IOException {
-        net.oneandone.sushi.fs.filter.Filter f;
+        Filter f;
         final Map<String, Node> result;
 
         result = new HashMap<>();
@@ -248,7 +277,7 @@ public class DefaultModule extends Module {
                 String path;
 
                 path = node.getRelative(exploded);
-                if (filter.isIncluded(path) && global.isPublicResource(path)) {
+                if (filter.matches(path) && global.isPublicResource(path)) {
                     result.put(path, node);
                 }
             }
@@ -281,7 +310,7 @@ public class DefaultModule extends Module {
             path = entry.getName();
             if (!entry.isDirectory()) {
                 isProperty = PROPERTIES.equals(path);
-                if (isProperty || ((resourcePath = config.getPath(path)) != null && filter.isIncluded(path))) {
+                if (isProperty || ((resourcePath = config.getPath(path)) != null && filter.matches(path))) {
                     child = root.join(path);
                     child.getParent().mkdirsOpt();
                     world.getBuffer().copy(src, child);

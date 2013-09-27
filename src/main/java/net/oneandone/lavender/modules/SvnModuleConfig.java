@@ -16,10 +16,10 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.config.Docroot;
-import net.oneandone.lavender.config.Filter;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
+import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.svn.SvnFilesystem;
 import net.oneandone.sushi.fs.svn.SvnNode;
 import net.oneandone.sushi.util.Strings;
@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -51,6 +52,10 @@ public class SvnModuleConfig {
     }
 
     public static Collection<SvnModuleConfig> parse(Properties properties) {
+        return parse(properties, DefaultModule.DEFAULT_INCLUDES);
+    }
+
+    public static Collection<SvnModuleConfig> parse(Properties properties, List<String> defaultIncludes) {
         String key;
         String value;
         String name;
@@ -73,7 +78,7 @@ public class SvnModuleConfig {
                 }
                 config = result.get(name);
                 if (config == null) {
-                    config = new SvnModuleConfig(name, Filter.forProperties(properties, SVN_PREFIX + name, null));
+                    config = new SvnModuleConfig(name, DefaultModule.filterForProperties(properties, SVN_PREFIX + name, defaultIncludes));
                     result.put(name, config);
                 }
                 if (key == null) {
