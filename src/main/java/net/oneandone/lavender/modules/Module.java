@@ -19,6 +19,8 @@ import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Label;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Contains resources. Can iterate all resources and probe for existing ones.
@@ -27,18 +29,21 @@ import java.io.IOException;
  * Current types are "web" and "flash". Modules have a descriptor the specifies the
  * type.
  */
-public abstract class Module implements Iterable<Resource> {
+public abstract class Module<T> implements Iterable<Resource> {
     private final String type;
     private final String name;
     private final boolean lavendelize;
 
+    private final String resourcePathPrefix;
+
     /** Where to write resources when publishing. Used for flash publishing to add the application name. */
     private final String targetPathPrefix;
 
-    public Module(String type, String name, boolean lavendelize, String targetPathPrefix) {
+    public Module(String type, String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix) {
         this.type = type;
         this.name = name;
         this.lavendelize = lavendelize;
+        this.resourcePathPrefix = resourcePathPrefix;
         this.targetPathPrefix = targetPathPrefix;
     }
 
@@ -48,6 +53,52 @@ public abstract class Module implements Iterable<Resource> {
 
     public String getName() {
         return name;
+    }
+
+    public Iterator<Resource> iterator() {
+        final Iterator<Map.Entry<String, T>> base;
+
+        try {
+            base = files().entrySet().iterator();
+        } catch (IOException e) {
+            throw new RuntimeException("TODO", e);
+        }
+        return new Iterator<Resource>() {
+            @Override
+            public boolean hasNext() {
+                return base.hasNext();
+            }
+
+            @Override
+            public Resource next() {
+                Map.Entry<String, T> entry;
+
+                entry = base.next();
+                try {
+                    return createResource(resourcePathPrefix + entry.getKey(), entry.getValue());
+                } catch (IOException e) {
+                    throw new RuntimeException("TODO", e);
+                }
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
+
+    public Resource probe(String resourcePath) throws IOException {
+        T file;
+
+        if (!resourcePath.startsWith(resourcePathPrefix)) {
+            return null;
+        }
+        file = files().get(resourcePath.substring(resourcePathPrefix.length()));
+        if (file == null) {
+            return null;
+        }
+        return createResource(resourcePath, file);
     }
 
     /** @return number of changed (updated or added) resources */
@@ -69,7 +120,12 @@ public abstract class Module implements Iterable<Resource> {
         return count;
     }
 
-    public abstract Resource probe(String path) throws IOException;
+    //--
+
+    /** scan for files in this module */
+    protected abstract Map<String, T> files() throws IOException;
+
+    protected abstract Resource createResource(String path, T file) throws IOException;
 
     public abstract void saveCaches() throws IOException;
 }

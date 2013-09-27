@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -46,9 +45,7 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class DefaultModule extends Module {
-    //--
-
+public class DefaultModule extends Module<Node> {
     public static final List<String> DEFAULT_INCLUDES = new ArrayList<>(Arrays.asList(
             "**/*.gif", "**/*.png", "**/*.jpg", "**/*.jpeg", "**/*.ico", "**/*.swf", "**/*.css", "**/*.js"));
 
@@ -323,19 +320,16 @@ public class DefaultModule extends Module {
     private final Map<String, Node> files;
 
     public DefaultModule(String type, String name, Map<String, Node> files) throws IOException {
-        super(type, name, true, "");
+        super(type, name, true, "", "");
         this.files = files;
     }
 
-    public Iterator<Resource> iterator() {
-        return new ResourceIterator(files.entrySet().iterator());
+    public Map<String, Node> files() throws IOException {
+        return files;
     }
 
-    public Resource probe(String path) throws IOException {
-        Node file;
-
-        file = files.get(path);
-        return file == null ? null : DefaultResource.forNode(file, path);
+    protected Resource createResource(String resourcePath, Node file) throws IOException {
+        return DefaultResource.forNode(file, resourcePath);
     }
 
     @Override
