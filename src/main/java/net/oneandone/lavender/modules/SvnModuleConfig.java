@@ -18,8 +18,6 @@ package net.oneandone.lavender.modules;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Filter;
 import net.oneandone.lavender.index.Index;
-import net.oneandone.lavender.index.Label;
-import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.svn.SvnFilesystem;
@@ -118,6 +116,7 @@ public class SvnModuleConfig {
         FileNode cache;
         final SvnNode root;
         final Index oldIndex;
+        String name;
 
         if (svnurl == null) {
             throw new IllegalArgumentException("missing svn url");
@@ -129,8 +128,10 @@ public class SvnModuleConfig {
             // TODO: ugly side-effect
             world.getFilesystem("svn", SvnFilesystem.class).setDefaultCredentials(svnUsername, svnPassword);
             root = (SvnNode) world.node("svn:" + svnurl);
+            name = root.getSvnurl().getPath().replace('/', '.') + ".idx";
+            name = Strings.removeLeftOpt(name, ".");
             cache = (FileNode) world.getHome().join(".cache/lavender",
-                    root.getRoot().getRepository().getRepositoryRoot(false).getHost(), root.getSvnurl().getPath().replace('/', '.') + ".idx");
+                    root.getRoot().getRepository().getRepositoryRoot(false).getHost(), name);
             if (cache.exists()) {
                 oldIndex = Index.load(cache);
             } else {
