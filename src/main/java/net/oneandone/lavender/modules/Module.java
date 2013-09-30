@@ -67,6 +67,10 @@ public abstract class Module<T> implements Iterable<Resource> {
         return name;
     }
 
+    public boolean hasFiles() {
+        return files != null;
+    }
+
     private Map<String, T> files() throws IOException {
         long started;
 
@@ -117,10 +121,8 @@ public abstract class Module<T> implements Iterable<Resource> {
         };
     }
 
-    public Resource probe(String resourcePath) throws IOException {
+    public String matches(String resourcePath) throws IOException {
         String path;
-        Resource fromCache;
-        T file;
 
         if (!resourcePath.startsWith(resourcePathPrefix)) {
             return null;
@@ -129,17 +131,23 @@ public abstract class Module<T> implements Iterable<Resource> {
         if (!filter.matches(path)) {
             return null;
         }
-        if (files != null) {
-            file = files.get(path);
-            fromCache = file == null ? null : createResource(resourcePath, file);
-            if (fromCache != null && !fromCache.isOutdated()) {
-                return fromCache;
-            }
-            // invalidate cache
-            files = null;
+        return path;
+    }
+
+    public Resource probe(String resourcePath) throws IOException {
+        String path;
+        T file;
+
+        path = matches(resourcePath);
+        if (path == null) {
+            return null;
         }
         file = files().get(path);
         return file == null ? null : createResource(resourcePath, file);
+    }
+
+    public void invalidate() throws IOException {
+        files = null;
     }
 
     /** @return number of changed (updated or added) resources */

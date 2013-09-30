@@ -19,6 +19,7 @@ import net.oneandone.sushi.fs.GetLastModifiedException;
 import net.oneandone.sushi.fs.Node;
 
 import java.io.IOException;
+import java.util.Date;
 
 public class DefaultResource extends Resource {
     public static DefaultResource forBytes(byte[] bytes, String path) {
@@ -66,7 +67,7 @@ public class DefaultResource extends Resource {
 
     public boolean isOutdated() {
         try {
-            return lastModified == dataNode.getLastModified();
+            return dataNode.getLastModified() != lastModified;
         } catch (GetLastModifiedException e) {
             // not found
             return true;

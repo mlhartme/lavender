@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.URI;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -142,13 +143,7 @@ public class Lavender implements Filter, LavenderMBean {
             return false;
         }
         path = path.substring(1);
-        resource = null;
-        for (Module module : develModules) {
-            resource = module.probe(path);
-            if (resource != null) {
-                break;
-            }
-        }
+        resource = develLookup(path);
         if (resource == null) {
             return false;
         }
@@ -165,6 +160,34 @@ public class Lavender implements Filter, LavenderMBean {
             default:
                 return false;
         }
+    }
+
+    private Resource develLookup(String resourcePath) throws IOException {
+        Resource resource;
+
+        // lookup cached stuff first
+        for (Module module : develModules) {
+            if (module.hasFiles()) {
+                resource = module.probe(resourcePath);
+                if (resource != null) {
+                    if (!resource.isOutdated()) {
+                        return resource;
+                    } else {
+                        LOG.info(resource.getOrigin() + ": outdated");
+                    }
+                }
+            }
+        }
+        for (Module module : develModules) {
+            if (module.matches(resourcePath) != null) {
+                module.invalidate();
+                resource = module.probe(resourcePath);
+                if (resource != null) {
+                    return resource;
+                }
+            }
+        }
+        return null;
     }
 
     public boolean getProd() {
