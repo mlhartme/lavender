@@ -54,7 +54,7 @@ public class SvnModule extends Module<SVNDirEntry> {
         this.files = null;
     }
 
-    protected Map<String, SVNDirEntry> files() {
+    protected Map<String, SVNDirEntry> scan() {
         if (files == null) {
             files = new HashMap<>();
             try {

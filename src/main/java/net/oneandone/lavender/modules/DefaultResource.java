@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.modules;
 
+import net.oneandone.sushi.fs.GetLastModifiedException;
 import net.oneandone.sushi.fs.Node;
 
 import java.io.IOException;
@@ -61,6 +62,15 @@ public class DefaultResource extends Resource {
 
     public long getLastModified() throws IOException {
         return lastModified;
+    }
+
+    public boolean isOutdated() {
+        try {
+            return lastModified == dataNode.getLastModified();
+        } catch (GetLastModifiedException e) {
+            // not found
+            return true;
+        }
     }
 
     public String getOrigin() {

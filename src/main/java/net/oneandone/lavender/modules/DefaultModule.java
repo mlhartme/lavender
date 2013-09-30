@@ -45,7 +45,7 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class DefaultModule extends Module<Node> {
+public abstract class DefaultModule extends Module<Node> {
     public static final List<String> DEFAULT_INCLUDES = new ArrayList<>(Arrays.asList(
             "**/*.gif", "**/*.png", "**/*.jpg", "**/*.jpeg", "**/*.ico", "**/*.swf", "**/*.css", "**/*.js"));
 
@@ -86,17 +86,18 @@ public class DefaultModule extends Module<Node> {
             throw new IOException("lavender.properties not found");
         }
         result = new ArrayList<>();
-        webappSource = prod ? webapp : live(webapp);
         rootConfig = WarConfig.fromXml(webapp);
         filter = filterForProperties(properties, "pustefix", DEFAULT_INCLUDES);
-        root = warModule(rootConfig, filter, webappSource);
-        result.add(root);
+        // add modules before webapp, because they have a prefix
         for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
             jarConfig = loadJarModuleConfig(rootConfig, jar);
             if (jarConfig != null) {
                 result.addAll(jarModule(prod, jar, filter, jarConfig, svnUsername, svnPassword));
             }
         }
+        webappSource = prod ? webapp : live(webapp);
+        root = warModule(rootConfig, filter, webappSource);
+        result.add(root);
         for (SvnModuleConfig config : SvnModuleConfig.parse(properties, DEFAULT_INCLUDES)) {
             LOG.info("adding svn module " + config.folder);
             result.add(config.create(webapp.getWorld(), svnUsername, svnPassword));
@@ -104,10 +105,11 @@ public class DefaultModule extends Module<Node> {
         return result;
     }
 
-    public static List<Module> jarModule(boolean prod, Node jarOrig, Filter filter, JarConfig config,
+    public static List<Module> jarModule(boolean prod, Node jarOrig, final Filter filter, final JarConfig config,
                                          String svnUsername, String svnPassword) throws IOException {
         List<Module> result;
-        Node jarLive;
+        Node jarTmp;
+        final Node jarLive;
         Properties properties;
         Module jarModule;
         Node propertiesNode;
@@ -116,17 +118,23 @@ public class DefaultModule extends Module<Node> {
         result = new ArrayList<>();
         if (jarOrig instanceof FileNode) {
             if (prod) {
-                jarLive = jarOrig;
+                jarTmp = jarOrig;
             } else {
-                jarLive = live(jarOrig);
+                jarTmp = live(jarOrig);
             }
-            if (jarLive.isFile()) {
-                jarLive = ((FileNode) jarLive).openJar();
+            if (jarTmp.isFile()) {
+                jarLive = ((FileNode) jarTmp).openJar();
                 propertiesNode = jarLive.join(PROPERTIES);
             } else {
+                jarLive = jarTmp;
                 propertiesNode = ((FileNode) jarOrig).openJar().join(PROPERTIES);
             }
-            jarModule = new DefaultModule(Docroot.WEB, config.getModuleName(), config.getResourcePathPrefix(), files(filter, config, jarLive));
+            jarModule = new DefaultModule(Docroot.WEB, config.getModuleName(), config.getResourcePathPrefix()) {
+                @Override
+                protected Map<String, Node> scan() throws IOException {
+                    return files(filter, config, jarLive);
+                }
+            };
         } else {
             if (!prod) {
                 throw new UnsupportedOperationException("live mechanism not supported for jar streams");
@@ -231,7 +239,7 @@ public class DefaultModule extends Module<Node> {
         return src.readProperties();
     }
 
-    public static DefaultModule warModule(WarConfig config, Filter filter, Node webapp) throws IOException {
+    public static DefaultModule warModule(final WarConfig config, final Filter filter, final Node webapp) throws IOException {
         Element root;
         Selector selector;
         String name;
@@ -240,7 +248,12 @@ public class DefaultModule extends Module<Node> {
             root = webapp.join("WEB-INF/project.xml").readXml().getDocumentElement();
             selector = webapp.getWorld().getXml().getSelector();
             name = selector.string(root, "project/name");
-            return new DefaultModule(Docroot.WEB, name, "", scanExploded(config, filter, webapp));
+            return new DefaultModule(Docroot.WEB, name, "") {
+                @Override
+                protected Map<String, Node> scan() throws IOException {
+                    return scanExploded(config, filter, webapp);
+                }
+            };
         } catch (SAXException | XmlException e) {
             throw new IOException("cannot load project descriptor: " + e);
         }
@@ -287,7 +300,7 @@ public class DefaultModule extends Module<Node> {
         Node child;
         boolean isProperty;
         Node propertyNode;
-        Map<String, Node> files;
+        final Map<String, Node> files;
         String resourcePath;
 
         world = jar.getWorld();
@@ -312,20 +325,18 @@ public class DefaultModule extends Module<Node> {
                 }
             }
         }
-        return new Object[] { new DefaultModule(type, config.getModuleName(), config.getResourcePathPrefix(), files), propertyNode };
+        return new Object[] { new DefaultModule(type, config.getModuleName(), config.getResourcePathPrefix()) {
+            public Map<String, Node> scan() {
+                // no need to re-scan files from memory
+                return files;
+            }
+        }, propertyNode };
     }
 
     //--
 
-    private final Map<String, Node> files;
-
-    public DefaultModule(String type, String name, String resourcePathPrefix, Map<String, Node> files) throws IOException {
+    public DefaultModule(String type, String name, String resourcePathPrefix) throws IOException {
         super(type, name, true, resourcePathPrefix, "");
-        this.files = files;
-    }
-
-    public Map<String, Node> files() throws IOException {
-        return files;
     }
 
     protected Resource createResource(String resourcePath, Node file) throws IOException {

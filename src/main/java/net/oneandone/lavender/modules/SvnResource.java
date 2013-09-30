@@ -1,6 +1,7 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.index.Label;
+import net.oneandone.sushi.fs.GetLastModifiedException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.io.Buffer;
 
@@ -52,6 +53,15 @@ public class SvnResource extends Resource {
 
     public long getLastModified() throws IOException {
         return lastModified;
+    }
+
+    public boolean isOutdated() {
+        try {
+            return lastModified == dataNode.getLastModified();
+        } catch (GetLastModifiedException e) {
+            // not found
+            return true;
+        }
     }
 
     public String getOrigin() {

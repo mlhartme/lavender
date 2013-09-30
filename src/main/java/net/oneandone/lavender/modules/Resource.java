@@ -35,6 +35,8 @@ public abstract class Resource {
 
     public abstract byte[] getData() throws IOException;
 
+    public abstract boolean isOutdated();
+    
     public Label labelNormal(String targetPathPrefix) throws IOException {
         String path;
 

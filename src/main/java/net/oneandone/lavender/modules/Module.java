@@ -39,12 +39,15 @@ public abstract class Module<T> implements Iterable<Resource> {
     /** Where to write resources when publishing. Used for flash publishing to add the application name. */
     private final String targetPathPrefix;
 
+    private Map<String, T> files;
+
     public Module(String type, String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix) {
         this.type = type;
         this.name = name;
         this.lavendelize = lavendelize;
         this.resourcePathPrefix = resourcePathPrefix;
         this.targetPathPrefix = targetPathPrefix;
+        this.files = null;
     }
 
     public String getType() {
@@ -53,6 +56,13 @@ public abstract class Module<T> implements Iterable<Resource> {
 
     public String getName() {
         return name;
+    }
+
+    private Map<String, T> files() throws IOException {
+        if (files == null) {
+            files = scan();
+        }
+        return files;
     }
 
     public Iterator<Resource> iterator() {
@@ -89,16 +99,25 @@ public abstract class Module<T> implements Iterable<Resource> {
     }
 
     public Resource probe(String resourcePath) throws IOException {
+        String path;
+        Resource fromCache;
         T file;
 
         if (!resourcePath.startsWith(resourcePathPrefix)) {
             return null;
         }
-        file = files().get(resourcePath.substring(resourcePathPrefix.length()));
-        if (file == null) {
-            return null;
+        path = resourcePath.substring(resourcePathPrefix.length());
+        if (files != null) {
+            file = files.get(path);
+            fromCache = file == null ? null : createResource(resourcePath, file);
+            if (fromCache != null && !fromCache.isOutdated()) {
+                return fromCache;
+            }
+            // invalidate cache
+            files = null;
         }
-        return createResource(resourcePath, file);
+        file = files().get(path);
+        return file == null ? null : createResource(resourcePath, file);
     }
 
     /** @return number of changed (updated or added) resources */
@@ -123,7 +142,7 @@ public abstract class Module<T> implements Iterable<Resource> {
     //--
 
     /** scan for files in this module */
-    protected abstract Map<String, T> files() throws IOException;
+    protected abstract Map<String, T> scan() throws IOException;
 
     protected abstract Resource createResource(String path, T file) throws IOException;
 
