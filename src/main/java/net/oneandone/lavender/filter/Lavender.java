@@ -70,7 +70,6 @@ public class Lavender implements Filter, LavenderMBean {
     protected ProcessorFactory processorFactory;
 
     protected List<Module> develModules;
-    protected Map<String, Resource> develResources;
 
     @Override
     public void init(FilterConfig config) throws ServletException {
@@ -96,7 +95,6 @@ public class Lavender implements Filter, LavenderMBean {
                 started = System.currentTimeMillis();
                 settings = Settings.load(world);
                 processorFactory = null;
-                develResources = new HashMap<>();
                 develModules = DefaultModule.fromWebapp(false, webapp, settings.svnUsername, settings.svnPassword);
                 LOG.info("Lavender devel filter for " + webapp + ", " + develModules.size()
                         + " resources. Init in " + (System.currentTimeMillis() - started + " ms"));
@@ -144,18 +142,15 @@ public class Lavender implements Filter, LavenderMBean {
             return false;
         }
         path = path.substring(1);
-        resource = develResources.get(path);
+        resource = null;
+        for (Module module : develModules) {
+            resource = module.probe(path);
+            if (resource != null) {
+                break;
+            }
+        }
         if (resource == null) {
-            for (Module module : develModules) {
-                resource = module.probe(path);
-                if (resource != null) {
-                    develResources.put(path, resource);
-                    break;
-                }
-            }
-            if (resource == null) {
-                return false;
-            }
+            return false;
         }
 
         switch (request.getMethod()) {

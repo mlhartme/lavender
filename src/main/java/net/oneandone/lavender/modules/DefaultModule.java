@@ -129,9 +129,9 @@ public abstract class DefaultModule extends Module<Node> {
                 jarLive = jarTmp;
                 propertiesNode = ((FileNode) jarOrig).openJar().join(PROPERTIES);
             }
-            jarModule = new DefaultModule(Docroot.WEB, config.getModuleName(), config.getResourcePathPrefix()) {
+            jarModule = new DefaultModule(Docroot.WEB, config.getModuleName(), config.getResourcePathPrefix(), filter) {
                 @Override
-                protected Map<String, Node> scan() throws IOException {
+                protected Map<String, Node> scan(Filter filter) throws IOException {
                     return files(filter, config, jarLive);
                 }
             };
@@ -248,9 +248,9 @@ public abstract class DefaultModule extends Module<Node> {
             root = webapp.join("WEB-INF/project.xml").readXml().getDocumentElement();
             selector = webapp.getWorld().getXml().getSelector();
             name = selector.string(root, "project/name");
-            return new DefaultModule(Docroot.WEB, name, "") {
+            return new DefaultModule(Docroot.WEB, name, "", filter) {
                 @Override
-                protected Map<String, Node> scan() throws IOException {
+                protected Map<String, Node> scan(Filter filter) throws IOException {
                     return scanExploded(config, filter, webapp);
                 }
             };
@@ -325,8 +325,8 @@ public abstract class DefaultModule extends Module<Node> {
                 }
             }
         }
-        return new Object[] { new DefaultModule(type, config.getModuleName(), config.getResourcePathPrefix()) {
-            public Map<String, Node> scan() {
+        return new Object[] { new DefaultModule(type, config.getModuleName(), config.getResourcePathPrefix(), filter) {
+            public Map<String, Node> scan(Filter filter) {
                 // no need to re-scan files from memory
                 return files;
             }
@@ -335,8 +335,8 @@ public abstract class DefaultModule extends Module<Node> {
 
     //--
 
-    public DefaultModule(String type, String name, String resourcePathPrefix) throws IOException {
-        super(type, name, true, resourcePathPrefix, "");
+    public DefaultModule(String type, String name, String resourcePathPrefix, Filter filter) throws IOException {
+        super(type, name, true, resourcePathPrefix, "", filter);
     }
 
     protected Resource createResource(String resourcePath, Node file) throws IOException {

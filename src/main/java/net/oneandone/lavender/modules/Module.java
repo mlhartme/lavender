@@ -17,8 +17,9 @@ package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Label;
-import org.apache.log4j.spi.LoggerFactory;
+import net.oneandone.sushi.fs.filter.Filter;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -32,7 +33,7 @@ import java.util.Map;
  * type.
  */
 public abstract class Module<T> implements Iterable<Resource> {
-    private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(Module.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Module.class);
 
     private final String type;
     private final String name;
@@ -43,14 +44,18 @@ public abstract class Module<T> implements Iterable<Resource> {
     /** Where to write resources when publishing. Used for flash publishing to add the application name. */
     private final String targetPathPrefix;
 
+    private final Filter filter;
+
     private Map<String, T> files;
 
-    public Module(String type, String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix) {
+
+    public Module(String type, String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
         this.type = type;
         this.name = name;
         this.lavendelize = lavendelize;
         this.resourcePathPrefix = resourcePathPrefix;
         this.targetPathPrefix = targetPathPrefix;
+        this.filter = filter;
         this.files = null;
     }
 
@@ -67,7 +72,13 @@ public abstract class Module<T> implements Iterable<Resource> {
 
         if (files == null) {
             started = System.currentTimeMillis();
-            files = scan();
+            try {
+                files = scan(filter);
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new IOException(name + " scan failed: " + e.getMessage(), e);
+            }
             LOG.info(name + ": scanned " + files.size() + " files in " + (System.currentTimeMillis() - started) + "ms");
         }
         return files;
@@ -115,6 +126,9 @@ public abstract class Module<T> implements Iterable<Resource> {
             return null;
         }
         path = resourcePath.substring(resourcePathPrefix.length());
+        if (!filter.matches(path)) {
+            return null;
+        }
         if (files != null) {
             file = files.get(path);
             fromCache = file == null ? null : createResource(resourcePath, file);
@@ -150,7 +164,7 @@ public abstract class Module<T> implements Iterable<Resource> {
     //--
 
     /** scan for files in this module */
-    protected abstract Map<String, T> scan() throws IOException;
+    protected abstract Map<String, T> scan(Filter filer) throws Exception;
 
     protected abstract Resource createResource(String path, T file) throws IOException;
 

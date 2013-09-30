@@ -41,44 +41,37 @@ public class SvnModule extends Module<SVNDirEntry> {
     private final Index index;
     private final Node indexFile;
 
-    private Map<String, SVNDirEntry> files;
-
     public SvnModule(Filter filter, String type, Index oldIndex, Index index, Node indexFile, SvnNode root,
                      boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, String folder) {
-        super(type, folder, lavendelize, resourcePathPrefix, targetPathPrefix);
+        super(type, folder, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
         this.root = root;
         this.filter = filter;
         this.oldIndex = oldIndex;
         this.index = index;
         this.indexFile = indexFile;
-        this.files = null;
     }
 
-    protected Map<String, SVNDirEntry> scan() {
-        if (files == null) {
-            files = new HashMap<>();
-            try {
-                root.getRoot().getClientMananger().getLogClient().doList(
-                        root.getSvnurl(), null, SVNRevision.HEAD, true, SVNDepth.INFINITY, SVNDirEntry.DIRENT_ALL, new ISVNDirEntryHandler() {
-                    @Override
-                    public void handleDirEntry(SVNDirEntry entry) throws SVNException {
-                        String path;
+    protected Map<String, SVNDirEntry> scan(final Filter filter) throws SVNException {
+        final Map<String, SVNDirEntry> files;
 
-                        if (entry.getKind() == SVNNodeKind.FILE) {
-                            path = entry.getRelativePath();
-                            if (filter.matches(path)) {
-                                if (entry.getSize() > Integer.MAX_VALUE) {
-                                    throw new UnsupportedOperationException("file too big: " + path);
-                                }
-                                files.put(path, entry);
-                            }
+        files = new HashMap<>();
+        root.getRoot().getClientMananger().getLogClient().doList(
+                root.getSvnurl(), null, SVNRevision.HEAD, true, SVNDepth.INFINITY, SVNDirEntry.DIRENT_ALL, new ISVNDirEntryHandler() {
+            @Override
+            public void handleDirEntry(SVNDirEntry entry) throws SVNException {
+                String path;
+
+                if (entry.getKind() == SVNNodeKind.FILE) {
+                    path = entry.getRelativePath();
+                    if (filter.matches(path)) {
+                        if (entry.getSize() > Integer.MAX_VALUE) {
+                            throw new UnsupportedOperationException("file too big: " + path);
                         }
+                        files.put(path, entry);
                     }
-                });
-            } catch (SVNException e) {
-                throw new RuntimeException("TODO", e);
+                }
             }
-        }
+        });
         return files;
     }
 
