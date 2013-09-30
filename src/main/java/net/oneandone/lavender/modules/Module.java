@@ -17,6 +17,8 @@ package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Label;
+import org.apache.log4j.spi.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -30,6 +32,8 @@ import java.util.Map;
  * type.
  */
 public abstract class Module<T> implements Iterable<Resource> {
+    private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(Module.class);
+
     private final String type;
     private final String name;
     private final boolean lavendelize;
@@ -59,8 +63,12 @@ public abstract class Module<T> implements Iterable<Resource> {
     }
 
     private Map<String, T> files() throws IOException {
+        long started;
+
         if (files == null) {
+            started = System.currentTimeMillis();
             files = scan();
+            LOG.info(name + ": scanned " + files.size() + " files in " + (System.currentTimeMillis() - started) + "ms");
         }
         return files;
     }
