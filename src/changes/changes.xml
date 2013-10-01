@@ -8,7 +8,8 @@
         Fixed module config to read both old and new descriptors. Removed resourceMapping support since it was removed from pustefix long ago.
       </action>
       <action date="2013-09-16" dev="mhm" type="update">
-        Moved WEB-INF/lavendel.properties to PUSTEFIX-INF/lavender.properties; jar modules now also read this descriptor.
+        Moved WEB-INF/lavendel.properties to WEB-INF/lavender.properties; jar modules now also read a descriptor
+        from PUSTEFIX-INF/lavender.properties.
       </action>
       <action date="2013-09-16" dev="mhm" type="update">
         Renamed svn.pathPrefix to svn.targetPathPrefix. The old config is still supported, but yields a warning.
