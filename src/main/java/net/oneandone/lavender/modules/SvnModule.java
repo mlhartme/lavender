@@ -39,6 +39,8 @@ public class SvnModule extends Module<SVNDirEntry> {
     private final Index oldIndex;
     private final Index index;
     private final Node indexFile;
+    private Map<String, SVNDirEntry> lastScan;
+    private long lastScanRevision;
 
     public SvnModule(Filter filter, String type, Index oldIndex, Index index, Node indexFile, SvnNode root,
                      boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, String folder) {
@@ -50,6 +52,22 @@ public class SvnModule extends Module<SVNDirEntry> {
     }
 
     protected Map<String, SVNDirEntry> scan(final Filter filter) throws SVNException {
+        long latest;
+
+        latest = root.getRoot().getRepository().getLatestRevision();
+        if (lastScan != null) {
+            if (latest == lastScanRevision) {
+                System.out.println("re-using last scan for revision " + latest);
+                return lastScan;
+            }
+            System.out.println("new scan: " + latest + " vs " + lastScanRevision);
+        }
+        lastScanRevision = latest;
+        lastScan = doScan(filter);
+        return lastScan;
+    }
+
+    protected Map<String, SVNDirEntry> doScan(final Filter filter) throws SVNException {
         final Map<String, SVNDirEntry> files;
 
         files = new HashMap<>();
