@@ -100,7 +100,7 @@ public abstract class DefaultModule extends Module<Node> {
         result.add(root);
         for (SvnModuleConfig config : SvnModuleConfig.parse(properties, DEFAULT_INCLUDES)) {
             LOG.info("adding svn module " + config.folder);
-            result.add(config.create(webapp.getWorld(), svnUsername, svnPassword));
+            result.add(config.create(prod, webapp.getWorld(), svnUsername, svnPassword));
         }
         return result;
     }
@@ -129,7 +129,7 @@ public abstract class DefaultModule extends Module<Node> {
                 jarLive = jarTmp;
                 propertiesNode = ((FileNode) jarOrig).openJar().join(PROPERTIES);
             }
-            jarModule = new DefaultModule(Docroot.WEB, config.getModuleName(), config.getResourcePathPrefix(), filter) {
+            jarModule = new DefaultModule(Docroot.WEB, config.getModuleName(), config.getResourcePathPrefix(), "", filter) {
                 @Override
                 protected Map<String, Node> scan(Filter filter) throws IOException {
                     return files(filter, config, jarLive);
@@ -139,7 +139,7 @@ public abstract class DefaultModule extends Module<Node> {
             if (!prod) {
                 throw new UnsupportedOperationException("live mechanism not supported for jar streams");
             }
-            tmp = DefaultModule.fromJar(filter, Docroot.WEB, config, jarOrig);
+            tmp = DefaultModule.fromJarStream(filter, Docroot.WEB, config, jarOrig);
             jarModule = (Module) tmp[0];
             propertiesNode = (Node) tmp[1];
         }
@@ -149,7 +149,7 @@ public abstract class DefaultModule extends Module<Node> {
             properties = propertiesNode.readProperties();
             // TODO: reject unknown properties
             for (SvnModuleConfig svnConfig : SvnModuleConfig.parse(properties, DEFAULT_INCLUDES)) {
-                result.add(svnConfig.create(propertiesNode.getWorld(), svnUsername, svnPassword));
+                result.add(svnConfig.create(prod, propertiesNode.getWorld(), svnUsername, svnPassword));
             }
         }
         return result;
@@ -248,7 +248,7 @@ public abstract class DefaultModule extends Module<Node> {
             root = webapp.join("WEB-INF/project.xml").readXml().getDocumentElement();
             selector = webapp.getWorld().getXml().getSelector();
             name = selector.string(root, "project/name");
-            return new DefaultModule(Docroot.WEB, name, "", filter) {
+            return new DefaultModule(Docroot.WEB, name, "", "", filter) {
                 @Override
                 protected Map<String, Node> scan(Filter filter) throws IOException {
                     return scanExploded(config, filter, webapp);
@@ -291,7 +291,7 @@ public abstract class DefaultModule extends Module<Node> {
     //--
 
     /** To properly make jars available as a module, I have to load them into memory when the jar is itself packaged into a war. */
-    public static Object[] fromJar(Filter filter, String type, JarConfig config, Node jar) throws IOException {
+    public static Object[] fromJarStream(Filter filter, String type, JarConfig config, Node jar) throws IOException {
         World world;
         ZipEntry entry;
         String path;
@@ -325,7 +325,7 @@ public abstract class DefaultModule extends Module<Node> {
                 }
             }
         }
-        return new Object[] { new DefaultModule(type, config.getModuleName(), config.getResourcePathPrefix(), filter) {
+        return new Object[] { new DefaultModule(type, config.getModuleName(), config.getResourcePathPrefix(), "", filter) {
             public Map<String, Node> scan(Filter filter) {
                 // no need to re-scan files from memory
                 return files;
@@ -335,8 +335,8 @@ public abstract class DefaultModule extends Module<Node> {
 
     //--
 
-    public DefaultModule(String type, String name, String resourcePathPrefix, Filter filter) throws IOException {
-        super(type, name, true, resourcePathPrefix, "", filter);
+    public DefaultModule(String type, String name, String resourcePathPrefix, String targetPathPrefix, Filter filter) throws IOException {
+        super(type, name, true, resourcePathPrefix, targetPathPrefix, filter);
     }
 
     protected Resource createResource(String resourcePath, Node file) throws IOException {

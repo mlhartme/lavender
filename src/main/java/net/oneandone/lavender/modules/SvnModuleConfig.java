@@ -17,6 +17,7 @@ package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.index.Index;
+import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
@@ -43,8 +44,9 @@ public class SvnModuleConfig {
     public String svnurl;
     public String type = Docroot.WEB;
     public boolean lavendelize = true;
-    public String sourcePathPrefix = "";
+    public String resourcePathPrefix = "";
     public String targetPathPrefix = "";
+    public String livePath;
 
     public SvnModuleConfig(String folder, Filter filter) {
         this.folder = folder;
@@ -91,7 +93,7 @@ public class SvnModuleConfig {
                         LOG.warn("CAUTION: out-dated pathPrefix - use targetPathPrefix instead");
                         config.targetPathPrefix = value;
                     } else if (key.equals("sourcePathPrefix")) {
-                        config.sourcePathPrefix = value;
+                        config.resourcePathPrefix = value;
                     } else if (key.equals("type")) {
                         config.type = value;
                     } else if (key.equals("storage")) {
@@ -110,6 +112,8 @@ public class SvnModuleConfig {
                         } else {
                             throw new IllegalArgumentException("illegal value: " + value);
                         }
+                    } else if (key.equals("livePath")) {
+                        config.livePath = value;
                     }
                 }
             }
@@ -117,11 +121,12 @@ public class SvnModuleConfig {
         return result.values();
     }
 
-    public SvnModule create(World world, String svnUsername, String svnPassword) throws IOException {
+    public Module create(boolean prod, World world, String svnUsername, String svnPassword) throws IOException {
         FileNode cache;
         final SvnNode root;
         final Index oldIndex;
         String name;
+        FileNode checkout;
 
         if (svnurl == null) {
             throw new IllegalArgumentException("missing svn url");
@@ -129,9 +134,24 @@ public class SvnModuleConfig {
         if (folder.startsWith("/") || folder.endsWith("/")) {
             throw new IllegalArgumentException(folder);
         }
+
+        // TODO: ugly side-effect
+        world.getFilesystem("svn", SvnFilesystem.class).setDefaultCredentials(svnUsername, svnPassword);
+
+        if (!prod && livePath != null) {
+            checkout = world.file(livePath);
+            if (checkout.isDirectory()) {
+                if (svnurl.equals(SvnNode.urlFromWorkspace(checkout))) {
+                    return new DefaultModule(type, folder, resourcePathPrefix, targetPathPrefix, filter) {
+                        @Override
+                        protected Map<String, Node> scan(Filter filer) throws Exception {
+                            return null;
+                        }
+                    };
+                }
+            }
+        }
         try {
-            // TODO: ugly side-effect
-            world.getFilesystem("svn", SvnFilesystem.class).setDefaultCredentials(svnUsername, svnPassword);
             root = (SvnNode) world.node("svn:" + svnurl);
             name = root.getSvnurl().getPath().replace('/', '.') + ".idx";
             name = Strings.removeLeftOpt(name, ".");
@@ -143,7 +163,7 @@ public class SvnModuleConfig {
                 cache.getParent().mkdirsOpt();
                 oldIndex = new Index();
             }
-            return new SvnModule(filter, type, oldIndex, new Index(), cache, root, lavendelize, sourcePathPrefix, targetPathPrefix, folder);
+            return new SvnModule(filter, type, oldIndex, new Index(), cache, root, lavendelize, resourcePathPrefix, targetPathPrefix, folder);
         } catch (RuntimeException | IOException e) {
             throw e;
         } catch (Exception e) {

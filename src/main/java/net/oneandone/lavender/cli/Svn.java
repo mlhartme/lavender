@@ -22,7 +22,7 @@ import net.oneandone.lavender.config.Settings;
 import net.oneandone.lavender.config.Target;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
-import net.oneandone.lavender.modules.SvnModule;
+import net.oneandone.lavender.modules.Module;
 import net.oneandone.lavender.modules.SvnModuleConfig;
 import net.oneandone.sushi.cli.ArgumentException;
 import net.oneandone.sushi.cli.Console;
@@ -52,7 +52,7 @@ public class Svn extends Base {
         Target target;
         Filter filter;
         SvnModuleConfig moduleConfig;
-        SvnModule module;
+        Module module;
         Distributor distributor;
         long changed;
         Index index;
@@ -69,7 +69,7 @@ public class Svn extends Base {
         moduleConfig.targetPathPrefix = directory + "/";
         moduleConfig.svnurl = svn + "/data/" + directory;
         moduleConfig.lavendelize = false;
-        module = moduleConfig.create(console.world, settings.svnUsername, settings.svnPassword);
+        module = moduleConfig.create(true, console.world, settings.svnUsername, settings.svnPassword);
         distributor = target.open(console.world, directory + ".idx");
         changed = module.publish(distributor);
         index = distributor.close();
