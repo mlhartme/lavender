@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public class SvnModuleConfig {
+public class SvnProperties {
     public static final String SVN_PREFIX = "svn.";
 
     public final String folder;
@@ -48,7 +48,7 @@ public class SvnModuleConfig {
     public String targetPathPrefix = "";
     public String livePath;
 
-    public SvnModuleConfig(String folder, Filter filter) {
+    public SvnProperties(String folder, Filter filter) {
         this.folder = folder;
         this.filter = filter;
     }

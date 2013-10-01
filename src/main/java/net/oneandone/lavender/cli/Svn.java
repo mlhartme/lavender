@@ -23,7 +23,7 @@ import net.oneandone.lavender.config.Target;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.Module;
-import net.oneandone.lavender.modules.SvnModuleConfig;
+import net.oneandone.lavender.modules.SvnProperties;
 import net.oneandone.sushi.cli.ArgumentException;
 import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.cli.Value;
@@ -51,7 +51,7 @@ public class Svn extends Base {
         Docroot docroot;
         Target target;
         Filter filter;
-        SvnModuleConfig moduleConfig;
+        SvnProperties moduleConfig;
         Module module;
         Distributor distributor;
         long changed;
@@ -65,7 +65,7 @@ public class Svn extends Base {
         target = new Target(cluster, docroot, docroot.aliases().get(0));
         filter = new Filter();
         filter.includeAll();
-        moduleConfig = new SvnModuleConfig("svn", filter);
+        moduleConfig = new SvnProperties("svn", filter);
         moduleConfig.targetPathPrefix = directory + "/";
         moduleConfig.svnurl = svn + "/data/" + directory;
         moduleConfig.lavendelize = false;

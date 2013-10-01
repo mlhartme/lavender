@@ -35,19 +35,20 @@ public class LavenderProperties {
         return parse(properties, DefaultModule.DEFAULT_INCLUDES);
     }
 
-    // TODO: reject unknown properties
     public static LavenderProperties parse(Properties properties, List<String> defaultIncludes) {
         String key;
         String value;
         String name;
-        SvnModuleConfig config;
-        Map<String, SvnModuleConfig> result;
+        SvnProperties config;
+        Map<String, SvnProperties> result;
+        String livePath;
 
         result = new HashMap<>();
+        livePath = null;
         for (Map.Entry<Object, Object> entry : properties.entrySet()) {
             key = (String) entry.getKey();
-            if (key.startsWith(SvnModuleConfig.SVN_PREFIX)) {
-                key = key.substring(SvnModuleConfig.SVN_PREFIX.length());
+            if (key.startsWith(SvnProperties.SVN_PREFIX)) {
+                key = key.substring(SvnProperties.SVN_PREFIX.length());
                 value = (String) entry.getValue();
                 int idx = key.indexOf('.');
                 if (idx == -1) {
@@ -59,7 +60,7 @@ public class LavenderProperties {
                 }
                 config = result.get(name);
                 if (config == null) {
-                    config = new SvnModuleConfig(name, DefaultModule.filterForProperties(properties, SvnModuleConfig.SVN_PREFIX + name, defaultIncludes));
+                    config = new SvnProperties(name, DefaultModule.filterForProperties(properties, SvnProperties.SVN_PREFIX + name, defaultIncludes));
                     result.put(name, config);
                 }
                 if (key == null) {
@@ -93,23 +94,33 @@ public class LavenderProperties {
                         }
                     } else if (key.equals("livePath")) {
                         config.livePath = value;
+                    } else {
+                        throw new IllegalArgumentException("unknown svn key: " + key);
                     }
+                }
+            } else {
+                if (key.equals("livePath")) {
+                    livePath = (String) entry.getValue();
+                } else {
+                    throw new IllegalArgumentException("unknown key: " + key);
                 }
             }
         }
-        return new LavenderProperties(result.values());
+        return new LavenderProperties(livePath, result.values());
     }
 
     //--
 
-    public final Collection<SvnModuleConfig> configs;
+    public final String livePath;
+    public final Collection<SvnProperties> configs;
 
-    public LavenderProperties(Collection<SvnModuleConfig> configs) {
+    public LavenderProperties(String livePath, Collection<SvnProperties> configs) {
+        this.livePath = livePath;
         this.configs = configs;
     }
 
     public void addModules(boolean prod, World world, String svnUsername, String svnPassword, List<Module> result) throws IOException {
-        for (SvnModuleConfig config : configs) {
+        for (SvnProperties config : configs) {
             result.add(config.create(prod, world, svnUsername, svnPassword));
         }
     }

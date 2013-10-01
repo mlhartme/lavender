@@ -23,7 +23,7 @@ import java.util.Properties;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-public class SvnModuleConfigTest {
+public class LavenderPropertiesTest {
     @Test
     public void empty() {
         assertEquals(0, LavenderProperties.parse(new Properties()).configs.size());
@@ -32,26 +32,46 @@ public class SvnModuleConfigTest {
     @Test
     public void one() {
         Properties props;
-        Collection<SvnModuleConfig> result;
-        SvnModuleConfig config;
+        LavenderProperties result;
+        SvnProperties config;
 
         props = new Properties();
+        props.put("livePath", "live");
         props.put("svn.foo", "svn");
         props.put("svn.foo.targetPathPrefix", "prefix");
         props.put("svn.foo.lavendelize", "false");
-        result = LavenderProperties.parse(props).configs;
-        assertEquals(1, result.size());
-        config = result.iterator().next();
+        result = LavenderProperties.parse(props);
+        assertEquals("live", result.livePath);
+        assertEquals(1, result.configs.size());
+        config = result.configs.iterator().next();
         assertEquals("foo", config.folder);
         assertFalse(config.lavendelize);
         assertEquals("prefix", config.targetPathPrefix);
         assertEquals("svn", config.svnurl);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void undefinedNormal() {
+        Properties props;
+
+        props = new Properties();
+        props.put("live", "live");
+        LavenderProperties.parse(props);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void undefinedSvn() {
+        Properties props;
+
+        props = new Properties();
+        props.put("svn.module.nosuchkey", "bla");
+        LavenderProperties.parse(props);
+    }
+
     @Test
     public void more() {
         Properties props;
-        Collection<SvnModuleConfig> result;
+        Collection<SvnProperties> result;
 
         props = new Properties();
         props.put("svn.foo", "1");
