@@ -34,7 +34,6 @@ import java.util.Map;
 /** Extracts resources from svn */
 public class SvnModule extends Module<SVNDirEntry> {
     private final SvnNode root;
-    private final Filter filter;
 
     // maps svn paths (relative to root) to revision numbers
     private final Index oldIndex;
@@ -45,7 +44,6 @@ public class SvnModule extends Module<SVNDirEntry> {
                      boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, String folder) {
         super(type, folder, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
         this.root = root;
-        this.filter = filter;
         this.oldIndex = oldIndex;
         this.index = index;
         this.indexFile = indexFile;
