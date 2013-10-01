@@ -16,6 +16,7 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.config.Docroot;
+import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.util.Strings;
 import org.slf4j.Logger;
@@ -30,6 +31,23 @@ import java.util.Properties;
 
 public class LavenderProperties {
     private static final Logger LOG = LoggerFactory.getLogger(LavenderProperties.class);
+
+    public static final String MODULE_PROPERTIES = "PUSTEFIX-INF/lavender.properties";
+    private static final String APP_PROPERTIES = "WEB-INF/lavender.properties";
+
+    public static Properties getAppProperties(Node webapp) throws IOException {
+        Node src;
+
+        src = webapp.join(LavenderProperties.APP_PROPERTIES);
+        if (!src.exists()) {
+            // TODO: dump this compatibility check as soon as I have ITs with new wars
+            src = webapp.join("WEB-INF/lavendel.properties");
+            if (!src.exists()) {
+                throw new IOException("lavender.properties not found");
+            }
+        }
+        return src.readProperties();
+    }
 
     public static LavenderProperties parse(Properties properties) {
         return parse(properties, DefaultModule.DEFAULT_INCLUDES);

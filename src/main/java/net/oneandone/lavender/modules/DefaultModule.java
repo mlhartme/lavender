@@ -69,9 +69,6 @@ public abstract class DefaultModule extends Module<Node> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Module.class);
 
-    public static final String MODULE_PROPERTIES = "PUSTEFIX-INF/lavender.properties";
-    public static final String APP_PROPERTIES = "WEB-INF/lavender.properties";
-
     public static List<Module> fromWebapp(boolean prod, Node webapp, String svnUsername, String svnPassword) throws IOException {
         Node webappSource;
         List<Module> result;
@@ -82,10 +79,7 @@ public abstract class DefaultModule extends Module<Node> {
         Filter filter;
 
         LOG.trace("scanning " + webapp);
-        properties = getAppPropertiesOpt(webapp);
-        if (properties == null) {
-            throw new IOException("lavender.properties not found");
-        }
+        properties = LavenderProperties.getAppProperties(webapp);
         result = new ArrayList<>();
         rootConfig = WarConfig.fromXml(webapp);
         filter = filterForProperties(properties, "pustefix", DEFAULT_INCLUDES);
@@ -122,10 +116,10 @@ public abstract class DefaultModule extends Module<Node> {
             }
             if (jarTmp.isFile()) {
                 jarLive = ((FileNode) jarTmp).openJar();
-                propertiesNode = jarLive.join(MODULE_PROPERTIES);
+                propertiesNode = jarLive.join(LavenderProperties.MODULE_PROPERTIES);
             } else {
                 jarLive = jarTmp;
-                propertiesNode = ((FileNode) jarOrig).openJar().join(MODULE_PROPERTIES);
+                propertiesNode = ((FileNode) jarOrig).openJar().join(LavenderProperties.MODULE_PROPERTIES);
             }
             jarModule = new DefaultModule(Docroot.WEB, config.getModuleName(), config.getResourcePathPrefix(), "", filter) {
                 @Override
@@ -220,20 +214,6 @@ public abstract class DefaultModule extends Module<Node> {
         return null;
     }
 
-    public static Properties getAppPropertiesOpt(Node webapp) throws IOException {
-        Node src;
-
-        src = webapp.join(APP_PROPERTIES);
-        if (!src.exists()) {
-            // TODO: dump this compatibility check as soon as I have ITs with new wars
-            src = webapp.join("WEB-INF/lavendel.properties");
-            if (!src.exists()) {
-                return null;
-            }
-        }
-        return src.readProperties();
-    }
-
     public static DefaultModule warModule(final WarConfig config, final Filter filter, final Node webapp) throws IOException {
         Element root;
         Selector selector;
@@ -307,7 +287,7 @@ public abstract class DefaultModule extends Module<Node> {
         while ((entry = src.getNextEntry()) != null) {
             path = entry.getName();
             if (!entry.isDirectory()) {
-                isProperty = MODULE_PROPERTIES.equals(path);
+                isProperty = LavenderProperties.MODULE_PROPERTIES.equals(path);
                 if (isProperty || ((resourcePath = config.getPath(path)) != null && filter.matches(path))) {
                     child = root.join(path);
                     child.getParent().mkdirsOpt();
