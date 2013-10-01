@@ -20,7 +20,9 @@ import net.oneandone.lavender.index.Index;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
+import net.oneandone.sushi.fs.filter.Action;
 import net.oneandone.sushi.fs.filter.Filter;
+import net.oneandone.sushi.fs.filter.Predicate;
 import net.oneandone.sushi.fs.svn.SvnFilesystem;
 import net.oneandone.sushi.fs.svn.SvnNode;
 import net.oneandone.sushi.util.Strings;
@@ -126,7 +128,7 @@ public class SvnModuleConfig {
         final SvnNode root;
         final Index oldIndex;
         String name;
-        FileNode checkout;
+        final FileNode checkout;
 
         if (svnurl == null) {
             throw new IllegalArgumentException("missing svn url");
@@ -144,8 +146,34 @@ public class SvnModuleConfig {
                 if (svnurl.equals(SvnNode.urlFromWorkspace(checkout))) {
                     return new DefaultModule(type, folder, resourcePathPrefix, targetPathPrefix, filter) {
                         @Override
-                        protected Map<String, Node> scan(Filter filer) throws Exception {
-                            return null;
+                        protected Map<String, Node> scan(final Filter filter) throws Exception {
+                            Filter f;
+                            final Map<String, Node> result;
+
+                            result = new HashMap<>();
+                            f = checkout.getWorld().filter().predicate(Predicate.FILE).includeAll();
+                            f.invoke(checkout, new Action() {
+                                public void enter(Node node, boolean isLink) {
+                                }
+
+                                public void enterFailed(Node node, boolean isLink, IOException e) throws IOException {
+                                    throw e;
+                                }
+
+                                public void leave(Node node, boolean isLink) {
+                                }
+
+                                public void select(Node node, boolean isLink) {
+                                    String path;
+
+                                    path = node.getRelative(checkout);
+                                    if (filter.matches(path)) {
+                                        result.put(path, node);
+                                    }
+                                }
+                            });
+                            return result;
+
                         }
                     };
                 }
