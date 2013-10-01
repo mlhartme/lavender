@@ -20,11 +20,14 @@ import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.svn.SvnNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tmatesoft.svn.core.ISVNDirEntryHandler;
 import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
+import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 import java.io.IOException;
@@ -33,6 +36,8 @@ import java.util.Map;
 
 /** Extracts resources from svn */
 public class SvnModule extends Module<SVNDirEntry> {
+    private static final Logger LOG = LoggerFactory.getLogger(SvnModule.class);
+
     private final SvnNode root;
 
     // maps svn paths (relative to root) to revision numbers
@@ -52,15 +57,22 @@ public class SvnModule extends Module<SVNDirEntry> {
     }
 
     protected Map<String, SVNDirEntry> scan(final Filter filter) throws SVNException {
+        SVNRepository repository;
         long latest;
 
-        latest = root.getRoot().getRepository().getLatestRevision();
+        repository = root.getRoot().getRepository();
+        latest = repository.getLatestRevision();
+        LOG.info("latest " + root.getURI() + ": " + latest);
         if (lastScan != null) {
             if (latest == lastScanRevision) {
-                System.out.println("re-using last scan for revision " + latest);
+                LOG.info(("re-using last scan for revision " + latest);
+                return lastScan;
+            } else if (repository.log(new String[] { root.getPath() } , lastScanRevision , latest, true , true, 1, null ) == 0) {
+                LOG.info(("no changes in " + root.getPath() + "between " + lastScanRevision + " and " + latest);
+                lastScanRevision = latest;
                 return lastScan;
             }
-            System.out.println("new scan: " + latest + " vs " + lastScanRevision);
+            LOG.info(("new scan: " + latest + " vs " + lastScanRevision);
         }
         lastScanRevision = latest;
         lastScan = doScan(filter);
