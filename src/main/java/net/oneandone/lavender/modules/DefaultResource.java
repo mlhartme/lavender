@@ -19,7 +19,6 @@ import net.oneandone.sushi.fs.GetLastModifiedException;
 import net.oneandone.sushi.fs.Node;
 
 import java.io.IOException;
-import java.util.Date;
 
 public class DefaultResource extends Resource {
     public static DefaultResource forBytes(byte[] bytes, String path) {

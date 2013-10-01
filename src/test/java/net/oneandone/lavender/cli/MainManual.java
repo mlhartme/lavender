@@ -21,7 +21,6 @@ import net.oneandone.lavender.config.Host;
 import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Settings;
 import net.oneandone.sushi.fs.Node;
-import net.oneandone.sushi.fs.World;
 import org.junit.Test;
 
 public class MainManual {

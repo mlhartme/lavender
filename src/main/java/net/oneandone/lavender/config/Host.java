@@ -22,9 +22,6 @@ import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.metadata.annotation.Type;
 import net.oneandone.sushi.metadata.annotation.Value;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 @Type
 public class Host {
     private static final String LOCALHOST = "localhost";
