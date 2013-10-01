@@ -37,9 +37,7 @@ import java.util.Map;
 import java.util.Properties;
 
 public class SvnModuleConfig {
-    private static final Logger LOG = LoggerFactory.getLogger(SvnModuleConfig.class);
-
-    private static final String SVN_PREFIX = "svn.";
+    public static final String SVN_PREFIX = "svn.";
 
     public final String folder;
     public final Filter filter;
@@ -53,74 +51,6 @@ public class SvnModuleConfig {
     public SvnModuleConfig(String folder, Filter filter) {
         this.folder = folder;
         this.filter = filter;
-    }
-
-    public static Collection<SvnModuleConfig> parse(Properties properties) {
-        return parse(properties, DefaultModule.DEFAULT_INCLUDES);
-    }
-
-    public static Collection<SvnModuleConfig> parse(Properties properties, List<String> defaultIncludes) {
-        String key;
-        String value;
-        String name;
-        SvnModuleConfig config;
-        Map<String, SvnModuleConfig> result;
-
-        result = new HashMap<>();
-        for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-            key = (String) entry.getKey();
-            if (key.startsWith(SVN_PREFIX)) {
-                key = key.substring(SVN_PREFIX.length());
-                value = (String) entry.getValue();
-                int idx = key.indexOf('.');
-                if (idx == -1) {
-                    name = key;
-                    key = null;
-                } else {
-                    name = key.substring(0, idx);
-                    key = key.substring(idx + 1);
-                }
-                config = result.get(name);
-                if (config == null) {
-                    config = new SvnModuleConfig(name, DefaultModule.filterForProperties(properties, SVN_PREFIX + name, defaultIncludes));
-                    result.put(name, config);
-                }
-                if (key == null) {
-                    config.svnurl = Strings.removeLeftOpt((String) entry.getValue(), "scm:svn:");
-                } else {
-                    if (key.equals("targetPathPrefix")) {
-                        config.targetPathPrefix = value;
-                    } else if (key.equals("pathPrefix")) {
-                        // TODO: dump
-                        LOG.warn("CAUTION: out-dated pathPrefix - use targetPathPrefix instead");
-                        config.targetPathPrefix = value;
-                    } else if (key.equals("sourcePathPrefix")) {
-                        config.resourcePathPrefix = value;
-                    } else if (key.equals("type")) {
-                        config.type = value;
-                    } else if (key.equals("storage")) {
-                        if (value.startsWith("flash-")) {
-                            // TODO: dump
-                            LOG.warn("CAUTION: out-dated storage configured - use type instead");
-                            config.type = Docroot.FLASH;
-                        } else {
-                            throw new IllegalArgumentException("storage no longer supported: " + value);
-                        }
-                    } else if (key.equals("lavendelize")) {
-                        if ("true".equals(value)) {
-                            config.lavendelize = true;
-                        } else if ("false".equals(value)) {
-                            config.lavendelize = false;
-                        } else {
-                            throw new IllegalArgumentException("illegal value: " + value);
-                        }
-                    } else if (key.equals("livePath")) {
-                        config.livePath = value;
-                    }
-                }
-            }
-        }
-        return result.values();
     }
 
     public Module create(boolean prod, World world, String svnUsername, String svnPassword) throws IOException {

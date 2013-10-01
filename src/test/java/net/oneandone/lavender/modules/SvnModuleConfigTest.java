@@ -26,7 +26,7 @@ import static org.junit.Assert.assertFalse;
 public class SvnModuleConfigTest {
     @Test
     public void empty() {
-        assertEquals(0, SvnModuleConfig.parse(new Properties()).size());
+        assertEquals(0, LavenderProperties.parse(new Properties()).size());
     }
 
     @Test
@@ -39,7 +39,7 @@ public class SvnModuleConfigTest {
         props.put("svn.foo", "svn");
         props.put("svn.foo.targetPathPrefix", "prefix");
         props.put("svn.foo.lavendelize", "false");
-        result = SvnModuleConfig.parse(props);
+        result = LavenderProperties.parse(props);
         assertEquals(1, result.size());
         config = result.iterator().next();
         assertEquals("foo", config.folder);
@@ -57,7 +57,7 @@ public class SvnModuleConfigTest {
         props.put("svn.foo", "1");
         props.put("svn.bar", "2");
         props.put("svn.baz", "3");
-        result = SvnModuleConfig.parse(props);
+        result = LavenderProperties.parse(props);
         assertEquals(3, result.size());
     }
 }
