@@ -99,10 +99,7 @@ public abstract class DefaultModule extends Module<Node> {
         webappSource = prod ? webapp : live(webapp);
         root = warModule(rootConfig, filter, webappSource);
         result.add(root);
-        for (SvnModuleConfig config : LavenderProperties.parse(properties, DEFAULT_INCLUDES)) {
-            LOG.info("adding svn module " + config.folder);
-            result.add(config.create(prod, webapp.getWorld(), svnUsername, svnPassword));
-        }
+        LavenderProperties.parse(properties, DEFAULT_INCLUDES).addModules(prod, webapp.getWorld(), svnUsername, svnPassword, result);
         return result;
     }
 
@@ -148,10 +145,7 @@ public abstract class DefaultModule extends Module<Node> {
 
         if (propertiesNode != null && propertiesNode.exists()) {
             properties = propertiesNode.readProperties();
-            // TODO: reject unknown properties
-            for (SvnModuleConfig svnConfig : LavenderProperties.parse(properties, DEFAULT_INCLUDES)) {
-                result.add(svnConfig.create(prod, propertiesNode.getWorld(), svnUsername, svnPassword));
-            }
+            LavenderProperties.parse(properties, DEFAULT_INCLUDES).addModules(prod, propertiesNode.getWorld(), svnUsername, svnPassword, result);
         }
         return result;
     }

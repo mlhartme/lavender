@@ -16,10 +16,12 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.config.Docroot;
+import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -29,11 +31,12 @@ import java.util.Properties;
 public class LavenderProperties {
     private static final Logger LOG = LoggerFactory.getLogger(LavenderProperties.class);
 
-    public static Collection<SvnModuleConfig> parse(Properties properties) {
+    public static LavenderProperties parse(Properties properties) {
         return parse(properties, DefaultModule.DEFAULT_INCLUDES);
     }
 
-    public static Collection<SvnModuleConfig> parse(Properties properties, List<String> defaultIncludes) {
+    // TODO: reject unknown properties
+    public static LavenderProperties parse(Properties properties, List<String> defaultIncludes) {
         String key;
         String value;
         String name;
@@ -94,7 +97,20 @@ public class LavenderProperties {
                 }
             }
         }
-        return result.values();
+        return new LavenderProperties(result.values());
     }
 
+    //--
+
+    public final Collection<SvnModuleConfig> configs;
+
+    public LavenderProperties(Collection<SvnModuleConfig> configs) {
+        this.configs = configs;
+    }
+
+    public void addModules(boolean prod, World world, String svnUsername, String svnPassword, List<Module> result) throws IOException {
+        for (SvnModuleConfig config : configs) {
+            result.add(config.create(prod, world, svnUsername, svnPassword));
+        }
+    }
 }
