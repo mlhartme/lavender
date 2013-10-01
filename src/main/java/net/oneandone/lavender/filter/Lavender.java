@@ -162,7 +162,7 @@ public class Lavender implements Filter, LavenderMBean {
         }
     }
 
-    private Resource develLookup(String resourcePath) throws IOException {
+    private synchronized Resource develLookup(String resourcePath) throws IOException {
         Resource resource;
 
         // lookup cached stuff first
