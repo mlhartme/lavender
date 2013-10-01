@@ -65,14 +65,14 @@ public class SvnModule extends Module<SVNDirEntry> {
         LOG.info("latest " + root.getURI() + ": " + latest);
         if (lastScan != null) {
             if (latest == lastScanRevision) {
-                LOG.info(("re-using last scan for revision " + latest);
+                LOG.info("re-using last scan for revision " + latest);
                 return lastScan;
             } else if (repository.log(new String[] { root.getPath() } , lastScanRevision , latest, true , true, 1, null ) == 0) {
-                LOG.info(("no changes in " + root.getPath() + "between " + lastScanRevision + " and " + latest);
+                LOG.info("no changes in " + root.getPath() + "between " + lastScanRevision + " and " + latest);
                 lastScanRevision = latest;
                 return lastScan;
             }
-            LOG.info(("new scan: " + latest + " vs " + lastScanRevision);
+            LOG.info("new scan: " + latest + " vs " + lastScanRevision);
         }
         lastScanRevision = latest;
         lastScan = doScan(filter);
