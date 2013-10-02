@@ -59,29 +59,20 @@ public class LavenderProperties {
     }
 
     public static LavenderProperties parse(Properties properties, List<String> defaultIncludes) {
-        String value;
-        String name;
         LavenderProperties result;
-        String svnurl;
-        Filter filter;
-        String targetPathPrefix;
-        String resourcePathPrefix;
-        String type;
-        boolean lavendelize;
-        String livePath;
 
         result = new LavenderProperties(eatFilter(properties, "pustefix", defaultIncludes), eat(properties, "livePath", null));
         for (String prefix : svnPrefixes(properties)) {
-            value = (String) properties.remove(prefix);
-            name = prefix.substring(SvnProperties.SVN_PREFIX.length());
-            svnurl = Strings.removeLeftOpt(value, "scm:svn:");
-            filter = eatFilter(properties, prefix, defaultIncludes);
-            targetPathPrefix = eatTargetPathPrefix(properties, prefix);
-            resourcePathPrefix = eat(properties, prefix + ".sourcePathPrefix", "");
-            type = eatType(properties, prefix);
-            lavendelize = eatBoolean(properties, prefix + ".lavendelize", true);
-            livePath = eat(properties, prefix + ".livePath", null);
-            result.configs.add(new SvnProperties(name, filter, svnurl, type, lavendelize, resourcePathPrefix, targetPathPrefix, livePath));
+            result.configs.add(
+                    new SvnProperties(
+                            prefix.substring(SvnProperties.SVN_PREFIX.length()),
+                            eatFilter(properties, prefix, defaultIncludes),
+                            Strings.removeLeftOpt((String) properties.remove(prefix), "scm:svn:"),
+                            eatType(properties, prefix),
+                            eatBoolean(properties, prefix + ".lavendelize", true),
+                            eat(properties, prefix + ".sourcePathPrefix", ""),
+                            eatTargetPathPrefix(properties, prefix),
+                            eat(properties, prefix + ".livePath", null)));
         }
         if (properties.size() > 0) {
             throw new IllegalArgumentException("unknown properties: " + properties);
