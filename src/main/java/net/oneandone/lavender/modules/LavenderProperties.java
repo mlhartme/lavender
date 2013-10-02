@@ -40,7 +40,22 @@ public class LavenderProperties {
     public static final List<String> DEFAULT_INCLUDES = new ArrayList<>(Arrays.asList(
             "**/*.gif", "**/*.png", "**/*.jpg", "**/*.jpeg", "**/*.ico", "**/*.swf", "**/*.css", "**/*.js"));
 
-    public static Properties getAppProperties(Node webapp) throws IOException {
+    public static LavenderProperties loadModuleOpt(Node root) throws IOException {
+        Node src;
+        Properties properties;
+
+        if (root == null) {
+            return null;
+        }
+        src = root.join(LavenderProperties.MODULE_PROPERTIES);
+        if (!src.exists()) {
+            return null;
+        }
+        properties = src.readProperties();
+        return LavenderProperties.parse(properties);
+    }
+
+    public static LavenderProperties loadApp(Node webapp) throws IOException {
         Node src;
 
         src = webapp.join(LavenderProperties.APP_PROPERTIES);
@@ -51,14 +66,14 @@ public class LavenderProperties {
                 throw new IOException("lavender.properties not found");
             }
         }
-        return src.readProperties();
+        return parse(src.readProperties());
     }
 
     public static LavenderProperties parse(Properties properties) {
         return parse(properties, DEFAULT_INCLUDES);
     }
 
-    public static LavenderProperties parse(Properties properties, List<String> defaultIncludes) {
+    private static LavenderProperties parse(Properties properties, List<String> defaultIncludes) {
         LavenderProperties result;
 
         result = new LavenderProperties(eatFilter(properties, "pustefix", defaultIncludes), eat(properties, "livePath", null));
@@ -177,4 +192,9 @@ public class LavenderProperties {
             result.add(config.create(prod, world, svnUsername, svnPassword));
         }
     }
+
+    public Node live(Node root) throws IOException {
+        return livePath != null ? root.getWorld().file(livePath) : root;
+    }
+
 }

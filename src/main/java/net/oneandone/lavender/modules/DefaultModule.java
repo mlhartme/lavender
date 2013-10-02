@@ -23,10 +23,8 @@ import net.oneandone.sushi.fs.filter.Action;
 import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.filter.Predicate;
 import net.oneandone.sushi.fs.zip.ZipNode;
-import net.oneandone.sushi.util.Separator;
 import net.oneandone.sushi.xml.Selector;
 import net.oneandone.sushi.xml.XmlException;
-import org.pustefixframework.live.LiveResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -49,15 +47,13 @@ public abstract class DefaultModule extends Module<Node> {
     public static List<Module> fromWebapp(boolean prod, Node webapp, String svnUsername, String svnPassword) throws IOException {
         Node webappSource;
         List<Module> result;
-        Properties properties;
         WarConfig rootConfig;
         DefaultModule root;
         JarConfig jarConfig;
         LavenderProperties lp;
 
         LOG.trace("scanning " + webapp);
-        properties = LavenderProperties.getAppProperties(webapp);
-        lp =  LavenderProperties.parse(properties);
+        lp = LavenderProperties.loadApp(webapp);
         result = new ArrayList<>();
         rootConfig = WarConfig.fromXml(webapp);
         // add modules before webapp, because they have a prefix
@@ -67,7 +63,7 @@ public abstract class DefaultModule extends Module<Node> {
                 result.addAll(jarModule(prod, jar, lp.filter, jarConfig, svnUsername, svnPassword));
             }
         }
-        webappSource = prod ? webapp : live(webapp);
+        webappSource = prod ? webapp : lp.live(webapp);
         root = warModule(rootConfig, lp.filter, webappSource);
         result.add(root);
         lp.addModules(prod, webapp.getWorld(), svnUsername, svnPassword, result);
@@ -79,24 +75,23 @@ public abstract class DefaultModule extends Module<Node> {
         List<Module> result;
         Node jarTmp;
         final Node jarLive;
-        Properties properties;
         Module jarModule;
-        Node propertiesNode;
         Object[] tmp;
+        LavenderProperties lp;
 
         result = new ArrayList<>();
         if (jarOrig instanceof FileNode) {
-            if (prod) {
+            // TODO: expensive
+            lp = LavenderProperties.loadModuleOpt(((FileNode) jarOrig).openJar());
+            if (prod || lp == null) {
                 jarTmp = jarOrig;
             } else {
-                jarTmp = live(jarOrig);
+                jarTmp = lp.live(jarOrig);
             }
             if (jarTmp.isFile()) {
                 jarLive = ((FileNode) jarTmp).openJar();
-                propertiesNode = jarLive.join(LavenderProperties.MODULE_PROPERTIES);
             } else {
                 jarLive = jarTmp;
-                propertiesNode = ((FileNode) jarOrig).openJar().join(LavenderProperties.MODULE_PROPERTIES);
             }
             jarModule = new DefaultModule(Docroot.WEB, config.getModuleName(), config.getResourcePathPrefix(), "", filter) {
                 @Override
@@ -110,13 +105,11 @@ public abstract class DefaultModule extends Module<Node> {
             }
             tmp = DefaultModule.fromJarStream(filter, Docroot.WEB, config, jarOrig);
             jarModule = (Module) tmp[0];
-            propertiesNode = (Node) tmp[1];
+            lp = LavenderProperties.loadModuleOpt((Node) tmp[1]);
         }
         result.add(jarModule);
-
-        if (propertiesNode != null && propertiesNode.exists()) {
-            properties = propertiesNode.readProperties();
-            LavenderProperties.parse(properties).addModules(prod, propertiesNode.getWorld(), svnUsername, svnPassword, result);
+        if (lp != null) {
+            lp.addModules(prod, jarOrig.getWorld(), svnUsername, svnPassword, result);
         }
         return result;
     }
@@ -152,23 +145,6 @@ public abstract class DefaultModule extends Module<Node> {
             }
         });
         return result;
-    }
-
-    public static Node live(Node root) throws IOException {
-        File resolved;
-
-        try {
-            if (root instanceof FileNode) {
-                resolved = LiveResolver.getInstance().resolveLiveRoot(((FileNode) root).getAbsolute(), "/foo");
-            } else if (root instanceof ZipNode) {
-                resolved = LiveResolver.getInstance().resolveLiveRoot(((ZipNode) root).getRoot().getZip().getName(), "/foo");
-            } else {
-                throw new IllegalArgumentException(root.toString());
-            }
-        } catch (Exception e) {
-            throw new IOException("cannot resolve life root", e);
-        }
-        return resolved == null ? root : root.getWorld().file(resolved);
     }
 
     //--
