@@ -51,7 +51,8 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 /**
- * A servlet filter that <em>lavendelizes</em> the response content.
+ * A servlet filter that <em>lavendelizes</em> the response content in production mode.
+ * In development mode, it delivers resources.
  */
 public class Lavender implements Filter, LavenderMBean {
     private static final Logger LOG = LoggerFactory.getLogger(Lavender.class);

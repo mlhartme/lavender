@@ -15,7 +15,6 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
@@ -26,31 +25,32 @@ import net.oneandone.sushi.fs.filter.Predicate;
 import net.oneandone.sushi.fs.svn.SvnFilesystem;
 import net.oneandone.sushi.fs.svn.SvnNode;
 import net.oneandone.sushi.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 public class SvnProperties {
     public static final String SVN_PREFIX = "svn.";
 
     public final String folder;
     public final Filter filter;
-    public String svnurl;
-    public String type = Docroot.WEB;
-    public boolean lavendelize = true;
-    public String resourcePathPrefix = "";
-    public String targetPathPrefix = "";
-    public String livePath;
+    public final String svnurl;
+    public final String type;
+    public final boolean lavendelize;
+    public final String resourcePathPrefix;
+    public final String targetPathPrefix;
+    public final String livePath;
 
-    public SvnProperties(String folder, Filter filter) {
+    public SvnProperties(String folder, Filter filter, String svnurl, String type, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, String livePath) {
         this.folder = folder;
         this.filter = filter;
+        this.svnurl = svnurl;
+        this.type = type;
+        this.lavendelize = lavendelize;
+        this.resourcePathPrefix = resourcePathPrefix;
+        this.targetPathPrefix = targetPathPrefix;
+        this.livePath = livePath;
     }
 
     public Module create(boolean prod, World world, String svnUsername, String svnPassword) throws IOException {

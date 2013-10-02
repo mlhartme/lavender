@@ -18,15 +18,17 @@ package net.oneandone.lavender.modules;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.filter.Filter;
+import net.oneandone.sushi.util.Separator;
 import net.oneandone.sushi.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 public class LavenderProperties {
@@ -54,77 +56,114 @@ public class LavenderProperties {
     }
 
     public static LavenderProperties parse(Properties properties, List<String> defaultIncludes) {
-        String key;
         String value;
         String name;
-        SvnProperties config;
-        Map<String, SvnProperties> result;
+        LavenderProperties result;
+        String svnurl;
+        Filter filter;
+        String targetPathPrefix;
+        String resourcePathPrefix;
+        String type;
+        boolean lavendelize;
         String livePath;
 
-        result = new HashMap<>();
-        livePath = null;
-        for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-            key = (String) entry.getKey();
-            if (key.startsWith(SvnProperties.SVN_PREFIX)) {
-                key = key.substring(SvnProperties.SVN_PREFIX.length());
-                value = (String) entry.getValue();
-                int idx = key.indexOf('.');
-                if (idx == -1) {
-                    name = key;
-                    key = null;
-                } else {
-                    name = key.substring(0, idx);
-                    key = key.substring(idx + 1);
-                }
-                config = result.get(name);
-                if (config == null) {
-                    config = new SvnProperties(name, DefaultModule.filterForProperties(properties, SvnProperties.SVN_PREFIX + name, defaultIncludes));
-                    result.put(name, config);
-                }
-                if (key == null) {
-                    config.svnurl = Strings.removeLeftOpt((String) entry.getValue(), "scm:svn:");
-                } else {
-                    if (key.equals("targetPathPrefix")) {
-                        config.targetPathPrefix = value;
-                    } else if (key.equals("pathPrefix")) {
-                        // TODO: dump
-                        LOG.warn("CAUTION: out-dated pathPrefix - use targetPathPrefix instead");
-                        config.targetPathPrefix = value;
-                    } else if (key.equals("sourcePathPrefix")) {
-                        config.resourcePathPrefix = value;
-                    } else if (key.equals("type")) {
-                        config.type = value;
-                    } else if (key.equals("storage")) {
-                        if (value.startsWith("flash-")) {
-                            // TODO: dump
-                            LOG.warn("CAUTION: out-dated storage configured - use type instead");
-                            config.type = Docroot.FLASH;
-                        } else {
-                            throw new IllegalArgumentException("storage no longer supported: " + value);
-                        }
-                    } else if (key.equals("lavendelize")) {
-                        if ("true".equals(value)) {
-                            config.lavendelize = true;
-                        } else if ("false".equals(value)) {
-                            config.lavendelize = false;
-                        } else {
-                            throw new IllegalArgumentException("illegal value: " + value);
-                        }
-                    } else if (key.equals("livePath")) {
-                        config.livePath = value;
-                    } else {
-                        throw new IllegalArgumentException("unknown svn key: " + key);
-                    }
-                }
+        result = new LavenderProperties(eat(properties, "livePath", null));
+        for (String prefix : svnPrefixes(properties)) {
+            value = (String) properties.remove(prefix);
+            name = prefix.substring(SvnProperties.SVN_PREFIX.length());
+            svnurl = Strings.removeLeftOpt(value, "scm:svn:");
+            filter = eatFilter(properties, prefix, defaultIncludes);
+            targetPathPrefix = eatTargetPathPrefix(properties, prefix);
+            resourcePathPrefix = eat(properties, prefix + ".sourcePathPrefix", "");
+            type = eatType(properties, prefix);
+            lavendelize = eatBoolean(properties, prefix + ".lavendelize", true);
+            livePath = eat(properties, prefix + ".livePath", null);
+            result.configs.add(new SvnProperties(name, filter, svnurl, type, lavendelize, resourcePathPrefix, targetPathPrefix, livePath));
+        }
+        if (properties.size() > 0) {
+            throw new IllegalArgumentException("unknown properties: " + properties);
+        }
+        return result;
+    }
+
+    private static String eatType(Properties properties, String prefix) {
+        String type;
+        String value;
+
+        type = eat(properties, prefix + ".type", Docroot.WEB);
+        if (type == null) {
+            value = eat(properties, prefix + ".storage", null);
+            if (value.startsWith("flash-")) {
+                // TODO: dump
+                LOG.warn("CAUTION: out-dated storage configured - use type instead");
+                type = Docroot.FLASH;
             } else {
-                if (key.equals("livePath")) {
-                    livePath = (String) entry.getValue();
-                } else {
-                    throw new IllegalArgumentException("unknown key: " + key);
+                throw new IllegalArgumentException("storage no longer supported: " + value);
+            }
+        }
+        return type;
+    }
+
+    private static String eatTargetPathPrefix(Properties properties, String prefix) {
+        String targetPathPrefix;
+
+        targetPathPrefix = eat(properties, prefix + ".targetPathPrefix", "");
+        if (targetPathPrefix == null) {
+            LOG.warn("CAUTION: out-dated pathPrefix - use targetPathPrefix instead");
+            targetPathPrefix = eat(properties, prefix + ".pathPrefix", null);
+        }
+        return targetPathPrefix;
+    }
+
+    private static Filter eatFilter(Properties properties, String prefix, List<String> defaultIncludes) {
+        Filter result;
+
+        result = new Filter();
+        result.include(eatList(properties, prefix + ".includes", defaultIncludes));
+        result.exclude(eatList(properties, prefix + ".excludes", Collections.EMPTY_LIST));
+        return result;
+    }
+
+    private static List<String> eatList(Properties p, String key, List<String> dflt) {
+        String result;
+
+        result = eat(p, key, null);
+        return result == null ? dflt : Separator.SPACE.split(result);
+    }
+
+    private static boolean eatBoolean(Properties p, String key, boolean dflt) {
+        String result;
+
+        result = eat(p, key, null);
+        if (result == null) {
+            return dflt;
+        }
+        switch (result) {
+            case "true": return true;
+            case "false": return false;
+            default: throw new IllegalArgumentException("true or false expected, got " + result);
+        }
+    }
+
+    private static String eat(Properties p, String key, String dflt) {
+        String result;
+
+        result = (String) p.remove(key);
+        return result == null ? dflt : result;
+    }
+
+    private static List<String> svnPrefixes(Properties properties) {
+        List<String> result;
+
+        result = new ArrayList<>();
+        for (String name : properties.stringPropertyNames()) {
+            if (name.startsWith(SvnProperties.SVN_PREFIX)) {
+                if (Strings.count(name, ".") == 1) {
+                    result.add(name);
                 }
             }
         }
-        return new LavenderProperties(livePath, result.values());
+        return result;
     }
 
     //--
@@ -132,9 +171,9 @@ public class LavenderProperties {
     public final String livePath;
     public final Collection<SvnProperties> configs;
 
-    public LavenderProperties(String livePath, Collection<SvnProperties> configs) {
+    public LavenderProperties(String livePath) {
         this.livePath = livePath;
-        this.configs = configs;
+        this.configs = new ArrayList<>();
     }
 
     public void addModules(boolean prod, World world, String svnUsername, String svnPassword, List<Module> result) throws IOException {
