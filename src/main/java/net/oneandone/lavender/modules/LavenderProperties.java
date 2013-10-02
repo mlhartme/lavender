@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +37,8 @@ public class LavenderProperties {
 
     public static final String MODULE_PROPERTIES = "PUSTEFIX-INF/lavender.properties";
     private static final String APP_PROPERTIES = "WEB-INF/lavender.properties";
+    public static final List<String> DEFAULT_INCLUDES = new ArrayList<>(Arrays.asList(
+            "**/*.gif", "**/*.png", "**/*.jpg", "**/*.jpeg", "**/*.ico", "**/*.swf", "**/*.css", "**/*.js"));
 
     public static Properties getAppProperties(Node webapp) throws IOException {
         Node src;
@@ -52,7 +55,7 @@ public class LavenderProperties {
     }
 
     public static LavenderProperties parse(Properties properties) {
-        return parse(properties, DefaultModule.DEFAULT_INCLUDES);
+        return parse(properties, DEFAULT_INCLUDES);
     }
 
     public static LavenderProperties parse(Properties properties, List<String> defaultIncludes) {
@@ -67,7 +70,7 @@ public class LavenderProperties {
         boolean lavendelize;
         String livePath;
 
-        result = new LavenderProperties(eat(properties, "livePath", null));
+        result = new LavenderProperties(eatFilter(properties, "pustefix", defaultIncludes), eat(properties, "livePath", null));
         for (String prefix : svnPrefixes(properties)) {
             value = (String) properties.remove(prefix);
             name = prefix.substring(SvnProperties.SVN_PREFIX.length());
@@ -168,10 +171,12 @@ public class LavenderProperties {
 
     //--
 
+    public final Filter filter;
     public final String livePath;
     public final Collection<SvnProperties> configs;
 
-    public LavenderProperties(String livePath) {
+    public LavenderProperties(Filter filter, String livePath) {
+        this.filter = filter;
         this.livePath = livePath;
         this.configs = new ArrayList<>();
     }

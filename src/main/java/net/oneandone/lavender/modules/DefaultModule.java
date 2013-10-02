@@ -35,8 +35,6 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,27 +44,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public abstract class DefaultModule extends Module<Node> {
-    public static final List<String> DEFAULT_INCLUDES = new ArrayList<>(Arrays.asList(
-            "**/*.gif", "**/*.png", "**/*.jpg", "**/*.jpeg", "**/*.ico", "**/*.swf", "**/*.css", "**/*.js"));
-
-    public static Filter filterForProperties(Properties properties, String prefix, List<String> defaultIncludes) {
-        Filter result;
-
-        result = new Filter();
-        result.include(get(properties, prefix + ".includes", defaultIncludes));
-        result.exclude(get(properties, prefix + ".excludes", Collections.EMPTY_LIST));
-        return result;
-    }
-
-    private static List<String> get(Properties properties, String key, List<String> dflt) {
-        String str;
-
-        str = properties.getProperty(key);
-        return str == null ? dflt : Separator.COMMA.split(str);
-    }
-
-    //--
-
     private static final Logger LOG = LoggerFactory.getLogger(Module.class);
 
     public static List<Module> fromWebapp(boolean prod, Node webapp, String svnUsername, String svnPassword) throws IOException {
@@ -76,24 +53,24 @@ public abstract class DefaultModule extends Module<Node> {
         WarConfig rootConfig;
         DefaultModule root;
         JarConfig jarConfig;
-        Filter filter;
+        LavenderProperties lp;
 
         LOG.trace("scanning " + webapp);
         properties = LavenderProperties.getAppProperties(webapp);
+        lp =  LavenderProperties.parse(properties);
         result = new ArrayList<>();
         rootConfig = WarConfig.fromXml(webapp);
-        filter = filterForProperties(properties, "pustefix", DEFAULT_INCLUDES);
         // add modules before webapp, because they have a prefix
         for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
             jarConfig = loadJarModuleConfig(rootConfig, jar);
             if (jarConfig != null) {
-                result.addAll(jarModule(prod, jar, filter, jarConfig, svnUsername, svnPassword));
+                result.addAll(jarModule(prod, jar, lp.filter, jarConfig, svnUsername, svnPassword));
             }
         }
         webappSource = prod ? webapp : live(webapp);
-        root = warModule(rootConfig, filter, webappSource);
+        root = warModule(rootConfig, lp.filter, webappSource);
         result.add(root);
-        LavenderProperties.parse(properties, DEFAULT_INCLUDES).addModules(prod, webapp.getWorld(), svnUsername, svnPassword, result);
+        lp.addModules(prod, webapp.getWorld(), svnUsername, svnPassword, result);
         return result;
     }
 
@@ -139,7 +116,7 @@ public abstract class DefaultModule extends Module<Node> {
 
         if (propertiesNode != null && propertiesNode.exists()) {
             properties = propertiesNode.readProperties();
-            LavenderProperties.parse(properties, DEFAULT_INCLUDES).addModules(prod, propertiesNode.getWorld(), svnUsername, svnPassword, result);
+            LavenderProperties.parse(properties).addModules(prod, propertiesNode.getWorld(), svnUsername, svnPassword, result);
         }
         return result;
     }
