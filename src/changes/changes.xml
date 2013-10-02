@@ -4,6 +4,9 @@
       <action date="2013-09-17" dev="mhm" type="update">
         lavender.properties: Added livePath to configure svn checkout location.
       </action>
+      <action date="2013-10-02" dev="mhm" type="update">
+        lavender.properties: Renamed sourcePathPrefix to resourcePathPrefix.
+      </action>
       <action date="2013-09-17" dev="mhm" type="fix">
         Fixed module config to read both old and new descriptors. Removed resourceMapping support since it was removed from pustefix long ago.
       </action>

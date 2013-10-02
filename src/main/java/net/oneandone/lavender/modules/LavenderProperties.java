@@ -70,7 +70,7 @@ public class LavenderProperties {
                             Strings.removeLeftOpt((String) properties.remove(prefix), "scm:svn:"),
                             eatType(properties, prefix),
                             eatBoolean(properties, prefix + ".lavendelize", true),
-                            eat(properties, prefix + ".sourcePathPrefix", ""),
+                            eat(properties, prefix + ".resourcePathPrefix", ""),
                             eatTargetPathPrefix(properties, prefix),
                             eat(properties, prefix + ".livePath", null)));
         }
