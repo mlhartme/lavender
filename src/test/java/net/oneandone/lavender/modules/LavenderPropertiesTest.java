@@ -37,7 +37,11 @@ public class LavenderPropertiesTest {
 
     @Test
     public void empty() throws IOException {
-        assertEquals(0, LavenderProperties.parse(new Properties(), testPomInfo()).configs.size());
+        Properties p;
+
+        p = new Properties();
+        p.put("pustefix.relative", "base");
+        assertEquals(0, LavenderProperties.parse(p, testPomInfo()).configs.size());
     }
 
     @Test
@@ -51,6 +55,7 @@ public class LavenderPropertiesTest {
         props.put("svn.foo", "svn");
         props.put("svn.foo.targetPathPrefix", "prefix");
         props.put("svn.foo.lavendelize", "false");
+        props.put("svn.foo.relative", "sub");
         result = LavenderProperties.parse(props, testPomInfo());
         assertEquals("someDirectory/relative", result.source);
         assertEquals(1, result.configs.size());
@@ -66,7 +71,6 @@ public class LavenderPropertiesTest {
         Properties props;
 
         props = new Properties();
-        props.put("live", "live");
         LavenderProperties.parse(props, testPomInfo());
     }
 
@@ -75,6 +79,7 @@ public class LavenderPropertiesTest {
         Properties props;
 
         props = new Properties();
+        props.put("pustefix.relative", "foo");
         props.put("svn.module.nosuchkey", "bla");
         LavenderProperties.parse(props, testPomInfo());
     }
@@ -85,6 +90,7 @@ public class LavenderPropertiesTest {
         Collection<SvnProperties> result;
 
         props = new Properties();
+        props.put("pustefix.relative", "foo");
         props.put("svn.foo", "1");
         props.put("svn.bar", "2");
         props.put("svn.baz", "3");

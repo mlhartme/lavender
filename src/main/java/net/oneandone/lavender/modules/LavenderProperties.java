@@ -60,6 +60,7 @@ public class LavenderProperties {
 
     public static LavenderProperties loadApp(Node webapp) throws IOException {
         Node src;
+        Properties pominfo;
 
         src = webapp.join(LavenderProperties.APP_PROPERTIES);
         if (!src.exists()) {
@@ -69,7 +70,11 @@ public class LavenderProperties {
                 throw new IOException("lavender.properties not found");
             }
         }
-        return parse(src.readProperties(), pominfoOpt(webapp.join("WEB-INF/classes")));
+        pominfo = pominfoOpt(webapp.join("WEB-INF/classes"));
+        if (pominfo ==  null) {
+            throw new IOException("pominfo.properties for application not found");
+        }
+        return parse(src.readProperties(), pominfo);
     }
 
     private static Properties pominfoOpt(Node root) throws IOException {
@@ -90,9 +95,9 @@ public class LavenderProperties {
         String relative;
         String source;
 
-        relative = eat(properties, "pustefix.relative", null);
+        relative = eat(properties, "pustefix.relative");
         // TODO: enforce pominfo == null when enough modules have switched
-        if (pominfo != null && relative != null && thisMachine(pominfo.getProperty("ethernet"))) {
+        if (pominfo != null && thisMachine(pominfo.getProperty("ethernet"))) {
             source = pominfo.getProperty("basedir");
             source = Strings.removeRightOpt(source, "/");
             source = source + "/" + relative;
@@ -108,15 +113,140 @@ public class LavenderProperties {
                             Strings.removeLeftOpt((String) properties.remove(prefix), "scm:svn:"),
                             eatType(properties, prefix),
                             eatBoolean(properties, prefix + ".lavendelize", true),
-                            eat(properties, prefix + ".resourcePathPrefix", ""),
+                            eatOpt(properties, prefix + ".resourcePathPrefix", ""),
                             eatTargetPathPrefix(properties, prefix),
-                            eatSource(properties, prefix, source)));
+                            eatSvnSource(properties, prefix, source)));
         }
         if (properties.size() > 0) {
             throw new IllegalArgumentException("unknown properties: " + properties);
         }
         return result;
     }
+
+    private static String eatSvnSource(Properties properties, String prefix, String source) {
+        String relative;
+
+        relative = eatOpt(properties, prefix + ".relative", null);
+        return source == null && relative != null ? null : source + relative;
+    }
+
+    private static String eatType(Properties properties, String prefix) {
+        String type;
+        String value;
+
+        type = eatOpt(properties, prefix + ".type", Docroot.WEB);
+        if (type == null) {
+            value = eatOpt(properties, prefix + ".storage", null);
+            if (value.startsWith("flash-")) {
+                // TODO: dump
+                LOG.warn("CAUTION: out-dated storage configured - use type instead");
+                type = Docroot.FLASH;
+            } else {
+                throw new IllegalArgumentException("storage no longer supported: " + value);
+            }
+        }
+        return type;
+    }
+
+    private static String eatTargetPathPrefix(Properties properties, String prefix) {
+        String targetPathPrefix;
+
+        targetPathPrefix = eatOpt(properties, prefix + ".targetPathPrefix", "");
+        if (targetPathPrefix == null) {
+            LOG.warn("CAUTION: out-dated pathPrefix - use targetPathPrefix instead");
+            targetPathPrefix = eatOpt(properties, prefix + ".pathPrefix", null);
+        }
+        return targetPathPrefix;
+    }
+
+    private static Filter eatFilter(Properties properties, String prefix, List<String> defaultIncludes) {
+        Filter result;
+
+        result = new Filter();
+        result.include(eatListOpt(properties, prefix + ".includes", defaultIncludes));
+        result.exclude(eatListOpt(properties, prefix + ".excludes", Collections.EMPTY_LIST));
+        return result;
+    }
+
+    private static List<String> eatListOpt(Properties p, String key, List<String> dflt) {
+        String result;
+
+        result = eatOpt(p, key, null);
+        return result == null ? dflt : Separator.SPACE.split(result);
+    }
+
+    private static boolean eatBoolean(Properties p, String key, boolean dflt) {
+        String result;
+
+        result = eatOpt(p, key, null);
+        if (result == null) {
+            return dflt;
+        }
+        switch (result) {
+            case "true": return true;
+            case "false": return false;
+            default: throw new IllegalArgumentException("true or false expected, got " + result);
+        }
+    }
+
+    private static String eat(Properties p, String key) {
+        String result;
+
+        result = eatOpt(p, key, null);
+        if (result == null) {
+            throw new IllegalArgumentException("key not found: " + key);
+        }
+        return result;
+    }
+
+    private static String eatOpt(Properties p, String key, String dflt) {
+        String result;
+
+        result = (String) p.remove(key);
+        return result == null ? dflt : result;
+    }
+
+    private static List<String> svnPrefixes(Properties properties) {
+        List<String> result;
+
+        result = new ArrayList<>();
+        for (String name : properties.stringPropertyNames()) {
+            if (name.startsWith(SvnProperties.SVN_PREFIX)) {
+                if (Strings.count(name, ".") == 1) {
+                    result.add(name);
+                }
+            }
+        }
+        return result;
+    }
+
+    //--
+
+    public final Filter filter;
+    public final String source;
+    public final Collection<SvnProperties> configs;
+
+    public LavenderProperties(Filter filter, String source) {
+        if (filter == null) {
+            throw new IllegalArgumentException();
+        }
+        this.filter = filter;
+        this.source = source;
+        this.configs = new ArrayList<>();
+    }
+
+    public void addModules(boolean prod, World world, String svnUsername, String svnPassword, List<Module> result) throws IOException {
+        for (SvnProperties config : configs) {
+            result.add(config.create(prod, world, svnUsername, svnPassword));
+        }
+    }
+
+    public Node live(Node root) throws IOException {
+        return source != null ? root.getWorld().file(source) : root;
+    }
+
+
+    //--
 
     private static boolean thisMachine(String ethernet) throws IOException {
         List<String> thisEthernet;
@@ -175,115 +305,4 @@ public class LavenderProperties {
             throw new IllegalArgumentException("" + b);
         }
     }
-
-
-    private static String eatSource(Properties properties, String prefix, String source) {
-        return source == null ? null : source + eat(properties, prefix + ".relative", null);
-    }
-
-    private static String eatType(Properties properties, String prefix) {
-        String type;
-        String value;
-
-        type = eat(properties, prefix + ".type", Docroot.WEB);
-        if (type == null) {
-            value = eat(properties, prefix + ".storage", null);
-            if (value.startsWith("flash-")) {
-                // TODO: dump
-                LOG.warn("CAUTION: out-dated storage configured - use type instead");
-                type = Docroot.FLASH;
-            } else {
-                throw new IllegalArgumentException("storage no longer supported: " + value);
-            }
-        }
-        return type;
-    }
-
-    private static String eatTargetPathPrefix(Properties properties, String prefix) {
-        String targetPathPrefix;
-
-        targetPathPrefix = eat(properties, prefix + ".targetPathPrefix", "");
-        if (targetPathPrefix == null) {
-            LOG.warn("CAUTION: out-dated pathPrefix - use targetPathPrefix instead");
-            targetPathPrefix = eat(properties, prefix + ".pathPrefix", null);
-        }
-        return targetPathPrefix;
-    }
-
-    private static Filter eatFilter(Properties properties, String prefix, List<String> defaultIncludes) {
-        Filter result;
-
-        result = new Filter();
-        result.include(eatList(properties, prefix + ".includes", defaultIncludes));
-        result.exclude(eatList(properties, prefix + ".excludes", Collections.EMPTY_LIST));
-        return result;
-    }
-
-    private static List<String> eatList(Properties p, String key, List<String> dflt) {
-        String result;
-
-        result = eat(p, key, null);
-        return result == null ? dflt : Separator.SPACE.split(result);
-    }
-
-    private static boolean eatBoolean(Properties p, String key, boolean dflt) {
-        String result;
-
-        result = eat(p, key, null);
-        if (result == null) {
-            return dflt;
-        }
-        switch (result) {
-            case "true": return true;
-            case "false": return false;
-            default: throw new IllegalArgumentException("true or false expected, got " + result);
-        }
-    }
-
-    private static String eat(Properties p, String key, String dflt) {
-        String result;
-
-        result = (String) p.remove(key);
-        return result == null ? dflt : result;
-    }
-
-    private static List<String> svnPrefixes(Properties properties) {
-        List<String> result;
-
-        result = new ArrayList<>();
-        for (String name : properties.stringPropertyNames()) {
-            if (name.startsWith(SvnProperties.SVN_PREFIX)) {
-                if (Strings.count(name, ".") == 1) {
-                    result.add(name);
-                }
-            }
-        }
-        return result;
-    }
-
-    //--
-
-    public final Filter filter;
-    public final String source;
-    public final Collection<SvnProperties> configs;
-
-    public LavenderProperties(Filter filter, String source) {
-        if (filter == null) {
-            throw new IllegalArgumentException();
-        }
-        this.filter = filter;
-        this.source = source;
-        this.configs = new ArrayList<>();
-    }
-
-    public void addModules(boolean prod, World world, String svnUsername, String svnPassword, List<Module> result) throws IOException {
-        for (SvnProperties config : configs) {
-            result.add(config.create(prod, world, svnUsername, svnPassword));
-        }
-    }
-
-    public Node live(Node root) throws IOException {
-        return source != null ? root.getWorld().file(source) : root;
-    }
-
 }
