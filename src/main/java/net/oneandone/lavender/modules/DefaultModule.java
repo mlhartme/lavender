@@ -63,7 +63,7 @@ public abstract class DefaultModule extends Module<Node> {
                 result.addAll(jarModule(prod, jar, lp.filter, jarConfig, svnUsername, svnPassword));
             }
         }
-        webappSource = prod ? webapp : lp.live(webapp);
+        webappSource = lp.live(webapp);
         root = warModule(rootConfig, lp.filter, webappSource);
         result.add(root);
         lp.addModules(prod, webapp.getWorld(), svnUsername, svnPassword, result);

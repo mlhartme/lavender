@@ -47,11 +47,12 @@ public class LavenderPropertiesTest {
         SvnProperties config;
 
         props = new Properties();
+        props.put("pustefix.relative", "relative");
         props.put("svn.foo", "svn");
         props.put("svn.foo.targetPathPrefix", "prefix");
         props.put("svn.foo.lavendelize", "false");
         result = LavenderProperties.parse(props, testPomInfo());
-        assertEquals("someDirectory", result.source);
+        assertEquals("someDirectory/relative", result.source);
         assertEquals(1, result.configs.size());
         config = result.configs.iterator().next();
         assertEquals("foo", config.folder);

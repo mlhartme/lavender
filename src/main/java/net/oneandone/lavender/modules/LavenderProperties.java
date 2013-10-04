@@ -16,6 +16,7 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.config.Docroot;
+import net.oneandone.sushi.fs.FileNotFoundException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.filter.Filter;
@@ -54,7 +55,7 @@ public class LavenderProperties {
             return null;
         }
         properties = src.readProperties();
-        return LavenderProperties.parse(properties, pominfo(root));
+        return LavenderProperties.parse(properties, pominfoOpt(root));
     }
 
     public static LavenderProperties loadApp(Node webapp) throws IOException {
@@ -68,11 +69,15 @@ public class LavenderProperties {
                 throw new IOException("lavender.properties not found");
             }
         }
-        return parse(src.readProperties(), pominfo(webapp));
+        return parse(src.readProperties(), pominfoOpt(webapp.join("WEB-INF/classes")));
     }
 
-    private static Properties pominfo(Node root) throws IOException {
-        return root.join("META-INF/pominfo.properties").readProperties();
+    private static Properties pominfoOpt(Node root) throws IOException {
+        try {
+            return root.join("META-INF/pominfo.properties").readProperties();
+        } catch (FileNotFoundException e) {
+            return null;
+        }
     }
 
     // public only for testing
@@ -82,11 +87,15 @@ public class LavenderProperties {
 
     private static LavenderProperties parse(Properties properties, Properties pominfo, List<String> defaultIncludes) throws IOException {
         LavenderProperties result;
+        String relative;
         String source;
 
-        if (thisMachine(pominfo.getProperty("ethernet"))) {
+        relative = eat(properties, "pustefix.relative", null);
+        // TODO: enforce pominfo == null when enough modules have switched
+        if (pominfo != null && relative != null && thisMachine(pominfo.getProperty("ethernet"))) {
             source = pominfo.getProperty("basedir");
             source = Strings.removeRightOpt(source, "/");
+            source = source + "/" + relative;
         } else {
             source = null;
         }
