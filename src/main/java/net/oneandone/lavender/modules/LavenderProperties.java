@@ -184,23 +184,23 @@ public class LavenderProperties {
     //--
 
     public final Filter filter;
-    public final String liveEthernet;
-    public final String livePath;
+    public final String sourceEthernet;
+    public final String sourcePath;
     public final Collection<SvnProperties> configs;
 
-    public LavenderProperties(Filter filter, String liveEthernet, String livePath) {
+    public LavenderProperties(Filter filter, String sourceEthernet, String sourcePath) {
         if (filter == null) {
             throw new IllegalArgumentException();
         }
-        if (liveEthernet == null) {
+        if (sourceEthernet == null) {
             throw new IllegalArgumentException();
         }
-        if (livePath == null) {
+        if (sourcePath == null) {
             throw new IllegalArgumentException();
         }
         this.filter = filter;
-        this.liveEthernet = liveEthernet;
-        this.livePath = livePath;
+        this.sourceEthernet = sourceEthernet;
+        this.sourcePath = sourcePath;
         this.configs = new ArrayList<>();
     }
 
@@ -211,7 +211,7 @@ public class LavenderProperties {
     }
 
     public Node live(Node root) throws IOException {
-        return livePath != null ? root.getWorld().file(livePath) : root;
+        return sourcePath != null ? root.getWorld().file(sourcePath) : root;
     }
 
 }

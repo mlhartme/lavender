@@ -49,7 +49,7 @@ public class LavenderPropertiesTest {
         props.put("svn.foo.targetPathPrefix", "prefix");
         props.put("svn.foo.lavendelize", "false");
         result = LavenderProperties.parse(props, testPomInfo());
-        assertEquals("someDirectory", result.livePath);
+        assertEquals("someDirectory", result.sourcePath);
         assertEquals(1, result.configs.size());
         config = result.configs.iterator().next();
         assertEquals("foo", config.folder);
