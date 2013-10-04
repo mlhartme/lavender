@@ -40,9 +40,12 @@ public class SvnProperties {
     public final boolean lavendelize;
     public final String resourcePathPrefix;
     public final String targetPathPrefix;
-    public final String livePath;
 
-    public SvnProperties(String folder, Filter filter, String svnurl, String type, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, String livePath) {
+    /** Absolute path relative to local sources for this module, null if not available */
+    public final String source;
+
+    public SvnProperties(String folder, Filter filter, String svnurl, String type, boolean lavendelize, String resourcePathPrefix,
+                         String targetPathPrefix, String source) {
         this.folder = folder;
         this.filter = filter;
         this.svnurl = svnurl;
@@ -50,7 +53,7 @@ public class SvnProperties {
         this.lavendelize = lavendelize;
         this.resourcePathPrefix = resourcePathPrefix;
         this.targetPathPrefix = targetPathPrefix;
-        this.livePath = livePath;
+        this.source = source;
     }
 
     public Module create(boolean prod, World world, String svnUsername, String svnPassword) throws IOException {
@@ -70,8 +73,8 @@ public class SvnProperties {
         // TODO: ugly side-effect
         world.getFilesystem("svn", SvnFilesystem.class).setDefaultCredentials(svnUsername, svnPassword);
 
-        if (!prod && livePath != null) {
-            checkout = world.file(livePath);
+        if (!prod && source != null) {
+            checkout = world.file(source);
             if (checkout.isDirectory()) {
                 if (svnurl.equals(SvnNode.urlFromWorkspace(checkout))) {
                     return new DefaultModule(type, folder, resourcePathPrefix, targetPathPrefix, filter) {

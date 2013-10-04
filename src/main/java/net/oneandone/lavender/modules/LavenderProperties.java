@@ -25,10 +25,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
@@ -74,15 +76,21 @@ public class LavenderProperties {
     }
 
     // public only for testing
-    public static LavenderProperties parse(Properties properties, Properties pominfo) {
+    public static LavenderProperties parse(Properties properties, Properties pominfo) throws IOException {
         return parse(properties, pominfo, DEFAULT_INCLUDES);
     }
 
-    private static LavenderProperties parse(Properties properties, Properties pominfo, List<String> defaultIncludes) {
+    private static LavenderProperties parse(Properties properties, Properties pominfo, List<String> defaultIncludes) throws IOException {
         LavenderProperties result;
+        String source;
 
-        result = new LavenderProperties(eatFilter(properties, "pustefix", defaultIncludes),
-                pominfo.getProperty("ethernet"), pominfo.getProperty("basedir"));
+        if (thisMachine(pominfo.getProperty("ethernet"))) {
+            source = pominfo.getProperty("basedir");
+            source = Strings.removeRightOpt(source, "/");
+        } else {
+            source = null;
+        }
+        result = new LavenderProperties(eatFilter(properties, "pustefix", defaultIncludes), source);
         for (String prefix : svnPrefixes(properties)) {
             result.configs.add(
                     new SvnProperties(
@@ -93,12 +101,75 @@ public class LavenderProperties {
                             eatBoolean(properties, prefix + ".lavendelize", true),
                             eat(properties, prefix + ".resourcePathPrefix", ""),
                             eatTargetPathPrefix(properties, prefix),
-                            eat(properties, prefix + ".livePath", null)));
+                            eatSource(properties, prefix, source)));
         }
         if (properties.size() > 0) {
             throw new IllegalArgumentException("unknown properties: " + properties);
         }
         return result;
+    }
+
+    private static boolean thisMachine(String ethernet) throws IOException {
+        List<String> thisEthernet;
+        List<String> otherEthernet;
+
+        thisEthernet = ethernet();
+        otherEthernet = Separator.COMMA.split(ethernet);
+        for (String address : thisEthernet) {
+            if (otherEthernet.contains(address)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static List<String> ethernet() throws IOException {
+        Enumeration ifcs;
+        List<String> result;
+        NetworkInterface ifc;
+        byte[] address;
+
+        ifcs = NetworkInterface.getNetworkInterfaces();
+        result = new ArrayList<>();
+        while (ifcs.hasMoreElements()) {
+            ifc = (NetworkInterface) ifcs.nextElement();
+            address = ifc.getHardwareAddress();
+            if (address != null) {
+                result.add(toHex(address));
+            } else {
+                // ignore -- not available (i.e. loopback device) or not accessible
+            }
+        }
+        return result;
+    }
+
+    public static String toHex(byte ... bytes) {
+        StringBuilder builder;
+
+        builder = new StringBuilder();
+        for (byte b : bytes) {
+            if (builder.length() > 0) {
+                builder.append(':');
+            }
+            builder.append(toHexChar(b >> 4 & 0xf));
+            builder.append(toHexChar(b & 0xf));
+        }
+        return builder.toString();
+    }
+
+    private static char toHexChar(int b) {
+        if (b >= 0 && b <= 9) {
+            return (char) ('0' + b);
+        } else if (b >= 10 && b <= 15) {
+            return (char) ('a' + b - 10);
+        } else {
+            throw new IllegalArgumentException("" + b);
+        }
+    }
+
+
+    private static String eatSource(Properties properties, String prefix, String source) {
+        return source == null ? null : source + eat(properties, prefix + ".relative", null);
     }
 
     private static String eatType(Properties properties, String prefix) {
@@ -184,23 +255,15 @@ public class LavenderProperties {
     //--
 
     public final Filter filter;
-    public final String sourceEthernet;
-    public final String sourcePath;
+    public final String source;
     public final Collection<SvnProperties> configs;
 
-    public LavenderProperties(Filter filter, String sourceEthernet, String sourcePath) {
+    public LavenderProperties(Filter filter, String source) {
         if (filter == null) {
             throw new IllegalArgumentException();
         }
-        if (sourceEthernet == null) {
-            throw new IllegalArgumentException();
-        }
-        if (sourcePath == null) {
-            throw new IllegalArgumentException();
-        }
         this.filter = filter;
-        this.sourceEthernet = sourceEthernet;
-        this.sourcePath = sourcePath;
+        this.source = source;
         this.configs = new ArrayList<>();
     }
 
@@ -211,7 +274,7 @@ public class LavenderProperties {
     }
 
     public Node live(Node root) throws IOException {
-        return sourcePath != null ? root.getWorld().file(sourcePath) : root;
+        return source != null ? root.getWorld().file(source) : root;
     }
 
 }

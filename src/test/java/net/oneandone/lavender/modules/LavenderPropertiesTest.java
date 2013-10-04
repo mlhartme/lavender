@@ -15,8 +15,10 @@
  */
 package net.oneandone.lavender.modules;
 
+import net.oneandone.sushi.util.Separator;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Properties;
 
@@ -24,22 +26,22 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 public class LavenderPropertiesTest {
-    private static Properties testPomInfo() {
+    private static Properties testPomInfo() throws IOException {
         Properties p;
 
         p = new Properties();
-        p.put("ethernet", "someAddress");
+        p.put("ethernet", Separator.COMMA.join(LavenderProperties.ethernet()));
         p.put("basedir", "someDirectory");
         return p;
     }
 
     @Test
-    public void empty() {
+    public void empty() throws IOException {
         assertEquals(0, LavenderProperties.parse(new Properties(), testPomInfo()).configs.size());
     }
 
     @Test
-    public void one() {
+    public void one() throws IOException {
         Properties props;
         LavenderProperties result;
         SvnProperties config;
@@ -49,7 +51,7 @@ public class LavenderPropertiesTest {
         props.put("svn.foo.targetPathPrefix", "prefix");
         props.put("svn.foo.lavendelize", "false");
         result = LavenderProperties.parse(props, testPomInfo());
-        assertEquals("someDirectory", result.sourcePath);
+        assertEquals("someDirectory", result.source);
         assertEquals(1, result.configs.size());
         config = result.configs.iterator().next();
         assertEquals("foo", config.folder);
@@ -59,7 +61,7 @@ public class LavenderPropertiesTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void undefinedNormal() {
+    public void undefinedNormal() throws IOException {
         Properties props;
 
         props = new Properties();
@@ -68,7 +70,7 @@ public class LavenderPropertiesTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void undefinedSvn() {
+    public void undefinedSvn() throws IOException {
         Properties props;
 
         props = new Properties();
@@ -77,7 +79,7 @@ public class LavenderPropertiesTest {
     }
 
     @Test
-    public void more() {
+    public void more() throws IOException {
         Properties props;
         Collection<SvnProperties> result;
 
