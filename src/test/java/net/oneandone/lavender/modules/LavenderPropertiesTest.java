@@ -24,9 +24,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 public class LavenderPropertiesTest {
+    private static Properties testPomInfo() {
+        Properties p;
+
+        p = new Properties();
+        p.put("ethernet", "someAddress");
+        p.put("basedir", "someDirectory");
+        return p;
+    }
+
     @Test
     public void empty() {
-        assertEquals(0, LavenderProperties.parse(new Properties()).configs.size());
+        assertEquals(0, LavenderProperties.parse(new Properties(), testPomInfo()).configs.size());
     }
 
     @Test
@@ -36,12 +45,11 @@ public class LavenderPropertiesTest {
         SvnProperties config;
 
         props = new Properties();
-        props.put("livePath", "live");
         props.put("svn.foo", "svn");
         props.put("svn.foo.targetPathPrefix", "prefix");
         props.put("svn.foo.lavendelize", "false");
-        result = LavenderProperties.parse(props);
-        assertEquals("live", result.livePath);
+        result = LavenderProperties.parse(props, testPomInfo());
+        assertEquals("someDirectory", result.livePath);
         assertEquals(1, result.configs.size());
         config = result.configs.iterator().next();
         assertEquals("foo", config.folder);
@@ -56,7 +64,7 @@ public class LavenderPropertiesTest {
 
         props = new Properties();
         props.put("live", "live");
-        LavenderProperties.parse(props);
+        LavenderProperties.parse(props, testPomInfo());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -65,7 +73,7 @@ public class LavenderPropertiesTest {
 
         props = new Properties();
         props.put("svn.module.nosuchkey", "bla");
-        LavenderProperties.parse(props);
+        LavenderProperties.parse(props, testPomInfo());
     }
 
     @Test
@@ -77,7 +85,7 @@ public class LavenderPropertiesTest {
         props.put("svn.foo", "1");
         props.put("svn.bar", "2");
         props.put("svn.baz", "3");
-        result = LavenderProperties.parse(props).configs;
+        result = LavenderProperties.parse(props, testPomInfo()).configs;
         assertEquals(3, result.size());
     }
 }

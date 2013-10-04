@@ -52,7 +52,7 @@ public class LavenderProperties {
             return null;
         }
         properties = src.readProperties();
-        return LavenderProperties.parse(properties);
+        return LavenderProperties.parse(properties, pominfo(root));
     }
 
     public static LavenderProperties loadApp(Node webapp) throws IOException {
@@ -66,17 +66,23 @@ public class LavenderProperties {
                 throw new IOException("lavender.properties not found");
             }
         }
-        return parse(src.readProperties());
+        return parse(src.readProperties(), pominfo(webapp));
     }
 
-    public static LavenderProperties parse(Properties properties) {
-        return parse(properties, DEFAULT_INCLUDES);
+    private static Properties pominfo(Node root) throws IOException {
+        return root.join("META-INF/pominfo.properties").readProperties();
     }
 
-    private static LavenderProperties parse(Properties properties, List<String> defaultIncludes) {
+    // public only for testing
+    public static LavenderProperties parse(Properties properties, Properties pominfo) {
+        return parse(properties, pominfo, DEFAULT_INCLUDES);
+    }
+
+    private static LavenderProperties parse(Properties properties, Properties pominfo, List<String> defaultIncludes) {
         LavenderProperties result;
 
-        result = new LavenderProperties(eatFilter(properties, "pustefix", defaultIncludes), eat(properties, "livePath", null));
+        result = new LavenderProperties(eatFilter(properties, "pustefix", defaultIncludes),
+                pominfo.getProperty("ethernet"), pominfo.getProperty("basedir"));
         for (String prefix : svnPrefixes(properties)) {
             result.configs.add(
                     new SvnProperties(
@@ -178,11 +184,22 @@ public class LavenderProperties {
     //--
 
     public final Filter filter;
+    public final String liveEthernet;
     public final String livePath;
     public final Collection<SvnProperties> configs;
 
-    public LavenderProperties(Filter filter, String livePath) {
+    public LavenderProperties(Filter filter, String liveEthernet, String livePath) {
+        if (filter == null) {
+            throw new IllegalArgumentException();
+        }
+        if (liveEthernet == null) {
+            throw new IllegalArgumentException();
+        }
+        if (livePath == null) {
+            throw new IllegalArgumentException();
+        }
         this.filter = filter;
+        this.liveEthernet = liveEthernet;
         this.livePath = livePath;
         this.configs = new ArrayList<>();
     }
