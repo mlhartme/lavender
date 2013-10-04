@@ -71,7 +71,11 @@ public class LavenderProperties {
             }
         }
         pominfo = pominfoOpt(webapp.join("WEB-INF/classes"));
-        if (pominfo ==  null) {
+        if (pominfo == null) {
+            // TODO: try target/classes - hack because pws deletes WEB-INF/classes to get virtual classpath working
+            pominfo = pominfoOpt(webapp.join("../classes"));
+        }
+        if (pominfo == null) {
             throw new IOException("pominfo.properties for application not found");
         }
         return parse(src.readProperties(), pominfo);
@@ -96,7 +100,7 @@ public class LavenderProperties {
         String source;
 
         relative = eat(properties, "pustefix.relative");
-        // TODO: enforce pominfo == null when enough modules have switched
+        // TODO: enforce pominfo != null when enough modules have switched
         if (pominfo != null && thisMachine(pominfo.getProperty("ethernet"))) {
             source = pominfo.getProperty("basedir");
             source = Strings.removeRightOpt(source, "/");
