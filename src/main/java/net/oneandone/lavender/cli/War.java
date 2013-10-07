@@ -24,12 +24,16 @@ import net.oneandone.lavender.config.Target;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.sushi.cli.ArgumentException;
 import net.oneandone.sushi.cli.Console;
+import net.oneandone.sushi.cli.Option;
 import net.oneandone.sushi.cli.Remaining;
 import net.oneandone.sushi.cli.Value;
+import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 public class War extends Base {
@@ -42,7 +46,7 @@ public class War extends Base {
     @Value(name = "idxName", position = 3)
     private String indexName;
 
-    private Map<String, Target> targets = new HashMap<>();
+    private final Map<String, Target> targets = new HashMap<>();
     private String nodes;
 
     @Remaining
@@ -87,6 +91,7 @@ public class War extends Base {
         FileNode outputNodesFile;
         WarEngine engine;
         Map<String, Distributor> distributors;
+        List<Node> locks;
 
         if (targets.isEmpty()) {
             throw new ArgumentException("missing targets");
@@ -98,10 +103,16 @@ public class War extends Base {
         outputWar.checkNotExists();
         tmp = inputWar.getWorld().getTemp();
         outputNodesFile = tmp.createTempFile();
-        distributors = distributors();
-        engine = new WarEngine(distributors, indexName, settings.svnUsername, settings.svnPassword,
-                inputWar, outputWar, outputNodesFile, nodes);
-        engine.run();
+        locks = Target.lock(console.world, user, new HashSet<>(targets.values()));
+        console.verbose.println("locked " + locks);
+        try {
+            distributors = distributors();
+            engine = new WarEngine(distributors, indexName, settings.svnUsername, settings.svnPassword,
+                    inputWar, outputWar, outputNodesFile, nodes);
+            engine.run();
+        } finally {
+            Target.unlock(locks);
+        }
         outputNodesFile.deleteFile();
     }
 

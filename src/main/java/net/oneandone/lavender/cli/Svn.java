@@ -27,9 +27,11 @@ import net.oneandone.lavender.modules.SvnProperties;
 import net.oneandone.sushi.cli.ArgumentException;
 import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.cli.Value;
+import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.filter.Filter;
 
 import java.io.IOException;
+import java.util.List;
 
 public class Svn extends Base {
     @Value(name = "directory", position = 1)
@@ -53,6 +55,7 @@ public class Svn extends Base {
         Filter filter;
         SvnProperties moduleConfig;
         Module module;
+        List<Node> locks;
         Distributor distributor;
         long changed;
         Index index;
@@ -67,10 +70,15 @@ public class Svn extends Base {
         filter.includeAll();
         moduleConfig = new SvnProperties("svn", filter, svn + "/data/" + directory, Docroot.WEB, false, "", directory + "/", null);
         module = moduleConfig.create(true, console.world, settings.svnUsername, settings.svnPassword);
-        distributor = target.open(console.world, directory + ".idx");
-        changed = module.publish(distributor);
-        index = distributor.close();
-        module.saveCaches();
+        locks = target.lock(console.world, user);
+        try {
+            distributor = target.open(console.world, directory + ".idx");
+            changed = module.publish(distributor);
+            index = distributor.close();
+            module.saveCaches();
+        } finally {
+            Target.unlock(locks);
+        }
         console.info.println("done: " + changed + "/" + index.size() + " files changed");
     }
 }

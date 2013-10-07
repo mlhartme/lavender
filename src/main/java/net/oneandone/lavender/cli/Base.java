@@ -20,11 +20,15 @@ import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Settings;
 import net.oneandone.sushi.cli.Command;
 import net.oneandone.sushi.cli.Console;
+import net.oneandone.sushi.cli.Option;
 
 public abstract class Base implements Command {
     protected final Console console;
     protected final Settings settings;
     protected final Net net;
+
+    @Option("user")
+    protected String user = "unknown@all";
 
     protected Base(Console console, Settings settings, Net net) {
         this.console = console;
