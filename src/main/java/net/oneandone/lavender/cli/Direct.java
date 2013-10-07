@@ -50,13 +50,11 @@ public class Direct extends Base {
 
     @Override
     public void invoke() throws IOException, JSchException {
-        SshFilesystem fs;
         SshRoot root;
 
         if (command.size() == 0) {
             throw new ArgumentException("missing command");
         }
-        fs = (SshFilesystem) console.world.getFilesystem("ssh");
         for (Host host : net.get(cluster).hosts()) {
             root = (SshRoot) host.open(console.world).getRoot();
             console.info.println(host.toString());
