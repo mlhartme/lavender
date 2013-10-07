@@ -16,11 +16,12 @@
 package net.oneandone.lavender.config;
 
 import net.oneandone.sushi.fs.Node;
-import net.oneandone.sushi.fs.NodeInstantiationException;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.metadata.annotation.Type;
 import net.oneandone.sushi.metadata.annotation.Value;
+
+import java.io.IOException;
 
 @Type
 public class Host {
@@ -66,13 +67,14 @@ public class Host {
         this.login = login;
     }
 
-    /** @return root node of this host */
-    public Node open(World world) throws NodeInstantiationException {
-        if (name.equals(LOCALHOST)) {
-            return world.file(login);
-        } else {
-            return world.validNode("ssh://" + login + "@" + name);
-        }
+    /** do not call directly, use pool.connect instead. */
+    public Connection connect(World world, String lock) throws IOException {
+        boolean local;
+        Node node;
+
+        local = name.equals(LOCALHOST);
+        node = local ? world.file(login) : world.validNode("ssh://" + login + "@" + name);
+        return local || lock != null ? Connection.openSimple(this, node) : Connection.openLocked(this, node, lock);
     }
 
     public String toString() {

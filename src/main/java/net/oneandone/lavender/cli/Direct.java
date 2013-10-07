@@ -16,14 +16,14 @@
 package net.oneandone.lavender.cli;
 
 import com.jcraft.jsch.JSchException;
-import net.oneandone.lavender.config.Host;
+import net.oneandone.lavender.config.Connection;
 import net.oneandone.lavender.config.Net;
+import net.oneandone.lavender.config.Pool;
 import net.oneandone.lavender.config.Settings;
 import net.oneandone.sushi.cli.ArgumentException;
 import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.cli.Remaining;
 import net.oneandone.sushi.cli.Value;
-import net.oneandone.sushi.fs.ssh.SshFilesystem;
 import net.oneandone.sushi.fs.ssh.SshRoot;
 import net.oneandone.sushi.launcher.ExitCode;
 import net.oneandone.sushi.util.Strings;
@@ -55,13 +55,15 @@ public class Direct extends Base {
         if (command.size() == 0) {
             throw new ArgumentException("missing command");
         }
-        for (Host host : net.get(cluster).hosts()) {
-            root = (SshRoot) host.open(console.world).getRoot();
-            console.info.println(host.toString());
-            try {
-                console.info.println(root.exec(Strings.toArray(command)));
-            } catch (ExitCode e) {
-                console.error.println(e.toString());
+        try (Pool pool = new Pool(console.world, user)) {
+            for (Connection connection : net.get(cluster).connect(pool)) {
+                root = (SshRoot) connection.join().getRoot();
+                console.info.println(connection.getHost().toString());
+                try {
+                    console.info.println(root.exec(Strings.toArray(command)));
+                } catch (ExitCode e) {
+                    console.error.println(e.toString());
+                }
             }
         }
     }

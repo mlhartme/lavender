@@ -19,21 +19,18 @@ import net.oneandone.lavender.config.Alias;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Net;
+import net.oneandone.lavender.config.Pool;
 import net.oneandone.lavender.config.Settings;
 import net.oneandone.lavender.config.Target;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.sushi.cli.ArgumentException;
 import net.oneandone.sushi.cli.Console;
-import net.oneandone.sushi.cli.Option;
 import net.oneandone.sushi.cli.Remaining;
 import net.oneandone.sushi.cli.Value;
-import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 
 public class War extends Base {
@@ -91,7 +88,6 @@ public class War extends Base {
         FileNode outputNodesFile;
         WarEngine engine;
         Map<String, Distributor> distributors;
-        List<Node> locks;
 
         if (targets.isEmpty()) {
             throw new ArgumentException("missing targets");
@@ -103,25 +99,21 @@ public class War extends Base {
         outputWar.checkNotExists();
         tmp = inputWar.getWorld().getTemp();
         outputNodesFile = tmp.createTempFile();
-        locks = Target.lock(console.world, user, new HashSet<>(targets.values()));
-        console.verbose.println("locked " + locks);
-        try {
-            distributors = distributors();
+        try (Pool pool = new Pool(console.world, user)) {
+            distributors = distributors(pool);
             engine = new WarEngine(distributors, indexName, settings.svnUsername, settings.svnPassword,
                     inputWar, outputWar, outputNodesFile, nodes);
             engine.run();
-        } finally {
-            Target.unlock(locks);
         }
         outputNodesFile.deleteFile();
     }
 
-    private Map<String, Distributor> distributors() throws IOException {
+    private Map<String, Distributor> distributors(Pool pool) throws IOException {
         Map<String, Distributor> result;
 
         result = new HashMap<>();
         for (Map.Entry<String, Target> entry : targets.entrySet()) {
-            result.put(entry.getKey(), entry.getValue().open(console.world, indexName));
+            result.put(entry.getKey(), entry.getValue().open(pool, indexName));
         }
         return result;
     }

@@ -16,9 +16,11 @@
 package net.oneandone.lavender.cli;
 
 import net.oneandone.lavender.config.Cluster;
+import net.oneandone.lavender.config.Connection;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Host;
 import net.oneandone.lavender.config.Net;
+import net.oneandone.lavender.config.Pool;
 import net.oneandone.lavender.config.Settings;
 import net.oneandone.sushi.fs.Node;
 import org.junit.Test;
@@ -32,10 +34,12 @@ public class MainManual {
 
         settings = Settings.load();
         net = settings.loadNet();
-        for (Cluster cluster : net.clusters()) {
-            for (Host host : cluster.hosts()) {
-                node = new Docroot("", "", "").node(host.open(settings.world));
-                System.out.println(host + ":\n  " + node.list());
+        try (Pool pool = new Pool(settings.world, null)) {
+            for (Cluster cluster : net.clusters()) {
+                for (Connection connection : cluster.connect(pool)) {
+                    node = new Docroot("", "", "").node(connection);
+                    System.out.println(connection.getHost() + ":\n  " + node.list());
+                }
             }
         }
     }

@@ -110,20 +110,20 @@ public class Docroot {
         throw new ArgumentException("alias not found: " + name);
     }
 
-    public Node node(Node host) {
-        return host.join(docroot);
+    public Node node(Connection connection) {
+        return connection.join(docroot);
     }
 
-    public Node index(Node host, String indexName) {
-        return host.join(indexes, indexName);
+    public Node index(Connection connection, String indexName) {
+        return connection.join(indexes, indexName);
     }
 
     /** @return all indexes without the all index */
-    public List<? extends Node> indexList(Node host) throws ListException, DirectoryNotFoundException {
+    public List<? extends Node> indexList(Connection connection) throws ListException, DirectoryNotFoundException {
         List<? extends Node> result;
         Iterator<? extends Node> iter;
 
-        result = host.join(indexes).list();
+        result = connection.join(indexes).list();
         iter = result.iterator();
         while (iter.hasNext()) {
             if (iter.next().getName().startsWith(".")) {

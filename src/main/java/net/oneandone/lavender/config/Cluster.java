@@ -94,4 +94,25 @@ public class Cluster {
         docroots.add(new Docroot(type, docroot, indexes, Arrays.asList(aliases)));
         return this;
     }
+
+    public List<Connection> connect(Pool pool) throws IOException {
+        List<Connection> result;
+
+        result = new ArrayList<>();
+        for (Host host : hosts) {
+            try {
+                result.add(pool.connect(host));
+            } catch (IOException e) {
+                for (Connection connection : result) {
+                    try {
+                        connection.close();
+                    } catch (IOException suppressed) {
+                        e.addSuppressed(suppressed);
+                    }
+                }
+                throw e;
+            }
+        }
+        return result;
+    }
 }

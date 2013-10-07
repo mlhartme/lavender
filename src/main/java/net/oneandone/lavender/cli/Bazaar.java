@@ -17,9 +17,11 @@ package net.oneandone.lavender.cli;
 
 import com.jcraft.jsch.JSchException;
 import net.oneandone.lavender.config.Cluster;
+import net.oneandone.lavender.config.Connection;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Host;
 import net.oneandone.lavender.config.Net;
+import net.oneandone.lavender.config.Pool;
 import net.oneandone.lavender.config.Settings;
 import net.oneandone.lavender.config.Target;
 import net.oneandone.sushi.cli.Console;
@@ -70,15 +72,17 @@ public class Bazaar extends Base {
         srcfile.copyFile(local);
         console.info.println("downloaded " + local.length() + " bytes from " + srcfile.getURI());
         root = local.openZip();
-        for (Host host : target.cluster.hosts()) {
-            console.info.println(host);
-            destTmp = target.docroot.node(host.open(console.world)).getParent().join("bazaarvoice/tmp").mkdirsOpt();
-            destFinal = destTmp.getParent().join("latest");
-            destFinal.checkDirectory();
-            destTmp.mkdir();
-            root.copyDirectory(destTmp);
-            destFinal.deleteTree();
-            destTmp.move(destFinal);
+        try (Pool pool = new Pool(console.world, user)) {
+            for (Connection connection : target.cluster.connect(pool)) {
+                console.info.println(connection.getHost());
+                destTmp = target.docroot.node(connection).getParent().join("bazaarvoice/tmp").mkdirsOpt();
+                destFinal = destTmp.getParent().join("latest");
+                destFinal.checkDirectory();
+                destTmp.mkdir();
+                root.copyDirectory(destTmp);
+                destFinal.deleteTree();
+                destTmp.move(destFinal);
+            }
         }
     }
 }

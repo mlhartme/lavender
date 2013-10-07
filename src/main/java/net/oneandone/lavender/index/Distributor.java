@@ -15,11 +15,10 @@
  */
 package net.oneandone.lavender.index;
 
+import net.oneandone.lavender.config.Connection;
 import net.oneandone.lavender.config.Docroot;
-import net.oneandone.lavender.config.Host;
 import net.oneandone.lavender.modules.Resource;
 import net.oneandone.sushi.fs.Node;
-import net.oneandone.sushi.fs.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,8 +32,7 @@ import java.util.Map;
 public class Distributor {
     private static final Logger LOG = LoggerFactory.getLogger(Distributor.class);
 
-    public static Distributor open(World world, List<Host> hosts, Docroot docroot, String indexName) throws IOException {
-        Node root;
+    public static Distributor open(List<Connection> connections, Docroot docroot, String indexName) throws IOException {
         Node destroot;
         Node file;
         Map<Node, Node> targets;
@@ -42,19 +40,18 @@ public class Distributor {
         Index prev;
 
         targets = new LinkedHashMap<>(); // to preserve order
-        if (hosts.isEmpty()) {
+        if (connections.isEmpty()) {
             prev = new Index();
             all = new Index();
         } else {
             all = null;
             prev = null;
-            for (Host host : hosts) {
-                root = host.open(world);
-                destroot = docroot.node(root);
-                file = docroot.index(root, indexName);
+            for (Connection connection : connections) {
+                destroot = docroot.node(connection);
+                file = docroot.index(connection, indexName);
                 prev = loadSame(file, prev);
                 targets.put(file, destroot);
-                all = loadSame(docroot.index(root, Index.ALL_IDX), all);
+                all = loadSame(docroot.index(connection, Index.ALL_IDX), all);
             }
         }
         return new Distributor(targets, all, prev);

@@ -16,9 +16,10 @@
 package net.oneandone.lavender.cli;
 
 import net.oneandone.lavender.config.Cluster;
+import net.oneandone.lavender.config.Connection;
 import net.oneandone.lavender.config.Docroot;
-import net.oneandone.lavender.config.Host;
 import net.oneandone.lavender.config.Net;
+import net.oneandone.lavender.config.Pool;
 import net.oneandone.lavender.config.Settings;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
@@ -50,28 +51,28 @@ public class GarbageCollection extends Base {
     @Override
     public void invoke() throws IOException {
         Cluster cluster;
-        Node hostroot;
         Index index;
         Set<String> references;
-        Node docroot;
+        Node docrootNode;
 
         cluster = net.get(clusterName);
-        for (Host host : cluster.hosts()) {
-            hostroot = host.open(console.world);
-            for (Docroot docrootObj : cluster.docroots()) {
-                docroot = docrootObj.node(hostroot);
-                if (docroot.exists()) {
-                    references = new HashSet<>();
-                    console.info.println(host);
-                    console.info.print("collecting references ...");
-                    for (Node file : docrootObj.indexList(hostroot)) {
-                        index = Index.load(file);
-                        for (Label label : index) {
-                            references.add(label.getLavendelizedPath());
+        try (Pool pool = new Pool(console.world, user)) {
+            for (Connection connection : cluster.connect(pool)) {
+                for (Docroot docroot : cluster.docroots()) {
+                    docrootNode = docroot.node(connection);
+                    if (docrootNode.exists()) {
+                        references = new HashSet<>();
+                        console.info.println(connection.getHost());
+                        console.info.print("collecting references ...");
+                        for (Node file : docroot.indexList(connection)) {
+                            index = Index.load(file);
+                            for (Label label : index) {
+                                references.add(label.getLavendelizedPath());
+                            }
                         }
+                        console.info.println("done: " + references.size());
+                        gc(docrootNode, references);
                     }
-                    console.info.println("done: " + references.size());
-                    gc(docroot, references);
                 }
             }
         }

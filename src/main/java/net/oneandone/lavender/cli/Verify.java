@@ -17,9 +17,10 @@ package net.oneandone.lavender.cli;
 
 import com.jcraft.jsch.JSchException;
 import net.oneandone.lavender.config.Cluster;
+import net.oneandone.lavender.config.Connection;
 import net.oneandone.lavender.config.Docroot;
-import net.oneandone.lavender.config.Host;
 import net.oneandone.lavender.config.Net;
+import net.oneandone.lavender.config.Pool;
 import net.oneandone.lavender.config.Settings;
 import net.oneandone.lavender.index.Hex;
 import net.oneandone.lavender.index.Index;
@@ -59,8 +60,7 @@ public class Verify extends Base {
     @Override
     public void invoke() throws IOException {
         Cluster cluster;
-        Node hostroot;
-        Node docroot;
+        Node docrootNode;
         boolean problem;
         Map<String, Index> prevIndexes;
         Map<String, Index> indexes;
@@ -69,33 +69,34 @@ public class Verify extends Base {
 
         problem = false;
         cluster = net.get(clusterName);
-        prevIndexes = null;
-        for (Host host : cluster.hosts()) {
-            console.info.println(host);
-            hostroot = host.open(console.world);
-            for (Docroot docrootObj : cluster.docroots()) {
-                docroot = docrootObj.node(hostroot);
-                if (docroot.exists()) {
-                    indexes = filesAndReferences(hostroot, docroot, docrootObj);
-                    if (indexes == null) {
-                        problem = true;
-                    } else {
-                        if (prevIndexes != null) {
-                            if (!prevIndexes.keySet().equals(indexes.keySet())) {
-                                console.error.println("index file list differs: " + prevIndexes.keySet() + " vs " + indexes.keySet());
-                                problem = true;
-                            } else {
-                                for (String name : prevIndexes.keySet()) {
-                                    left = prevIndexes.get(name);
-                                    right = indexes.get(name);
-                                    if (!left.equals(right)) {
-                                        console.error.println("index files differ: " + name);
-                                        problem = true;
+        try (Pool pool = new Pool(console.world, user)) {
+            for (Docroot docroot : cluster.docroots()) {
+                prevIndexes = null;
+                for (Connection connection : cluster.connect(pool)) {
+                    console.info.println(connection.getHost() + " " + docroot.aliases().get(0).getName());
+                    docrootNode = docroot.node(connection);
+                    if (docrootNode.exists()) {
+                        indexes = filesAndReferences(connection, docrootNode, docroot);
+                        if (indexes == null) {
+                            problem = true;
+                        } else {
+                            if (prevIndexes != null) {
+                                if (!prevIndexes.keySet().equals(indexes.keySet())) {
+                                    console.error.println("index file list differs: " + prevIndexes.keySet() + " vs " + indexes.keySet());
+                                    problem = true;
+                                } else {
+                                    for (String name : prevIndexes.keySet()) {
+                                        left = prevIndexes.get(name);
+                                        right = indexes.get(name);
+                                        if (!left.equals(right)) {
+                                            console.error.println("index files differ: " + name);
+                                            problem = true;
+                                        }
                                     }
                                 }
                             }
+                            prevIndexes = indexes;
                         }
-                        prevIndexes = indexes;
                     }
                 }
             }
@@ -108,7 +109,7 @@ public class Verify extends Base {
     }
 
     /** @return Indexes on this docroot (file name mapped to Index object). Null if a problem was detected. */
-    private Map<String, Index> filesAndReferences(Node hostroot, Node docroot, Docroot docrootObj) throws IOException {
+    private Map<String, Index> filesAndReferences(Connection connection, Node docroot, Docroot docrootObj) throws IOException {
         boolean problem;
         Set<String> references;
         List<String> files;
@@ -128,7 +129,7 @@ public class Verify extends Base {
         console.info.println("done: " + files.size());
         console.info.print("  collecting references ...");
         all = new Index();
-        for (Node file : docrootObj.indexList(hostroot)) {
+        for (Node file : docrootObj.indexList(connection)) {
             index = Index.load(file);
             result.put(file.getName(), index);
             for (Label label : index) {
@@ -136,9 +137,9 @@ public class Verify extends Base {
                 all.addReference(label.getLavendelizedPath(), label.md5());
             }
         }
-        allLoaded = Index.load(docrootObj.index(hostroot, Index.ALL_IDX));
+        allLoaded = Index.load(docrootObj.index(connection, Index.ALL_IDX));
         if (!all.equals(allLoaded)) {
-            fixed = docrootObj.index(hostroot, Index.ALL_IDX + ".fixed");
+            fixed = docrootObj.index(connection, Index.ALL_IDX + ".fixed");
             console.error.println("all-index is broken, saving fixed to " + fixed);
             all.save(fixed);
             problem = true;
