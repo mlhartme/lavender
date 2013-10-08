@@ -102,9 +102,7 @@ public class LavenderProperties {
         relative = eat(properties, "pustefix.relative");
         // TODO: enforce pominfo != null when enough modules have switched
         if (pominfo != null && thisMachine(pominfo.getProperty("ethernet"))) {
-            source = pominfo.getProperty("basedir");
-            source = Strings.removeRightOpt(source, "/");
-            source = source + "/" + relative;
+            source = join(pominfo.getProperty("basedir"), relative);
         } else {
             source = null;
         }
@@ -131,7 +129,21 @@ public class LavenderProperties {
         String relative;
 
         relative = eatOpt(properties, prefix + ".relative", null);
-        return source == null && relative != null ? null : source + relative;
+        return source == null || relative == null ? null : join(source, relative);
+    }
+
+    private static String join(String left, String right) {
+        StringBuilder result;
+
+        result = new StringBuilder(left);
+        if (!left.endsWith("/")) {
+            result.append("/");
+        }
+        if (right.startsWith("/")) {
+            right = right.substring(1);
+        }
+        result.append(right);
+        return result.toString();
     }
 
     private static String eatType(Properties properties, String prefix) {
