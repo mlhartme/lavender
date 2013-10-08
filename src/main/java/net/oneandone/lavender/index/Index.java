@@ -34,7 +34,7 @@ import java.util.Properties;
  *
  * where
  *   originalPath      source request path, that will be replaced by Lavender filter
- *   lavendelizedPath  path on Lavender Servers
+ *   lavendelizedPath  path on Lavender Servers ... or some other data like a reference count
  *   md5               md5 sum of the resource
  */
 public class Index implements Iterable<Label> {
