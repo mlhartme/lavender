@@ -46,9 +46,9 @@ public class SvnModule extends Module<SVNDirEntry> {
     private Map<String, SVNDirEntry> lastScan;
     private long lastScanRevision;
 
-    public SvnModule(Filter filter, String type, Index index, Node indexFile, SvnNode root,
-                     boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, String folder) {
-        super(type, folder, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
+    public SvnModule(String type, String name, Index index, Node indexFile, SvnNode root, boolean lavendelize, String resourcePathPrefix,
+                     String targetPathPrefix, Filter filter) {
+        super(type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
         this.root = root;
         this.index = index;
         this.indexFile = indexFile;

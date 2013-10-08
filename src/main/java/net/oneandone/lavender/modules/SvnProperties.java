@@ -124,7 +124,7 @@ public class SvnProperties {
                 cache.getParent().mkdirsOpt();
                 index = new Index();
             }
-            return new SvnModule(filter, type, index, cache, root, lavendelize, resourcePathPrefix, targetPathPrefix, folder);
+            return new SvnModule(type, folder, index, cache, root, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
         } catch (RuntimeException | IOException e) {
             throw e;
         } catch (Exception e) {
