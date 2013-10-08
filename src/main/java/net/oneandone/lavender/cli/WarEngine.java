@@ -23,8 +23,10 @@ import net.oneandone.lavender.modules.DefaultModule;
 import net.oneandone.lavender.modules.Module;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.io.Buffer;
+import net.oneandone.sushi.xml.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -69,7 +71,7 @@ public class WarEngine {
      *
      * @return types mapped to indexes
      */
-    public Map<String, Index> run() throws IOException {
+    public Map<String, Index> run() throws IOException, XmlException, SAXException {
         long started;
         List<Module> modules;
         Index index;

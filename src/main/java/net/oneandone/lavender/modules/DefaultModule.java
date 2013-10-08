@@ -32,6 +32,7 @@ import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,12 +45,11 @@ import java.util.zip.ZipInputStream;
 public abstract class DefaultModule extends Module<Node> {
     private static final Logger LOG = LoggerFactory.getLogger(Module.class);
 
-    public static List<Module> fromWebapp(boolean prod, Node webapp, String svnUsername, String svnPassword) throws IOException {
+    public static List<Module> fromWebapp(boolean prod, Node webapp, String svnUsername, String svnPassword) throws IOException, SAXException, XmlException {
         Node webappSource;
         List<Module> result;
         WarConfig rootConfig;
         DefaultModule root;
-        JarConfig jarConfig;
         LavenderProperties lp;
 
         LOG.trace("scanning " + webapp);
@@ -58,10 +58,7 @@ public abstract class DefaultModule extends Module<Node> {
         rootConfig = WarConfig.fromXml(webapp);
         // add modules before webapp, because they have a prefix
         for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
-            jarConfig = loadJarModuleConfig(rootConfig, jar);
-            if (jarConfig != null) {
-                result.addAll(jarModule(prod, jar, lp.filter, jarConfig, svnUsername, svnPassword));
-            }
+            result.addAll(jarModuleOpt(rootConfig, prod, jar, lp.filter, svnUsername, svnPassword));
         }
         webappSource = lp.live(webapp);
         root = warModule(rootConfig, lp.filter, webappSource);
@@ -70,19 +67,30 @@ public abstract class DefaultModule extends Module<Node> {
         return result;
     }
 
-    public static List<Module> jarModule(boolean prod, Node jarOrig, final Filter filter, final JarConfig config,
-                                         String svnUsername, String svnPassword) throws IOException {
+    public static List<Module> jarModuleOpt(WarConfig rootConfig, boolean prod, Node jarOrig, final Filter filter,
+                                            String svnUsername, String svnPassword) throws IOException, XmlException, SAXException {
+        Node configFile;
+        final JarConfig config;
         List<Module> result;
         Node jarTmp;
         final Node jarLive;
         Module jarModule;
         Object[] tmp;
         LavenderProperties lp;
+        Node exploded;
 
         result = new ArrayList<>();
         if (jarOrig instanceof FileNode) {
             // TODO: expensive
-            lp = LavenderProperties.loadModuleOpt(((FileNode) jarOrig).openJar());
+            exploded = ((FileNode) jarOrig).openJar();
+            configFile = exploded.join("META-INF/pustefix-module.xml");
+            if (!configFile.exists()) {
+                return null;
+            }
+            try (InputStream src = configFile.createInputStream()) {
+                config = JarConfig.load(jarOrig.getWorld().getXml(), rootConfig, src);
+            }
+            lp = LavenderProperties.loadModuleOpt(exploded);
             if (prod || lp == null) {
                 jarTmp = jarOrig;
             } else {
@@ -102,6 +110,10 @@ public abstract class DefaultModule extends Module<Node> {
         } else {
             if (!prod) {
                 throw new UnsupportedOperationException("live mechanism not supported for jar streams");
+            }
+            config = loadJarModuleConfig(rootConfig, jarOrig);
+            if (config == null) {
+                return result;
             }
             tmp = DefaultModule.fromJarStream(filter, Docroot.WEB, config, jarOrig);
             jarModule = (Module) tmp[0];

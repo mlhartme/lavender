@@ -28,6 +28,8 @@ import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.cli.Remaining;
 import net.oneandone.sushi.cli.Value;
 import net.oneandone.sushi.fs.file.FileNode;
+import net.oneandone.sushi.xml.XmlException;
+import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -83,7 +85,7 @@ public class War extends Base {
     }
 
     @Override
-    public void invoke() throws IOException {
+    public void invoke() throws IOException, SAXException, XmlException {
         FileNode tmp;
         FileNode outputNodesFile;
         WarEngine engine;
