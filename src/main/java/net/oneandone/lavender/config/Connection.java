@@ -1,16 +1,39 @@
 package net.oneandone.lavender.config;
 
 import net.oneandone.sushi.fs.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 /** Node and optionally lock on a host. */
 public class Connection implements AutoCloseable {
-    public static Connection openLocked(Host host, Node root, String lock) throws IOException {
+    private static final Logger LOG = LoggerFactory.getLogger(Connection.class);
+
+    public static Connection openLocked(Host host, Node root, String lock, int wait) throws IOException {
         Node lockfile;
+        int seconds;
 
         lockfile = root.join("tmp/lavender.lock");
-        lockfile.mkfile();
+        seconds = 0;
+        while (true) {
+            try {
+                lockfile.mkfile();
+                break;
+            } catch (IOException e) {
+                if (seconds >= wait) {
+                    throw e;
+                }
+                if (seconds % 10 == 0) {
+                    LOG.info("waiting for lock " + lockfile + ", seconds=" + seconds);
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e1) {
+                    // fall-through
+                }
+            }
+        }
         lockfile.writeString(lock);
         return new Connection(host, root, lockfile);
     }

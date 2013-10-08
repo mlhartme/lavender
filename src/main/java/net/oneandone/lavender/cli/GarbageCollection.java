@@ -56,7 +56,7 @@ public class GarbageCollection extends Base {
         Node docrootNode;
 
         cluster = net.get(clusterName);
-        try (Pool pool = new Pool(console.world, user)) {
+        try (Pool pool = pool()) {
             for (Connection connection : cluster.connect(pool)) {
                 for (Docroot docroot : cluster.docroots()) {
                     docrootNode = docroot.node(connection);

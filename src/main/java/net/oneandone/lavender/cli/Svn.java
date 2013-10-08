@@ -68,7 +68,7 @@ public class Svn extends Base {
         filter.includeAll();
         moduleConfig = new SvnProperties("svn", filter, svn + "/data/" + directory, Docroot.WEB, false, "", directory + "/", null);
         module = moduleConfig.create(true, console.world, settings.svnUsername, settings.svnPassword);
-        try (Pool pool = new Pool(console.world, user)) {
+        try (Pool pool = pool()) {
             distributor = target.open(pool, directory + ".idx");
             changed = module.publish(distributor);
             index = distributor.close();

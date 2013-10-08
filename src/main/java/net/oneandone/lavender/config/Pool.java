@@ -12,11 +12,14 @@ import java.util.List;
 public class Pool implements AutoCloseable {
     private final World world;
     private final String lock;
+    /** seconds to wait for a lock */
+    private final int wait;
     private final List<Connection> connections;
 
-    public Pool(World world, String lock) {
+    public Pool(World world, String lock, int wait) {
         this.world = world;
         this.lock = lock;
+        this.wait = wait;
         this.connections = new ArrayList<>();
     }
 
@@ -25,7 +28,7 @@ public class Pool implements AutoCloseable {
 
         result = lookup(host);
         if (result == null) {
-            result = host.connect(world, lock);
+            result = host.connect(world, lock, wait);
         }
         return result;
     }

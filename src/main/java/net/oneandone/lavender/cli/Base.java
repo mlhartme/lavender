@@ -17,6 +17,7 @@ package net.oneandone.lavender.cli;
 
 
 import net.oneandone.lavender.config.Net;
+import net.oneandone.lavender.config.Pool;
 import net.oneandone.lavender.config.Settings;
 import net.oneandone.sushi.cli.Command;
 import net.oneandone.sushi.cli.Console;
@@ -30,6 +31,9 @@ public abstract class Base implements Command {
     @Option("user")
     protected String user = "unknown@all";
 
+    @Option("await")
+    protected int await = 30;
+
     protected Base(Console console, Settings settings, Net net) {
         this.console = console;
         this.settings = settings;
@@ -38,4 +42,8 @@ public abstract class Base implements Command {
 
     @Override
     public abstract void invoke() throws Exception;
+
+    protected Pool pool() {
+        return new Pool(console.world, user, await);
+    }
 }

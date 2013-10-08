@@ -99,7 +99,7 @@ public class War extends Base {
         outputWar.checkNotExists();
         tmp = inputWar.getWorld().getTemp();
         outputNodesFile = tmp.createTempFile();
-        try (Pool pool = new Pool(console.world, user)) {
+        try (Pool pool = pool()) {
             distributors = distributors(pool);
             engine = new WarEngine(distributors, indexName, settings.svnUsername, settings.svnPassword,
                     inputWar, outputWar, outputNodesFile, nodes);

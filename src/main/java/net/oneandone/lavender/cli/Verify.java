@@ -69,7 +69,7 @@ public class Verify extends Base {
 
         problem = false;
         cluster = net.get(clusterName);
-        try (Pool pool = new Pool(console.world, user)) {
+        try (Pool pool = pool()) {
             for (Docroot docroot : cluster.docroots()) {
                 prevIndexes = null;
                 for (Connection connection : cluster.connect(pool)) {

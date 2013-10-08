@@ -34,7 +34,7 @@ public class MainManual {
 
         settings = Settings.load();
         net = settings.loadNet();
-        try (Pool pool = new Pool(settings.world, null)) {
+        try (Pool pool = new Pool(settings.world, null, 0)) {
             for (Cluster cluster : net.clusters()) {
                 for (Connection connection : cluster.connect(pool)) {
                     node = new Docroot("", "", "").node(connection);

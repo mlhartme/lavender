@@ -55,7 +55,7 @@ public class Direct extends Base {
         if (command.size() == 0) {
             throw new ArgumentException("missing command");
         }
-        try (Pool pool = new Pool(console.world, user)) {
+        try (Pool pool = pool()) {
             for (Connection connection : net.get(cluster).connect(pool)) {
                 root = (SshRoot) connection.join().getRoot();
                 console.info.println(connection.getHost().toString());

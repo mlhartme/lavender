@@ -72,7 +72,7 @@ public class Bazaar extends Base {
         srcfile.copyFile(local);
         console.info.println("downloaded " + local.length() + " bytes from " + srcfile.getURI());
         root = local.openZip();
-        try (Pool pool = new Pool(console.world, user)) {
+        try (Pool pool = pool()) {
             for (Connection connection : target.cluster.connect(pool)) {
                 console.info.println(connection.getHost());
                 destTmp = target.docroot.node(connection).getParent().join("bazaarvoice/tmp").mkdirsOpt();
