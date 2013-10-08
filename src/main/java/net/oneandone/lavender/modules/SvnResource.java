@@ -32,7 +32,7 @@ public class SvnResource extends Resource {
     public byte[] getMd5() throws IOException {
         if (lazyMd5 == null) {
             lazyMd5 = md5(getData());
-            module.index().add(new Label(getPath(), Long.toString(revision), lazyMd5));
+            module.addIndex(new Label(getPath(), Long.toString(revision), lazyMd5));
         }
         return lazyMd5;
     }

@@ -40,18 +40,16 @@ public class SvnModule extends Module<SVNDirEntry> {
 
     private final SvnNode root;
 
-    // maps svn paths (relative to root) to revision numbers
-    private final Index oldIndex;
-    private final Index index;
+    /** Maps svn paths (relative to root) to revision numbers for all entries where the md5 sum is known. */
+    private Index index;
     private final Node indexFile;
     private Map<String, SVNDirEntry> lastScan;
     private long lastScanRevision;
 
-    public SvnModule(Filter filter, String type, Index oldIndex, Index index, Node indexFile, SvnNode root,
+    public SvnModule(Filter filter, String type, Index index, Node indexFile, SvnNode root,
                      boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, String folder) {
         super(type, folder, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
         this.root = root;
-        this.oldIndex = oldIndex;
         this.index = index;
         this.indexFile = indexFile;
     }
@@ -81,13 +79,17 @@ public class SvnModule extends Module<SVNDirEntry> {
 
     protected Map<String, SVNDirEntry> doScan(final Filter filter) throws SVNException {
         final Map<String, SVNDirEntry> files;
+        final Index oldIndex;
 
+        oldIndex = index;
+        index = new Index();
         files = new HashMap<>();
         root.getRoot().getClientMananger().getLogClient().doList(
                 root.getSvnurl(), null, SVNRevision.HEAD, true, SVNDepth.INFINITY, SVNDirEntry.DIRENT_ALL, new ISVNDirEntryHandler() {
             @Override
             public void handleDirEntry(SVNDirEntry entry) throws SVNException {
                 String path;
+                Label label;
 
                 if (entry.getKind() == SVNNodeKind.FILE) {
                     path = entry.getRelativePath();
@@ -96,6 +98,10 @@ public class SvnModule extends Module<SVNDirEntry> {
                             throw new UnsupportedOperationException("file too big: " + path);
                         }
                         files.put(path, entry);
+                        label = oldIndex.lookup(path);
+                        if (label != null && entry.getRevision() == Long.parseLong(label.getLavendelizedPath())) {
+                            index.add(label);
+                        }
                     }
                 }
             }
@@ -114,20 +120,17 @@ public class SvnModule extends Module<SVNDirEntry> {
 
     protected byte[] md5(SVNDirEntry entry) {
         Label label;
-        byte[] md5;
 
-        label = oldIndex.lookup(entry.getRelativePath());
+        label = index.lookup(entry.getRelativePath());
         if (label != null && label.getLavendelizedPath().equals(Long.toString(entry.getRevision()))) {
-            md5 = label.md5();
-            index.add(label);
+            return label.md5();
         } else {
-            md5 = null;
+            return null;
         }
-        return md5;
     }
 
-    public Index index() {
-        return index;
+    public void addIndex(Label label) {
+        index.add(label);
     }
 
     public String uri() {

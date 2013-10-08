@@ -59,7 +59,7 @@ public class SvnProperties {
     public Module create(boolean prod, World world, String svnUsername, String svnPassword) throws IOException {
         FileNode cache;
         final SvnNode root;
-        final Index oldIndex;
+        final Index index;
         String name;
         final FileNode checkout;
 
@@ -119,12 +119,12 @@ public class SvnProperties {
             cache = (FileNode) world.getHome().join(".cache/lavender",
                     root.getRoot().getRepository().getRepositoryRoot(false).getHost(), name);
             if (cache.exists()) {
-                oldIndex = Index.load(cache);
+                index = Index.load(cache);
             } else {
                 cache.getParent().mkdirsOpt();
-                oldIndex = new Index();
+                index = new Index();
             }
-            return new SvnModule(filter, type, oldIndex, new Index(), cache, root, lavendelize, resourcePathPrefix, targetPathPrefix, folder);
+            return new SvnModule(filter, type, index, cache, root, lavendelize, resourcePathPrefix, targetPathPrefix, folder);
         } catch (RuntimeException | IOException e) {
             throw e;
         } catch (Exception e) {
