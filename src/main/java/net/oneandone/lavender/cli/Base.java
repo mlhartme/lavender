@@ -34,6 +34,9 @@ public abstract class Base implements Command {
     @Option("await")
     protected int await = 30;
 
+    @Option("no-lock")
+    protected boolean noLock = false;
+
     protected Base(Console console, Settings settings, Net net) {
         this.console = console;
         this.settings = settings;
@@ -44,6 +47,6 @@ public abstract class Base implements Command {
     public abstract void invoke() throws Exception;
 
     protected Pool pool() {
-        return new Pool(console.world, user, await);
+        return new Pool(console.world, noLock ? null : user, await);
     }
 }

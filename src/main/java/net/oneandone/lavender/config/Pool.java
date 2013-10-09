@@ -29,6 +29,7 @@ public class Pool implements AutoCloseable {
         result = lookup(host);
         if (result == null) {
             result = host.connect(world, lock, wait);
+            connections.add(result);
         }
         return result;
     }

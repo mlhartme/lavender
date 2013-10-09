@@ -106,9 +106,9 @@ public class Validate extends Base {
             }
         }
         if (problem) {
-            throw new IOException("verify failed");
+            throw new IOException("validate failed");
         } else {
-            console.info.println("verify ok");
+            console.info.println("validate ok");
         }
     }
 
@@ -162,13 +162,13 @@ public class Validate extends Base {
         tmp.removeAll(files);
         if (!tmp.isEmpty()) {
             problem = true;
-            console.error.println("not existing references: " + tmp);
+            console.error.println("dangling references: " + tmp);
         }
         tmp = new ArrayList<>(files);
         tmp.removeAll(references);
         if (!tmp.isEmpty()) {
             problem = true;
-            console.error.println("not referenced files: " + tmp);
+            console.error.println("unreferenced files: " + tmp);
         }
         if (md5check) {
             if (md5check(docroot, all)) {

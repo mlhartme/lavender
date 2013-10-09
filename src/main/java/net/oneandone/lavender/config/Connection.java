@@ -32,6 +32,7 @@ public class Connection implements AutoCloseable {
                 } catch (InterruptedException e1) {
                     // fall-through
                 }
+                seconds++;
             }
         }
         lockfile.writeString(lock);

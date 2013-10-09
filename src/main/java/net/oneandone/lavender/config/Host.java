@@ -74,7 +74,7 @@ public class Host {
 
         local = name.equals(LOCALHOST);
         node = local ? world.file(login) : world.validNode("ssh://" + login + "@" + name);
-        return local || lock != null ? Connection.openSimple(this, node) : Connection.openLocked(this, node, lock, wait);
+        return local || lock == null ? Connection.openSimple(this, node) : Connection.openLocked(this, node, lock, wait);
     }
 
     public String toString() {
