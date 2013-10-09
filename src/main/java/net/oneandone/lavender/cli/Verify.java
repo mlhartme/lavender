@@ -28,6 +28,7 @@ import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.cli.Option;
 import net.oneandone.sushi.cli.Value;
+import net.oneandone.sushi.fs.FileNotFoundException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.ssh.SshNode;
@@ -137,7 +138,12 @@ public class Verify extends Base {
                 all.addReference(label.getLavendelizedPath(), label.md5());
             }
         }
-        allLoaded = Index.load(docrootObj.index(connection, Index.ALL_IDX));
+        try {
+            allLoaded = Index.load(docrootObj.index(connection, Index.ALL_IDX));
+        } catch (FileNotFoundException e) {
+            console.error.println("all-index is missing");
+            allLoaded = new Index();
+        }
         if (!all.equals(allLoaded)) {
             fixed = docrootObj.index(connection, Index.ALL_IDX + ".fixed");
             console.error.println("all-index is broken, saving fixed to " + fixed);
