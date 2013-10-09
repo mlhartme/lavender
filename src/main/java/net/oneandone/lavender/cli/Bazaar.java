@@ -63,9 +63,7 @@ public class Bazaar extends Base {
         docroot = cluster.docroot(Docroot.SVN);
         target = new Target(cluster, docroot, docroot.aliases().get(0));
         srcdir = feeds(console.world);
-        if (!srcdir.join("bv_1und1_smartseo.zip.ready").isFile()) {
-            throw new IOException("not ready");
-        }
+        srcdir.join("bv_1und1_smartseo.zip.ready").checkFile();
         local = console.world.getTemp().createTempFile();
         srcfile = srcdir.join("bv_1und1_smartseo.zip");
         srcfile.copyFile(local);
