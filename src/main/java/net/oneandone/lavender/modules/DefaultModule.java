@@ -85,7 +85,7 @@ public abstract class DefaultModule extends Module<Node> {
             exploded = ((FileNode) jarOrig).openJar();
             configFile = exploded.join("META-INF/pustefix-module.xml");
             if (!configFile.exists()) {
-                return null;
+                return result;
             }
             try (InputStream src = configFile.createInputStream()) {
                 config = JarConfig.load(jarOrig.getWorld().getXml(), rootConfig, src);
