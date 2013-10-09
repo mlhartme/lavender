@@ -105,7 +105,7 @@ public class GarbageCollection extends Base {
             throw new IllegalStateException(found + "/" + references.size() + " files found in " + base);
         }
         if (dryrun) {
-            console.info.println("dry-run: " + (paths.size() - references.size()) + " files could be deleted.");
+            console.info.println("dryrun: " + (paths.size() - references.size()) + " files could be deleted.");
         } else {
             console.info.println((paths.size() - references.size()) + " unreferenced files deleted.");
         }
@@ -121,7 +121,7 @@ public class GarbageCollection extends Base {
             rmdir(base, base.join(path));
         }
         if (dryrun) {
-            console.info.println("dry-run: " + paths.size() + " empty directories could be deleted.");
+            console.info.println("dryrun: " + paths.size() + " empty directories could be deleted.");
         } else {
             console.info.println(paths.size() + " empty directories deleted.");
         }
