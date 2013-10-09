@@ -68,6 +68,16 @@
       <groupId>org.tmatesoft.svnkit</groupId>
       <artifactId>svnkit</artifactId>
       <version>1.7.8</version>
+      <exclusions>
+        <exclusion>
+          <groupId>net.java.dev.jna</groupId>
+          <artifactId>jna</artifactId>
+        </exclusion>
+        <exclusion><!-- we don'T need ssh svn urls -->
+          <groupId>com.trilead</groupId>
+          <artifactId>trilead-ssh2</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework</groupId>
@@ -84,7 +94,7 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
       <version>1.7.5</version>
-      <!-- because all want is: get a mapping in the publisher application -->
+      <!-- because all I want is: get a mapping in the publisher application -->
       <optional>true</optional>
     </dependency>
 
@@ -176,9 +186,6 @@
           <main>net.oneandone.lavender.cli.Main</main>
           <options>-Djava.awt.headless=true</options>
           <remove>META-INF/DEPENDENCIES, META-INF/NOTICE, META-INF/LICENSE.txt, META-INF/NOTICE.txt, META-INF/LICENSE, META-INF/wsd.properties, META-INF/pominfo.properties</remove>
-
-          <distribute>ssh://servlet@pumama64.schlund.de/home/servlet/tools</distribute>
-          <backup>lavender-old</backup>
 
           <!-- for upload -->
           <symlink>ssh://servlet@pumama64.schlund.de/home/servlet/bin/lavender</symlink>
