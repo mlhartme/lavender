@@ -105,9 +105,9 @@ public class GarbageCollection extends Base {
             throw new IllegalStateException(found + "/" + references.size() + " files found in " + base);
         }
         if (dryrun) {
-            console.info.println((paths.size() - references.size()) + " unreferenced files deleted.");
-        } else {
             console.info.println("dry-run: " + (paths.size() - references.size()) + " files could be deleted.");
+        } else {
+            console.info.println((paths.size() - references.size()) + " unreferenced files deleted.");
         }
     }
 
