@@ -44,17 +44,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Verify extends Base {
+public class Validate extends Base {
     @Option("md5")
     private boolean md5check;
 
     @Option("mac")
     private boolean mac;
 
+    @Option("fix-all-idx")
+    private boolean fixAllIdx;
+
     @Value(name = "cluster", position = 1)
     private String clusterName;
 
-    public Verify(Console console, Settings settings, Net net) {
+    public Validate(Console console, Settings settings, Net net) {
         super(console, settings, net);
     }
 
@@ -145,10 +148,14 @@ public class Verify extends Base {
             allLoaded = new Index();
         }
         if (!all.equals(allLoaded)) {
-            fixed = docrootObj.index(connection, Index.ALL_IDX + ".fixed");
-            console.error.println("all-index is broken, saving fixed to " + fixed);
-            all.save(fixed);
             problem = true;
+            console.error.println("all-index is broken");
+            if (fixAllIdx) {
+                all.save(docrootObj.index(connection, Index.ALL_IDX));
+                console.error.println("saving a fixed version");
+            } else {
+                console.error.println("consider validate with '-fix-all-idx'");
+            }
         }
         console.info.println("done: " + references.size());
         tmp = new ArrayList<>(references);

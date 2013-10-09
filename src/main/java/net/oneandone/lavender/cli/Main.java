@@ -77,9 +77,9 @@ public class Main extends Cli implements Command {
         return new GarbageCollection(console, settings, net());
     }
 
-    @Child("verify")
-    public Command verfiy() throws IOException {
-        return new Verify(console, settings, net());
+    @Child("validate")
+    public Command validate() throws IOException {
+        return new Validate(console, settings, net());
     }
 
     @Override
@@ -97,7 +97,7 @@ public class Main extends Cli implements Command {
         console.info.println("  'bazaar'                  publishes Bazaar Voice files to eu cluster.");
         console.info.println("                            actually publish to the specified cluster");
         console.info.println("  'direct' cluster arg+     executes the specified command on all machines of the cluster");
-        console.info.println("  'verify' cluster          checks if all files are indexed and indexes match");
+        console.info.println("  'validate' cluster        checks if all files are indexed and indexes match");
         console.info.println("  'gc' ['-dryrun'] cluster  removes unreferenced resources and empty directories from the");
         console.info.println("                            specified host(s); default: all hosts");
     }

@@ -88,7 +88,7 @@ public class GarbageCollection extends Base {
         int found;
 
         console.info.print("scanning files ...");
-        paths = Verify.find(base, "-type", "f");
+        paths = Validate.find(base, "-type", "f");
         console.info.println(" done: " + paths.size());
         found = 0;
         for (String path : paths) {
@@ -104,19 +104,27 @@ public class GarbageCollection extends Base {
         if (found != references.size()) {
             throw new IllegalStateException(found + "/" + references.size() + " files found in " + base);
         }
-        console.info.println((paths.size() - references.size()) + " unreferenced files deleted.");
+        if (dryrun) {
+            console.info.println((paths.size() - references.size()) + " unreferenced files deleted.");
+        } else {
+            console.info.println("dry-run: " + (paths.size() - references.size()) + " files could be deleted.");
+        }
     }
 
     private void gcDirectories(Node base) throws IOException {
         List<String> paths;
 
         console.info.print("scanning empty directories ...");
-        paths = Verify.find(base, "-type", "d", "-empty");
+        paths = Validate.find(base, "-type", "d", "-empty");
         console.info.println(" done: " + paths.size());
         for (String path : paths) {
             rmdir(base, base.join(path));
         }
-        console.info.println(paths.size() + " empty directories deleted.");
+        if (dryrun) {
+            console.info.println("dry-run: " + paths.size() + " empty directories could be deleted.");
+        } else {
+            console.info.println(paths.size() + " empty directories deleted.");
+        }
     }
 
     private void rmdir(Node base, Node dir) throws IOException {
