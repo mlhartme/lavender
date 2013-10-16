@@ -44,17 +44,17 @@ public class File extends Base {
     @Value(name = "file", position = 1)
     private FileNode file;
 
-    @Value(name = "type", position = 2)
+    @Value(name = "idxName", position = 2)
+    private String name;
+
+    @Value(name = "type", position = 3)
     private String type;
 
-    @Value(name = "cluster", position = 3)
+    @Value(name = "cluster", position = 4)
     private String clusterName;
 
     @Option("prefix")
     private String prefix;
-
-    @Option("name")
-    private String explicitName;
 
     public File(Console console, Settings settings, Net net) {
         super(console, settings, net);
@@ -71,7 +71,6 @@ public class File extends Base {
         Distributor distributor;
         long changed;
         Index index;
-        String name;
 
         cluster = net.get(clusterName);
         file.checkExists();
@@ -85,7 +84,6 @@ public class File extends Base {
         filter = new Filter();
         filter.includeAll();
         filter.predicate(Predicate.FILE);
-        name = (explicitName == null ? getName() : explicitName) + ".idx";
         module = new DefaultModule(type, name, false, "", prefix, filter) {
             @Override
             protected Map<String, Node> scan(Filter filter) throws Exception {
@@ -106,17 +104,5 @@ public class File extends Base {
             module.saveCaches();
         }
         console.info.println("done: " + changed + "/" + index.size() + " files changed");
-    }
-
-    private String getName() {
-        String name;
-        int idx;
-
-        name = file.getName();
-        idx = name.lastIndexOf(".");
-        if (idx != -1) {
-            name = name.substring(0, idx);
-        }
-        return name;
     }
 }
