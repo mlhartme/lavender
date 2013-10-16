@@ -77,7 +77,7 @@ public class SvnProperties {
             checkout = world.file(source);
             if (checkout.isDirectory()) {
                 if (svnurl.equals(SvnNode.urlFromWorkspace(checkout))) {
-                    return new DefaultModule(type, folder, resourcePathPrefix, targetPathPrefix, filter) {
+                    return new DefaultModule(type, folder, lavendelize, resourcePathPrefix, targetPathPrefix, filter) {
                         @Override
                         protected Map<String, Node> scan(final Filter filter) throws Exception {
                             Filter f;

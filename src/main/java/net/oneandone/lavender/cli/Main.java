@@ -62,14 +62,14 @@ public class Main extends Cli implements Command {
         return new Svn(console, settings, Strings.removeLeft(settings.svn.toString(), "svn:"), net());
     }
 
+    @Child("file")
+    public Command file() throws IOException {
+        return new File(console, settings, net());
+    }
+
     @Child("direct")
     public Command direct() throws IOException {
         return new Direct(console, settings, net());
-    }
-
-    @Child("bazaar")
-    public Command bazaar() throws IOException {
-        return new Bazaar(console, settings, net());
     }
 
     @Child("gc")
@@ -91,11 +91,11 @@ public class Main extends Cli implements Command {
         console.info.println("                            publish resources from the specified war,");
         console.info.println("                            target = type '=' cluster ['/' alias]");
         console.info.println("  'svn' directory cluster   publish resources from svn to the specified cluster");
+        console.info.println("  'file' file type ['-prefix' prefix] cluster");
+        console.info.println("                            publish resources from file to the specified cluster");
         console.info.println("other commands");
         console.info.println("  'help'                    print this message");
         console.info.println("  'version'                 print version information");
-        console.info.println("  'bazaar'                  publishes Bazaar Voice files to eu cluster.");
-        console.info.println("                            actually publish to the specified cluster");
         console.info.println("  'direct' cluster arg+     executes the specified command on all machines of the cluster");
         console.info.println("  'validate' cluster        checks if all files are indexed and indexes match");
         console.info.println("  'gc' ['-dryrun'] cluster  removes unreferenced resources and empty directories from the");
