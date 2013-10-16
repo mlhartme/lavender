@@ -85,7 +85,7 @@ public class File extends Base {
         filter = new Filter();
         filter.includeAll();
         filter.predicate(Predicate.FILE);
-        name = explicitName == null ? getName() : explicitName;
+        name = (explicitName == null ? getName() : explicitName) + ".idx";
         module = new DefaultModule(type, name, false, "", prefix, filter) {
             @Override
             protected Map<String, Node> scan(Filter filter) throws Exception {
@@ -117,7 +117,6 @@ public class File extends Base {
         if (idx != -1) {
             name = name.substring(0, idx);
         }
-        name = name + ".idx";
         return name;
     }
 }
