@@ -63,13 +63,7 @@ public class LavenderProperties {
         Properties pominfo;
 
         src = webapp.join(LavenderProperties.APP_PROPERTIES);
-        if (!src.exists()) {
-            // TODO: dump this compatibility check as soon as I have ITs with new wars
-            src = webapp.join("WEB-INF/lavendel.properties");
-            if (!src.exists()) {
-                throw new IOException("lavender.properties not found");
-            }
-        }
+        src.checkFile();
         pominfo = pominfoOpt(webapp.join("WEB-INF/classes"));
         if (pominfo == null) {
             // TODO: try target/classes - hack because pws deletes WEB-INF/classes to get virtual classpath working
