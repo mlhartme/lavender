@@ -32,7 +32,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 public class LavenderProperties {
@@ -92,6 +94,8 @@ public class LavenderProperties {
         LavenderProperties result;
         String relative;
         String source;
+        String configUrl;
+        String configSource;
 
         relative = eat(properties, "pustefix.relative");
         // TODO: enforce pominfo != null when enough modules have switched
@@ -102,21 +106,51 @@ public class LavenderProperties {
         }
         result = new LavenderProperties(eatFilter(properties, "pustefix", defaultIncludes), source);
         for (String prefix : svnPrefixes(properties)) {
+            configUrl = Strings.removeLeftOpt((String) properties.remove(prefix), "scm:svn:");
+            configSource = eatSvnSource(properties, prefix, source);
+            configSource = fallback(configUrl, configSource);
             result.configs.add(
                     new SvnProperties(
                             prefix.substring(SvnProperties.SVN_PREFIX.length()),
                             eatFilter(properties, prefix, defaultIncludes),
-                            Strings.removeLeftOpt((String) properties.remove(prefix), "scm:svn:"),
+                            configUrl,
                             eatType(properties, prefix),
                             eatBoolean(properties, prefix + ".lavendelize", true),
                             eatOpt(properties, prefix + ".resourcePathPrefix", ""),
                             eatTargetPathPrefix(properties, prefix),
-                            eatSvnSource(properties, prefix, source)));
+                            configSource));
         }
         if (properties.size() > 0) {
             throw new IllegalArgumentException("unknown properties: " + properties);
         }
         return result;
+    }
+
+    private static final Map<String, String> fallbackSources;
+
+    static {
+        String str;
+        int idx;
+
+        fallbackSources = new HashMap<>();
+        str = System.getenv("LAVENDER_FALLBACKS");
+        if (str != null) {
+            for (String entry : Separator.COMMA.split(str)) {
+                idx = entry.indexOf('=');
+                if (idx == -1) {
+                    throw new IllegalStateException("illegal fallback entry: " + entry);
+                }
+                fallbackSources.put(entry.substring(0, idx), entry.substring(idx + 1));
+            }
+        }
+        System.err.println("using fallbacks: " + fallbackSources);
+    }
+
+    private static String fallback(String url, String source) {
+        String fallbackSource;
+
+        fallbackSource = fallbackSources.get(url);
+        return fallbackSource != null ? fallbackSource : source;
     }
 
     private static String eatSvnSource(Properties properties, String prefix, String source) {
@@ -245,9 +279,9 @@ public class LavenderProperties {
         this.configs = new ArrayList<>();
     }
 
-    public void addModules(boolean prod, World world, String svnUsername, String svnPassword, List<Module> result) throws IOException {
+    public void addModules(World world, String svnUsername, String svnPassword, List<Module> result) throws IOException {
         for (SvnProperties config : configs) {
-            result.add(config.create(prod, world, svnUsername, svnPassword));
+            result.add(config.create(world, svnUsername, svnPassword));
         }
     }
 

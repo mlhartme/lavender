@@ -59,7 +59,7 @@ public class SvnProperties {
         this.source = source;
     }
 
-    public Module create(boolean prod, World world, String svnUsername, String svnPassword) throws IOException {
+    public Module create(World world, String svnUsername, String svnPassword) throws IOException {
         FileNode cache;
         final SvnNode root;
         final Index index;
@@ -73,7 +73,7 @@ public class SvnProperties {
         // TODO: ugly side-effect
         world.getFilesystem("svn", SvnFilesystem.class).setDefaultCredentials(svnUsername, svnPassword);
 
-        if (!prod && source != null) {
+        if (source != null) {
             checkout = world.file(source);
             if (checkout.isDirectory()) {
                 if (svnurl.equals(SvnNode.urlFromWorkspace(checkout))) {
