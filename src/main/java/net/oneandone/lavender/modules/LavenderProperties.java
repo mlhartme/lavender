@@ -182,7 +182,7 @@ public class LavenderProperties {
         String result;
 
         result = eatOpt(p, key, null);
-        return result == null ? dflt : Separator.SPACE.split(result);
+        return result == null ? dflt : Separator.COMMA.split(result);
     }
 
     private static boolean eatBoolean(Properties p, String key, boolean dflt) {
