@@ -33,7 +33,7 @@ import java.util.Map;
 public class SvnProperties {
     public static final String SVN_PREFIX = "svn.";
 
-    public final String folder;
+    public final String name;
     public final Filter filter;
     public final String svnurl;
     public final String type;
@@ -44,9 +44,12 @@ public class SvnProperties {
     /** Absolute path relative to local sources for this module, null if not available */
     public final String source;
 
-    public SvnProperties(String folder, Filter filter, String svnurl, String type, boolean lavendelize, String resourcePathPrefix,
+    public SvnProperties(String name, Filter filter, String svnurl, String type, boolean lavendelize, String resourcePathPrefix,
                          String targetPathPrefix, String source) {
-        this.folder = folder;
+        if (name.startsWith("/") || name.endsWith("/")) {
+            throw new IllegalArgumentException(name);
+        }
+        this.name = name;
         this.filter = filter;
         this.svnurl = svnurl;
         this.type = type;
@@ -60,14 +63,11 @@ public class SvnProperties {
         FileNode cache;
         final SvnNode root;
         final Index index;
-        String name;
+        String idxName;
         final FileNode checkout;
 
         if (svnurl == null) {
             throw new IllegalArgumentException("missing svn url");
-        }
-        if (folder.startsWith("/") || folder.endsWith("/")) {
-            throw new IllegalArgumentException(folder);
         }
 
         // TODO: ugly side-effect
@@ -77,7 +77,7 @@ public class SvnProperties {
             checkout = world.file(source);
             if (checkout.isDirectory()) {
                 if (svnurl.equals(SvnNode.urlFromWorkspace(checkout))) {
-                    return new DefaultModule(type, folder, lavendelize, resourcePathPrefix, targetPathPrefix, filter) {
+                    return new DefaultModule(type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter) {
                         @Override
                         protected Map<String, Node> scan(final Filter filter) throws Exception {
                             Filter f;
@@ -114,17 +114,17 @@ public class SvnProperties {
         }
         try {
             root = (SvnNode) world.node("svn:" + svnurl);
-            name = root.getSvnurl().getPath().replace('/', '.') + ".idx";
-            name = Strings.removeLeftOpt(name, ".");
+            idxName = root.getSvnurl().getPath().replace('/', '.') + ".idx";
+            idxName = Strings.removeLeftOpt(idxName, ".");
             cache = (FileNode) world.getHome().join(".cache/lavender",
-                    root.getRoot().getRepository().getRepositoryRoot(false).getHost(), name);
+                    root.getRoot().getRepository().getRepositoryRoot(false).getHost(), idxName);
             if (cache.exists()) {
                 index = Index.load(cache);
             } else {
                 cache.getParent().mkdirsOpt();
                 index = new Index();
             }
-            return new SvnModule(type, folder, index, cache, root, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
+            return new SvnModule(type, name, index, cache, root, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
         } catch (RuntimeException | IOException e) {
             throw e;
         } catch (Exception e) {

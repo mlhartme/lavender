@@ -60,7 +60,7 @@ public class LavenderPropertiesTest {
         assertEquals("someDirectory/relative", result.source);
         assertEquals(1, result.configs.size());
         config = result.configs.iterator().next();
-        assertEquals("foo", config.folder);
+        assertEquals("foo", config.name);
         assertFalse(config.lavendelize);
         assertEquals("prefix", config.targetPathPrefix);
         assertEquals("svn", config.svnurl);
