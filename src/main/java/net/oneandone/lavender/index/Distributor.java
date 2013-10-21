@@ -93,6 +93,7 @@ public class Distributor {
         String destPath;
         Label allLabel;
         boolean changed;
+        Node tmp;
 
         destPath = label.getLavendelizedPath();
         allLabel = all.lookup(destPath);
@@ -107,13 +108,20 @@ public class Distributor {
                 } else {
                     LOG.info("U " + destPath);
                 }
-                dest.writeBytes(resource.getData());
+                if (allLabel == null) {
+                    dest.writeBytes(resource.getData());
+                } else {
+                    tmp = dest.getParent().join(".atomicUpdate");
+                    tmp.writeBytes(resource.getData());
+                    tmp.move(dest, true);
+                }
             }
             changed = true;
         }
         next.add(label);
         return changed;
     }
+
 
     /** return next index */
     public Index close() throws IOException {
