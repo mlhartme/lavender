@@ -142,14 +142,17 @@ public class LavenderProperties {
                 }
                 fallbackSources.put(entry.substring(0, idx), entry.substring(idx + 1));
             }
+            System.err.println("available fallbacks: " + fallbackSources);
         }
-        System.err.println("using fallbacks: " + fallbackSources);
     }
 
     private static String fallback(String url, String source) {
         String fallbackSource;
 
         fallbackSource = fallbackSources.get(url);
+        if (fallbackSources != null) {
+            System.err.println("fallback for url " + url + ": " + fallbackSource);
+        }
         return fallbackSource != null ? fallbackSource : source;
     }
 
