@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.modules;
 
+import net.oneandone.lavender.cli.File;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.sushi.fs.FileNotFoundException;
 import net.oneandone.sushi.fs.Node;
@@ -131,6 +132,7 @@ public class LavenderProperties {
     static {
         String str;
         int idx;
+        String file;
 
         fallbackSources = new HashMap<>();
         str = System.getenv("LAVENDER_FALLBACKS");
@@ -140,7 +142,11 @@ public class LavenderProperties {
                 if (idx == -1) {
                     throw new IllegalStateException("illegal fallback entry: " + entry);
                 }
-                fallbackSources.put(entry.substring(0, idx), entry.substring(idx + 1));
+                file = entry.substring(idx + 1);
+                if (!new java.io.File(file).isDirectory()) {
+                    throw new IllegalStateException("fallback directory not found: " + file);
+                }
+                fallbackSources.put(entry.substring(0, idx), file);
             }
             System.err.println("available fallbacks: " + fallbackSources);
         }
