@@ -129,7 +129,10 @@ public class Distributor {
         Node index;
 
         for (Label label : prev) {
-            all.removeReference(label.getLavendelizedPath());
+            if (!all.removeReferenceOpt(label.getLavendelizedPath())) {
+                // TODO: turn this into error as soon as all applications use Lavender 2!
+                LOG.warn("not found in all.idx: " + label.getLavendelizedPath());
+            }
         }
         for (Label label : next) {
             all.addReference(label.getLavendelizedPath(), label.md5());

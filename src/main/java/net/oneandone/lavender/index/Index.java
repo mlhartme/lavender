@@ -127,14 +127,14 @@ public class Index implements Iterable<Label> {
         properties.setProperty(path, Integer.toString(count) + DELIMITER + md5hex);
     }
 
-    public void removeReference(String path) {
+    public boolean removeReferenceOpt(String path) {
         String value;
         int idx;
         int count;
 
         value = properties.getProperty(path);
         if (value == null) {
-            throw new IllegalArgumentException("path not found: " + path);
+            return false;
         }
         idx = value.indexOf(DELIMITER);
         count = Integer.parseInt(value.substring(0, idx)) - 1;
@@ -143,6 +143,7 @@ public class Index implements Iterable<Label> {
         } else {
             properties.setProperty(path, Integer.toString(count) + DELIMITER + value.substring(idx + 1));
         }
+        return true;
     }
 
     //--
