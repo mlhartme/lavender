@@ -50,7 +50,7 @@ public abstract class DefaultModule extends Module<Node> {
         LavenderProperties lp;
 
         LOG.trace("scanning " + webapp);
-        lp = LavenderProperties.loadApp(webapp);
+        lp = LavenderProperties.loadApp(prod, webapp);
         result = new ArrayList<>();
         rootConfig = WarConfig.fromXml(webapp);
         // add modules before webapp, because they have a prefix
@@ -87,7 +87,7 @@ public abstract class DefaultModule extends Module<Node> {
             try (InputStream src = configFile.createInputStream()) {
                 config = JarConfig.load(jarOrig.getWorld().getXml(), rootConfig, src);
             }
-            lp = LavenderProperties.loadModuleOpt(exploded);
+            lp = LavenderProperties.loadModuleOpt(prod, exploded);
             if (prod || lp == null) {
                 jarTmp = jarOrig;
             } else {
@@ -114,7 +114,7 @@ public abstract class DefaultModule extends Module<Node> {
             }
             tmp = DefaultModule.fromJarStream(filter, Docroot.WEB, config, jarOrig);
             jarModule = (Module) tmp[0];
-            lp = LavenderProperties.loadModuleOpt((Node) tmp[1]);
+            lp = LavenderProperties.loadModuleOpt(prod, (Node) tmp[1]);
         }
         result.add(jarModule);
         if (lp != null) {

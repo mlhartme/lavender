@@ -43,7 +43,7 @@ public class LavenderProperties {
     public static final List<String> DEFAULT_INCLUDES = new ArrayList<>(Arrays.asList(
             "**/*.gif", "**/*.png", "**/*.jpg", "**/*.jpeg", "**/*.ico", "**/*.swf", "**/*.css", "**/*.js"));
 
-    public static LavenderProperties loadModuleOpt(Node root) throws IOException {
+    public static LavenderProperties loadModuleOpt(boolean prod, Node root) throws IOException {
         Node src;
         Properties properties;
 
@@ -55,10 +55,10 @@ public class LavenderProperties {
             return null;
         }
         properties = src.readProperties();
-        return LavenderProperties.parse(properties, pominfoOpt(root));
+        return LavenderProperties.parse(prod, properties, pominfoOpt(root));
     }
 
-    public static LavenderProperties loadApp(Node webapp) throws IOException {
+    public static LavenderProperties loadApp(boolean prod, Node webapp) throws IOException {
         Node src;
         Properties pominfo;
 
@@ -72,7 +72,7 @@ public class LavenderProperties {
         if (pominfo == null) {
             throw new IOException("pominfo.properties for application not found");
         }
-        return parse(src.readProperties(), pominfo);
+        return parse(prod, src.readProperties(), pominfo);
     }
 
     private static Properties pominfoOpt(Node root) throws IOException {
@@ -84,18 +84,18 @@ public class LavenderProperties {
     }
 
     // public only for testing
-    public static LavenderProperties parse(Properties properties, Properties pominfo) throws IOException {
-        return parse(properties, pominfo, DEFAULT_INCLUDES);
+    public static LavenderProperties parse(boolean prod, Properties properties, Properties pominfo) throws IOException {
+        return parse(prod, properties, pominfo, DEFAULT_INCLUDES);
     }
 
-    private static LavenderProperties parse(Properties properties, Properties pominfo, List<String> defaultIncludes) throws IOException {
+    private static LavenderProperties parse(boolean prod, Properties properties, Properties pominfo, List<String> defaultIncludes) throws IOException {
         LavenderProperties result;
         String relative;
         String source;
 
         relative = eat(properties, "pustefix.relative");
         // TODO: enforce pominfo != null when enough modules have switched
-        if (pominfo != null && thisMachine(pominfo.getProperty("ethernet"))) {
+        if (!prod && pominfo != null && thisMachine(pominfo.getProperty("ethernet"))) {
             source = join(pominfo.getProperty("basedir"), relative);
         } else {
             source = null;

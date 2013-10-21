@@ -41,7 +41,7 @@ public class LavenderPropertiesTest {
 
         p = new Properties();
         p.put("pustefix.relative", "base");
-        assertEquals(0, LavenderProperties.parse(p, testPomInfo()).configs.size());
+        assertEquals(0, LavenderProperties.parse(true, p, testPomInfo()).configs.size());
     }
 
     @Test
@@ -56,7 +56,7 @@ public class LavenderPropertiesTest {
         props.put("svn.foo.targetPathPrefix", "prefix");
         props.put("svn.foo.lavendelize", "false");
         props.put("svn.foo.relative", "sub");
-        result = LavenderProperties.parse(props, testPomInfo());
+        result = LavenderProperties.parse(false, props, testPomInfo());
         assertEquals("someDirectory/relative", result.source);
         assertEquals(1, result.configs.size());
         config = result.configs.iterator().next();
@@ -71,7 +71,7 @@ public class LavenderPropertiesTest {
         Properties props;
 
         props = new Properties();
-        LavenderProperties.parse(props, testPomInfo());
+        LavenderProperties.parse(true, props, testPomInfo());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -81,7 +81,7 @@ public class LavenderPropertiesTest {
         props = new Properties();
         props.put("pustefix.relative", "foo");
         props.put("svn.module.nosuchkey", "bla");
-        LavenderProperties.parse(props, testPomInfo());
+        LavenderProperties.parse(true, props, testPomInfo());
     }
 
     @Test
@@ -94,7 +94,7 @@ public class LavenderPropertiesTest {
         props.put("svn.foo", "1");
         props.put("svn.bar", "2");
         props.put("svn.baz", "3");
-        result = LavenderProperties.parse(props, testPomInfo()).configs;
+        result = LavenderProperties.parse(true, props, testPomInfo()).configs;
         assertEquals(3, result.size());
     }
 }
