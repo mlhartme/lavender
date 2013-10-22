@@ -346,7 +346,7 @@ public class LavenderProperties {
                 }
                 FALLBACK_SOURCES.put(entry.substring(0, idx), file);
             }
-            System.err.println("available fallbacks: " + FALLBACK_SOURCES);
+            LOG.info("fallback configured: " + FALLBACK_SOURCES);
         }
     }
 
@@ -354,8 +354,8 @@ public class LavenderProperties {
         String fallbackSource;
 
         fallbackSource = FALLBACK_SOURCES.get(url);
-        if (FALLBACK_SOURCES != null) {
-            System.err.println("fallback for url " + url + ": " + fallbackSource);
+        if (!FALLBACK_SOURCES.isEmpty()) {
+            LOG.info("fallback for url " + url + ": " + fallbackSource);
         }
         return fallbackSource != null ? fallbackSource : source;
     }
