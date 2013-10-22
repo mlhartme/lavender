@@ -76,7 +76,7 @@ public class SvnProperties {
         if (source != null) {
             checkout = world.file(source);
             if (checkout.isDirectory()) {
-                if (svnurl.equals(SvnNode.urlFromWorkspace(checkout))) {
+                if (LavenderProperties.FALLBACK_SOURCES.keySet().contains(svnurl) || svnurl.equals(SvnNode.urlFromWorkspace(checkout))) {
                     return new DefaultModule(type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter) {
                         @Override
                         protected Map<String, Node> scan(final Filter filter) throws Exception {
