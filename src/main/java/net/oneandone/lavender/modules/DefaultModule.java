@@ -55,7 +55,7 @@ public abstract class DefaultModule extends Module<Node> {
         rootConfig = WarConfig.fromXml(webapp);
         // add modules before webapp, because they have a prefix
         for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
-            result.addAll(jarModuleOpt(rootConfig, prod, jar, lp.filter, svnUsername, svnPassword));
+            result.addAll(jarModuleOpt(rootConfig, prod, jar, svnUsername, svnPassword));
         }
         webappSource = lp.live(webapp);
         root = warModule(rootConfig, lp.filter, webappSource);
@@ -64,7 +64,7 @@ public abstract class DefaultModule extends Module<Node> {
         return result;
     }
 
-    public static List<Module> jarModuleOpt(WarConfig rootConfig, boolean prod, Node jarOrig, final Filter filter,
+    public static List<Module> jarModuleOpt(WarConfig rootConfig, boolean prod, Node jarOrig,
                                             String svnUsername, String svnPassword) throws IOException, XmlException, SAXException {
         Node configFile;
         final JarConfig config;
@@ -75,6 +75,7 @@ public abstract class DefaultModule extends Module<Node> {
         Object[] tmp;
         LavenderProperties lp;
         Node exploded;
+        final Filter filter;
 
         result = new ArrayList<>();
         if (jarOrig instanceof FileNode) {
@@ -98,6 +99,7 @@ public abstract class DefaultModule extends Module<Node> {
             } else {
                 jarLive = jarTmp;
             }
+            filter = lp == null ? LavenderProperties.defaultFilter() : lp.filter;
             jarModule = new DefaultModule(Docroot.WEB, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
                 @Override
                 protected Map<String, Node> scan(Filter filter) throws IOException {
@@ -112,9 +114,9 @@ public abstract class DefaultModule extends Module<Node> {
             if (config == null) {
                 return result;
             }
-            tmp = DefaultModule.fromJarStream(filter, Docroot.WEB, config, jarOrig);
+            tmp = DefaultModule.fromJarStream(prod, Docroot.WEB, config, jarOrig);
             jarModule = (Module) tmp[0];
-            lp = LavenderProperties.loadModuleOpt(prod, (Node) tmp[1]);
+            lp = (LavenderProperties) tmp[1];
         }
         result.add(jarModule);
         if (lp != null) {
@@ -228,37 +230,41 @@ public abstract class DefaultModule extends Module<Node> {
     //--
 
     /** To properly make jars available as a module, I have to load them into memory when the jar is itself packaged into a war. */
-    public static Object[] fromJarStream(Filter filter, String type, JarConfig config, Node jar) throws IOException {
+    public static Object[] fromJarStream(boolean prod, String type, JarConfig config, Node jar) throws IOException {
+        Node[] tmp;
+        Filter filter;
         World world;
         ZipEntry entry;
         String path;
         ZipInputStream src;
         Node root;
         Node child;
-        boolean isProperty;
         Node propertyNode;
         final Map<String, Node> files;
         String resourcePath;
+        LavenderProperties lp;
 
+        tmp = LavenderProperties.loadStreamNodes(jar, LavenderProperties.MODULE_PROPERTIES, "META-INF/pominfo.properties");
+        propertyNode = tmp[0];
+        if (propertyNode == null) {
+            filter = LavenderProperties.defaultFilter();
+            lp = null;
+        } else {
+            lp = LavenderProperties.loadNode(prod, propertyNode, tmp[1]);
+            filter = lp.filter;
+        }
         world = jar.getWorld();
         root = world.getMemoryFilesystem().root().node(UUID.randomUUID().toString(), null).mkdir();
         src = new ZipInputStream(jar.createInputStream());
-        propertyNode = null;
         files = new HashMap<>();
-        resourcePath = null; // definite assignment
         while ((entry = src.getNextEntry()) != null) {
             path = entry.getName();
             if (!entry.isDirectory()) {
-                isProperty = LavenderProperties.MODULE_PROPERTIES.equals(path);
-                if (isProperty || ((resourcePath = config.getPath(path)) != null && filter.matches(path))) {
+                if ((resourcePath = config.getPath(path)) != null && filter.matches(path)) {
                     child = root.join(path);
                     child.getParent().mkdirsOpt();
                     world.getBuffer().copy(src, child);
-                    if (isProperty) {
-                        propertyNode = child;
-                    } else {
-                        files.put(resourcePath, child);
-                    }
+                    files.put(resourcePath, child);
                 }
             }
         }
@@ -267,7 +273,7 @@ public abstract class DefaultModule extends Module<Node> {
                 // no need to re-scan files from memory
                 return files;
             }
-        }, propertyNode };
+        }, lp };
     }
 
     //--

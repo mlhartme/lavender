@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +37,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class LavenderProperties {
     private static final Logger LOG = LoggerFactory.getLogger(LavenderProperties.class);
@@ -44,6 +48,14 @@ public class LavenderProperties {
     private static final String APP_PROPERTIES = "WEB-INF/lavender.properties";
     public static final List<String> DEFAULT_INCLUDES = new ArrayList<>(Arrays.asList(
             "**/*.gif", "**/*.png", "**/*.jpg", "**/*.jpeg", "**/*.ico", "**/*.swf", "**/*.css", "**/*.js"));
+
+    public static final Filter defaultFilter() {
+        return new Filter().include(DEFAULT_INCLUDES);
+    }
+
+    public static LavenderProperties loadNode(boolean prod, Node root, Node pominfo) throws IOException {
+        return LavenderProperties.parse(prod, root.readProperties(), pominfoOpt(pominfo));
+    }
 
     public static LavenderProperties loadModuleOpt(boolean prod, Node root) throws IOException {
         Node src;
@@ -358,5 +370,47 @@ public class LavenderProperties {
             LOG.info("fallback for url " + url + ": " + fallbackSource);
         }
         return fallbackSource != null ? fallbackSource : source;
+    }
+
+    //--
+
+    /** To properly make jars available as a module, I have to load them into memory when the jar is itself packaged into a war. */
+    public static Node[] loadStreamNodes(Node jar, String ... names) throws IOException {
+        World world;
+        int count;
+        Node[] result;
+        ZipEntry entry;
+        String path;
+        Node dest;
+        int idx;
+
+        world = jar.getWorld();
+        count = 0;
+        result = new Node[names.length];
+        try (ZipInputStream src = new ZipInputStream(jar.createInputStream())) {
+            while ((entry = src.getNextEntry()) != null) {
+                path = entry.getName();
+                idx = indexOf(names, path);
+                if (idx != -1) {
+                    count++;
+                    dest = world.memoryNode();
+                    result[idx] = dest;
+                    world.getBuffer().copy(src, dest);
+                    if (count == names.length) {
+                        return result;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    private static int indexOf(String[] all, String element) {
+        for (int i = 0; i < all.length; i++) {
+            if (element.equals(all[i])) {
+                return i;
+            }
+        }
+        return -1;
     }
 }
