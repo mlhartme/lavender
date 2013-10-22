@@ -110,11 +110,11 @@ public abstract class DefaultModule extends Module<Node> {
             if (!prod) {
                 throw new UnsupportedOperationException("live mechanism not supported for jar streams");
             }
-            config = loadJarModuleConfig(rootConfig, jarOrig);
-            if (config == null) {
+            tmp = DefaultModule.fromJarStream(prod, Docroot.WEB, rootConfig, jarOrig);
+            if (tmp == null) {
+                // no pustefix module config
                 return result;
             }
-            tmp = DefaultModule.fromJarStream(prod, Docroot.WEB, config, jarOrig);
             jarModule = (Module) tmp[0];
             lp = (LavenderProperties) tmp[1];
         }
@@ -159,24 +159,6 @@ public abstract class DefaultModule extends Module<Node> {
     }
 
     //--
-
-    private static JarConfig loadJarModuleConfig(WarConfig parent, Node jar) throws IOException {
-        ZipEntry entry;
-
-        // TODO: expensive
-        try (ZipInputStream jarInputStream = new ZipInputStream(jar.createInputStream())) {
-            while ((entry = jarInputStream.getNextEntry()) != null) {
-                if (entry.getName().equals("META-INF/pustefix-module.xml")) {
-                    try {
-                        return JarConfig.load(jar.getWorld().getXml(), parent, jarInputStream);
-                    } catch (SAXException | XmlException e) {
-                        throw new IOException(jar + ": cannot load module descriptor:" + e.getMessage(), e);
-                    }
-                }
-            }
-        }
-        return null;
-    }
 
     public static DefaultModule warModule(final WarConfig config, final Filter filter, final Node webapp) throws IOException {
         Element root;
@@ -230,7 +212,8 @@ public abstract class DefaultModule extends Module<Node> {
     //--
 
     /** To properly make jars available as a module, I have to load them into memory when the jar is itself packaged into a war. */
-    public static Object[] fromJarStream(boolean prod, String type, JarConfig config, Node jar) throws IOException {
+    public static Object[] fromJarStream(boolean prod, String type, WarConfig parent, Node jar) throws IOException {
+        JarConfig config;
         Node[] tmp;
         Filter filter;
         World world;
@@ -244,13 +227,22 @@ public abstract class DefaultModule extends Module<Node> {
         String resourcePath;
         LavenderProperties lp;
 
-        tmp = LavenderProperties.loadStreamNodes(jar, LavenderProperties.MODULE_PROPERTIES, "META-INF/pominfo.properties");
-        propertyNode = tmp[0];
+        tmp = LavenderProperties.loadStreamNodes(jar, "META-INF/pustefix-module.xml",
+                LavenderProperties.MODULE_PROPERTIES, "META-INF/pominfo.properties");
+        if (tmp[0] == null) {
+            return null;
+        }
+        try (InputStream configSrc = tmp[0].createInputStream()) {
+            config = JarConfig.load(jar.getWorld().getXml(), parent, configSrc);
+        } catch (SAXException | XmlException e) {
+            throw new IOException(jar + ": cannot load module descriptor:" + e.getMessage(), e);
+        }
+        propertyNode = tmp[1];
         if (propertyNode == null) {
             filter = LavenderProperties.defaultFilter();
             lp = null;
         } else {
-            lp = LavenderProperties.loadNode(prod, propertyNode, tmp[1]);
+            lp = LavenderProperties.loadNode(prod, propertyNode, tmp[2]);
             filter = lp.filter;
         }
         world = jar.getWorld();
