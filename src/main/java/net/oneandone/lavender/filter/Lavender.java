@@ -110,7 +110,7 @@ public class Lavender implements Filter, LavenderMBean {
 
         try {
             ManagementFactory.getPlatformMBeanServer().registerMBean(this,
-                    new ObjectName("com.oneandone:type=Lavender,name=" + UUID.randomUUID().toString()));
+                    new ObjectName("net.oneandone:type=Lavender,name=" + UUID.randomUUID().toString()));
         } catch (InstanceAlreadyExistsException | NotCompliantMBeanException | MalformedObjectNameException e) {
             throw new IllegalStateException(e);
         } catch (MBeanRegistrationException e) {

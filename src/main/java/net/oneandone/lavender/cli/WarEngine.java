@@ -89,7 +89,7 @@ public class WarEngine {
             absolute += index.size();
             result.put(entry.getKey(), index);
         }
-        LOG.info("lavendel servers updated: "
+        LOG.info("lavender servers updated: "
                 + changed + "/" + absolute + " files changed (" + (System.currentTimeMillis() - started) + " ms)");
         outputNodesFile.writeString(nodes);
         updateWarFile(result.get(Docroot.WEB));
