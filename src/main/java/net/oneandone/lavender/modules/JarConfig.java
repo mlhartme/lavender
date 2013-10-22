@@ -84,22 +84,23 @@ public class JarConfig {
     }
 
     /* @return null if not public */
-    public String getPath(String resourceNameOrig) {
-        String resourceName;
-
-        if (resourceNameOrig.startsWith("/")) {
-            throw new IllegalArgumentException(resourceNameOrig);
+    public String getPath(String resourceName) {
+        if (resourceName.startsWith("/")) {
+            throw new IllegalArgumentException(resourceName);
         }
-        if (resourceNameOrig.startsWith(PUSTEFIX_INF)) {
-            resourceName = resourceNameOrig.substring(PUSTEFIX_INF.length());
+        if (resourceName.startsWith(PUSTEFIX_INF)) {
+            resourceName = resourceName.substring(PUSTEFIX_INF.length());
+
+            // statics is relative to PUSTEFIX-INF - so it's not checked, when the resource name does not start with it:
             for (String path : statics) {
                 if (resourceName.startsWith(path)) {
                     return resourceName;
                 }
             }
         }
-        if (global.isPublicResource(resourceNameOrig)) {
-            return resourceNameOrig;
+        // note that PUSTEFIX-INF has been stripped from the beginning
+        if (global.isPublicResource(resourceName)) {
+            return resourceName;
         }
         return null;
     }

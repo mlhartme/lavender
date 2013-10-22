@@ -2,6 +2,9 @@
   <body>
     <release date="2013-10-22" version="2.0.0">
       <action date="2013-10-16" dev="mhm" type="fix">
+        Fix public-resource check with PUSTEFIX-INF prefix.
+      </action>
+      <action date="2013-10-16" dev="mhm" type="fix">
         Fix filter when scanning module streams.
       </action>
     </release>
