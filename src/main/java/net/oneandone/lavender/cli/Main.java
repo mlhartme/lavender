@@ -90,7 +90,8 @@ public class Main extends Cli implements Command {
         console.info.println("  'war' inputWar outputWar idxName target+");
         console.info.println("                            publish resources from the specified war,");
         console.info.println("                            target = type '=' cluster ['/' alias]");
-        console.info.println("  'svn' directory cluster   publish resources from svn to the specified cluster");
+        console.info.println("  'svn' ['-type' type] directory cluster");
+        console.info.println("                            publish resources from svn to the specified cluster; type defaults to 'svn'");
         console.info.println("  'file' ['-prefix' prefix] file idxName type cluster");
         console.info.println("                            publish resources from file to the specified cluster");
         console.info.println("other commands");

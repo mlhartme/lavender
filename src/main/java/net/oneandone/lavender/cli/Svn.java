@@ -27,6 +27,7 @@ import net.oneandone.lavender.modules.Module;
 import net.oneandone.lavender.modules.SvnProperties;
 import net.oneandone.sushi.cli.ArgumentException;
 import net.oneandone.sushi.cli.Console;
+import net.oneandone.sushi.cli.Option;
 import net.oneandone.sushi.cli.Value;
 import net.oneandone.sushi.fs.filter.Filter;
 
@@ -38,6 +39,9 @@ public class Svn extends Base {
 
     @Value(name = "cluster", position = 2)
     private String clusterName;
+
+    @Option("type")
+    private String type = Docroot.SVN;
 
     private final String svn;
 
@@ -62,7 +66,7 @@ public class Svn extends Base {
             throw new ArgumentException("invalid directory: " + directory);
         }
         cluster = net.get(clusterName);
-        docroot = cluster.docroot(Docroot.SVN);
+        docroot = cluster.docroot(type);
         target = new Target(cluster, docroot, docroot.aliases().get(0));
         filter = new Filter();
         filter.includeAll();
