@@ -82,7 +82,7 @@ public class Settings {
     }
 
     public void initLogs(FileNode logs) throws IOException {
-        world.setTemp((FileNode) logs.mkdirOpt());
+        world.setTemp((FileNode) logs.mkdirsOpt());
     }
 
     private void initWorld() throws IOException {
