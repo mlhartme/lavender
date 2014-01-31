@@ -4,6 +4,9 @@
       <action date="2014-01-31" dev="mhm" type="fix">
         Fix unsynchronized message digest call.
       </action>
+      <action date="2014-01-31" dev="mhm" type="fix">
+        Update sushi 2.8.12 to 2.8.13 to fix verbose console output.
+      </action>
     </release>
     <release date="2014-01-28" version="2.0.2">
       <action date="2014-01-28" dev="mhm" type="fix">
