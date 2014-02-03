@@ -184,8 +184,8 @@
           <remove>META-INF/DEPENDENCIES, META-INF/NOTICE, META-INF/LICENSE.txt, META-INF/NOTICE.txt, META-INF/LICENSE, META-INF/wsd.properties, META-INF/pominfo.properties</remove>
 
           <!-- for upload -->
-          <symlink>ssh://servlet@pumama64.schlund.de/home/servlet/bin/lavender</symlink>
-          <target>ssh://servlet@pumama64.schlund.de/home/servlet/tools</target>
+          <symlink>${env.TOWER_TOOLS}/bin/lavender</symlink>
+          <target>${env.TOWER_TOOLS}/lavender</target>
         </configuration>
         <executions>
           <execution>
