@@ -139,7 +139,7 @@ public class Lavender implements Filter, LavenderMBean {
         Resource resource;
 
         path = request.getPathInfo();
-        if (path == null && !path.startsWith("/")) {
+        if (path == null || !path.startsWith("/")) {
             return false;
         }
         path = path.substring(1);
