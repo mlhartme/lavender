@@ -32,7 +32,7 @@ public abstract class Base implements Command {
     protected String user = "unknown@all";
 
     @Option("await")
-    protected int await = 30;
+    protected int await = 60 * 60;  // 1 hour
 
     @Option("no-lock")
     protected boolean noLock = false;

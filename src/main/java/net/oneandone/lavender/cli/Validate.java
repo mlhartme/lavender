@@ -121,7 +121,6 @@ public class Validate extends Base {
         List<String> tmp;
         Index all;
         Index allLoaded;
-        Node fixed;
         Map<String, Index> result;
 
         result = new HashMap<>();

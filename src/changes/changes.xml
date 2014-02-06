@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?><document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
   <body>
+    <release date="2014-02-06" version="2.0.4">
+      <action date="2014-02-06" dev="mhm" type="fix">
+        Fix NPE when called without path prefix in devel mode.
+      </action>
+      <action date="2014-02-06" dev="mhm" type="update">
+        Bump lock timeout from 30 seconds to 1 hour.
+      </action>
+    </release>
     <release date="2014-01-31" version="2.0.3">
       <action date="2014-01-31" dev="mhm" type="fix">
         Fix unsynchronized message digest call.
