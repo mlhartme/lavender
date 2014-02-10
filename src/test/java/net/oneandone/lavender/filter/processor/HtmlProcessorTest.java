@@ -72,6 +72,28 @@ public class HtmlProcessorTest {
         assertEquals(expected, out.getBuffer().toString());
     }
 
+
+    @Test
+    public void testIsolatedObjectParam() throws IOException {
+        String input = "<object/><param name='movie' value='/x/y/z'/>";
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(input, out.getBuffer().toString());
+    }
+
+    @Test
+    public void testObjectParam() throws IOException {
+        String input = "<object><param name='movie' value='/x/y/z'/></object>";
+        String output = "<object><param name='movie' value='http://a.b.c'/></object>";
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(output, out.getBuffer().toString());
+    }
+
     @Test
     public void testSimpleWithDoubleQuotedAttributes() throws IOException {
 

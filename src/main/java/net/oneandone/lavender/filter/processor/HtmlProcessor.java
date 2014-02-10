@@ -30,8 +30,11 @@ public class HtmlProcessor extends AbstractProcessor {
     /** The main state of this processor. */
     protected State state = State.NULL;
 
-    /** The current tag. CAUTION: properly set only between < ... >; outside of angle brackets, it contains the last value of tag. */
+    /** The current tag, but only if it has attributes. CAUTION: properly set only between < ... >; outside of angle brackets, it contains the last value of tag. */
     protected Tag tag = Tag.NULL;
+
+    /** Number of "object" tags surrounding the current position */
+    protected int surroundingObjectTags = 0;
 
     /** The current attribute within an tag. */
     protected Attr attr = Attr.NULL;
@@ -61,7 +64,7 @@ public class HtmlProcessor extends AbstractProcessor {
      * An enum to track the current tag.
      */
     enum Tag {
-        NULL, IMG, LINK, SCRIPT, INPUT, A, SOURCE, OTHER;
+        NULL, IMG, LINK, SCRIPT, INPUT, A, SOURCE, OBJECT, PARAM, OTHER;
 
         public static Tag forString(String str) {
             if ("img".equals(str)) {
@@ -76,6 +79,10 @@ public class HtmlProcessor extends AbstractProcessor {
                 return Tag.A;
             } else if ("source".equals(str)) {
                 return Tag.SOURCE;
+            } else if ("object".equals(str)) {
+                return Tag.OBJECT;
+            } else if ("param".equals(str)) {
+                return Tag.PARAM;
             } else {
                 return Tag.OTHER;
             }
@@ -86,7 +93,7 @@ public class HtmlProcessor extends AbstractProcessor {
      * An enum to track the current attribute.
      */
     enum Attr {
-        NULL, SRC, HREF, REL, STYLE, TYPE, OTHER
+        NULL, SRC, HREF, REL, STYLE, TYPE, DATA, NAME, VALUE, OTHER
     }
 
     private static final class Value {
@@ -99,6 +106,7 @@ public class HtmlProcessor extends AbstractProcessor {
             this.start = start;
         }
     }
+
 
     /**
      * Instantiates a new HTML processor.
@@ -255,6 +263,21 @@ public class HtmlProcessor extends AbstractProcessor {
             tag = Tag.forString(tagBuffer.toString().toLowerCase());
             tagBuffer.append(c);
         } else if (c == '>') {
+            if (state == State.TAG_START) {
+                // we've seen no space, and thus, tag has not been assigned properly
+                tag = Tag.forString(tagBuffer.toString().toLowerCase());
+            }
+            if (tag == Tag.OBJECT) {
+                if (tagBuffer.charAt(1) == '/') {
+                    // </object>
+                    surroundingObjectTags--;
+                } else if (tagBuffer.charAt(tagBuffer.length() - 1) == '/') {
+                    // <object/>
+                } else {
+                    // <object>
+                    surroundingObjectTags++;
+                }
+            }
             processTagBuffer();
             state = State.NULL;
             tagBuffer.setLength(0);
@@ -275,7 +298,6 @@ public class HtmlProcessor extends AbstractProcessor {
             state = State.NULL;
             tagBuffer.setLength(0);
             out.write(c);
-
         } else if (c == '/') {
             // ignore this
             tagBuffer.append(c);
@@ -304,6 +326,12 @@ public class HtmlProcessor extends AbstractProcessor {
                 attr = Attr.REL;
             } else if ("type".equalsIgnoreCase(a)) {
                 attr = Attr.TYPE;
+            } else if ("data".equalsIgnoreCase(a)) {
+                attr = Attr.DATA;
+            } else if ("name".equalsIgnoreCase(a)) {
+                attr = Attr.NAME;
+            } else if ("value".equalsIgnoreCase(a)) {
+                attr = attr.VALUE;
             } else {
                 attr = Attr.OTHER;
             }
@@ -444,6 +472,10 @@ public class HtmlProcessor extends AbstractProcessor {
                 }
             } else if (value.attr == Attr.STYLE) {
                 rewriteCss(value);
+            } else if (tag == Tag.OBJECT && value.attr == Attr.DATA && hasAttribute(Attr.TYPE, "application/x-shockware-flash")) {
+                rewriteUrl(value);
+            } else if (tag == Tag.PARAM && value.attr == Attr.VALUE && hasAttribute(Attr.NAME, "movie") && surroundingObjectTags > 0) {
+                rewriteUrl(value);
             } else {
                 out.write(tagBuffer.substring(value.start, value.end));
             }
@@ -457,6 +489,13 @@ public class HtmlProcessor extends AbstractProcessor {
         attrs.clear();
         tagBuffer.setLength(0);
         uriBuffer.setLength(0);
+    }
+
+    private boolean hasAttribute(Attr attr, String value) {
+        Value v;
+
+        v = attrs.get(attr);
+        return v == null ? false : value.equalsIgnoreCase(tagBuffer.substring(v.start, v.end));
     }
 
     protected void rewriteUrl(Value value) throws IOException {

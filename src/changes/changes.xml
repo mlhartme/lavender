@@ -4,6 +4,9 @@
       <action date="2014-02-09" dev="mhm" type="add">
         Add support for HTML 5 source tags, they are properly rewritten now.
       </action>
+      <action date="2014-02-09" dev="mhm" type="add">
+        Add support for Flash Objects, data attributes and movie params are properly rewritten now.
+      </action>
     </release>
     <release date="2014-02-06" version="2.0.4">
       <action date="2014-02-06" dev="mhm" type="fix">
