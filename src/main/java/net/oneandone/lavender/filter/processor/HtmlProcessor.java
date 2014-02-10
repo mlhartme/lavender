@@ -30,7 +30,7 @@ public class HtmlProcessor extends AbstractProcessor {
     /** The main state of this processor. */
     protected State state = State.NULL;
 
-    /** The current tag. */
+    /** The current tag. CAUTION: properly set only between < ... >; outside of angle brackets, it contains the last value of tag. */
     protected Tag tag = Tag.NULL;
 
     /** The current attribute within an tag. */
@@ -61,7 +61,7 @@ public class HtmlProcessor extends AbstractProcessor {
      * An enum to track the current tag.
      */
     enum Tag {
-        NULL, IMG, LINK, SCRIPT, INPUT, A, OTHER;
+        NULL, IMG, LINK, SCRIPT, INPUT, A, SOURCE, OTHER;
 
         public static Tag forString(String str) {
             if ("img".equals(str)) {
@@ -74,6 +74,8 @@ public class HtmlProcessor extends AbstractProcessor {
                 return Tag.INPUT;
             } else if ("a".equals(str)) {
                 return Tag.A;
+            } else if ("source".equals(str)) {
+                return Tag.SOURCE;
             } else {
                 return Tag.OTHER;
             }
@@ -395,6 +397,8 @@ public class HtmlProcessor extends AbstractProcessor {
             if (tag == Tag.IMG && value.attr == Attr.SRC) {
                 rewriteUrl(value);
             } else if (tag == Tag.A && value.attr == Attr.HREF) {
+                rewriteUrl(value);
+            } else if (tag == Tag.SOURCE && value.attr == Attr.SRC) {
                 rewriteUrl(value);
             } else if (tag == Tag.LINK && value.attr == Attr.HREF) {
                 boolean rewritten = false;

@@ -61,6 +61,18 @@ public class HtmlProcessorTest {
     }
 
     @Test
+    public void testHtml5Source() throws IOException {
+
+        String input = "<source src='/x/y/z'/>";
+        String expected = "<source src='http://a.b.c'/>";
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(expected, out.getBuffer().toString());
+    }
+
+    @Test
     public void testSimpleWithDoubleQuotedAttributes() throws IOException {
 
         String input = "<html>abc!<body><img  src  =  \"/a/b/c\" /><link rel=\"stylesheet\" href=\"/x/y/z\" />"
