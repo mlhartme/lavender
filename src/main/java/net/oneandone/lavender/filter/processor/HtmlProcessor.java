@@ -263,21 +263,6 @@ public class HtmlProcessor extends AbstractProcessor {
             tag = Tag.forString(tagBuffer.toString().toLowerCase());
             tagBuffer.append(c);
         } else if (c == '>') {
-            if (state == State.TAG_START) {
-                // we've seen no space, and thus, tag has not been assigned properly
-                tag = Tag.forString(tagBuffer.toString().toLowerCase());
-            }
-            if (tag == Tag.OBJECT) {
-                if (tagBuffer.charAt(1) == '/') {
-                    // </object>
-                    surroundingObjectTags--;
-                } else if (tagBuffer.charAt(tagBuffer.length() - 1) == '/') {
-                    // <object/>
-                } else {
-                    // <object>
-                    surroundingObjectTags++;
-                }
-            }
             processTagBuffer();
             state = State.NULL;
             tagBuffer.setLength(0);
@@ -416,6 +401,7 @@ public class HtmlProcessor extends AbstractProcessor {
     }
 
     protected void processTagBuffer() throws IOException {
+        updateSurroundingObjectTags();
 
         int index = 0;
         for (Attr a : attrs.keySet()) {
@@ -472,7 +458,7 @@ public class HtmlProcessor extends AbstractProcessor {
                 }
             } else if (value.attr == Attr.STYLE) {
                 rewriteCss(value);
-            } else if (tag == Tag.OBJECT && value.attr == Attr.DATA && hasAttribute(Attr.TYPE, "application/x-shockware-flash")) {
+            } else if (tag == Tag.OBJECT && value.attr == Attr.DATA && hasAttribute(Attr.TYPE, "application/x-shockwave-flash")) {
                 rewriteUrl(value);
             } else if (tag == Tag.PARAM && value.attr == Attr.VALUE && hasAttribute(Attr.NAME, "movie") && surroundingObjectTags > 0) {
                 rewriteUrl(value);
@@ -489,6 +475,28 @@ public class HtmlProcessor extends AbstractProcessor {
         attrs.clear();
         tagBuffer.setLength(0);
         uriBuffer.setLength(0);
+    }
+
+    private void updateSurroundingObjectTags() {
+        Tag realTag;
+
+        if (state == State.TAG_START) {
+            // we've seen no space, and thus, tag has not been assigned properly
+            realTag = Tag.forString(tagBuffer.toString().toLowerCase());
+        } else {
+            realTag = tag;
+        }
+        if (realTag == Tag.OBJECT) {
+            if (tagBuffer.charAt(1) == '/') {
+                // </object>
+                surroundingObjectTags--;
+            } else if (tagBuffer.charAt(tagBuffer.length() - 1) == '/') {
+                // <object/>
+            } else {
+                // <object>
+                surroundingObjectTags++;
+            }
+        }
     }
 
     private boolean hasAttribute(Attr attr, String value) {

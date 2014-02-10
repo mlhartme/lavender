@@ -95,6 +95,87 @@ public class HtmlProcessorTest {
     }
 
     @Test
+    public void testFlash() throws IOException {
+        String input = "      <div id=\"flashContent\">\n" +
+                "        <object classid=\"clsid:d27cdb6e-ae6d-11cf-96b8-444553540000\" width=\"450\" height=\"450\" id=\"nHosting-apps-wuerfelani_v01\" align=\"middle\">\n" +
+                "          <param name=\"movie\" value=\"/x/y/z\" />\n" +
+                "          <param name=\"quality\" value=\"best\" />\n" +
+                "          <param name=\"bgcolor\" value=\"#2e86c7\" />\n" +
+                "          <param name=\"play\" value=\"true\" />\n" +
+                "          <param name=\"loop\" value=\"false\" />\n" +
+                "          <param name=\"wmode\" value=\"transparent\" />\n" +
+                "          <param name=\"scale\" value=\"showall\" />\n" +
+                "          <param name=\"menu\" value=\"false\" />\n" +
+                "          <param name=\"devicefont\" value=\"false\" />\n" +
+                "          <param name=\"salign\" value=\"\" />\n" +
+                "          <param name=\"allowScriptAccess\" value=\"sameDomain\" />\n" +
+                "          <!--[if !IE]>-->\n" +
+                "          <object type=\"application/x-shockwave-flash\" data=\"/x/y/z\" width=\"450\" height=\"450\">\n" +
+                "            <param name=\"movie\" value=\"/x/y/z\" />\n" +
+                "            <param name=\"quality\" value=\"best\" />\n" +
+                "            <param name=\"bgcolor\" value=\"#2e86c7\" />\n" +
+                "            <param name=\"play\" value=\"true\" />\n" +
+                "            <param name=\"loop\" value=\"false\" />\n" +
+                "            <param name=\"wmode\" value=\"transparent\" />\n" +
+                "            <param name=\"scale\" value=\"showall\" />\n" +
+                "            <param name=\"menu\" value=\"false\" />\n" +
+                "            <param name=\"devicefont\" value=\"false\" />\n" +
+                "            <param name=\"salign\" value=\"\" />\n" +
+                "            <param name=\"allowScriptAccess\" value=\"sameDomain\" />\n" +
+                "            <!--<![endif]-->\n" +
+                "            <a href=\"http://www.adobe.com/go/getflash\">\n" +
+                "              <img src=\"http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif\" alt=\"Get Adobe Flash Player\" />\n" +
+                "            </a>\n" +
+                "            <!--[if !IE]>-->\n" +
+                "          </object>\n" +
+                "          <!--<![endif]-->\n" +
+                "        </object>\n" +
+                "      </div>\n";
+        String output = "      <div id=\"flashContent\">\n" +
+                "        <object classid=\"clsid:d27cdb6e-ae6d-11cf-96b8-444553540000\" width=\"450\" height=\"450\" id=\"nHosting-apps-wuerfelani_v01\" align=\"middle\">\n" +
+                "          <param name=\"movie\" value=\"http://a.b.c\" />\n" +
+                "          <param name=\"quality\" value=\"best\" />\n" +
+                "          <param name=\"bgcolor\" value=\"#2e86c7\" />\n" +
+                "          <param name=\"play\" value=\"true\" />\n" +
+                "          <param name=\"loop\" value=\"false\" />\n" +
+                "          <param name=\"wmode\" value=\"transparent\" />\n" +
+                "          <param name=\"scale\" value=\"showall\" />\n" +
+                "          <param name=\"menu\" value=\"false\" />\n" +
+                "          <param name=\"devicefont\" value=\"false\" />\n" +
+                "          <param name=\"salign\" value=\"\" />\n" +
+                "          <param name=\"allowScriptAccess\" value=\"sameDomain\" />\n" +
+                "          <!--[if !IE]>-->\n" +
+                "          <object type=\"application/x-shockwave-flash\" data=\"http://a.b.c\" width=\"450\" height=\"450\">\n" +
+                "            <param name=\"movie\" value=\"http://a.b.c\" />\n" +
+                "            <param name=\"quality\" value=\"best\" />\n" +
+                "            <param name=\"bgcolor\" value=\"#2e86c7\" />\n" +
+                "            <param name=\"play\" value=\"true\" />\n" +
+                "            <param name=\"loop\" value=\"false\" />\n" +
+                "            <param name=\"wmode\" value=\"transparent\" />\n" +
+                "            <param name=\"scale\" value=\"showall\" />\n" +
+                "            <param name=\"menu\" value=\"false\" />\n" +
+                "            <param name=\"devicefont\" value=\"false\" />\n" +
+                "            <param name=\"salign\" value=\"\" />\n" +
+                "            <param name=\"allowScriptAccess\" value=\"sameDomain\" />\n" +
+                "            <!--<![endif]-->\n" +
+                "            <a href=\"http://a.b.c\">\n" +
+                "              <img src=\"http://a.b.c\" alt=\"Get Adobe Flash Player\" />\n" +
+                "            </a>\n" +
+                "            <!--[if !IE]>-->\n" +
+                "          </object>\n" +
+                "          <!--<![endif]-->\n" +
+                "        </object>\n" +
+                "      </div>\n";
+
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(output, out.getBuffer().toString());
+
+    }
+
+    @Test
     public void testSimpleWithDoubleQuotedAttributes() throws IOException {
 
         String input = "<html>abc!<body><img  src  =  \"/a/b/c\" /><link rel=\"stylesheet\" href=\"/x/y/z\" />"
