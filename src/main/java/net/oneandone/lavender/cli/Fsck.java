@@ -122,6 +122,7 @@ public class Fsck extends Base {
         Index all;
         Index allLoaded;
         Map<String, Index> result;
+        Node repaired;
 
         result = new HashMap<>();
         problem = false;
@@ -148,10 +149,12 @@ public class Fsck extends Base {
             problem = true;
         }
         if (!all.equals(allLoaded)) {
+            repaired = repairedLocation(docrootObj.index(connection, Index.ALL_IDX));
+            repaired.getParent().mkdirsOpt();
             // TODO: change this into a problem when all shops use lavender 2
             // problem = true;
             console.error.println("all-index is broken");
-            all.save(repairedLocation(docrootObj.index(connection, Index.ALL_IDX)));
+            all.save(repaired);
         }
         console.info.println(references.size());
         tmp = new ArrayList<>(references);
