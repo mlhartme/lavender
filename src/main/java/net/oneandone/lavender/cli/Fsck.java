@@ -28,9 +28,7 @@ import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.cli.Option;
 import net.oneandone.sushi.cli.Value;
-import net.oneandone.sushi.fs.DirectoryNotFoundException;
 import net.oneandone.sushi.fs.FileNotFoundException;
-import net.oneandone.sushi.fs.ListException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.ssh.SshNode;
@@ -108,7 +106,7 @@ public class Fsck extends Base {
             }
         }
         if (problem) {
-            throw new IOException("validate failed");
+            throw new IOException("VALIDATE FAILED");
         } else {
             console.info.println("validate ok");
         }
@@ -128,11 +126,11 @@ public class Fsck extends Base {
         result = new HashMap<>();
         problem = false;
         references = new HashSet<>();
-        console.info.println(docroot.getURI().toString());
-        console.info.print("  collecting files ...");
+        console.verbose.println("  docroot"  + docroot.getURI().toString());
+        console.info.print("  files: ");
         files = find(docroot, "-type", "f");
-        console.info.println("done: " + files.size());
-        console.info.print("  collecting references ...");
+        console.info.println(files.size());
+        console.info.print("  references: ");
         all = new Index();
         for (Node file : docrootObj.indexList(connection)) {
             index = Index.load(file);
@@ -155,16 +153,20 @@ public class Fsck extends Base {
             console.error.println("all-index is broken");
             all.save(repairedLocation(docrootObj.index(connection, Index.ALL_IDX)));
         }
-        console.info.println("done: " + references.size());
+        console.info.println(references.size());
         tmp = new ArrayList<>(references);
         tmp.removeAll(files);
+        console.error.println("  dangling references: " + tmp.size());
         if (!tmp.isEmpty()) {
             problem = true;
-            console.error.println("dangling references: " + tmp);
+            for (String path : tmp) {
+                console.verbose.println("    " + path);
+            }
             removeReferences(connection, docrootObj, tmp);
         }
         tmp = new ArrayList<>(files);
         tmp.removeAll(references);
+        console.error.println("  unreferenced files: " + tmp.size());
         if (!tmp.isEmpty()) {
             if (gc) {
                 if (problem) {
@@ -173,7 +175,9 @@ public class Fsck extends Base {
                 gc(docroot, tmp);
             } else {
                 problem = true;
-                console.error.println("unreferenced files: " + tmp);
+                for (String path : tmp) {
+                    console.verbose.println("    " + path);
+                }
             }
         }
         if (md5check) {
