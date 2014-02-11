@@ -28,7 +28,9 @@ import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.cli.Option;
 import net.oneandone.sushi.cli.Value;
+import net.oneandone.sushi.fs.DirectoryNotFoundException;
 import net.oneandone.sushi.fs.FileNotFoundException;
+import net.oneandone.sushi.fs.ListException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.ssh.SshNode;
@@ -162,6 +164,7 @@ public class Validate extends Base {
         if (!tmp.isEmpty()) {
             problem = true;
             console.error.println("dangling references: " + tmp);
+            removeReferences(connection, docrootObj, tmp);
         }
         tmp = new ArrayList<>(files);
         tmp.removeAll(references);
@@ -177,6 +180,28 @@ public class Validate extends Base {
         return problem ? null : result;
     }
 
+    private void removeReferences(Connection connection, Docroot docrootObj, List<String> references) throws IOException {
+        Index orig;
+        Index modified;
+        Node fixed;
+
+        for (Node file : docrootObj.indexList(connection)) {
+            orig = Index.load(file);
+            modified = new Index();
+            for (Label label : orig) {
+                if (!references.contains(label.getLavendelizedPath())) {
+                    modified.add(label);
+                }
+            }
+            if (orig.size() != modified.size()) {
+                fixed = file.getParent().getParent().getParent().join("repaired-indexes", file.getParent().getName(), file.getName());
+                console.info.println("writing fixed index: " + fixed);
+                fixed.getParent().mkdirsOpt();
+                modified.save(fixed);
+            }
+        }
+
+    }
     private boolean md5check(Node docroot, Index index) throws IOException {
         boolean problem;
         List<String> paths;

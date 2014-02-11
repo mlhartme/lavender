@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?><document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
   <body>
-    <release date="2014-02-09" version="2.0.5">
-      <action date="2014-02-09" dev="mhm" type="add">
+    <release date="2014-02-11" version="2.0.6">
+      <action date="2014-02-11" dev="mhm" type="add">
+        Validate computes fixed indexes for dangling references.
+      </action>
+    </release>
+    <release date="2014-02-10" version="2.0.5">
+      <action date="2014-02-10" dev="mhm" type="add">
         Add support for HTML 5 source tags, they are properly rewritten now.
       </action>
-      <action date="2014-02-09" dev="mhm" type="add">
+      <action date="2014-02-10" dev="mhm" type="add">
         Add support for Flash Objects, data attributes and movie params are properly rewritten now.
       </action>
     </release>
