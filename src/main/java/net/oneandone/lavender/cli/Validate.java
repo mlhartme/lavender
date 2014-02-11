@@ -182,22 +182,22 @@ public class Validate extends Base {
 
     private void removeReferences(Connection connection, Docroot docrootObj, List<String> references) throws IOException {
         Index orig;
-        Index modified;
-        Node fixed;
+        Index repaired;
+        Node repairedFile;
 
         for (Node file : docrootObj.indexList(connection)) {
             orig = Index.load(file);
-            modified = new Index();
+            repaired = new Index();
             for (Label label : orig) {
                 if (!references.contains(label.getLavendelizedPath())) {
-                    modified.add(label);
+                    repaired.add(label);
                 }
             }
-            if (orig.size() != modified.size()) {
-                fixed = file.getParent().getParent().getParent().join("repaired-indexes", file.getParent().getName(), file.getName());
-                console.info.println("writing fixed index: " + fixed);
-                fixed.getParent().mkdirsOpt();
-                modified.save(fixed);
+            if (orig.size() != repaired.size()) {
+                repairedFile = file.getParent().getParent().getParent().join("repaired-indexes", file.getParent().getName(), file.getName());
+                console.info.println("writing repaired index: " + repairedFile);
+                repairedFile.getParent().mkdirsOpt();
+                repaired.save(repairedFile);
             }
         }
 
