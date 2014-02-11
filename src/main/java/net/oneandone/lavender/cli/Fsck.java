@@ -143,7 +143,7 @@ public class Fsck extends Base {
         try {
             allLoaded = Index.load(docrootObj.index(connection, Index.ALL_IDX));
         } catch (FileNotFoundException e) {
-            console.info.println("all-index is missing");
+            console.info.println(Index.ALL_IDX + " is missing");
             allLoaded = new Index();
             problem = true;
         }
@@ -164,6 +164,11 @@ public class Fsck extends Base {
             }
             removeReferences(connection, docrootObj, tmp);
         }
+        if (md5check) {
+            if (md5check(docroot, all)) {
+                problem = true;
+            }
+        }
         tmp = new ArrayList<>(files);
         tmp.removeAll(references);
         console.error.println("  unreferenced files: " + tmp.size());
@@ -178,11 +183,6 @@ public class Fsck extends Base {
                 for (String path : tmp) {
                     console.verbose.println("    " + path);
                 }
-            }
-        }
-        if (md5check) {
-            if (md5check(docroot, all)) {
-                problem = true;
             }
         }
         return problem ? null : result;
