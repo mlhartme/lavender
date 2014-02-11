@@ -53,8 +53,8 @@ public class Fsck extends Base {
     @Option("mac")
     private boolean mac;
 
-    @Option("fix-all-idx")
-    private boolean fixAllIdx;
+    @Option("gc")
+    private boolean gc;
 
     @Value(name = "cluster", position = 1)
     private String clusterName;
@@ -145,18 +145,15 @@ public class Fsck extends Base {
         try {
             allLoaded = Index.load(docrootObj.index(connection, Index.ALL_IDX));
         } catch (FileNotFoundException e) {
-            console.error.println("all-index is missing");
+            console.info.println("all-index is missing");
             allLoaded = new Index();
+            problem = true;
         }
         if (!all.equals(allLoaded)) {
-            problem = true;
+            // TODO: change this into a problem when all shops use lavender 2
+            // problem = true;
             console.error.println("all-index is broken");
-            if (fixAllIdx) {
-                all.save(docrootObj.index(connection, Index.ALL_IDX));
-                console.error.println("saving a fixed version");
-            } else {
-                console.error.println("consider validate with '-fix-all-idx'");
-            }
+            all.save(repairedLocation(docrootObj.index(connection, Index.ALL_IDX)));
         }
         console.info.println("done: " + references.size());
         tmp = new ArrayList<>(references);
@@ -169,8 +166,15 @@ public class Fsck extends Base {
         tmp = new ArrayList<>(files);
         tmp.removeAll(references);
         if (!tmp.isEmpty()) {
-            problem = true;
-            console.error.println("unreferenced files: " + tmp);
+            if (gc) {
+                if (problem) {
+                    throw new IOException("garbage collection not allowed - fix the above problems first");
+                }
+                gc(docroot, tmp);
+            } else {
+                problem = true;
+                console.error.println("unreferenced files: " + tmp);
+            }
         }
         if (md5check) {
             if (md5check(docroot, all)) {
@@ -194,7 +198,7 @@ public class Fsck extends Base {
                 }
             }
             if (orig.size() != repaired.size()) {
-                repairedFile = file.getParent().getParent().getParent().join("repaired-indexes", file.getParent().getName(), file.getName());
+                repairedFile = repairedLocation(file);
                 console.info.println("writing repaired index: " + repairedFile);
                 repairedFile.getParent().mkdirsOpt();
                 repaired.save(repairedFile);
@@ -202,6 +206,11 @@ public class Fsck extends Base {
         }
 
     }
+
+    private Node repairedLocation(Node file) {
+        return file.getParent().getParent().getParent().join("repaired-indexes", file.getParent().getName(), file.getName());
+    }
+
     private boolean md5check(Node docroot, Index index) throws IOException {
         boolean problem;
         List<String> paths;
@@ -310,4 +319,48 @@ public class Fsck extends Base {
         }
         return result;
     }
+
+    //--
+
+    private void gc(Node base, List<String> files) throws IOException {
+        gcFiles(base, files);
+        gcDirectories(base);
+    }
+
+    private void gcFiles(Node base, List<String> files) throws IOException {
+        console.info.print("scanning files ...");
+        console.info.println(" done: " + files.size());
+        for (String file : files) {
+            console.verbose.println("rm " + file);
+            base.join(file).deleteFile();
+        }
+        console.info.println(files.size() + " unreferenced files deleted.");
+    }
+
+    private void gcDirectories(Node base) throws IOException {
+        List<String> paths;
+
+        console.info.print("scanning empty directories ...");
+        paths = Fsck.find(base, "-type", "d", "-empty");
+        console.info.println(" done: " + paths.size());
+        for (String path : paths) {
+            rmdir(base, base.join(path));
+        }
+        console.info.println(paths.size() + " empty directories deleted.");
+    }
+
+    private void rmdir(Node base, Node dir) throws IOException {
+        while (true) {
+            if (dir.equals(base)) {
+                return;
+            }
+            console.verbose.println("rmdir " + dir.getPath());
+            dir.deleteDirectory();
+            dir = dir.getParent();
+            if (dir.list().size() > 0) {
+                return;
+            }
+        }
+    }
+
 }

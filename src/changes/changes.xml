@@ -4,8 +4,14 @@
       <action date="2014-02-11" dev="mhm" type="update">
         Renamed validate to fsck.
       </action>
+      <action date="2014-02-11" dev="mhm" type="update">
+        Moved gc command into fsck -gc.
+      </action>
       <action date="2014-02-11" dev="mhm" type="add">
-        Validate computes fixed indexes for dangling references.
+        Fsck writes repaired indexes for dangling references.
+      </action>
+      <action date="2014-02-11" dev="mhm" type="add">
+        Fsck always writes a repaired .all.idx now, the explicit option is gone.
       </action>
     </release>
     <release date="2014-02-10" version="2.0.5">
