@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Validate extends Base {
+public class Fsck extends Base {
     @Option("md5")
     private boolean md5check;
 
@@ -59,7 +59,7 @@ public class Validate extends Base {
     @Value(name = "cluster", position = 1)
     private String clusterName;
 
-    public Validate(Console console, Settings settings, Net net) {
+    public Fsck(Console console, Settings settings, Net net) {
         super(console, settings, net);
     }
 

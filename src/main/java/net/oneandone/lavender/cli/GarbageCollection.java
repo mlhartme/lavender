@@ -88,7 +88,7 @@ public class GarbageCollection extends Base {
         int found;
 
         console.info.print("scanning files ...");
-        paths = Validate.find(base, "-type", "f");
+        paths = Fsck.find(base, "-type", "f");
         console.info.println(" done: " + paths.size());
         found = 0;
         for (String path : paths) {
@@ -115,7 +115,7 @@ public class GarbageCollection extends Base {
         List<String> paths;
 
         console.info.print("scanning empty directories ...");
-        paths = Validate.find(base, "-type", "d", "-empty");
+        paths = Fsck.find(base, "-type", "d", "-empty");
         console.info.println(" done: " + paths.size());
         for (String path : paths) {
             rmdir(base, base.join(path));

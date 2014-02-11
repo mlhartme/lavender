@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?><document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
   <body>
     <release date="2014-02-11" version="2.0.6">
+      <action date="2014-02-11" dev="mhm" type="update">
+        Renamed validate to fsck.
+      </action>
       <action date="2014-02-11" dev="mhm" type="add">
         Validate computes fixed indexes for dangling references.
       </action>

@@ -77,9 +77,9 @@ public class Main extends Cli implements Command {
         return new GarbageCollection(console, settings, net());
     }
 
-    @Child("validate")
+    @Child("fsck")
     public Command validate() throws IOException {
-        return new Validate(console, settings, net());
+        return new Fsck(console, settings, net());
     }
 
     @Override
@@ -98,7 +98,7 @@ public class Main extends Cli implements Command {
         console.info.println("  'help'                    print this message");
         console.info.println("  'version'                 print version information");
         console.info.println("  'direct' cluster arg+     executes the specified command on all machines of the cluster");
-        console.info.println("  'validate' cluster        checks if all files are indexed and indexes match");
+        console.info.println("  'fsck' cluster            checks if all files are indexed and indexes match");
         console.info.println("  'gc' ['-dryrun'] cluster  removes unreferenced resources and empty directories from the");
         console.info.println("                            specified host(s); default: all hosts");
     }
