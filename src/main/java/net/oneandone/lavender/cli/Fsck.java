@@ -106,9 +106,9 @@ public class Fsck extends Base {
             }
         }
         if (problem) {
-            throw new IOException("VALIDATE FAILED");
+            throw new IOException("FSCK FAILED");
         } else {
-            console.info.println("validate ok");
+            console.info.println("ok");
         }
     }
 
