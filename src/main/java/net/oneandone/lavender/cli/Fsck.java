@@ -120,9 +120,7 @@ public class Fsck extends Base {
         Index index;
         List<String> tmp;
         Index all;
-        Index allLoaded;
         Map<String, Index> result;
-        Node repaired;
 
         result = new HashMap<>();
         problem = false;
@@ -141,31 +139,21 @@ public class Fsck extends Base {
                 all.addReference(label.getLavendelizedPath(), label.md5());
             }
         }
-        try {
-            allLoaded = Index.load(docrootObj.index(connection, Index.ALL_IDX));
-        } catch (FileNotFoundException e) {
-            console.info.println(Index.ALL_IDX + " is missing");
-            allLoaded = new Index();
-            problem = true;
-        }
-        if (!all.equals(allLoaded)) {
-            repaired = repairedLocation(docrootObj.index(connection, Index.ALL_IDX));
-            repaired.getParent().mkdirsOpt();
-            // TODO: change this into a problem when all shops use lavender 2
-            // problem = true;
-            console.error.println("all-index is broken");
-            all.save(repaired);
-        }
         console.info.println(references.size());
         tmp = new ArrayList<>(references);
         tmp.removeAll(files);
         console.error.println("  dangling references: " + tmp.size());
-        if (!tmp.isEmpty()) {
+        if (tmp.isEmpty()) {
+            if (allIdxCheck(connection, docrootObj, all)) {
+                problem = true;
+            }
+        } else {
             problem = true;
             for (String path : tmp) {
                 console.verbose.println("    " + path);
             }
             removeReferences(connection, docrootObj, tmp);
+            console.verbose.println("skipping allIdx check skipped because we have dangling references");
         }
         if (md5check) {
             if (md5check(docroot, all)) {
@@ -189,6 +177,30 @@ public class Fsck extends Base {
             }
         }
         return problem ? null : result;
+    }
+
+    private boolean allIdxCheck(Connection connection, Docroot docrootObj, Index all) throws IOException {
+        Index allLoaded;
+        Node repaired;
+        boolean problem;
+
+        try {
+            allLoaded = Index.load(docrootObj.index(connection, Index.ALL_IDX));
+            problem = false;
+        } catch (FileNotFoundException e) {
+            console.info.println(Index.ALL_IDX + " is missing");
+            allLoaded = new Index();
+            problem = true;
+        }
+        if (!all.equals(allLoaded)) {
+            repaired = repairedLocation(docrootObj.index(connection, Index.ALL_IDX));
+            repaired.getParent().mkdirsOpt();
+            // TODO: change this into a problem when all shops use lavender 2
+            // result = true;
+            console.error.println("all-index is broken");
+            all.save(repaired);
+        }
+        return problem;
     }
 
     private void removeReferences(Connection connection, Docroot docrootObj, List<String> references) throws IOException {
