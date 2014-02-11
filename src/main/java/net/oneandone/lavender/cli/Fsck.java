@@ -221,7 +221,7 @@ public class Fsck extends Base {
         List<String> expecteds;
 
         problem = false;
-        console.info.println("  md5 check ...");
+        console.info.print("  md5 check: ");
         paths = new ArrayList<>();
         expecteds = new ArrayList<>();
         for (Label label : index) {
@@ -240,7 +240,7 @@ public class Fsck extends Base {
                 problem = true;
             }
         }
-        console.info.println("  done");
+        console.info.println(problem ? "failed" : "ok");
         return problem;
     }
 
