@@ -144,8 +144,12 @@ public class Fsck extends Base {
         tmp.removeAll(files);
         console.error.println("  dangling references: " + tmp.size());
         if (tmp.isEmpty()) {
-            if (allIdxCheck(connection, docrootObj, all)) {
-                problem = true;
+            if (result.size() == 0) {
+                // there's no .all.idx
+            } else {
+                if (allIdxCheck(connection, docrootObj, all)) {
+                    problem = true;
+                }
             }
         } else {
             problem = true;
@@ -182,25 +186,18 @@ public class Fsck extends Base {
     private boolean allIdxCheck(Connection connection, Docroot docrootObj, Index all) throws IOException {
         Index allLoaded;
         Node repaired;
-        boolean problem;
 
-        try {
-            allLoaded = Index.load(docrootObj.index(connection, Index.ALL_IDX));
-            problem = false;
-        } catch (FileNotFoundException e) {
-            console.info.println(Index.ALL_IDX + " is missing");
-            allLoaded = new Index();
-            problem = true;
+        allLoaded = Index.load(docrootObj.index(connection, Index.ALL_IDX));
+        if (all.equals(allLoaded)) {
+            return true;
         }
-        if (!all.equals(allLoaded)) {
-            repaired = repairedLocation(docrootObj.index(connection, Index.ALL_IDX));
-            repaired.getParent().mkdirsOpt();
-            // TODO: change this into a problem when all shops use lavender 2
-            // result = true;
-            console.error.println("all-index is broken");
-            all.save(repaired);
-        }
-        return problem;
+        repaired = repairedLocation(docrootObj.index(connection, Index.ALL_IDX));
+        repaired.getParent().mkdirsOpt();
+        // TODO: change this into a problem when all shops use lavender 2
+        // result = true;
+        console.error.println("all-index is broken");
+        all.save(repaired);
+        return false;
     }
 
     private void removeReferences(Connection connection, Docroot docrootObj, List<String> references) throws IOException {
