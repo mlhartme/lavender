@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -156,8 +157,9 @@ public class Fsck extends Base {
             for (String path : tmp) {
                 console.verbose.println("    " + path);
             }
+            allIdxWorkaround(connection, docrootObj, tmp);
             removeReferences(connection, docrootObj, tmp);
-            console.verbose.println("skipping allIdx check skipped because we have dangling references");
+            console.verbose.println("skipping allIdx check because we have dangling references");
         }
         if (md5check) {
             if (md5check(docroot, all)) {
@@ -181,6 +183,24 @@ public class Fsck extends Base {
             }
         }
         return problem ? null : result;
+    }
+
+    // Removes paths in references that are still used by allIdx.
+    // TODO: dump when all shops have switched to Lavender 2.
+    private void allIdxWorkaround(Connection connection, Docroot docrootObj, List<String> references) throws IOException {
+        Index all;
+        Iterator<String> iter;
+        String reference;
+
+        all = Index.load(docrootObj.index(connection, Index.ALL_IDX));
+        iter = references.iterator();
+        while (iter.hasNext()) {
+            reference = iter.next();
+            if (all.removeReferenceOpt(reference)) {
+                iter.remove();
+                console.info.println("    TODO: cannot remove file because it's still in all.idx: " + reference);
+            }
+        }
     }
 
     private boolean allIdxCheck(Connection connection, Docroot docrootObj, Index all) throws IOException {
