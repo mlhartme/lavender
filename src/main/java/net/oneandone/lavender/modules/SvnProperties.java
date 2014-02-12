@@ -76,41 +76,42 @@ public class SvnProperties {
         if (source != null) {
             checkout = world.file(source);
             if (checkout.isDirectory()) {
-                if (LavenderProperties.FALLBACK_SOURCES.keySet().contains(svnurl) || svnurl.equals(SvnNode.urlFromWorkspace(checkout))) {
-                    return new DefaultModule(type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter) {
-                        @Override
-                        protected Map<String, Node> scan(final Filter filter) throws Exception {
-                            Filter f;
-                            final Map<String, Node> result;
+                // I could also check if the svnurl noted in the artifact matches the svn url of checkout,
+                // but that fails for frontend teams creating a branch without adjusting scm elements in the pom.
 
-                            result = new HashMap<>();
-                            f = checkout.getWorld().filter().predicate(Predicate.FILE).includeAll();
-                            f.invoke(checkout, new Action() {
-                                public void enter(Node node, boolean isLink) {
+                return new DefaultModule(type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter) {
+                    @Override
+                    protected Map<String, Node> scan(final Filter filter) throws Exception {
+                        Filter f;
+                        final Map<String, Node> result;
+
+                        result = new HashMap<>();
+                        f = checkout.getWorld().filter().predicate(Predicate.FILE).includeAll();
+                        f.invoke(checkout, new Action() {
+                            public void enter(Node node, boolean isLink) {
+                            }
+
+                            public void enterFailed(Node node, boolean isLink, IOException e) throws IOException {
+                                throw e;
+                            }
+
+                            public void leave(Node node, boolean isLink) {
+                            }
+
+                            public void select(Node node, boolean isLink) {
+                                String path;
+
+                                path = node.getRelative(checkout);
+                                if (filter.matches(path)) {
+                                    result.put(path, node);
                                 }
+                            }
+                        });
+                        return result;
 
-                                public void enterFailed(Node node, boolean isLink, IOException e) throws IOException {
-                                    throw e;
-                                }
-
-                                public void leave(Node node, boolean isLink) {
-                                }
-
-                                public void select(Node node, boolean isLink) {
-                                    String path;
-
-                                    path = node.getRelative(checkout);
-                                    if (filter.matches(path)) {
-                                        result.put(path, node);
-                                    }
-                                }
-                            });
-                            return result;
-
-                        }
-                    };
-                }
-            }
+                    }
+                };
+        }
         }
         try {
             root = (SvnNode) world.node("svn:" + svnurl);
