@@ -89,6 +89,11 @@ public abstract class DefaultModule extends Module<Node> {
                 config = JarConfig.load(jarOrig.getWorld().getXml(), rootConfig, src);
             }
             lp = LavenderProperties.loadModuleOpt(prod, exploded);
+            if (!prod && lp == null) {
+                // This module has no lavender.properties, and thus pominfo.properties is outdated and thus lavender's live mechanism won't work.
+                // So we ignore this module to get requests pass through to pustefix, which can do his old live handling
+                return result;
+            }
             if (prod || lp == null) {
                 jarTmp = jarOrig;
             } else {

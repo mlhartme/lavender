@@ -6,6 +6,9 @@
         Because that's frequently use in temporary branches by frontend development.
       </action>
       <action date="2014-02-11" dev="mhm" type="fix">
+        Devel filter: fix live resource handling for modules without lavender descriptor.
+      </action>
+      <action date="2014-02-11" dev="mhm" type="fix">
         Do not garbage-collect files that are still in all.idx.
       </action>
       <action date="2014-02-11" dev="mhm" type="update">
