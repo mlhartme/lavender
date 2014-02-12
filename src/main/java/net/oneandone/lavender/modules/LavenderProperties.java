@@ -99,10 +99,6 @@ public class LavenderProperties {
 
     // public only for testing
     public static LavenderProperties parse(boolean prod, Properties properties, Properties pominfo) throws IOException {
-        return parse(prod, properties, pominfo, DEFAULT_INCLUDES);
-    }
-
-    private static LavenderProperties parse(boolean prod, Properties properties, Properties pominfo, List<String> defaultIncludes) throws IOException {
         LavenderProperties result;
         String relative;
         String source;
@@ -116,7 +112,7 @@ public class LavenderProperties {
         } else {
             source = null;
         }
-        result = new LavenderProperties(eatFilter(properties, "pustefix", defaultIncludes), source);
+        result = new LavenderProperties(eatFilter(properties, "pustefix", DEFAULT_INCLUDES), source);
         for (String prefix : svnPrefixes(properties)) {
             configUrl = Strings.removeLeftOpt((String) properties.remove(prefix), "scm:svn:");
             configSource = eatSvnSource(properties, prefix, source);
@@ -124,7 +120,7 @@ public class LavenderProperties {
             result.configs.add(
                     new SvnProperties(
                             prefix.substring(SvnProperties.SVN_PREFIX.length()),
-                            eatFilter(properties, prefix, defaultIncludes),
+                            eatFilter(properties, prefix, DEFAULT_INCLUDES),
                             configUrl,
                             eatType(properties, prefix),
                             eatBoolean(properties, prefix + ".lavendelize", true),
