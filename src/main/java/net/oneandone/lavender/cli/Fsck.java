@@ -126,7 +126,7 @@ public class Fsck extends Base {
         result = new HashMap<>();
         problem = false;
         references = new HashSet<>();
-        console.verbose.println("  docroot"  + docroot.getURI().toString());
+        console.verbose.println("  docroot "  + docroot.getURI().toString());
         console.info.print("  files: ");
         files = find(docroot, "-type", "f");
         console.info.println(files.size());
@@ -148,8 +148,9 @@ public class Fsck extends Base {
             if (result.size() == 0) {
                 // there's no .all.idx
             } else {
-                if (allIdxCheck(connection, docrootObj, all)) {
-                    problem = true;
+                if (allIdxBroken(connection, docrootObj, all)) {
+                    // TODO: comment-in when every shop switched to Lavender 2
+                    // problem = true;
                 }
             }
         } else {
@@ -203,13 +204,13 @@ public class Fsck extends Base {
         }
     }
 
-    private boolean allIdxCheck(Connection connection, Docroot docrootObj, Index all) throws IOException {
+    private boolean allIdxBroken(Connection connection, Docroot docrootObj, Index all) throws IOException {
         Index allLoaded;
         Node repaired;
 
         allLoaded = Index.load(docrootObj.index(connection, Index.ALL_IDX));
         if (all.equals(allLoaded)) {
-            return true;
+            return false;
         }
         repaired = repairedLocation(docrootObj.index(connection, Index.ALL_IDX));
         repaired.getParent().mkdirsOpt();
@@ -217,7 +218,7 @@ public class Fsck extends Base {
         // result = true;
         console.error.println("all-index is broken");
         all.save(repaired);
-        return false;
+        return true;
     }
 
     private void removeReferences(Connection connection, Docroot docrootObj, List<String> references) throws IOException {
