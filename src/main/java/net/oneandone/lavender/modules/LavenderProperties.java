@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -122,10 +120,10 @@ public class LavenderProperties {
                             prefix.substring(SvnProperties.SVN_PREFIX.length()),
                             eatFilter(properties, prefix, DEFAULT_INCLUDES),
                             configUrl,
-                            eatType(properties, prefix),
+                            eatOpt(properties, prefix + ".type", Docroot.WEB),
                             eatBoolean(properties, prefix + ".lavendelize", true),
                             eatOpt(properties, prefix + ".resourcePathPrefix", ""),
-                            eatTargetPathPrefix(properties, prefix),
+                            eatOpt(properties, prefix + ".targetPathPrefix", ""),
                             configSource));
         }
         if (properties.size() > 0) {
@@ -153,35 +151,6 @@ public class LavenderProperties {
         }
         result.append(right);
         return result.toString();
-    }
-
-    private static String eatType(Properties properties, String prefix) {
-        String type;
-        String value;
-
-        type = eatOpt(properties, prefix + ".type", Docroot.WEB);
-        if (type == null) {
-            value = eatOpt(properties, prefix + ".storage", null);
-            if (value.startsWith("flash-")) {
-                // TODO: dump
-                LOG.warn("CAUTION: out-dated storage configured - use type instead");
-                type = Docroot.FLASH;
-            } else {
-                throw new IllegalArgumentException("storage no longer supported: " + value);
-            }
-        }
-        return type;
-    }
-
-    private static String eatTargetPathPrefix(Properties properties, String prefix) {
-        String targetPathPrefix;
-
-        targetPathPrefix = eatOpt(properties, prefix + ".targetPathPrefix", "");
-        if (targetPathPrefix == null) {
-            LOG.warn("CAUTION: out-dated pathPrefix - use targetPathPrefix instead");
-            targetPathPrefix = eatOpt(properties, prefix + ".pathPrefix", null);
-        }
-        return targetPathPrefix;
     }
 
     private static Filter eatFilter(Properties properties, String prefix, List<String> defaultIncludes) {
