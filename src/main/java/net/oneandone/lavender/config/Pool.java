@@ -26,24 +26,24 @@ import java.util.List;
  */
 public class Pool implements AutoCloseable {
     private final World world;
-    private final String lock;
+    private final String lockContent;
     /** seconds to wait for a lock */
     private final int wait;
     private final List<Connection> connections;
 
-    public Pool(World world, String lock, int wait) {
+    public Pool(World world, String lockContent, int wait) {
         this.world = world;
-        this.lock = lock;
+        this.lockContent = lockContent;
         this.wait = wait;
         this.connections = new ArrayList<>();
     }
 
-    public Connection connect(Host host) throws IOException {
+    public Connection connect(Host host, String lockPath) throws IOException {
         Connection result;
 
         result = lookup(host);
         if (result == null) {
-            result = host.connect(world, lock, wait);
+            result = host.connect(world, lockPath, lockContent, wait);
             connections.add(result);
         }
         return result;

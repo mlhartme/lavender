@@ -25,11 +25,11 @@ import java.io.IOException;
 public class Connection implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(Connection.class);
 
-    public static Connection openLocked(Host host, Node root, String lock, int wait) throws IOException {
+    public static Connection openLocked(Host host, Node root, String lockPath, String lockContent, int wait) throws IOException {
         Node lockfile;
         int seconds;
 
-        lockfile = root.join("tmp/lavender.lock");
+        lockfile = root.join(lockPath);
         seconds = 0;
         while (true) {
             try {
@@ -50,7 +50,7 @@ public class Connection implements AutoCloseable {
                 seconds++;
             }
         }
-        lockfile.writeString(lock);
+        lockfile.writeString(lockContent);
         return new Connection(host, root, lockfile);
     }
 

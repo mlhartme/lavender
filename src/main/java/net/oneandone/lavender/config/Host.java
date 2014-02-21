@@ -68,13 +68,13 @@ public class Host {
     }
 
     /** do not call directly, use pool.connect instead. */
-    public Connection connect(World world, String lock, int wait) throws IOException {
+    public Connection connect(World world, String lockPath, String lockContent, int wait) throws IOException {
         boolean local;
         Node node;
 
         local = name.equals(LOCALHOST);
         node = local ? world.file(login) : world.validNode("ssh://" + login + "@" + name);
-        return local || lock == null ? Connection.openSimple(this, node) : Connection.openLocked(this, node, lock, wait);
+        return local || lockContent == null ? Connection.openSimple(this, node) : Connection.openLocked(this, node, lockPath, lockContent, wait);
     }
 
     public String toString() {

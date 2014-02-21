@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?><document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
   <body>
+    <release date="2014-02-20" version="2.0.7">
+      <action date="2014-02-20" dev="mhm" type="update">
+        Lock path is configurable now (per cluster).
+      </action>
+    </release>
     <release date="2014-02-13" version="2.0.6">
       <action date="2014-02-13" dev="mhm" type="update">
         Devel filter: use local directories, even if the svn url in the pom does not match the checkout.
-        Because that's frequently use in temporary branches by frontend development.
+        Because that's frequently used in temporary branches by frontend development.
       </action>
       <action date="2014-02-13" dev="mhm" type="fix">
         Devel filter: fix live resource handling for modules without lavender descriptor.

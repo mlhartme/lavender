@@ -16,6 +16,7 @@
 package net.oneandone.lavender.config;
 
 import net.oneandone.sushi.fs.file.FileNode;
+import net.oneandone.sushi.metadata.annotation.Option;
 import net.oneandone.sushi.metadata.annotation.Sequence;
 import net.oneandone.sushi.metadata.annotation.Type;
 import net.oneandone.sushi.metadata.annotation.Value;
@@ -36,6 +37,9 @@ public class Cluster {
     @Sequence(Docroot.class)
     private final List<Docroot> docroots;
 
+    @Option
+    private String lockPath;
+
     public Cluster() {
         this("dummy");
     }
@@ -53,6 +57,14 @@ public class Cluster {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getLockPath() {
+        return lockPath;
+    }
+
+    public void setLockPath(String lockPath) {
+        this.lockPath = lockPath;
     }
 
     public List<Host> hosts() {
@@ -101,7 +113,7 @@ public class Cluster {
         result = new ArrayList<>();
         for (Host host : hosts) {
             try {
-                result.add(pool.connect(host));
+                result.add(pool.connect(host, lockPath == null ?  "tmp/lavender.lock" : lockPath));
             } catch (IOException e) {
                 for (Connection connection : result) {
                     try {
