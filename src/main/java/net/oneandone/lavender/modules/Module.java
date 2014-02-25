@@ -48,6 +48,7 @@ public abstract class Module<T> implements Iterable<Resource> {
 
     private Map<String, T> files;
 
+    private long lastScan;
 
     public Module(String type, String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
         this.type = type;
@@ -84,6 +85,7 @@ public abstract class Module<T> implements Iterable<Resource> {
                 throw new IOException(name + " scan failed: " + e.getMessage(), e);
             }
             LOG.info(name + ": scanned " + files.size() + " files in " + (System.currentTimeMillis() - started) + "ms");
+            lastScan = System.currentTimeMillis();
         }
         return files;
     }
@@ -146,8 +148,13 @@ public abstract class Module<T> implements Iterable<Resource> {
         return file == null ? null : createResource(resourcePath, file);
     }
 
-    public void invalidate() throws IOException {
-        files = null;
+    public boolean softInvalidate() throws IOException {
+        if (System.currentTimeMillis() - lastScan < 5000) {
+            return false;
+        } else {
+            files = null;
+            return true;
+        }
     }
 
     /** @return number of changed (updated or added) resources */

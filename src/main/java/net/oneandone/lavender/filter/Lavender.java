@@ -180,7 +180,7 @@ public class Lavender implements Filter, LavenderMBean {
         }
         for (Module module : develModules) {
             if (module.matches(resourcePath) != null) {
-                module.invalidate();
+                module.softInvalidate();
                 resource = module.probe(resourcePath);
                 if (resource != null) {
                     return resource;
