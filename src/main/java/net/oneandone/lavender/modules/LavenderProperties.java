@@ -100,8 +100,9 @@ public class LavenderProperties {
         LavenderProperties result;
         String relative;
         String source;
-        String configUrl;
-        String configSource;
+        String svnurl;
+        String svnurlDevel;
+        String svnsrc;
 
         relative = eat(properties, "pustefix.relative");
         // TODO: enforce pominfo != null when enough modules have switched
@@ -112,24 +113,33 @@ public class LavenderProperties {
         }
         result = new LavenderProperties(eatFilter(properties, "pustefix", DEFAULT_INCLUDES), source);
         for (String prefix : svnPrefixes(properties)) {
-            configUrl = Strings.removeLeftOpt((String) properties.remove(prefix), "scm:svn:");
-            configSource = eatSvnSource(properties, prefix, source);
-            configSource = fallback(configUrl, configSource);
+            svnurl = strip((String) properties.remove(prefix));
+            svnurlDevel = strip(eatOpt(properties, prefix + ".devel", svnurl));
+            svnsrc = eatSvnSource(properties, prefix, source);
+            svnsrc = fallback(svnurl, svnsrc);
             result.configs.add(
                     new SvnProperties(
                             prefix.substring(SvnProperties.SVN_PREFIX.length()),
                             eatFilter(properties, prefix, DEFAULT_INCLUDES),
-                            configUrl, configUrl,
+                            svnurl, svnurlDevel,
                             eatOpt(properties, prefix + ".type", Docroot.WEB),
                             eatBoolean(properties, prefix + ".lavendelize", true),
                             eatOpt(properties, prefix + ".resourcePathPrefix", ""),
                             eatOpt(properties, prefix + ".targetPathPrefix", ""),
-                            configSource));
+                            svnsrc));
         }
         if (properties.size() > 0) {
             throw new IllegalArgumentException("unknown properties: " + properties);
         }
         return result;
+    }
+
+    private static String strip(String url) {
+        if (url.startsWith("scm:")) {
+            return Strings.removeLeft(url, "scm:svn:");
+        } else {
+            return url;
+        }
     }
 
     private static String eatSvnSource(Properties properties, String prefix, String source) {
