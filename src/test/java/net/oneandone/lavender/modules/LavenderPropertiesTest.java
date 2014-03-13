@@ -64,6 +64,7 @@ public class LavenderPropertiesTest {
         assertFalse(config.lavendelize);
         assertEquals("prefix", config.targetPathPrefix);
         assertEquals("svn", config.svnurl);
+        assertEquals("svn", config.svnurlDevel);
     }
 
     @Test(expected = IllegalArgumentException.class)
