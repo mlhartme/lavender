@@ -149,8 +149,7 @@ public class Fsck extends Base {
                 // there's no .all.idx
             } else {
                 if (allIdxBroken(connection, docrootObj, all)) {
-                    // TODO: comment-in when every shop switched to Lavender 2
-                    // problem = true;
+                    problem = true;
                 }
             }
         } else {
@@ -214,8 +213,6 @@ public class Fsck extends Base {
         }
         repaired = repairedLocation(docrootObj.index(connection, Index.ALL_IDX));
         repaired.getParent().mkdirsOpt();
-        // TODO: change this into a problem when all shops use lavender 2
-        // result = true;
         console.error.println("all-index is broken");
         all.save(repaired);
         return true;
