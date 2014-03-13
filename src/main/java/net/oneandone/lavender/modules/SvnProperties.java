@@ -61,12 +61,13 @@ public class SvnProperties {
         this.source = source;
     }
 
-    public Module create(World world, String svnUsername, String svnPassword) throws IOException {
+    public Module create(World world, boolean prod, String svnUsername, String svnPassword) throws IOException {
         FileNode cache;
         final SvnNode root;
         final Index index;
         String idxName;
         final FileNode checkout;
+        String url;
 
         if (svnurl == null) {
             throw new IllegalArgumentException("missing svn url");
@@ -113,10 +114,11 @@ public class SvnProperties {
 
                     }
                 };
+            }
         }
-        }
+        url = prod ? svnurl : svnurlDevel;
         try {
-            root = (SvnNode) world.node("svn:" + svnurl);
+            root = (SvnNode) world.node("svn:" + url);
             idxName = root.getSvnurl().getPath().replace('/', '.') + ".idx";
             idxName = Strings.removeLeftOpt(idxName, ".");
             cache = (FileNode) world.getHome().join(".cache/lavender",
@@ -131,7 +133,7 @@ public class SvnProperties {
         } catch (RuntimeException | IOException e) {
             throw e;
         } catch (Exception e) {
-            throw new IOException("error scanning svn module " + svnurl + ": " + e.getMessage(), e);
+            throw new IOException("error scanning svn module " + url + ": " + e.getMessage(), e);
         }
     }
 }
