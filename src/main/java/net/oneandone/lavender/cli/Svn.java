@@ -56,6 +56,7 @@ public class Svn extends Base {
         Docroot docroot;
         Target target;
         Filter filter;
+        String svnurl;
         SvnProperties moduleConfig;
         Module module;
         Distributor distributor;
@@ -70,7 +71,8 @@ public class Svn extends Base {
         target = new Target(cluster, docroot, docroot.aliases().get(0));
         filter = new Filter();
         filter.includeAll();
-        moduleConfig = new SvnProperties("svn", filter, svn + "/data/" + directory, Docroot.WEB, false, "", directory + "/", null);
+        svnurl = svn + "/data/" + directory;
+        moduleConfig = new SvnProperties("svn", filter, svnurl, svnurl, Docroot.WEB, false, "", directory + "/", null);
         module = moduleConfig.create(console.world, settings.svnUsername, settings.svnPassword);
         try (Pool pool = pool()) {
             distributor = target.open(pool, directory + ".idx");

@@ -36,6 +36,7 @@ public class SvnProperties {
     public final String name;
     public final Filter filter;
     public final String svnurl;
+    public final String svnurlDevel;
     public final String type;
     public final boolean lavendelize;
     public final String resourcePathPrefix;
@@ -44,7 +45,7 @@ public class SvnProperties {
     /** Absolute path relative to local sources for this module, null if not available */
     public final String source;
 
-    public SvnProperties(String name, Filter filter, String svnurl, String type, boolean lavendelize, String resourcePathPrefix,
+    public SvnProperties(String name, Filter filter, String svnurl, String svnurlDevel, String type, boolean lavendelize, String resourcePathPrefix,
                          String targetPathPrefix, String source) {
         if (name.startsWith("/") || name.endsWith("/")) {
             throw new IllegalArgumentException(name);
@@ -52,6 +53,7 @@ public class SvnProperties {
         this.name = name;
         this.filter = filter;
         this.svnurl = svnurl;
+        this.svnurlDevel = svnurlDevel;
         this.type = type;
         this.lavendelize = lavendelize;
         this.resourcePathPrefix = resourcePathPrefix;

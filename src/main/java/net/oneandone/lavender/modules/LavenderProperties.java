@@ -119,7 +119,7 @@ public class LavenderProperties {
                     new SvnProperties(
                             prefix.substring(SvnProperties.SVN_PREFIX.length()),
                             eatFilter(properties, prefix, DEFAULT_INCLUDES),
-                            configUrl,
+                            configUrl, configUrl,
                             eatOpt(properties, prefix + ".type", Docroot.WEB),
                             eatBoolean(properties, prefix + ".lavendelize", true),
                             eatOpt(properties, prefix + ".resourcePathPrefix", ""),
