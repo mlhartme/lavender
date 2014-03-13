@@ -86,7 +86,8 @@ public class Main extends Cli implements Command {
         console.info.println("                            publish resources from the specified war,");
         console.info.println("                            target = type '=' cluster ['/' alias]");
         console.info.println("  'svn' ['-type' type] directory cluster");
-        console.info.println("                            publish resources from svn to the specified cluster; type defaults to 'svn'");
+        console.info.println("                            publish resources from <svn>/data/<directory> to <docroot>/<directory>");
+        console.info.println("                            type defaults to 'svn'; <svn> is picked from lavender.properties");
         console.info.println("  'file' ['-prefix' prefix] file idxName type cluster");
         console.info.println("                            publish resources from file to the specified cluster");
         console.info.println("other commands");
