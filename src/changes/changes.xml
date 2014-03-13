@@ -2,6 +2,9 @@
   <body>
     <release date="2014-03-13" version="2.0.8">
       <action date="2014-03-13" dev="mhm" type="update">
+        Updating all.idx throws an exception now, when a removed reference is not found.
+      </action>
+      <action date="2014-03-13" dev="mhm" type="update">
         Changed "all.idx broken" from a warning to an error.
       </action>
       <action date="2014-03-13" dev="mhm" type="update">
