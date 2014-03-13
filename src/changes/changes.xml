@@ -5,6 +5,9 @@
         Changed "all.idx broken" from a warning to an error.
       </action>
       <action date="2014-03-13" dev="mhm" type="update">
+        Changed garbage collection: a file is unreferenced if it has normal references, all.idx is no longer checked.
+      </action>
+      <action date="2014-03-13" dev="mhm" type="update">
         Added svn.devel property to configure the url to load from in devel mode.
       </action>
     </release>

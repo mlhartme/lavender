@@ -157,7 +157,6 @@ public class Fsck extends Base {
             for (String path : tmp) {
                 console.verbose.println("    " + path);
             }
-            allIdxWorkaround(connection, docrootObj, tmp);
             removeReferences(connection, docrootObj, tmp);
             console.verbose.println("skipping allIdx check because we have dangling references");
         }
@@ -183,24 +182,6 @@ public class Fsck extends Base {
             }
         }
         return problem ? null : result;
-    }
-
-    // Removes paths in references that are still used by allIdx.
-    // TODO: dump when all shops have switched to Lavender 2.
-    private void allIdxWorkaround(Connection connection, Docroot docrootObj, List<String> references) throws IOException {
-        Index all;
-        Iterator<String> iter;
-        String reference;
-
-        all = Index.load(docrootObj.index(connection, Index.ALL_IDX));
-        iter = references.iterator();
-        while (iter.hasNext()) {
-            reference = iter.next();
-            if (all.removeReferenceOpt(reference)) {
-                iter.remove();
-                console.info.println("    TODO: cannot remove file because it's still in all.idx: " + reference);
-            }
-        }
     }
 
     private boolean allIdxBroken(Connection connection, Docroot docrootObj, Index all) throws IOException {
