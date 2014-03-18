@@ -91,7 +91,8 @@ public abstract class DefaultModule extends Module<Node> {
             lp = LavenderProperties.loadModuleOpt(prod, exploded);
             if (!prod && lp == null) {
                 // This module has no lavender.properties, and thus pominfo.properties is outdated and thus lavender's live mechanism won't work.
-                // So we ignore this module to get requests pass through to pustefix, which can do his old live handling
+                // So we ignore this module in devel mode to get requests passed through to pustefix, which can do his old live handling
+                // TODO: report "missing lavender.properties" error when all modules have been updated ...
                 return result;
             }
             if (prod || lp == null) {
@@ -216,7 +217,7 @@ public abstract class DefaultModule extends Module<Node> {
 
     //--
 
-    /** To properly make jars available as a module, I have to load them into memory when the jar is itself packaged into a war. */
+    /** To properly make jars available as a module, I have to load them into memory when the jar is itself contained in a war. */
     public static Object[] fromJarStream(boolean prod, String type, WarConfig parent, Node jar) throws IOException {
         JarConfig config;
         Node[] tmp;
