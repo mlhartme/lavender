@@ -42,7 +42,7 @@ import java.util.zip.ZipInputStream;
 public class LavenderProperties {
     private static final Logger LOG = LoggerFactory.getLogger(LavenderProperties.class);
 
-    public static final String MODULE_PROPERTIES = "PUSTEFIX-INF/lavender.properties";
+    public static final String MODULE_PROPERTIES = "META-INF/lavender.properties";
     private static final String APP_PROPERTIES = "WEB-INF/lavender.properties";
     public static final List<String> DEFAULT_INCLUDES = new ArrayList<>(Arrays.asList(
             "**/*.gif", "**/*.png", "**/*.jpg", "**/*.jpeg", "**/*.ico", "**/*.swf", "**/*.css", "**/*.js"));
