@@ -77,7 +77,7 @@
     </release>
     <release date="2014-01-28" version="2.0.2">
       <action date="2014-01-28" dev="mhm" type="fix">
-        Fix explicit alias name passed to publish command..
+        Fix explicit alias name passed to publish command.
       </action>
     </release>
     <release date="2014-01-22" version="2.0.1">

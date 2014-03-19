@@ -59,8 +59,8 @@ import java.util.UUID;
 public class Lavender implements Filter, LavenderMBean {
     private static final Logger LOG = LoggerFactory.getLogger(Lavender.class);
 
-    public static final String LAVENDEL_IDX = "WEB-INF/lavender.idx";
-    public static final String LAVENDEL_NODES = "WEB-INF/lavender.nodes";
+    public static final String LAVENDER_IDX = "WEB-INF/lavender.idx";
+    public static final String LAVENDER_NODES = "WEB-INF/lavender.nodes";
 
 
     private World world;
@@ -86,10 +86,10 @@ public class Lavender implements Filter, LavenderMBean {
             filterConfig = config;
             world = new World();
             webapp = world.file(filterConfig.getServletContext().getRealPath(""));
-            src = webapp.join(LAVENDEL_IDX);
+            src = webapp.join(LAVENDER_IDX);
             if (src.exists()) {
                 index = Index.load(src);
-                rewriteEngine = RewriteEngine.load(index, webapp.join(LAVENDEL_NODES));
+                rewriteEngine = RewriteEngine.load(index, webapp.join(LAVENDER_NODES));
                 processorFactory = new ProcessorFactory(rewriteEngine);
                 LOG.info("Lavender prod filter");
             } else {

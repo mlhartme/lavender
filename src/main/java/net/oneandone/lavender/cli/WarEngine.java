@@ -133,12 +133,12 @@ public class WarEngine {
         }
         zin.close();
 
-        ZipEntry indexEntry = new ZipEntry(Lavender.LAVENDEL_IDX);
+        ZipEntry indexEntry = new ZipEntry(Lavender.LAVENDER_IDX);
         out.putNextEntry(indexEntry);
         webIndex.save(out);
         out.closeEntry();
 
-        ZipEntry nodesEntry = new ZipEntry(Lavender.LAVENDEL_NODES);
+        ZipEntry nodesEntry = new ZipEntry(Lavender.LAVENDER_NODES);
         out.putNextEntry(nodesEntry);
         outputNodesFile.writeTo(out);
         out.closeEntry();
