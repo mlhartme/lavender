@@ -2,6 +2,9 @@
   <body>
     <release date="2014-03-20" version="2.1.0">
       <action date="2014-03-20" dev="mhm" type="update">
+        Modules with a recent parent pom (i.e. they have resources properties) without lavender.properties are not lavendelized.
+      </action>
+      <action date="2014-03-20" dev="mhm" type="fix">
         Fixed path translation for svn modules.
       </action>
       <action date="2014-03-18" dev="mhm" type="update">

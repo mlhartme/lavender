@@ -41,6 +41,9 @@ import java.util.zip.ZipInputStream;
 
 public abstract class DefaultModule extends Module<Node> {
     private static final Logger LOG = LoggerFactory.getLogger(Module.class);
+    // used to detect a recent parent pom
+    private static final String RESOURCE_INDEX = "META-INF/pustefix-resource.index";
+
 
     public static List<Module> fromWebapp(boolean prod, Node webapp, String svnUsername, String svnPassword) throws IOException, SAXException, XmlException {
         Node webappSource;
@@ -76,6 +79,7 @@ public abstract class DefaultModule extends Module<Node> {
         LavenderProperties lp;
         Node exploded;
         final Filter filter;
+        boolean hasResourceIndex;
 
         result = new ArrayList<>();
         if (jarOrig instanceof FileNode) {
@@ -95,6 +99,7 @@ public abstract class DefaultModule extends Module<Node> {
                 // TODO: report "missing lavender.properties" error when all modules have been updated ...
                 return result;
             }
+            hasResourceIndex = exploded.join(RESOURCE_INDEX).exists();
             if (prod || lp == null) {
                 jarTmp = jarOrig;
             } else {
@@ -124,7 +129,14 @@ public abstract class DefaultModule extends Module<Node> {
             jarModule = (Module) tmp[0];
             lp = (LavenderProperties) tmp[1];
             config = (JarConfig) tmp[2];
+            hasResourceIndex = (Boolean) tmp[3];
         }
+        if (lp == null && hasResourceIndex) {
+            // ok - we have a recent parent pom without lavender properties
+            // -> the has not enabled lavender for this module
+            return result;
+        }
+        // continue without lavender.properties -- we have to support this mode for a some time ... :(
         result.add(jarModule);
         if (lp != null) {
             lp.addModules(jarOrig.getWorld(), prod, svnUsername, svnPassword, result, config);
@@ -221,7 +233,7 @@ public abstract class DefaultModule extends Module<Node> {
     /** To properly make jars available as a module, I have to load them into memory when the jar is itself contained in a war. */
     public static Object[] fromJarStream(boolean prod, String type, WarConfig parent, Node jar) throws IOException {
         JarConfig config;
-        Node[] tmp;
+        Node[] loaded;
         Filter filter;
         World world;
         ZipEntry entry;
@@ -234,22 +246,22 @@ public abstract class DefaultModule extends Module<Node> {
         String resourcePath;
         LavenderProperties lp;
 
-        tmp = LavenderProperties.loadStreamNodes(jar, "META-INF/pustefix-module.xml",
-                LavenderProperties.MODULE_PROPERTIES, "META-INF/pominfo.properties");
-        if (tmp[0] == null) {
+        loaded = LavenderProperties.loadStreamNodes(jar, "META-INF/pustefix-module.xml",
+                LavenderProperties.MODULE_PROPERTIES, "META-INF/pominfo.properties", RESOURCE_INDEX);
+        if (loaded[0] == null) {
             return null;
         }
-        try (InputStream configSrc = tmp[0].createInputStream()) {
+        try (InputStream configSrc = loaded[0].createInputStream()) {
             config = JarConfig.load(jar.getWorld().getXml(), parent, configSrc);
         } catch (SAXException | XmlException e) {
             throw new IOException(jar + ": cannot load module descriptor:" + e.getMessage(), e);
         }
-        propertyNode = tmp[1];
+        propertyNode = loaded[1];
         if (propertyNode == null) {
             filter = LavenderProperties.defaultFilter();
             lp = null;
         } else {
-            lp = LavenderProperties.loadNode(prod, propertyNode, tmp[2]);
+            lp = LavenderProperties.loadNode(prod, propertyNode, loaded[2]);
             filter = lp.filter;
         }
         world = jar.getWorld();
@@ -272,7 +284,7 @@ public abstract class DefaultModule extends Module<Node> {
                 // no need to re-scan files from memory
                 return files;
             }
-        }, lp, config };
+        }, lp, config, loaded[3] != null};
     }
 
     //--
