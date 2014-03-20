@@ -317,7 +317,7 @@ public class Fsck extends Base {
         }
     }
 
-    // TODO: jsch problem -- it takes the argument as a string ...
+    // TODO: jsch problem -- it takes the argument list as a single string ...
     private static String[] escape(String[] args) {
         String[] result;
         String arg;
@@ -325,7 +325,7 @@ public class Fsck extends Base {
         result = new String[args.length];
         for (int i = 0; i < result.length; i++) {
             arg = args[i];
-            if (arg.contains(" ")) {
+            if (arg.contains(" ") || arg.contains("'")) {
                 arg = "\"" + arg + "\"";
             }
             result[i] = arg;
