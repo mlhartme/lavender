@@ -61,7 +61,7 @@ public class SvnProperties {
         this.source = source;
     }
 
-    public Module create(World world, boolean prod, String svnUsername, String svnPassword) throws IOException {
+    public Module create(World world, boolean prod, String svnUsername, String svnPassword, final JarConfig jarConfig) throws IOException {
         FileNode cache;
         final SvnNode root;
         final Index index;
@@ -106,7 +106,12 @@ public class SvnProperties {
 
                                 path = node.getRelative(checkout);
                                 if (filter.matches(path)) {
-                                    result.put(path, node);
+                                    if (jarConfig != null) {
+                                        path = jarConfig.getPath(path);
+                                    }
+                                    if (path != null) {
+                                        result.put(path, node);
+                                    }
                                 }
                             }
                         });
@@ -129,7 +134,7 @@ public class SvnProperties {
                 cache.getParent().mkdirsOpt();
                 index = new Index();
             }
-            return new SvnModule(type, name, index, cache, root, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
+            return new SvnModule(type, name, index, cache, root, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
         } catch (RuntimeException | IOException e) {
             throw e;
         } catch (Exception e) {

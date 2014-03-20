@@ -239,9 +239,10 @@ public class LavenderProperties {
         this.configs = new ArrayList<>();
     }
 
-    public void addModules(World world, boolean prod, String svnUsername, String svnPassword, List<Module> result) throws IOException {
+    public void addModules(World world, boolean prod, String svnUsername, String svnPassword, List<Module> result, JarConfig jarConfig)
+            throws IOException {
         for (SvnProperties config : configs) {
-            result.add(config.create(world, prod, svnUsername, svnPassword));
+            result.add(config.create(world, prod, svnUsername, svnPassword, jarConfig));
         }
     }
 

@@ -46,12 +46,16 @@ public class SvnModule extends Module<SVNDirEntry> {
     private Map<String, SVNDirEntry> lastScan;
     private long lastScanRevision;
 
+    /** may be null */
+    private JarConfig jarConfig;
+
     public SvnModule(String type, String name, Index index, Node indexFile, SvnNode root, boolean lavendelize, String resourcePathPrefix,
-                     String targetPathPrefix, Filter filter) {
+                     String targetPathPrefix, Filter filter, JarConfig jarConfig) {
         super(type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
         this.root = root;
         this.index = index;
         this.indexFile = indexFile;
+        this.jarConfig = jarConfig;
     }
 
     protected Map<String, SVNDirEntry> scan(final Filter filter) throws SVNException {
@@ -94,13 +98,18 @@ public class SvnModule extends Module<SVNDirEntry> {
                 if (entry.getKind() == SVNNodeKind.FILE) {
                     path = entry.getRelativePath();
                     if (filter.matches(path)) {
-                        if (entry.getSize() > Integer.MAX_VALUE) {
-                            throw new UnsupportedOperationException("file too big: " + path);
+                        if (jarConfig != null) {
+                            path = jarConfig.getPath(path);
                         }
-                        files.put(path, entry);
-                        label = oldIndex.lookup(path);
-                        if (label != null && entry.getRevision() == Long.parseLong(label.getLavendelizedPath())) {
-                            index.add(label);
+                        if (path != null) {
+                            if (entry.getSize() > Integer.MAX_VALUE) {
+                                throw new UnsupportedOperationException("file too big: " + path);
+                            }
+                            files.put(path, entry);
+                            label = oldIndex.lookup(path);
+                            if (label != null && entry.getRevision() == Long.parseLong(label.getLavendelizedPath())) {
+                                index.add(label);
+                            }
                         }
                     }
                 }

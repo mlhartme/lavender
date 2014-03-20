@@ -60,7 +60,7 @@ public abstract class DefaultModule extends Module<Node> {
         webappSource = lp.live(webapp);
         root = warModule(rootConfig, lp.filter, webappSource);
         result.add(root);
-        lp.addModules(webapp.getWorld(), prod, svnUsername, svnPassword, result);
+        lp.addModules(webapp.getWorld(), prod, svnUsername, svnPassword, result, null);
         return result;
     }
 
@@ -123,10 +123,11 @@ public abstract class DefaultModule extends Module<Node> {
             }
             jarModule = (Module) tmp[0];
             lp = (LavenderProperties) tmp[1];
+            config = (JarConfig) tmp[2];
         }
         result.add(jarModule);
         if (lp != null) {
-            lp.addModules(jarOrig.getWorld(), prod, svnUsername, svnPassword, result);
+            lp.addModules(jarOrig.getWorld(), prod, svnUsername, svnPassword, result, config);
         }
         return result;
     }
@@ -271,7 +272,7 @@ public abstract class DefaultModule extends Module<Node> {
                 // no need to re-scan files from memory
                 return files;
             }
-        }, lp };
+        }, lp, config };
     }
 
     //--
