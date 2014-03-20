@@ -95,9 +95,7 @@ public class Main extends Cli implements Command {
         console.info.println("  'version'                 print version information");
         console.info.println("  'direct' cluster arg+     executes the specified command on all machines of the cluster");
         console.info.println("  'fsck' ['-md5'] ['-gc'] cluster");
-        console.info.println("                            checks if all files are indexed and indexes match");
-        console.info.println("  'gc' ['-dryrun'] cluster  removes unreferenced resources and empty directories from the");
-        console.info.println("                            specified host(s); default: all hosts");
+        console.info.println("                            checks if all files are indexed and referenced and the same on all machines");
     }
 
     @Override
