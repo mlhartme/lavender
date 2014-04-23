@@ -459,9 +459,9 @@ public class HtmlProcessor extends AbstractProcessor {
             } else if (value.attr == Attr.STYLE) {
                 rewriteCss(value);
             } else if (tag == Tag.OBJECT && value.attr == Attr.DATA && hasAttribute(Attr.TYPE, "application/x-shockwave-flash")) {
-                rewriteUrl(value);
+                rewriteFlashUrl(value);
             } else if (tag == Tag.PARAM && value.attr == Attr.VALUE && hasAttribute(Attr.NAME, "movie") && surroundingObjectTags > 0) {
-                rewriteUrl(value);
+                rewriteFlashUrl(value);
             } else {
                 out.write(tagBuffer.substring(value.start, value.end));
             }
@@ -504,6 +504,49 @@ public class HtmlProcessor extends AbstractProcessor {
 
         v = attrs.get(attr);
         return v == null ? false : value.equalsIgnoreCase(tagBuffer.substring(v.start, v.end));
+    }
+
+    private void rewriteFlashUrl(Value value) throws IOException {
+        String str;
+        int idx;
+        String remaining;
+        String key;
+        int count;
+
+        str = tagBuffer.substring(value.start, value.end);
+        System.out.println("flash url: " + str);
+        idx = str.indexOf('?');
+        if (idx != -1) {
+            remaining = str.substring(idx + 1);
+            str = str.substring(0, idx);
+        } else {
+            remaining = null;
+        }
+        out.write(rewriteEngine.rewrite(str, baseURI, contextPath));
+        for (count = 0; remaining != null; count ++) {
+            out.write(count == 0 ? '?' : '&');
+            idx = remaining.indexOf('&');
+            if (idx != -1) {
+                str = remaining.substring(0, idx);
+                remaining = remaining.substring(idx + 1);
+            } else {
+                str = remaining;
+                remaining = null;
+            }
+            idx = str.indexOf('=');
+            if (idx == -1) {
+                out.write(str);
+            } else {
+                key = str.substring(0, idx).toLowerCase();
+                if (key.equals("flvsource") || key.equals("skinsource")) {
+                    out.write(key);
+                    out.write('=');
+                    out.write(rewriteEngine.rewrite(str.substring(idx + 1), baseURI, contextPath));
+                } else {
+                    out.write(str);
+                }
+            }
+        }
     }
 
     protected void rewriteUrl(Value value) throws IOException {

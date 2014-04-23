@@ -175,6 +175,83 @@ public class HtmlProcessorTest {
 
     }
 
+    // CHECKSTYLE:OFF
+    @Test
+    public void testFlashWithFlv() throws IOException {
+        // test html from Mobile Order, Andreas Martin
+        String input = "<object id='video' width='640' height='405' align='middle' autostart='true' codebase='https://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0' classid='clsid:d27cdb6e-ae6d-11cf-96b8-444553540000'>\n" +
+                "<param value='sameDomain' name='allowScriptAccess'>\n" +
+                "<param value='false' name='allowFullScreen'>\n" +
+                "<param value='/img/pages/all-net-flat/flash/1und1Player.swf?flvsource=/img/pages/all-net-flat/flash/2014-03-All-Net-Flat-11sec-final-V2.flv&skinsource=/img/pages/all-net-flat/flash/1und1Skin.swf' name='movie'>\n" +
+                "<param value='high' name='quality'>\n" +
+                "<param value='ffffff' name='bgcolor'>\n" +
+                "<param value='transparent' name='wmode'>\n" +
+                "<param value='true' name='allowfullscreen'>\n" +
+                "<param value='true' name='autoplay'>\n" +
+                "<embed width='640' height='405' align='middle' pluginspage='https://www.macromedia.com/go/getflashplayer'\n"
+                     + " type='application/x-shockwave-flash' allowscriptaccess='sameDomain' autostart='true' name='video'\n"
+                     + " autoplay='true' allowfullscreen='true' wmode='transparent' bgcolor='ffffff' quality='high'\n"
+                     + " src='/img/pages/all-net-flat/flash/1und1Player.swf?flvsource=/img/pages/all-net-flat/flash/2014-03-All-Net-Flat-11sec-final-V2.flv&skinsource=/img/pages/all-net-flat/flash/1und1Skin.swf'>\n" +
+                "</object>";
+        String output = "<object id='video' width='640' height='405' align='middle' autostart='true' codebase='https://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0' classid='clsid:d27cdb6e-ae6d-11cf-96b8-444553540000'>\n" +
+                "<param value='sameDomain' name='allowScriptAccess'>\n" +
+                "<param value='false' name='allowFullScreen'>\n" +
+                "<param value='http://a.b.c?flvsource=http://a.b.c&skinsource=http://a.b.c' name='movie'>\n" +
+                "<param value='high' name='quality'>\n" +
+                "<param value='ffffff' name='bgcolor'>\n" +
+                "<param value='transparent' name='wmode'>\n" +
+                "<param value='true' name='allowfullscreen'>\n" +
+                "<param value='true' name='autoplay'>\n" +
+                "<embed width='640' height='405' align='middle' pluginspage='https://www.macromedia.com/go/getflashplayer'\n"
+                + " type='application/x-shockwave-flash' allowscriptaccess='sameDomain' autostart='true' name='video'\n"
+                + " autoplay='true' allowfullscreen='true' wmode='transparent' bgcolor='ffffff' quality='high'\n"
+                + " src='/img/pages/all-net-flat/flash/1und1Player.swf?flvsource=/img/pages/all-net-flat/flash/2014-03-All-Net-Flat-11sec-final-V2.flv&skinsource=/img/pages/all-net-flat/flash/1und1Skin.swf'>\n" +
+                "</object>";
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(output, out.getBuffer().toString());
+    }
+
+
+    @Test
+    public void testFlashWithFlv2() throws IOException {
+        String input = "<object classid='clsid:d27cdb6e-ae6d-11cf-96b8-444553540000' \n" +
+                "codebase='https://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0' \n" +
+                "id='video' width='640' height='405' autostart='true' align='middle'>\n" +
+                "  <param name='allowScriptAccess' value='sameDomain'>\n" +
+                "  <param name='allowFullScreen' value='false'>\n" +
+                "  <param name='movie' value='/img/pages/all-net-flat/flash/1und1Player.swf?flvsource=/img/pages/all-net-flat/flash/2014-03-All-Net-Flat-11sec-final-V2.flv&amp;skinsource=/img/pages/all-net-flat/flash/1und1Skin.swf'>\n" +
+                "  <param name='quality' value='high'>\n" +
+                "  <param name='bgcolor' value='ffffff'>\n" +
+                "  <param name='wmode' value='transparent'>\n" +
+                "  <param name='allowfullscreen' value='true'>\n" +
+                "  <param name='autoplay' value='true'>\n" +
+                "  <embed src='/img/pages/all-net-flat/flash/1und1Player.swf?flvsource=/img/pages/all-net-flat/flash/2014-03-All-Net-Flat-11sec-final-V2.flv&amp;skinsource=/img/pages/all-net-flat/flash/1und1Skin.swf' quality='high' bgcolor='ffffff' wmode='transparent' allowfullscreen='true' autoplay='true' name='video' width='640' height='405' autostart='true' align='middle' allowscriptaccess='sameDomain' type='application/x-shockwave-flash' pluginspage='https://www.macromedia.com/go/getflashplayer'>\n" +
+                "</object>";
+        String output = "<object classid='clsid:d27cdb6e-ae6d-11cf-96b8-444553540000' \n" +
+                "codebase='https://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0' \n" +
+                "id='video' width='640' height='405' autostart='true' align='middle'>\n" +
+                "  <param name='allowScriptAccess' value='sameDomain'>\n" +
+                "  <param name='allowFullScreen' value='false'>\n" +
+                "  <param name='movie' value='/img/pages/all-net-flat/flash/1und1Player.swf?flvsource=/img/pages/all-net-flat/flash/2014-03-All-Net-Flat-11sec-final-V2.flv&amp;skinsource=/img/pages/all-net-flat/flash/1und1Skin.swf'>\n" +
+                "  <param name='quality' value='high'>\n" +
+                "  <param name='bgcolor' value='ffffff'>\n" +
+                "  <param name='wmode' value='transparent'>\n" +
+                "  <param name='allowfullscreen' value='true'>\n" +
+                "  <param name='autoplay' value='true'>\n" +
+                "  <embed src='/img/pages/all-net-flat/flash/1und1Player.swf?flvsource=/img/pages/all-net-flat/flash/2014-03-All-Net-Flat-11sec-final-V2.flv&amp;skinsource=/img/pages/all-net-flat/flash/1und1Skin.swf' quality='high' bgcolor='ffffff' wmode='transparent' allowfullscreen='true' autoplay='true' name='video' width='640' height='405' autostart='true' align='middle' allowscriptaccess='sameDomain' type='application/x-shockwave-flash' pluginspage='https://www.macromedia.com/go/getflashplayer'>\n" +
+                "</object>";
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(output, out.getBuffer().toString());
+    }
+
+    // CHECKSTYLE:ON
+
     @Test
     public void testSimpleWithDoubleQuotedAttributes() throws IOException {
 

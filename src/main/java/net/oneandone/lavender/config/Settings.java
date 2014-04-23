@@ -47,9 +47,21 @@ public class Settings {
         Node file;
         Properties properties;
         List<Node> sshKeys;
+        FileNode dir;
 
         path = System.getenv("LAVENDER_SETTINGS");
-        file = path != null ? world.file(path) : world.getHome().join(".lavender.settings");
+        if (path != null) {
+            file = world.file(path);
+        } else {
+            file = world.getHome().join(".lavender.settings");
+            if (!file.exists()) {
+                dir = world.locateClasspathItem(Settings.class).getParent();
+                file = dir.join("lavender.settings");
+                if (!file.exists()) {
+                    throw new IOException("cannot locate lavender settings in " + world.getHome() + " or " + dir);
+                }
+            }
+        }
         properties = file.readProperties();
         sshKeys = new ArrayList<>();
         for (String key : properties.stringPropertyNames()) {
