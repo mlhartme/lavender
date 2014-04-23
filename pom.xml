@@ -29,6 +29,9 @@
 
     <tomcat.version>7.0.42</tomcat.version>
     <wsd.ypid>1224</wsd.ypid>
+
+    <!-- TODO ... dependency convergence -->
+    <enforcer.skip>true</enforcer.skip>
   </properties>
 
   <developers>
@@ -65,6 +68,27 @@
       <artifactId>jsch</artifactId>
       <version>0.1.50</version>
     </dependency>
+    <dependency>
+      <groupId>com.jcraft</groupId>
+      <artifactId>jsch.agentproxy.core</artifactId>
+      <version>0.0.6</version>
+    </dependency>
+    <dependency>
+      <groupId>com.jcraft</groupId>
+      <artifactId>jsch.agentproxy.jsch</artifactId>
+      <version>0.0.6</version>
+    </dependency>
+    <dependency>
+      <groupId>com.jcraft</groupId>
+      <artifactId>jsch.agentproxy.sshagent</artifactId>
+      <version>0.0.6</version>
+    </dependency>
+    <dependency>
+      <groupId>com.jcraft</groupId>
+      <artifactId>jsch.agentproxy.usocket-jna</artifactId>
+      <version>0.0.6</version>
+    </dependency>
+
     <dependency>
       <groupId>org.tmatesoft.svnkit</groupId>
       <artifactId>svnkit</artifactId>
