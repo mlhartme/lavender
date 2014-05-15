@@ -19,7 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class HtmlProcessor extends AbstractProcessor {
@@ -42,7 +44,7 @@ public class HtmlProcessor extends AbstractProcessor {
     protected StringBuilder tagBuffer = new StringBuilder(100);
 
     /** The relevant attributes in the current tag, in order. */
-    protected Map<Attr, Value> attrs = new LinkedHashMap<>();
+    protected List<Value> attrs = new ArrayList<>();
 
     /**
      * An enum to track the state of this processor.
@@ -86,7 +88,13 @@ public class HtmlProcessor extends AbstractProcessor {
      * An enum to track the current attribute.
      */
     enum Attr {
-        NULL, SRC, HREF, REL, STYLE, TYPE, DATA, NAME, VALUE, OTHER
+        NULL, SRC, HREF, REL, STYLE, TYPE, NAME, VALUE,
+
+        /** everything starting with "data-lavender-" */
+        DATA_LAVENDER,
+
+        /** everything else */
+        OTHER
     }
 
     private static final class Value {
@@ -304,12 +312,12 @@ public class HtmlProcessor extends AbstractProcessor {
                 attr = Attr.REL;
             } else if ("type".equalsIgnoreCase(a)) {
                 attr = Attr.TYPE;
-            } else if ("data".equalsIgnoreCase(a)) {
-                attr = Attr.DATA;
             } else if ("name".equalsIgnoreCase(a)) {
                 attr = Attr.NAME;
             } else if ("value".equalsIgnoreCase(a)) {
                 attr = attr.VALUE;
+            } else if (a.startsWith("data-lavender-")) {
+                attr = Attr.DATA_LAVENDER;
             } else {
                 attr = Attr.OTHER;
             }
@@ -395,8 +403,7 @@ public class HtmlProcessor extends AbstractProcessor {
 
     protected void processTagBuffer() throws IOException {
         int index = 0;
-        for (Attr a : attrs.keySet()) {
-            Value value = attrs.get(a);
+        for (Value value : attrs) {
             out.write(tagBuffer.substring(index, value.start));
 
             if (tag == Tag.IMG && value.attr == Attr.SRC) {
@@ -407,8 +414,8 @@ public class HtmlProcessor extends AbstractProcessor {
                 rewriteUrl(value);
             } else if (tag == Tag.LINK && value.attr == Attr.HREF) {
                 boolean rewritten = false;
-                if (attrs.containsKey(Attr.REL)) {
-                    Value rel = attrs.get(Attr.REL);
+                Value rel = lookupAttribute(Attr.REL);
+                if (rel != null) {
                     if ("stylesheet".equalsIgnoreCase(tagBuffer.substring(rel.start, rel.end))) {
                         rewriteUrl(value);
                         rewritten = true;
@@ -425,8 +432,8 @@ public class HtmlProcessor extends AbstractProcessor {
                 }
             } else if (tag == Tag.SCRIPT && value.attr == Attr.SRC) {
                 boolean rewritten = false;
-                if (attrs.containsKey(Attr.TYPE)) {
-                    Value type = attrs.get(Attr.TYPE);
+                Value type = lookupAttribute(Attr.TYPE);
+                if (type != null) {
                     if ("text/javascript".equalsIgnoreCase(tagBuffer.substring(type.start, type.end))) {
                         rewriteUrl(value);
                         rewritten = true;
@@ -437,8 +444,8 @@ public class HtmlProcessor extends AbstractProcessor {
                 }
             } else if (tag == Tag.INPUT && value.attr == Attr.SRC) {
                 boolean rewritten = false;
-                if (attrs.containsKey(Attr.TYPE)) {
-                    Value type = attrs.get(Attr.TYPE);
+                Value type = lookupAttribute(Attr.TYPE);
+                if (type != null) {
                     if ("image".equalsIgnoreCase(tagBuffer.substring(type.start, type.end))) {
                         rewriteUrl(value);
                         rewritten = true;
@@ -449,6 +456,8 @@ public class HtmlProcessor extends AbstractProcessor {
                 }
             } else if (value.attr == Attr.STYLE) {
                 rewriteCss(value);
+            } else if (value.attr == Attr.DATA_LAVENDER) {
+                rewriteUrl(value);
             } else {
                 out.write(tagBuffer.substring(value.start, value.end));
             }
@@ -462,13 +471,6 @@ public class HtmlProcessor extends AbstractProcessor {
         attrs.clear();
         tagBuffer.setLength(0);
         uriBuffer.setLength(0);
-    }
-
-    private boolean hasAttribute(Attr attr, String value) {
-        Value v;
-
-        v = attrs.get(attr);
-        return v == null ? false : value.equalsIgnoreCase(tagBuffer.substring(v.start, v.end));
     }
 
     protected void rewriteUrl(Value value) throws IOException {
@@ -486,18 +488,31 @@ public class HtmlProcessor extends AbstractProcessor {
     }
 
     protected void markValueStart() throws IOException {
-        if (attrs.containsKey(attr)) {
-            attrs.remove(attr);
-        }
         if (attr != Attr.OTHER) {
-            attrs.put(attr, new Value(attr, tagBuffer.length()));
+            attrs.add(new Value(attr, tagBuffer.length()));
         }
     }
 
     protected void markValueLength() throws IOException {
-        if (attrs.containsKey(attr)) {
-            attrs.get(attr).end = tagBuffer.length();
+        int size;
+        Value value;
+
+        size = attrs.size();
+        if (size > 0) {
+            value = attrs.get(size - 1);
+            if (value.attr == attr) {
+                value.end = tagBuffer.length();
+            }
         }
     }
 
+    /** @return first match or null */
+    private Value lookupAttribute(Attr attr) {
+        for (Value value : attrs) {
+            if (value.attr == attr) {
+                return value;
+            }
+        }
+        return null;
+    }
 }

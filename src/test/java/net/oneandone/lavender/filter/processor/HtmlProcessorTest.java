@@ -72,6 +72,27 @@ public class HtmlProcessorTest {
         assertEquals(expected, out.getBuffer().toString());
     }
 
+    @Test
+    public void testDataLavenderAttributes() throws IOException {
+        String input = "<a src='/x/y/z' data-lavender-a='x/y/z' data-lavender-2='x/y/z' >";
+        String output = "<a src='/x/y/z' data-lavender-a='http://a.b.c' data-lavender-2='http://a.b.c' >";
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(output, out.getBuffer().toString());
+    }
+
+    @Test
+    public void testDataOther() throws IOException {
+        String input = "<foo src='/x/y/z' data-a='x/y/z' data='x/y/z' >";
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(input, out.getBuffer().toString());
+    }
+
 
     @Test
     public void testSimpleWithDoubleQuotedAttributes() throws IOException {
