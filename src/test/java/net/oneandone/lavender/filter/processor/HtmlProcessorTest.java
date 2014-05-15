@@ -175,6 +175,7 @@ public class HtmlProcessorTest {
 
     }
 
+
     // CHECKSTYLE:OFF
     @Test
     public void testFlashWithFlv() throws IOException {
@@ -214,7 +215,6 @@ public class HtmlProcessorTest {
         assertEquals(output, out.getBuffer().toString());
     }
 
-
     @Test
     public void testFlashWithFlv2() throws IOException {
         String input = "<object classid='clsid:d27cdb6e-ae6d-11cf-96b8-444553540000' \n" +
@@ -235,7 +235,7 @@ public class HtmlProcessorTest {
                 "id='video' width='640' height='405' autostart='true' align='middle'>\n" +
                 "  <param name='allowScriptAccess' value='sameDomain'>\n" +
                 "  <param name='allowFullScreen' value='false'>\n" +
-                "  <param name='movie' value='/img/pages/all-net-flat/flash/1und1Player.swf?flvsource=/img/pages/all-net-flat/flash/2014-03-All-Net-Flat-11sec-final-V2.flv&amp;skinsource=/img/pages/all-net-flat/flash/1und1Skin.swf'>\n" +
+                "  <param name='movie' value='http://a.b.c?flvsource=http://a.b.c&amp;skinsource=/img/pages/all-net-flat/flash/1und1Skin.swf'>\n" +
                 "  <param name='quality' value='high'>\n" +
                 "  <param name='bgcolor' value='ffffff'>\n" +
                 "  <param name='wmode' value='transparent'>\n" +

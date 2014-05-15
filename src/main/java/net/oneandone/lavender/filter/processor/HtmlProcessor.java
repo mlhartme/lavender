@@ -514,7 +514,6 @@ public class HtmlProcessor extends AbstractProcessor {
         int count;
 
         str = tagBuffer.substring(value.start, value.end);
-        System.out.println("flash url: " + str);
         idx = str.indexOf('?');
         if (idx != -1) {
             remaining = str.substring(idx + 1);
