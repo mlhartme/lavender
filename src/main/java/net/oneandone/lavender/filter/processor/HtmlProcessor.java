@@ -33,9 +33,6 @@ public class HtmlProcessor extends AbstractProcessor {
     /** The current tag, but only if it has attributes. CAUTION: properly set only between < ... >; outside of angle brackets, it contains the last value of tag. */
     protected Tag tag = Tag.NULL;
 
-    /** Number of "object" tags surrounding the current position */
-    protected int surroundingObjectTags = 0;
-
     /** The current attribute within an tag. */
     protected Attr attr = Attr.NULL;
 
@@ -64,7 +61,7 @@ public class HtmlProcessor extends AbstractProcessor {
      * An enum to track the current tag.
      */
     enum Tag {
-        NULL, IMG, LINK, SCRIPT, INPUT, A, SOURCE, OBJECT, PARAM, OTHER;
+        NULL, IMG, LINK, SCRIPT, INPUT, A, SOURCE, OTHER;
 
         public static Tag forString(String str) {
             if ("img".equals(str)) {
@@ -79,10 +76,6 @@ public class HtmlProcessor extends AbstractProcessor {
                 return Tag.A;
             } else if ("source".equals(str)) {
                 return Tag.SOURCE;
-            } else if ("object".equals(str)) {
-                return Tag.OBJECT;
-            } else if ("param".equals(str)) {
-                return Tag.PARAM;
             } else {
                 return Tag.OTHER;
             }
@@ -401,8 +394,6 @@ public class HtmlProcessor extends AbstractProcessor {
     }
 
     protected void processTagBuffer() throws IOException {
-        updateSurroundingObjectTags();
-
         int index = 0;
         for (Attr a : attrs.keySet()) {
             Value value = attrs.get(a);
@@ -458,10 +449,6 @@ public class HtmlProcessor extends AbstractProcessor {
                 }
             } else if (value.attr == Attr.STYLE) {
                 rewriteCss(value);
-            } else if (tag == Tag.OBJECT && value.attr == Attr.DATA && hasAttribute(Attr.TYPE, "application/x-shockwave-flash")) {
-                rewriteFlashUrl(value);
-            } else if (tag == Tag.PARAM && value.attr == Attr.VALUE && hasAttribute(Attr.NAME, "movie") && surroundingObjectTags > 0) {
-                rewriteFlashUrl(value);
             } else {
                 out.write(tagBuffer.substring(value.start, value.end));
             }
@@ -477,75 +464,11 @@ public class HtmlProcessor extends AbstractProcessor {
         uriBuffer.setLength(0);
     }
 
-    private void updateSurroundingObjectTags() {
-        Tag realTag;
-
-        if (state == State.TAG_START) {
-            // we've seen no space, and thus, tag has not been assigned properly
-            realTag = Tag.forString(tagBuffer.toString().toLowerCase());
-        } else {
-            realTag = tag;
-        }
-        if (realTag == Tag.OBJECT) {
-            if (tagBuffer.charAt(1) == '/') {
-                // </object>
-                surroundingObjectTags--;
-            } else if (tagBuffer.charAt(tagBuffer.length() - 1) == '/') {
-                // <object/>
-            } else {
-                // <object>
-                surroundingObjectTags++;
-            }
-        }
-    }
-
     private boolean hasAttribute(Attr attr, String value) {
         Value v;
 
         v = attrs.get(attr);
         return v == null ? false : value.equalsIgnoreCase(tagBuffer.substring(v.start, v.end));
-    }
-
-    private void rewriteFlashUrl(Value value) throws IOException {
-        String str;
-        int idx;
-        String remaining;
-        String key;
-        int count;
-
-        str = tagBuffer.substring(value.start, value.end);
-        idx = str.indexOf('?');
-        if (idx != -1) {
-            remaining = str.substring(idx + 1);
-            str = str.substring(0, idx);
-        } else {
-            remaining = null;
-        }
-        out.write(rewriteEngine.rewrite(str, baseURI, contextPath));
-        for (count = 0; remaining != null; count ++) {
-            out.write(count == 0 ? '?' : '&');
-            idx = remaining.indexOf('&');
-            if (idx != -1) {
-                str = remaining.substring(0, idx);
-                remaining = remaining.substring(idx + 1);
-            } else {
-                str = remaining;
-                remaining = null;
-            }
-            idx = str.indexOf('=');
-            if (idx == -1) {
-                out.write(str);
-            } else {
-                key = str.substring(0, idx).toLowerCase();
-                if (key.equals("flvsource") || key.equals("skinsource")) {
-                    out.write(key);
-                    out.write('=');
-                    out.write(rewriteEngine.rewrite(str.substring(idx + 1), baseURI, contextPath));
-                } else {
-                    out.write(str);
-                }
-            }
-        }
     }
 
     protected void rewriteUrl(Value value) throws IOException {
