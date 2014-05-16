@@ -124,6 +124,8 @@ public class SvnProperties {
         url = prod ? svnurl : svnurlDevel;
         try {
             root = (SvnNode) world.node("svn:" + url);
+            // make sure to get a propery error message, and to get it early
+            root.checkDirectory();
             idxName = root.getSvnurl().getPath().replace('/', '.') + ".idx";
             idxName = Strings.removeLeftOpt(idxName, ".");
             cache = (FileNode) world.getHome().join(".cache/lavender",
