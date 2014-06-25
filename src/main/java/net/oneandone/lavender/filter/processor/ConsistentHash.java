@@ -24,7 +24,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
- * @link http://weblogs.java.net/blog/2007/11/27/consistent-hashing"
+ * See http://weblogs.java.net/blog/2007/11/27/consistent-hashing"
  */
 public class ConsistentHash {
 

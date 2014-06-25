@@ -32,7 +32,7 @@ public class HtmlProcessor extends AbstractProcessor {
     /** The main state of this processor. */
     protected State state = State.NULL;
 
-    /** The current tag, but only if it has attributes. CAUTION: properly set only between < ... >; outside of angle brackets, it contains the last value of tag. */
+    /** The current tag, but only if it has attributes. CAUTION: properly set only between &lt; ... &gt;; outside of angle brackets, it contains the last value of tag. */
     protected Tag tag = Tag.NULL;
 
     /** The current attribute within an tag. */
