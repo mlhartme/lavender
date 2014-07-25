@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?><document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
   <body>
     <release date="2014-07-25" version="2.2.1">
+      <action date="2014-07-25" dev="mhm" type="update">
+        Update slf4j-api 1.7.2 to 1.7.5.
+      </action>
       <action date="2014-07-25" dev="mhm" type="fix">
         Don't use jsch and ssh agent proxy in servlet filter: it's not needed there, and ssh agent proxy fails to connect when used
         with svnkit 1.8.5.
