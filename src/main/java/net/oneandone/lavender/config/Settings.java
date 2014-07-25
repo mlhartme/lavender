@@ -15,7 +15,6 @@
  */
 package net.oneandone.lavender.config;
 
-import com.jcraft.jsch.JSchException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -31,14 +30,14 @@ import java.util.Properties;
 
 public class Settings {
     public static Settings load() throws IOException {
-        return load(new World());
+        return load(new World(), true);
     }
 
-    public static Settings load(World world) throws IOException {
+    public static Settings load(World world, boolean withSsh) throws IOException {
         Settings settings;
 
         settings = settings(world);
-        settings.initWorld();
+        settings.initWorld(withSsh);
         return settings;
     }
 
@@ -97,19 +96,21 @@ public class Settings {
         world.setTemp((FileNode) logs.mkdirsOpt());
     }
 
-    private void initWorld() throws IOException {
+    private void initWorld(boolean withSsh) throws IOException {
         SshFilesystem ssh;
 
         initLogs((FileNode) world.getHome().join("logs/lavender"));
 
         world.getMemoryFilesystem().setMaxInMemorySize(Integer.MAX_VALUE);
         world.getFilesystem("svn", SvnFilesystem.class).setDefaultCredentials(svnUsername, svnPassword);
-        ssh = world.getFilesystem("ssh", SshFilesystem.class);
-        for (Node node : sshKeys) {
-            try {
-                ssh.addIdentity(node, null);
-            } catch (JSchException | IOException e) {
-                throw new IllegalStateException("cannot connect to flash server: " + e.getMessage(), e);
+        if (withSsh) {
+            ssh = world.getFilesystem("ssh", SshFilesystem.class);
+            for (Node node : sshKeys) {
+                try {
+                    ssh.addIdentity(node, null);
+                } catch (Exception e) {
+                    throw new IllegalStateException("cannot add identity: " + e.getMessage(), e);
+                }
             }
         }
         // disable them for integration tests, because I don't have .ssh on pearl/gems

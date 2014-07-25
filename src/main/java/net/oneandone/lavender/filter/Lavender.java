@@ -84,7 +84,9 @@ public class Lavender implements Filter, LavenderMBean {
         try {
             LOG.info("init");
             filterConfig = config;
-            world = new World();
+            // do not try ssh agent, because it crashes )with an abstract method error)
+            // when jna is not in version 3.4.0. Which happens easily ...
+            world = new World(false);
             webapp = world.file(filterConfig.getServletContext().getRealPath(""));
             src = webapp.join(LAVENDER_IDX);
             if (src.exists()) {
@@ -94,7 +96,7 @@ public class Lavender implements Filter, LavenderMBean {
                 LOG.info("Lavender prod filter");
             } else {
                 started = System.currentTimeMillis();
-                settings = Settings.load(world);
+                settings = Settings.load(world, false);
                 processorFactory = null;
                 develModules = DefaultModule.fromWebapp(false, webapp, settings.svnUsername, settings.svnPassword);
                 LOG.info("Lavender devel filter for " + webapp + ", " + develModules.size()
