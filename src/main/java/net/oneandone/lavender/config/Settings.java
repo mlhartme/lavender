@@ -29,23 +29,22 @@ import java.util.List;
 import java.util.Properties;
 
 public class Settings {
+    /** convenience method */
     public static Settings load() throws IOException {
-        return load(new World(), true);
+        return load(file(new World()), true);
     }
 
-    public static Settings load(World world, boolean withSsh) throws IOException {
+    public static Settings load(Node file, boolean withSsh) throws IOException {
         Settings settings;
 
-        settings = settings(world);
+        settings = settings(file);
         settings.initWorld(withSsh);
         return settings;
     }
 
-    private static Settings settings(World world) throws IOException {
+    public static Node file(World world) throws IOException {
         String path;
         Node file;
-        Properties properties;
-        List<Node> sshKeys;
         FileNode dir;
 
         path = System.getenv("LAVENDER_SETTINGS");
@@ -61,15 +60,22 @@ public class Settings {
                 }
             }
         }
+        return file;
+    }
+
+    private static Settings settings(Node file) throws IOException {
+        Properties properties;
+        List<Node> sshKeys;
+
         properties = file.readProperties();
         sshKeys = new ArrayList<>();
         for (String key : properties.stringPropertyNames()) {
             if (key.startsWith("ssh.")) {
-                sshKeys.add(world.file(properties.getProperty(key)));
+                sshKeys.add(file.getWorld().file(properties.getProperty(key)));
             }
         }
         try {
-            return new Settings(world, new URI(properties.getProperty("svn")), properties.getProperty("svn.username"), properties.getProperty("svn.password"), sshKeys);
+            return new Settings(file.getWorld(), new URI(properties.getProperty("svn")), properties.getProperty("svn.username"), properties.getProperty("svn.password"), sshKeys);
         } catch (URISyntaxException e) {
             throw new IOException("invalid settings file " + file + ": " + e.getMessage(), e);
         }

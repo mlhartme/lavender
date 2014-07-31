@@ -96,7 +96,7 @@ public class Lavender implements Filter, LavenderMBean {
                 LOG.info("Lavender prod filter");
             } else {
                 started = System.currentTimeMillis();
-                settings = Settings.load(world, false);
+                settings = Settings.load(Settings.file(world), false);
                 processorFactory = null;
                 develModules = DefaultModule.fromWebapp(false, webapp, settings.svnUsername, settings.svnPassword);
                 LOG.info("Lavender devel filter for " + webapp + ", " + develModules.size()
