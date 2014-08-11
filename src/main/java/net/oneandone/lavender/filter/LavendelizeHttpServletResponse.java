@@ -287,9 +287,9 @@ public class LavendelizeHttpServletResponse extends HttpServletResponseWrapper {
             super.setContentLength(processing || gzip ? -1 : contentLength);
         }
         if (gzip) {
-            // see "High Performance Websites", by Steve Souders
+            // see http://cs193h.stevesouders.com and "High Performance Websites", by Steve Souders
             setHeader("Content-Encoding", "gzip");
-            addHeader("Cache-Control", "private");
+            addHeader("Vary", "Accept-Encoding");
         }
         return processor;
     }

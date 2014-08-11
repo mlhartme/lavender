@@ -4,6 +4,9 @@
       <action date="2014-07-31" dev="mhm" type="update">
         Settings.load with Node instead of World"
       </action>
+      <action date="2014-07-31" dev="mhm" type="update">
+        Use gzip content encoding as advertised by client request. Removed browser white lists.
+      </action>
     </release>
     <release date="2014-07-28" version="2.2.1">
       <action date="2014-07-25" dev="mhm" type="update">

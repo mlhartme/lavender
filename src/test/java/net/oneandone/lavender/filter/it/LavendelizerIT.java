@@ -17,16 +17,19 @@ package net.oneandone.lavender.filter.it;
 
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
+import net.oneandone.sushi.io.Buffer;
 import org.apache.catalina.startup.Tomcat;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.zip.GZIPInputStream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -115,11 +118,9 @@ public class LavendelizerIT {
     private String doGetZ(String path, boolean gzip) throws IOException {
         URL url;
         HttpURLConnection conn;
-        BufferedReader rd;
-        String line;
-        StringBuilder buffer;
-        String content;
-
+        byte[] bytes;
+        InputStream in;
+        ByteArrayOutputStream out;
 
         url = new URL("http://localhost:" + PORT + "/" + path);
         conn = (HttpURLConnection) url.openConnection();
@@ -127,13 +128,13 @@ public class LavendelizerIT {
         if (gzip) {
             conn.addRequestProperty("Accept-Encoding", "gzip");
         }
-        rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        buffer = new StringBuilder();
-        while ((line = rd.readLine()) != null) {
-            buffer.append(line);
+        bytes = new Buffer().readBytes(conn.getInputStream());
+        if ("gzip".equals(conn.getHeaderField("Content-Encoding"))) {
+            in = new GZIPInputStream(new ByteArrayInputStream(bytes));
+            out = new ByteArrayOutputStream();
+            new Buffer().copy(in, out);
+            bytes = out.toByteArray();
         }
-        rd.close();
-        content = buffer.toString();
-        return content;
+        return new String(bytes, "utf8");
     }
 }
