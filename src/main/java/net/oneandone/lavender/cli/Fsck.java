@@ -320,17 +320,43 @@ public class Fsck extends Base {
     // TODO: jsch problem -- it takes the argument list as a single string ...
     private static String[] escape(String[] args) {
         String[] result;
-        String arg;
 
         result = new String[args.length];
         for (int i = 0; i < result.length; i++) {
-            arg = args[i];
-            if (arg.contains(" ") || arg.contains("'")) {
-                arg = "\"" + arg + "\"";
-            }
-            result[i] = arg;
+            result[i] = escape(args[i]);
         }
         return result;
+    }
+
+    // TODO: jsch problem -- it takes the argument list as a single string ...
+    private static String escape(String arg) {
+        int max;
+        StringBuilder result;
+        char c;
+
+        max = arg.length();
+        result = new StringBuilder(max);
+        for (int i = 0; i < max; i++) {
+            c = arg.charAt(i);
+            switch (c) {
+                case '\'':
+                case '"':
+                case ' ':
+                case '\t':
+                case '&':
+                case '|':
+                case '(':
+                case ')':
+                case '\n':
+                    result.append('\\');
+                    result.append(c);
+                    break;
+                default:
+                    result.append(c);
+                    break;
+            }
+        }
+        return result.toString();
     }
 
     //--
