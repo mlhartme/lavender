@@ -102,11 +102,23 @@ public class Settings {
         world.setTemp((FileNode) temp.mkdirsOpt());
     }
 
+    private FileNode temp() {
+        String str;
+
+        str = System.getenv("LAVENDER_TEMP");
+        if (str == null) {
+            // make sure that users have individual sub directories - for shared machines
+            return world.getTemp().join("lavender", System.getProperty("user.name"));
+        } else {
+            // TODO: dump this case when we can dump pumama64
+            return world.file(str);
+        }
+    }
+
     private void initWorld(boolean withSsh) throws IOException {
         SshFilesystem ssh;
 
-        initTemp((FileNode) world.getHome().join("logs/lavender"));
-
+        initTemp(temp());
         world.getMemoryFilesystem().setMaxInMemorySize(Integer.MAX_VALUE);
         world.getFilesystem("svn", SvnFilesystem.class).setDefaultCredentials(svnUsername, svnPassword);
         if (withSsh) {
