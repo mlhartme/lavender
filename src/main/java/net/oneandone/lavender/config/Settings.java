@@ -98,14 +98,14 @@ public class Settings {
         this.sshKeys = sshKeys;
     }
 
-    public void initLogs(FileNode logs) throws IOException {
-        world.setTemp((FileNode) logs.mkdirsOpt());
+    public void initTemp(FileNode temp) throws IOException {
+        world.setTemp((FileNode) temp.mkdirsOpt());
     }
 
     private void initWorld(boolean withSsh) throws IOException {
         SshFilesystem ssh;
 
-        initLogs((FileNode) world.getHome().join("logs/lavender"));
+        initTemp((FileNode) world.getHome().join("logs/lavender"));
 
         world.getMemoryFilesystem().setMaxInMemorySize(Integer.MAX_VALUE);
         world.getFilesystem("svn", SvnFilesystem.class).setDefaultCredentials(svnUsername, svnPassword);
