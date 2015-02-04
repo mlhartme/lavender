@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?><document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
   <body>
+    <release date="2015-02-04" version="2.2.4">
+      <action date="2015-02-04" dev="mhm" type="fix">
+        Fix permissions of /tmp/lavender, has to be world-writable.
+      </action>
+    </release>
     <release date="2015-02-02" version="2.2.3">
       <action date="2015-01-30" dev="mhm" type="fix">
         Fix temp file location - caused problems on Waterloos.

@@ -99,7 +99,14 @@ public class Settings {
     }
 
     public void initTemp(FileNode temp) throws IOException {
-        world.setTemp((FileNode) temp.mkdirsOpt());
+        FileNode parent;
+
+        parent = temp.getParent();
+        if (!parent.exists()) {
+            parent.mkdir();
+            parent.setPermissions("rwxrwxrwx");
+        }
+        world.setTemp((FileNode) temp.mkdirOpt());
     }
 
     private FileNode temp() {
