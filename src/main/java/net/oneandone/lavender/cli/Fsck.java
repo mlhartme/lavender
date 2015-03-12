@@ -133,9 +133,13 @@ public class Fsck extends Base {
         for (Node file : docrootObj.indexList(connection)) {
             index = Index.load(file);
             result.put(file.getName(), index);
-            for (Label label : index) {
-                references.add(label.getLavendelizedPath());
-                all.addReference(label.getLavendelizedPath(), label.md5());
+            try {
+                for (Label label : index) {
+                    references.add(label.getLavendelizedPath());
+                    all.addReference(label.getLavendelizedPath(), label.md5());
+                }
+            } catch (IllegalStateException e) {
+                throw new IllegalStateException(file.getURI() + ": " + e.getMessage(), e);
             }
         }
         console.info.println(references.size());
