@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.config;
 
+import net.oneandone.sushi.fs.FileNotFoundException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -44,7 +45,7 @@ public class Properties {
     public static Node file(World world) throws IOException {
         String path;
         Node file;
-        FileNode dir;
+        FileNode parent;
 
         path = System.getenv("LAVENDER_PROPERTIES");
         if (path != null) {
@@ -52,10 +53,16 @@ public class Properties {
         } else {
             file = world.getHome().join(".lavender.properties");
             if (!file.exists()) {
-                dir = world.locateClasspathItem(Properties.class).getParent();
-                file = dir.join("lavender.properties");
+                parent = world.locateClasspathItem(Properties.class).getParent();
+                file = parent.join("lavender.properties");
                 if (!file.exists()) {
-                    throw new IOException("cannot locate lavender properties in " + world.getHome() + " or " + dir);
+                    file = parent.getParent().join("etc/lavender.properties");
+                    if (!file.exists()) {
+                        file = world.file("/etc/lavender.properties");
+                        if (!file.exists()) {
+                            throw new IOException("cannot locate lavender properties");
+                        }
+                    }
                 }
             }
         }

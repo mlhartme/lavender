@@ -5,7 +5,8 @@
         Improved error messages for broken indexes.
       </action>
       <action date="2015-06-26" dev="mhm" type="update">
-        Renamed settings to properties.
+        Renamed settings to properties, inparticulat the file name and the environment variable.
+        Extended search path to include etc. Behavior is simular to puc now.
       </action>
     </release>
     <release date="2015-02-04" version="2.2.4">
