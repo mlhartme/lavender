@@ -229,6 +229,48 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <artifactId>jdeb</artifactId>
+        <groupId>org.vafer</groupId>
+        <version>1.4</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>jdeb</goal>
+            </goals>
+            <configuration>
+              <name>lavender</name><!-- overview pom.name because debian packages need lower case -->
+              <changesIn>${basedir}/src/changes/CHANGES.txt</changesIn>
+              <changesSave>${project.build.directory}/CHANGES.txt</changesSave>
+              <dataSet>
+                <data>
+                  <src>${project.build.directory}/lavender</src>
+                  <dst>/opt/ui/bin/lavender</dst>
+                  <type>file</type>
+                  <mapper>
+                    <type>perm</type>
+                    <user>root</user>
+                    <group>root</group>
+                    <filemode>755</filemode>
+                  </mapper>
+                </data>
+                <data>
+                  <src>${basedir}/src/deb/lavender.properties</src>
+                  <dst>/opt/ui/etc/lavender.properties</dst>
+                  <type>file</type>
+                  <mapper>
+                    <type>perm</type>
+                    <user>root</user>
+                    <group>root</group>
+                    <filemode>644</filemode>
+                  </mapper>
+                </data>
+              </dataSet>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <profiles>
