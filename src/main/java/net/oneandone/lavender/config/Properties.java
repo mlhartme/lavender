@@ -26,20 +26,19 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
-public class Settings {
+public class Properties {
     /** convenience method */
-    public static Settings load() throws IOException {
+    public static Properties load() throws IOException {
         return load(file(new World()), true);
     }
 
-    public static Settings load(Node file, boolean withSsh) throws IOException {
-        Settings settings;
+    public static Properties load(Node file, boolean withSsh) throws IOException {
+        Properties properties;
 
-        settings = settings(file);
-        settings.initWorld(withSsh);
-        return settings;
+        properties = properties(file);
+        properties.initWorld(withSsh);
+        return properties;
     }
 
     public static Node file(World world) throws IOException {
@@ -47,24 +46,24 @@ public class Settings {
         Node file;
         FileNode dir;
 
-        path = System.getenv("LAVENDER_SETTINGS");
+        path = System.getenv("LAVENDER_PROPERTIES");
         if (path != null) {
             file = world.file(path);
         } else {
-            file = world.getHome().join(".lavender.settings");
+            file = world.getHome().join(".lavender.properties");
             if (!file.exists()) {
-                dir = world.locateClasspathItem(Settings.class).getParent();
-                file = dir.join("lavender.settings");
+                dir = world.locateClasspathItem(Properties.class).getParent();
+                file = dir.join("lavender.properties");
                 if (!file.exists()) {
-                    throw new IOException("cannot locate lavender settings in " + world.getHome() + " or " + dir);
+                    throw new IOException("cannot locate lavender properties in " + world.getHome() + " or " + dir);
                 }
             }
         }
         return file;
     }
 
-    private static Settings settings(Node file) throws IOException {
-        Properties properties;
+    private static Properties properties(Node file) throws IOException {
+        java.util.Properties properties;
         List<Node> sshKeys;
 
         properties = file.readProperties();
@@ -75,22 +74,22 @@ public class Settings {
             }
         }
         try {
-            return new Settings(file.getWorld(), new URI(properties.getProperty("svn")), properties.getProperty("svn.username"), properties.getProperty("svn.password"), sshKeys);
+            return new Properties(file.getWorld(), new URI(properties.getProperty("svn")), properties.getProperty("svn.username"), properties.getProperty("svn.password"), sshKeys);
         } catch (URISyntaxException e) {
-            throw new IOException("invalid settings file " + file + ": " + e.getMessage(), e);
+            throw new IOException("invalid properties file " + file + ": " + e.getMessage(), e);
         }
     }
 
     //--
 
     public final World world;
-    /** don't store the node, so I can create settings without accessing svn (and thus without svn credentials) */
+    /** don't store the node, so I can create properties without accessing svn (and thus without svn credentials) */
     public final URI svn;
     public final String svnUsername;
     public final String svnPassword;
     private final List<Node> sshKeys;
 
-    public Settings(World world, URI svn, String svnUsername, String svnPassword, List<Node> sshKeys) {
+    public Properties(World world, URI svn, String svnUsername, String svnPassword, List<Node> sshKeys) {
         this.world = world;
         this.svn = svn;
         this.svnUsername = svnUsername;

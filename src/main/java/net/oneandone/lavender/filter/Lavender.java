@@ -15,7 +15,7 @@
  */
 package net.oneandone.lavender.filter;
 
-import net.oneandone.lavender.config.Settings;
+import net.oneandone.lavender.config.Properties;
 import net.oneandone.lavender.filter.processor.ProcessorFactory;
 import net.oneandone.lavender.filter.processor.RewriteEngine;
 import net.oneandone.lavender.index.Hex;
@@ -78,7 +78,7 @@ public class Lavender implements Filter, LavenderMBean {
         Node src;
         Index index;
         RewriteEngine rewriteEngine;
-        Settings settings;
+        Properties properties;
         Node webapp;
 
         try {
@@ -96,9 +96,9 @@ public class Lavender implements Filter, LavenderMBean {
                 LOG.info("Lavender prod filter");
             } else {
                 started = System.currentTimeMillis();
-                settings = Settings.load(Settings.file(world), false);
+                properties = Properties.load(Properties.file(world), false);
                 processorFactory = null;
-                develModules = DefaultModule.fromWebapp(false, webapp, settings.svnUsername, settings.svnPassword);
+                develModules = DefaultModule.fromWebapp(false, webapp, properties.svnUsername, properties.svnPassword);
                 LOG.info("Lavender devel filter for " + webapp + ", " + develModules.size()
                         + " resources. Init in " + (System.currentTimeMillis() - started + " ms"));
             }

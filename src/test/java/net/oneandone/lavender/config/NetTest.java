@@ -22,6 +22,6 @@ import java.io.IOException;
 public class NetTest {
     @Test
     public void load() throws IOException {
-        Settings.load().loadNet();
+        Properties.load().loadNet();
     }
 }

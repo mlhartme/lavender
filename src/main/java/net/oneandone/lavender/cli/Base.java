@@ -18,14 +18,14 @@ package net.oneandone.lavender.cli;
 
 import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Pool;
-import net.oneandone.lavender.config.Settings;
+import net.oneandone.lavender.config.Properties;
 import net.oneandone.sushi.cli.Command;
 import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.cli.Option;
 
 public abstract class Base implements Command {
     protected final Console console;
-    protected final Settings settings;
+    protected final Properties properties;
     protected final Net net;
 
     @Option("user")
@@ -37,9 +37,9 @@ public abstract class Base implements Command {
     @Option("no-lock")
     protected boolean noLock = false;
 
-    protected Base(Console console, Settings settings, Net net) {
+    protected Base(Console console, Properties properties, Net net) {
         this.console = console;
-        this.settings = settings;
+        this.properties = properties;
         this.net = net;
     }
 

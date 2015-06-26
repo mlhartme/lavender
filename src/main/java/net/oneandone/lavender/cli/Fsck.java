@@ -21,7 +21,7 @@ import net.oneandone.lavender.config.Connection;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Pool;
-import net.oneandone.lavender.config.Settings;
+import net.oneandone.lavender.config.Properties;
 import net.oneandone.lavender.index.Hex;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
@@ -56,8 +56,8 @@ public class Fsck extends Base {
     @Value(name = "cluster", position = 1)
     private String clusterName;
 
-    public Fsck(Console console, Settings settings, Net net) {
-        super(console, settings, net);
+    public Fsck(Console console, Properties properties, Net net) {
+        super(console, properties, net);
     }
 
     @Override

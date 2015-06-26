@@ -16,7 +16,7 @@
 package net.oneandone.lavender.cli;
 
 import net.oneandone.lavender.config.Net;
-import net.oneandone.lavender.config.Settings;
+import net.oneandone.lavender.config.Properties;
 import net.oneandone.sushi.cli.Child;
 import net.oneandone.sushi.cli.Cli;
 import net.oneandone.sushi.cli.Command;
@@ -27,16 +27,16 @@ import java.io.IOException;
 
 public class Main extends Cli implements Command {
     public static void main(String[] args) throws IOException {
-        Settings settings;
+        Properties properties;
 
-        settings = Settings.load();
-        System.exit(doMain(settings, null, args));
+        properties = Properties.load();
+        System.exit(doMain(properties, null, args));
     }
 
-    public static int doMain(Settings settings, Net net, String ... args) {
+    public static int doMain(Properties properties, Net net, String ... args) {
         Main main;
 
-        main = new Main(settings, net);
+        main = new Main(properties, net);
         return main.run(args);
     }
 
@@ -44,37 +44,37 @@ public class Main extends Cli implements Command {
     private boolean lastConfig;
 
     private Net lazyNet;
-    private final Settings settings;
+    private final Properties properties;
 
-    public Main(Settings settings, Net net) {
-        super(settings.world);
-        this.settings = settings;
+    public Main(Properties properties, Net net) {
+        super(properties.world);
+        this.properties = properties;
         this.lazyNet = net;
     }
 
     @Child("war")
     public Command war() throws IOException {
-        return new War(console, settings, net());
+        return new War(console, properties, net());
     }
 
     @Child("svn")
     public Command svn() throws IOException {
-        return new Svn(console, settings, Strings.removeLeft(settings.svn.toString(), "svn:"), net());
+        return new Svn(console, properties, Strings.removeLeft(properties.svn.toString(), "svn:"), net());
     }
 
     @Child("file")
     public Command file() throws IOException {
-        return new File(console, settings, net());
+        return new File(console, properties, net());
     }
 
     @Child("direct")
     public Command direct() throws IOException {
-        return new Direct(console, settings, net());
+        return new Direct(console, properties, net());
     }
 
     @Child("fsck")
     public Command validate() throws IOException {
-        return new Fsck(console, settings, net());
+        return new Fsck(console, properties, net());
     }
 
     @Override
@@ -105,7 +105,7 @@ public class Main extends Cli implements Command {
 
     private Net net() throws IOException {
         if (lazyNet == null) {
-            lazyNet = lastConfig ? settings.loadLastNet() : settings.loadNet();
+            lazyNet = lastConfig ? properties.loadLastNet() : properties.loadNet();
         }
         return lazyNet;
     }

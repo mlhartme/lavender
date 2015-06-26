@@ -20,20 +20,20 @@ import net.oneandone.lavender.config.Connection;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Pool;
-import net.oneandone.lavender.config.Settings;
+import net.oneandone.lavender.config.Properties;
 import net.oneandone.sushi.fs.Node;
 import org.junit.Test;
 
 public class MainManual {
     @Test
     public void sshAccess() throws Exception {
-        Settings settings;
+        Properties properties;
         Net net;
         Node node;
 
-        settings = Settings.load();
-        net = settings.loadNet();
-        try (Pool pool = new Pool(settings.world, null, 0)) {
+        properties = Properties.load();
+        net = properties.loadNet();
+        try (Pool pool = new Pool(properties.world, null, 0)) {
             for (Cluster cluster : net.clusters()) {
                 for (Connection connection : cluster.connect(pool)) {
                     node = new Docroot("", "", "").node(connection);

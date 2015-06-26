@@ -4,6 +4,9 @@
       <action date="2015-03-12" dev="mhm" type="update">
         Improved error messages for broken indexes.
       </action>
+      <action date="2015-06-26" dev="mhm" type="update">
+        Renamed settings to properties.
+      </action>
     </release>
     <release date="2015-02-04" version="2.2.4">
       <action date="2015-02-04" dev="mhm" type="fix">

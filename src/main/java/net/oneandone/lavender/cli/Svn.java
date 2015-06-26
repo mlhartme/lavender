@@ -19,7 +19,7 @@ import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Pool;
-import net.oneandone.lavender.config.Settings;
+import net.oneandone.lavender.config.Properties;
 import net.oneandone.lavender.config.Target;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
@@ -45,8 +45,8 @@ public class Svn extends Base {
 
     private final String svn;
 
-    public Svn(Console console, Settings settings, String svn, Net net) {
-        super(console, settings, net);
+    public Svn(Console console, Properties properties, String svn, Net net) {
+        super(console, properties, net);
         this.svn = svn;
     }
 
@@ -73,7 +73,7 @@ public class Svn extends Base {
         filter.includeAll();
         svnurl = svn + "/data/" + directory;
         moduleConfig = new SvnProperties("svn", filter, svnurl, svnurl, Docroot.WEB, false, "", directory + "/", null);
-        module = moduleConfig.create(console.world, true, settings.svnUsername, settings.svnPassword, null);
+        module = moduleConfig.create(console.world, true, properties.svnUsername, properties.svnPassword, null);
         try (Pool pool = pool()) {
             distributor = target.open(pool, directory + ".idx");
             changed = module.publish(distributor);

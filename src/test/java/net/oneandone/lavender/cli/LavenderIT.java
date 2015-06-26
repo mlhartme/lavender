@@ -18,7 +18,7 @@ package net.oneandone.lavender.cli;
 import net.oneandone.lavender.config.Alias;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Net;
-import net.oneandone.lavender.config.Settings;
+import net.oneandone.lavender.config.Properties;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -55,7 +55,7 @@ public class LavenderIT {
     private static final String INDEX_NAME = "indexfilefortests.idx";
 
     public void check(String name, String expected, String warUrl) throws Exception {
-        Settings settings;
+        Properties properties;
         World world;
         Node src;
         FileNode target;
@@ -65,8 +65,8 @@ public class LavenderIT {
         long started;
         Net net;
 
-        settings = Settings.load();
-        world = settings.world;
+        properties = Properties.load();
+        world = properties.world;
         System.out.println(name + " started: ");
         src = world.node("http://mavenrepo.united.domain:8081/nexus/content/repositories/1und1-stable/" + warUrl);
         war = world.getTemp().createTempFile();
@@ -78,8 +78,8 @@ public class LavenderIT {
         testhosts.getParent().mkdirsOpt();
         started = System.currentTimeMillis();
         net = net(testhosts);
-        settings.initTemp(target.join("ittemp"));
-        assertEquals(0, Main.doMain(settings, net, "-e", "war", "test", war.getAbsolute(), warModified.getAbsolute(), INDEX_NAME));
+        properties.initTemp(target.join("ittemp"));
+        assertEquals(0, Main.doMain(properties, net, "-e", "war", "test", war.getAbsolute(), warModified.getAbsolute(), INDEX_NAME));
         System.out.println(name + " done: " + (System.currentTimeMillis() - started) + " ms");
 
         // tmp space on pearls is very restricted

@@ -20,7 +20,7 @@ import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Pool;
-import net.oneandone.lavender.config.Settings;
+import net.oneandone.lavender.config.Properties;
 import net.oneandone.lavender.config.Target;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.sushi.cli.ArgumentException;
@@ -80,8 +80,8 @@ public class War extends Base {
         targets.put(type, new Target(cluster, docroot, alias));
     }
 
-    public War(Console console, Settings settings, Net net) {
-        super(console, settings, net);
+    public War(Console console, Properties properties, Net net) {
+        super(console, properties, net);
     }
 
     @Override
@@ -103,7 +103,7 @@ public class War extends Base {
         outputNodesFile = tmp.createTempFile();
         try (Pool pool = pool()) {
             distributors = distributors(pool);
-            engine = new WarEngine(distributors, indexName, settings.svnUsername, settings.svnPassword,
+            engine = new WarEngine(distributors, indexName, properties.svnUsername, properties.svnPassword,
                     inputWar, outputWar, outputNodesFile, nodes);
             engine.run();
         }
