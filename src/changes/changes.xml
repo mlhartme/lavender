@@ -5,8 +5,8 @@
         Build debian packages.
       </action>
       <action date="2015-06-26" dev="mhm" type="update">
-        Renamed settings to properties, inparticulat the file name and the environment variable.
-        Extended search path to include etc. Behavior is simular to puc now.
+        Renamed settings to properties, in particular the file name and the environment variable.
+        Extended search path to include /etc and $INSTALL_DIR/../etc. Behavior is simular to puc now.
       </action>
       <action date="2015-03-12" dev="mhm" type="update">
         Improved error messages for broken indexes.
