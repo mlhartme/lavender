@@ -241,6 +241,7 @@
             </goals>
             <configuration>
               <name>lavender</name><!-- overview pom.name because debian packages need lower case -->
+              <snapshotExpand>true</snapshotExpand>
               <changesIn>${basedir}/src/changes/CHANGES.txt</changesIn>
               <changesSave>${project.build.directory}/CHANGES.txt</changesSave>
               <dataSet>
@@ -259,6 +260,7 @@
                   <src>${basedir}/src/deb/lavender.properties</src>
                   <dst>/opt/ui/etc/lavender.properties</dst>
                   <type>file</type>
+                  <conffile>true</conffile>
                   <mapper>
                     <type>perm</type>
                     <user>root</user>
