@@ -242,8 +242,6 @@
             <configuration>
               <name>lavender</name><!-- overview pom.name because debian packages need lower case -->
               <snapshotExpand>true</snapshotExpand>
-              <changesIn>${basedir}/src/changes/CHANGES.txt</changesIn>
-              <changesSave>${project.build.directory}/CHANGES.txt</changesSave>
               <dataSet>
                 <data>
                   <src>${project.build.directory}/lavender</src>
