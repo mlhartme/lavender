@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.config;
 
+import net.oneandone.sushi.fs.World;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -22,6 +23,11 @@ import java.io.IOException;
 public class NetTest {
     @Test
     public void load() throws IOException {
-        Properties.load().loadNet();
+        World world;
+        Properties properties;
+
+        world = new World();
+        properties = Properties.load(world.guessProjectHome(Net.class).join("src/test/lavender.properties"), false);
+        properties.loadNet();
     }
 }
