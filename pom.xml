@@ -4,7 +4,7 @@
   <parent>
     <groupId>net.oneandone.maven.poms</groupId>
     <artifactId>foss-parent</artifactId>
-    <version>1.4.8</version>
+    <version>1.5.7</version>
     <relativePath />
   </parent>
 
@@ -24,11 +24,7 @@
   </scm>
 
   <properties>
-    <oneandone.java.source>1.7</oneandone.java.source>
-    <oneandone.java.target>1.7</oneandone.java.target>
-
     <tomcat.version>7.0.42</tomcat.version>
-    <wsd.ypid>1224</wsd.ypid>
 
     <!-- too picky -->
     <enforcer.skip>true</enforcer.skip>
