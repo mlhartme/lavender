@@ -79,7 +79,7 @@ public class Main extends Cli implements Command {
 
     @Override
     public void printHelp() {
-        console.info.println("usage: 'lavender' command");
+        console.info.println("usage: 'lavender' global-options command");
         console.info.println();
         console.info.println("publishing commands");
         console.info.println("  'war' inputWar outputWar idxName target+");
@@ -96,6 +96,9 @@ public class Main extends Cli implements Command {
         console.info.println("  'direct' cluster arg+     executes the specified command on all machines of the cluster");
         console.info.println("  'fsck' ['-md5'] ['-gc'] cluster");
         console.info.println("                            checks if all files are indexed and referenced and the same on all machines");
+        console.info.println("global options");
+        console.info.println("  '-await' seconds          to how to wait for a lock before giving up; default is 1 hour");
+        console.info.println("  '-user' email             written to lock files to know who's currently holding the lock; defaults to unknown@all");
     }
 
     @Override
