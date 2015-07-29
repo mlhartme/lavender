@@ -28,14 +28,12 @@ public class SvnResource extends Resource {
     private final SvnModule module;
     private final long revision;
     private final String path;
-    private final int length;
     private final long lastModified;
 
-    public SvnResource(SvnModule module, long revision, String path, int length, long lastModified, Node dataNode, byte[] lazyMd5) {
+    public SvnResource(SvnModule module, long revision, String path, long lastModified, Node dataNode, byte[] lazyMd5) {
         this.module = module;
         this.revision = revision;
         this.path = path;
-        this.length = length;
         this.lastModified = lastModified;
 
         this.dataNode = dataNode;
@@ -63,10 +61,6 @@ public class SvnResource extends Resource {
         return path;
     }
 
-    public long getSize() {
-        return length;
-    }
-
     public long getLastModified() throws IOException {
         return lastModified;
     }
@@ -86,16 +80,7 @@ public class SvnResource extends Resource {
 
     public byte[] getData() throws IOException {
         if (dataBytes == null) {
-            dataBytes = new byte[length];
-            try (InputStream src = dataNode.createInputStream()) {
-                if (length != Buffer.fill(src, dataBytes)) {
-                    throw new IllegalStateException();
-                }
-                if (src.read() != -1) {
-                    throw new IllegalStateException();
-                }
-            }
-            dataNode = null;
+            dataBytes = dataNode.readBytes();
         }
         return dataBytes;
     }

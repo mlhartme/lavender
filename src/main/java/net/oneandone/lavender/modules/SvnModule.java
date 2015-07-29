@@ -127,7 +127,7 @@ public class SvnModule extends Module<SVNDirEntry> {
 
         svnPath = entry.getRelativePath();
         return new SvnResource(this, entry.getRevision(), resourcePath,
-                (int) entry.getSize(), entry.getDate().getTime(), root.join(svnPath), md5(entry));
+                entry.getDate().getTime(), root.join(svnPath), md5(entry));
     }
 
     protected byte[] md5(SVNDirEntry entry) {

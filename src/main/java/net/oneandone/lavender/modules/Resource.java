@@ -29,8 +29,6 @@ public abstract class Resource {
     /** for logging purpose */
     public abstract String getOrigin();
 
-    public abstract long getSize();
-
     public abstract byte[] getMd5() throws IOException;
 
     public abstract byte[] getData() throws IOException;
@@ -60,7 +58,7 @@ public abstract class Resource {
 
     @Override
     public String toString() {
-        return getPath() + "[" + getSize() + "] ->" + getOrigin();
+        return getPath() + " ->" + getOrigin();
     }
 
     //--
