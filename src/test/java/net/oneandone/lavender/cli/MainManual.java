@@ -39,30 +39,23 @@ public class MainManual {
     public void sshAccess() throws Exception {
         World world;
         Node node;
-        Host host;
-        Docroot docroot;
         Cluster cluster;
-        FileNode indexes;
-        FileNode htdocs;
-        FileNode testDoc;
+        FileNode hostdir;
+        FileNode testfile;
         List<? extends Node> lst;
 
-        // TODO: generate net.xml for a cluster hosted on localhost and set it up properly
         world = new World();
-        host = new Host(InetAddress.getLocalHost().getHostName(), System.getProperty("user.name"));
-        htdocs = world.getTemp().createTempDirectory();
-        testDoc = htdocs.createTempFile();
-        indexes = world.getTemp().createTempDirectory();
-        docroot = new Docroot("web", htdocs.getPath(), indexes.getPath(), new Alias("fix", "no.such.domain"));
-        cluster = new Cluster();
-        cluster.hosts().add(host);
-        cluster.docroots().add(docroot);
+        hostdir = world.getTemp().createTempDirectory().join("testcluster");
+        cluster = new Cluster("test");
+        cluster.addLocalhost(hostdir);
+        cluster.addDocroot("web", "htdocs", "indexes", new Alias("fix", "no.such.domain"));
+        testfile = hostdir.join("htdocs").createTempFile();
         try (Pool pool = new Pool(world, null, 0)) {
             for (Connection connection : cluster.connect(pool)) {
-                node = docroot.node(connection);
+                node = cluster.docroot("web").node(connection);
                 lst = node.list();
                 assertEquals(1, lst.size());
-                assertEquals(testDoc.getName(), lst.get(0).getName());
+                assertEquals(testfile.getName(), lst.get(0).getName());
             }
         }
     }

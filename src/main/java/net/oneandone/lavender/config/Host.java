@@ -18,17 +18,18 @@ package net.oneandone.lavender.config;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
+import net.oneandone.sushi.metadata.annotation.Option;
 import net.oneandone.sushi.metadata.annotation.Type;
 import net.oneandone.sushi.metadata.annotation.Value;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 @Type
 public class Host {
-    private static final String LOCALHOST = "localhost";
-
-    public static Host local(FileNode basedir) {
-        return new Host(LOCALHOST, basedir.getAbsolute());
+    public static Host localhost(FileNode basedir) throws UnknownHostException {
+        return new Host(InetAddress.getLocalHost().getHostName(), System.getProperty("user.name"), basedir.getPath());
     }
 
     @Value
@@ -38,13 +39,17 @@ public class Host {
     @Value
     private String login;
 
+    @Option
+    private String path;
+
     public Host() {
-        this(null, null);
+        this(null, null, null);
     }
 
-    public Host(String name, String login) {
+    public Host(String name, String login, String path) {
         this.name = name;
         this.login = login;
+        this.path = path;
     }
 
     public String getName() {
@@ -63,14 +68,23 @@ public class Host {
         this.login = login;
     }
 
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
     /** do not call directly, use pool.connect instead. */
-    public Connection connect(World world, String lockPath, String lockContent, int wait) throws IOException {
-        boolean local;
+    public Connection connect(World world, String lockContent, int wait) throws IOException {
         Node node;
 
-        local = name.equals(LOCALHOST);
-        node = local ? world.file(login) : world.validNode("ssh://" + login + "@" + name);
-        return local || lockContent == null ? Connection.openSimple(this, node) : Connection.openLocked(this, node, lockPath, lockContent, wait);
+        node = world.validNode("ssh://" + login + "@" + name);
+        if (path != null) {
+            node = node.join(path);
+        }
+        return lockContent == null ? Connection.openSimple(this, node) : Connection.openLocked(this, node, "tmp/lavender.lock", lockContent, wait);
     }
 
     public String toString() {

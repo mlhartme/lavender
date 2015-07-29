@@ -38,12 +38,12 @@ public class Pool implements AutoCloseable {
         this.connections = new ArrayList<>();
     }
 
-    public Connection connect(Host host, String lockPath) throws IOException {
+    public Connection connect(Host host) throws IOException {
         Connection result;
 
         result = lookup(host);
         if (result == null) {
-            result = host.connect(world, lockPath, lockContent, wait);
+            result = host.connect(world, lockContent, wait);
             connections.add(result);
         }
         return result;

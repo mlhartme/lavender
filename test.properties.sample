@@ -1,0 +1,5 @@
+# rename this to test.properties and adjust the credentials
+svn=http://not.used
+svn.username=someuser
+svn.password=somepassword
+

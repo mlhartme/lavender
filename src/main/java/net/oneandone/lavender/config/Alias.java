@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/** multiple vhost may share the same docroot. */
+/** Lists the domains that point to the respective docroot. And a name to refer to this set of domains. */
 @Type
 public class Alias {
     public static Alias one(String name) {

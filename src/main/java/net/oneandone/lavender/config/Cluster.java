@@ -37,9 +37,6 @@ public class Cluster {
     @Sequence(Docroot.class)
     private final List<Docroot> docroots;
 
-    @Option
-    private String lockPath;
-
     public Cluster() {
         this("dummy");
     }
@@ -57,14 +54,6 @@ public class Cluster {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getLockPath() {
-        return lockPath;
-    }
-
-    public void setLockPath(String lockPath) {
-        this.lockPath = lockPath;
     }
 
     public List<Host> hosts() {
@@ -96,9 +85,10 @@ public class Cluster {
 
     public Cluster addLocalhost(FileNode basedir) throws IOException {
         basedir.mkdir();
-        basedir.join("indexes").mkdirs();
-        basedir.join("htdocs").mkdirOpt();
-        hosts.add(Host.local(basedir));
+        basedir.join("tmp").mkdir();
+        basedir.join("indexes").mkdir();
+        basedir.join("htdocs").mkdir();
+        hosts.add(Host.localhost(basedir));
         return this;
     }
 
@@ -113,7 +103,7 @@ public class Cluster {
         result = new ArrayList<>();
         for (Host host : hosts) {
             try {
-                result.add(pool.connect(host, lockPath == null ?  "tmp/lavender.lock" : lockPath));
+                result.add(pool.connect(host));
             } catch (IOException e) {
                 for (Connection connection : result) {
                     try {
