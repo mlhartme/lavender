@@ -19,6 +19,7 @@ import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.fs.GetLastModifiedException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.io.Buffer;
+import net.oneandone.sushi.util.Strings;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,7 +48,7 @@ public class SvnResource extends Resource {
     public byte[] getMd5() throws IOException {
         if (lazyMd5 == null) {
             lazyMd5 = md5(getData());
-            module.addIndex(new Label(getPath(), Long.toString(revision), lazyMd5));
+            module.addIndex(new Label(Strings.removeLeft(getPath(), module.getResourcePathPrefix()), Long.toString(revision), lazyMd5));
         }
         return lazyMd5;
     }

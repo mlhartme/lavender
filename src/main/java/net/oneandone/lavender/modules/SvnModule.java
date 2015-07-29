@@ -40,7 +40,10 @@ public class SvnModule extends Module<SVNDirEntry> {
 
     private final SvnNode root;
 
-    /** Maps svn paths (relative to root) to revision numbers for all entries where the md5 sum is known. */
+    /**
+     * Maps svn paths (relative to root (i.e. without modulePrefix), with jarConfig applied) to revision numbers and md5 hashes.
+     * Contains only entries where the md5 sum is known.
+     */
     private Index index;
     private final Node indexFile;
     private Map<String, SVNDirEntry> lastScan;
@@ -128,9 +131,14 @@ public class SvnModule extends Module<SVNDirEntry> {
     }
 
     protected byte[] md5(SVNDirEntry entry) {
+        String path;
         Label label;
 
-        label = index.lookup(entry.getRelativePath());
+        path = entry.getRelativePath();
+        if (jarConfig != null) {
+            path = jarConfig.getPath(path);
+        }
+        label = index.lookup(path);
         if (label != null && label.getLavendelizedPath().equals(Long.toString(entry.getRevision()))) {
             return label.md5();
         } else {

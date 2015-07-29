@@ -60,6 +60,10 @@ public abstract class Module<T> implements Iterable<Resource> {
         this.files = null;
     }
 
+    public String getResourcePathPrefix() {
+        return resourcePathPrefix;
+    }
+
     public String getType() {
         return type;
     }
