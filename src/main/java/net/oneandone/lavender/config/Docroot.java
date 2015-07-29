@@ -31,7 +31,6 @@ import java.util.List;
 @Type
 public class Docroot {
     public static final String WEB = "web";
-    public static final String FLASH = "flash";
     public static final String SVN = "svn";
 
     @Value

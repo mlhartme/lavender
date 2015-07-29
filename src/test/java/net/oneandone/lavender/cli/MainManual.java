@@ -17,26 +17,29 @@ package net.oneandone.lavender.cli;
 
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Connection;
-import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Pool;
 import net.oneandone.lavender.config.Properties;
 import net.oneandone.sushi.fs.Node;
+import net.oneandone.sushi.fs.World;
 import org.junit.Test;
 
 public class MainManual {
     @Test
     public void sshAccess() throws Exception {
+        World world;
         Properties properties;
         Net net;
         Node node;
 
-        properties = Properties.load();
+        // TODO: generate net.xml for a cluster hosted on localhost and set it up properly
+        world = new World();
+        properties = Properties.load(world.guessProjectHome(Net.class).join("src/test/lavender.properties"), false);
         net = properties.loadNet();
         try (Pool pool = new Pool(properties.world, null, 0)) {
             for (Cluster cluster : net.clusters()) {
                 for (Connection connection : cluster.connect(pool)) {
-                    node = new Docroot("", "", "").node(connection);
+                    node = cluster.docroot("web").node(connection);
                     System.out.println(connection.getHost() + ":\n  " + node.list());
                 }
             }
