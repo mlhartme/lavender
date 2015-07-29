@@ -97,7 +97,7 @@ public class Main extends Cli implements Command {
         console.info.println("  'fsck' ['-md5'] ['-gc'] cluster");
         console.info.println("                            checks if all files are indexed and referenced and the same on all machines");
         console.info.println("global options");
-        console.info.println("  '-await' seconds          to how to wait for a lock before giving up; default is 1 hour");
+        console.info.println("  '-await' seconds          how long to wait for a lock before giving up; default is 3600");
         console.info.println("  '-user' email             written to lock files to know who's currently holding the lock; defaults to unknown@all");
     }
 
