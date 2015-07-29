@@ -15,33 +15,54 @@
  */
 package net.oneandone.lavender.cli;
 
+import net.oneandone.lavender.config.Alias;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Connection;
+import net.oneandone.lavender.config.Docroot;
+import net.oneandone.lavender.config.Host;
 import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Pool;
 import net.oneandone.lavender.config.Properties;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.file.FileNode;
 import org.junit.Test;
 
+import java.net.InetAddress;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+
+/** assumes that ssh localhost works for your machine without password */
 public class MainManual {
     @Test
     public void sshAccess() throws Exception {
         World world;
-        Properties properties;
-        Net net;
         Node node;
+        Host host;
+        Docroot docroot;
+        Cluster cluster;
+        FileNode indexes;
+        FileNode htdocs;
+        FileNode testDoc;
+        List<? extends Node> lst;
 
         // TODO: generate net.xml for a cluster hosted on localhost and set it up properly
         world = new World();
-        properties = Properties.load(world.guessProjectHome(Net.class).join("src/test/lavender.properties"), false);
-        net = properties.loadNet();
-        try (Pool pool = new Pool(properties.world, null, 0)) {
-            for (Cluster cluster : net.clusters()) {
-                for (Connection connection : cluster.connect(pool)) {
-                    node = cluster.docroot("web").node(connection);
-                    System.out.println(connection.getHost() + ":\n  " + node.list());
-                }
+        host = new Host(InetAddress.getLocalHost().getHostName(), System.getProperty("user.name"));
+        htdocs = world.getTemp().createTempDirectory();
+        testDoc = htdocs.createTempFile();
+        indexes = world.getTemp().createTempDirectory();
+        docroot = new Docroot("web", htdocs.getPath(), indexes.getPath(), new Alias("fix", "no.such.domain"));
+        cluster = new Cluster();
+        cluster.hosts().add(host);
+        cluster.docroots().add(docroot);
+        try (Pool pool = new Pool(world, null, 0)) {
+            for (Connection connection : cluster.connect(pool)) {
+                node = docroot.node(connection);
+                lst = node.list();
+                assertEquals(1, lst.size());
+                assertEquals(testDoc.getName(), lst.get(0).getName());
             }
         }
     }

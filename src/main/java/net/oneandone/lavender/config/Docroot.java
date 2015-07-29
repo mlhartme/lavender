@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+/** Where on a host to store files */
 @Type
 public class Docroot {
     public static final String WEB = "web";

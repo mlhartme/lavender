@@ -27,10 +27,6 @@ import java.io.IOException;
 public class Host {
     private static final String LOCALHOST = "localhost";
 
-    public static Host remote(String name, String login) {
-        return new Host(name, login);
-    }
-
     public static Host local(FileNode basedir) {
         return new Host(LOCALHOST, basedir.getAbsolute());
     }

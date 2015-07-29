@@ -1,26 +1,18 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <net>
   <cluster>
-    <name>walter</name>
+    <name>localhost</name>
     <host>
-      <name>walter.websales.united.domain</name>
-      <login>mhm</login>
+      <name>localhost</name>
+      <login>dummy</login>
     </host>
     <docroot>
       <type>web</type>
-      <docroot>Users/mhm/Projects/lavender/walter/fix/htdocs/after</docroot>
-      <indexes>Users/mhm/Projects/lavender/walter/fix/indexes/after</indexes>
+      <docroot>Users/mhm/Projects/lavender/walter/fix/htdocs</docroot>
+      <indexes>Users/mhm/Projects/lavender/walter/fix/indexes</indexes>
       <aliase>
         <name>fix</name>
         <domain>fix.lavender.walter.websales.united.domain</domain>
-      </aliase>
-    </docroot>
-    <docroot>
-      <type>svn</type>
-      <docroot>Users/mhm/Projects/lavender/walter/svn/htdocs/after</docroot>
-      <indexes>Users/mhm/Projects/lavender/walter/svn/indexes/after</indexes>
-      <aliase>
-        <name>svn</name>
       </aliase>
     </docroot>
   </cluster>
