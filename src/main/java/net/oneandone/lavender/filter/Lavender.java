@@ -172,10 +172,10 @@ public class Lavender implements Filter, LavenderMBean {
             if (module.hasFiles()) {
                 resource = module.probe(resourcePath);
                 if (resource != null) {
-                    if (!resource.isOutdated()) {
-                        return resource;
-                    } else {
+                    if (resource.isOutdated()) {
                         LOG.info(resource.getOrigin() + ": outdated");
+                    } else {
+                        return resource;
                     }
                 }
             }

@@ -18,11 +18,13 @@ package net.oneandone.lavender.modules;
 import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.fs.GetLastModifiedException;
 import net.oneandone.sushi.fs.Node;
+import net.oneandone.sushi.fs.svn.SvnNode;
 import net.oneandone.sushi.io.Buffer;
 import net.oneandone.sushi.util.Strings;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 public class SvnResource extends Resource {
     private final SvnModule module;
@@ -31,7 +33,7 @@ public class SvnResource extends Resource {
     private final int length;
     private final long lastModified;
 
-    public SvnResource(SvnModule module, long revision, String path, int length, long lastModified, Node dataNode, byte[] lazyMd5) {
+    public SvnResource(SvnModule module, long revision, String path, int length, long lastModified, SvnNode dataNode, byte[] lazyMd5) {
         this.module = module;
         this.revision = revision;
         this.path = path;
@@ -54,7 +56,7 @@ public class SvnResource extends Resource {
     }
 
     // dataNode xor dataBytes is null
-    private Node dataNode;
+    private SvnNode dataNode;
     private byte[] dataBytes;
 
     protected byte[] lazyMd5;
@@ -83,16 +85,39 @@ public class SvnResource extends Resource {
     public byte[] getData() throws IOException {
         if (dataBytes == null) {
             dataBytes = new byte[length];
-            try (InputStream src = dataNode.createInputStream()) {
-                if (length != Buffer.fill(src, dataBytes)) {
-                    throw new IllegalStateException();
-                }
-                if (src.read() != -1) {
-                    throw new IllegalStateException();
-                }
+            try (OutputStream dest = new FixedOutputStream(dataBytes)) {
+                dataNode.writeTo(dest);
             }
             dataNode = null;
         }
         return dataBytes;
+    }
+
+    public static class FixedOutputStream extends OutputStream {
+        private final byte[] dest;
+        private int pos;
+
+        public FixedOutputStream(byte[] dest) {
+            this.dest = dest;
+            this.pos = 0;
+        }
+
+        @Override
+        public void write(int b) throws IOException {
+            dest[pos++] = (byte) b;
+        }
+
+        @Override
+        public void write(byte bytes[], int ofs, int len) throws IOException {
+            System.arraycopy(bytes, ofs, dest, pos, len);
+            pos += len;
+        }
+
+        @Override
+        public void close() {
+            if (pos != dest.length) {
+                throw new IllegalStateException(pos + " vs " + dest.length);
+            }
+        }
     }
 }
