@@ -2,7 +2,7 @@
   <body>
     <release date="2015-07-29" version="2.2.7">
       <action date="2015-07-29" dev="mhm" type="update">
-        Speedup reading files from svn.
+        Speedup reading files from svn: read without temporary local file; get rid of checkPath call.
       </action>
       <action date="2015-07-29" dev="mhm" type="fix">
         Fixed SvnModule caching. Reduces the time to publish a module without changes by more than 50%.
@@ -20,7 +20,7 @@
     </release>
     <release date="2015-06-29" version="2.2.5">
       <action date="2015-06-26" dev="mhm" type="add">
-        Build debian packages.
+        Build Debian packages.
       </action>
       <action date="2015-06-26" dev="mhm" type="update">
         Renamed settings to properties, in particular the file name and the environment variable.

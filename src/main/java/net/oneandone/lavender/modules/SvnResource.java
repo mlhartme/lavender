@@ -16,11 +16,15 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.index.Label;
+import net.oneandone.sushi.fs.FileNotFoundException;
 import net.oneandone.sushi.fs.GetLastModifiedException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.svn.SvnNode;
 import net.oneandone.sushi.io.Buffer;
 import net.oneandone.sushi.util.Strings;
+import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.SVNNodeKind;
+import org.tmatesoft.svn.core.io.SVNRepository;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -83,10 +87,17 @@ public class SvnResource extends Resource {
     }
 
     public byte[] getData() throws IOException {
+        SVNRepository repository;
+
         if (dataBytes == null) {
             dataBytes = new byte[length];
             try (OutputStream dest = new FixedOutputStream(dataBytes)) {
-                dataNode.writeTo(dest);
+                repository = dataNode.getRoot().getRepository();
+                try {
+                    repository.getFile(dataNode.getPath(), -1, null, dest);
+                } catch (SVNException e) {
+                    throw new IOException("svn failure: " + e.getMessage(), e);
+                }
             }
             dataNode = null;
         }
