@@ -31,7 +31,9 @@ import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** Extracts resources from svn */
@@ -47,7 +49,8 @@ public class SvnModule extends Module<SVNDirEntry> {
     private Index index;
     private final Node indexFile;
     private Map<String, SVNDirEntry> lastScan;
-    private long lastScanRevision;
+    private long lastModifiedRepository;
+    private long lastModifiedModule;
 
     /** may be null */
     private JarConfig jarConfig;
@@ -59,32 +62,58 @@ public class SvnModule extends Module<SVNDirEntry> {
         this.index = index;
         this.indexFile = indexFile;
         this.jarConfig = jarConfig;
+        this.lastModifiedRepository = 0;
+        this.lastModifiedModule = 0;
     }
 
     protected Map<String, SVNDirEntry> scan(final Filter filter) throws SVNException {
         SVNRepository repository;
-        long latest;
+        long modifiedRepository;
+        long modifiedModule;
 
         repository = root.getRoot().getRepository();
-        latest = repository.getLatestRevision();
-        LOG.info("latest " + root.getURI() + ": " + latest);
-        if (lastScan != null) {
-            if (latest == lastScanRevision) {
-                LOG.info("re-using last scan for revision " + latest);
-                return lastScan;
-            } else if (repository.log(new String[] { root.getPath() } , lastScanRevision , latest, true , true, 1, null ) == 0) {
-                LOG.info("no changes in " + root.getPath() + "between " + lastScanRevision + " and " + latest);
-                lastScanRevision = latest;
-                return lastScan;
+        modifiedRepository = repository.getLatestRevision();
+        if (modifiedRepository == lastModifiedRepository) {
+            LOG.info("no changes in repository: " + modifiedRepository);
+            if (lastScan == null) {
+                throw new IllegalStateException();
             }
-            LOG.info("new scan: " + latest + " vs " + lastScanRevision);
+            return lastScan;
         }
-        lastScanRevision = latest;
-        lastScan = doScan(filter, latest);
+        lastModifiedRepository = modifiedRepository;
+        modifiedModule = getLastModified();
+        LOG.info("latest " + root.getURI() + ": " + modifiedModule + " " + modifiedRepository);
+        if (modifiedModule == lastModifiedModule) {
+            LOG.info("re-using last scan for revision " + modifiedModule);
+            if (lastScan == null) {
+                throw new IllegalStateException();
+            }
+            return lastScan;
+        }
+        LOG.info("new scan: " + modifiedModule + " vs " + lastModifiedModule);
+        lastModifiedModule = modifiedModule;
+        lastScan = doScan(filter);
         return lastScan;
     }
 
-    protected Map<String, SVNDirEntry> doScan(final Filter filter, long latestRevision) throws SVNException {
+    private long getLastModified() throws SVNException {
+        final List<SVNDirEntry> result;
+
+        result = new ArrayList<>();
+        root.getRoot().getClientMananger().getLogClient().doList(root.getSvnurl(), null, SVNRevision.create(lastModifiedRepository),
+                false, SVNDepth.EMPTY, SVNDirEntry.DIRENT_ALL, new ISVNDirEntryHandler() {
+            @Override
+            public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException {
+                result.add(dirEntry);
+            }
+        });
+        if (result.size() != 1) {
+            throw new IllegalStateException("" + result.size());
+        }
+        return result.get(0).getRevision();
+    }
+
+    protected Map<String, SVNDirEntry> doScan(final Filter filter) throws SVNException {
         final Map<String, SVNDirEntry> files;
         final Index oldIndex;
 
@@ -92,7 +121,7 @@ public class SvnModule extends Module<SVNDirEntry> {
         index = new Index();
         files = new HashMap<>();
         root.getRoot().getClientMananger().getLogClient().doList(
-                root.getSvnurl(), null, SVNRevision.create(latestRevision), true, SVNDepth.INFINITY,
+                root.getSvnurl(), null, SVNRevision.create(lastModifiedRepository), true, SVNDepth.INFINITY,
                 SVNDirEntry.DIRENT_KIND + SVNDirEntry.DIRENT_SIZE + SVNDirEntry.DIRENT_TIME + SVNDirEntry.DIRENT_CREATED_REVISION,
                 new ISVNDirEntryHandler() {
             @Override
@@ -128,8 +157,8 @@ public class SvnModule extends Module<SVNDirEntry> {
         String svnPath;
 
         svnPath = entry.getRelativePath();
-        return new SvnResource(this, entry.getRevision(), lastScanRevision, resourcePath,
-                (int) entry.getSize(), entry.getDate().getTime(), root.join(svnPath), md5(entry));
+        return new SvnResource(this, entry.getRevision(), lastModifiedRepository /* not module, because paths might already be out-dated */,
+                resourcePath, (int) entry.getSize(), entry.getDate().getTime(), root.join(svnPath), md5(entry));
     }
 
     protected byte[] md5(SVNDirEntry entry) {
