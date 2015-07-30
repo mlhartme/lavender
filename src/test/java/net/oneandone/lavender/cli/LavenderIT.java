@@ -39,12 +39,12 @@ public class LavenderIT {
     @Test
     public void war() throws Exception {
         // TODO
-        check("war", "/Users/mhm/Downloads/dslcancel-de-1.5.9.war");
+        check("war", "/Users/mhm/Downloads/dslcancel-de-1.5.9.war", "4f08b13013aa6020a76b230debc9851f");
     }
 
     private static final String INDEX_NAME = "indexfilefortests.idx";
 
-    public void check(String name, String warFile) throws Exception {
+    public void check(String name, String warFile, String expected) throws Exception {
         Properties properties;
         World world;
         Node src;
@@ -72,7 +72,9 @@ public class LavenderIT {
         properties.initTemp(target.join("ittemp"));
         assertEquals(0, Main.doMain(properties, net, "-e", "war", war.getAbsolute(), warModified.getAbsolute(), INDEX_NAME, "web=test"));
         System.out.println(name + " done: " + (System.currentTimeMillis() - started) + " ms");
-
+        for (FileNode host : testhosts.list()) {
+            assertEquals(expected, md5(host.join("htdocs")));
+        }
         // tmp space on pearls is very restricted
         war.deleteFile();
         warModified.deleteFile();
@@ -90,5 +92,31 @@ public class LavenderIT {
                 .addDocroot("web", "htdocs", "indexes",
                         new Alias("fix", "fix1.uicdn.net", "fix2.uicdn.net", "fix3.uicdn.net", "fix4.uicdn.net")));
         return net;
+    }
+
+    private String md5(Node directory) throws IOException {
+        World world;
+        Filter filter;
+        List<String> entries;
+        Node tmp;
+        String md5;
+
+        world = directory.getWorld();
+        filter = world.filter();
+        filter.include("**/*");
+        filter.predicate(Predicate.FILE);
+        entries = new ArrayList<>();
+        for (Node file : directory.find(filter)) {
+            if (file.getName().startsWith(INDEX_NAME)) {
+                // because different machine sort entries differently. And there's a timestamp comment in the beginning
+                md5 = Integer.toHexString(file.readProperties().hashCode());
+            } else {
+                md5 = file.md5();
+            }
+            entries.add(file.getRelative(directory) + ':' + md5 + '\n');
+        }
+        Collections.sort(entries); // because it runs on different filesystems
+        tmp = world.memoryNode();
+        return tmp.writeLines(entries).md5();
     }
 }

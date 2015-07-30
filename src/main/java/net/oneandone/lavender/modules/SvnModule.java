@@ -92,7 +92,9 @@ public class SvnModule extends Module<SVNDirEntry> {
         index = new Index();
         files = new HashMap<>();
         root.getRoot().getClientMananger().getLogClient().doList(
-                root.getSvnurl(), null, SVNRevision.HEAD, true, SVNDepth.INFINITY, SVNDirEntry.DIRENT_ALL, new ISVNDirEntryHandler() {
+                root.getSvnurl(), null, SVNRevision.HEAD, true, SVNDepth.INFINITY,
+                SVNDirEntry.DIRENT_KIND + SVNDirEntry.DIRENT_SIZE + SVNDirEntry.DIRENT_TIME + SVNDirEntry.DIRENT_CREATED_REVISION,
+                new ISVNDirEntryHandler() {
             @Override
             public void handleDirEntry(SVNDirEntry entry) throws SVNException {
                 String path;
