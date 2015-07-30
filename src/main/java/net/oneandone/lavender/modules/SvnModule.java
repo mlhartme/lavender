@@ -80,11 +80,11 @@ public class SvnModule extends Module<SVNDirEntry> {
             LOG.info("new scan: " + latest + " vs " + lastScanRevision);
         }
         lastScanRevision = latest;
-        lastScan = doScan(filter);
+        lastScan = doScan(filter, latest);
         return lastScan;
     }
 
-    protected Map<String, SVNDirEntry> doScan(final Filter filter) throws SVNException {
+    protected Map<String, SVNDirEntry> doScan(final Filter filter, long latestRevision) throws SVNException {
         final Map<String, SVNDirEntry> files;
         final Index oldIndex;
 
@@ -92,7 +92,7 @@ public class SvnModule extends Module<SVNDirEntry> {
         index = new Index();
         files = new HashMap<>();
         root.getRoot().getClientMananger().getLogClient().doList(
-                root.getSvnurl(), null, SVNRevision.HEAD, true, SVNDepth.INFINITY,
+                root.getSvnurl(), null, SVNRevision.create(latestRevision), true, SVNDepth.INFINITY,
                 SVNDirEntry.DIRENT_KIND + SVNDirEntry.DIRENT_SIZE + SVNDirEntry.DIRENT_TIME + SVNDirEntry.DIRENT_CREATED_REVISION,
                 new ISVNDirEntryHandler() {
             @Override
@@ -128,7 +128,7 @@ public class SvnModule extends Module<SVNDirEntry> {
         String svnPath;
 
         svnPath = entry.getRelativePath();
-        return new SvnResource(this, entry.getRevision(), resourcePath,
+        return new SvnResource(this, entry.getRevision(), lastScanRevision, resourcePath,
                 (int) entry.getSize(), entry.getDate().getTime(), root.join(svnPath), md5(entry));
     }
 

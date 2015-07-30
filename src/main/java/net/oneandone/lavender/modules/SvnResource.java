@@ -32,14 +32,24 @@ import java.io.OutputStream;
 
 public class SvnResource extends Resource {
     private final SvnModule module;
-    private final long revision;
+
+    /**
+     * revision this resource was last modified; not that copying a resource is not a modification.
+     * Thus, the path pointing for this revision might differ from the current path. (This is usually happens if the resource is
+     * tagged as part of the release process.
+     */
+    private final long lastModifiedRevision;
+
+    /** revision this resource was seen in svn */
+    private final long lastCheckedRevision;
     private final String path;
     private final int length;
     private final long lastModified;
 
-    public SvnResource(SvnModule module, long revision, String path, int length, long lastModified, SvnNode dataNode, byte[] lazyMd5) {
+    public SvnResource(SvnModule module, long lastModifiedRevision, long lastCheckedRevision, String path, int length, long lastModified, SvnNode dataNode, byte[] lazyMd5) {
         this.module = module;
-        this.revision = revision;
+        this.lastModifiedRevision = lastModifiedRevision;
+        this.lastCheckedRevision = lastCheckedRevision;
         this.path = path;
         this.length = length;
         this.lastModified = lastModified;
@@ -54,7 +64,7 @@ public class SvnResource extends Resource {
     public byte[] getMd5() throws IOException {
         if (lazyMd5 == null) {
             lazyMd5 = md5(getData());
-            module.addIndex(new Label(Strings.removeLeft(getPath(), module.getResourcePathPrefix()), Long.toString(revision), lazyMd5));
+            module.addIndex(new Label(Strings.removeLeft(getPath(), module.getResourcePathPrefix()), Long.toString(lastCheckedRevision), lazyMd5));
         }
         return lazyMd5;
     }
@@ -88,15 +98,19 @@ public class SvnResource extends Resource {
 
     public byte[] getData() throws IOException {
         SVNRepository repository;
+        long loaded;
 
         if (dataBytes == null) {
             dataBytes = new byte[length];
             try (OutputStream dest = new FixedOutputStream(dataBytes)) {
                 repository = dataNode.getRoot().getRepository();
                 try {
-                    repository.getFile(dataNode.getPath(), -1, null, dest);
+                    loaded = repository.getFile(dataNode.getPath(), lastCheckedRevision, null, dest);
                 } catch (SVNException e) {
                     throw new IOException("svn failure: " + e.getMessage(), e);
+                }
+                if (loaded != lastCheckedRevision) {
+                    throw new IllegalStateException(loaded + " " + lastCheckedRevision);
                 }
             }
             dataNode = null;
