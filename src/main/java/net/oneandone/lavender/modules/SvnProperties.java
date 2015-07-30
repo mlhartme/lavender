@@ -62,9 +62,9 @@ public class SvnProperties {
     }
 
     public Module create(World world, boolean prod, String svnUsername, String svnPassword, final JarConfig jarConfig) throws IOException {
+        FileNode cacheDir;
         FileNode cache;
         final SvnNode root;
-        final Index index;
         String idxName;
         final FileNode checkout;
         String url;
@@ -128,15 +128,10 @@ public class SvnProperties {
             root.checkDirectory();
             idxName = root.getSvnurl().getPath().replace('/', '.') + ".idx";
             idxName = Strings.removeLeftOpt(idxName, ".");
-            cache = (FileNode) world.getHome().join(".cache/lavender",
-                    root.getRoot().getRepository().getRepositoryRoot(false).getHost(), idxName);
-            if (cache.exists()) {
-                index = Index.load(cache);
-            } else {
-                cache.getParent().mkdirsOpt();
-                index = new Index();
-            }
-            return new SvnModule(type, name, index, cache, root, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
+            cacheDir = (FileNode) world.getHome().join(".cache/lavender");
+            cacheDir.mkdirsOpt();
+            cache = cacheDir.join(root.getRoot().getRepository().getRepositoryRoot(false).getHost(), idxName);
+            return SvnModule.create(type, name, cache, root, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
         } catch (RuntimeException | IOException e) {
             throw e;
         } catch (Exception e) {

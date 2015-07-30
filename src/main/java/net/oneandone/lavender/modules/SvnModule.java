@@ -38,6 +38,21 @@ import java.util.Map;
 
 /** Extracts resources from svn */
 public class SvnModule extends Module<SVNDirEntry> {
+    public static SvnModule create(String type, String name, Node indexFile, SvnNode root, boolean lavendelize, String resourcePathPrefix,
+                     String targetPathPrefix, Filter filter, JarConfig jarConfig) throws IOException {
+        Index index;
+        long lastModifiedModule;
+
+        if (indexFile.exists()) {
+            index = Index.load(indexFile);
+            lastModifiedModule = 0; // TODO
+        } else {
+            index = new Index();
+            lastModifiedModule = 0;
+        }
+        return new SvnModule(type, name, indexFile, index, lastModifiedModule, root, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(SvnModule.class);
 
     private final SvnNode root;
@@ -53,17 +68,17 @@ public class SvnModule extends Module<SVNDirEntry> {
     private long lastModifiedModule;
 
     /** may be null */
-    private JarConfig jarConfig;
+    private final JarConfig jarConfig;
 
-    public SvnModule(String type, String name, Index index, Node indexFile, SvnNode root, boolean lavendelize, String resourcePathPrefix,
-                     String targetPathPrefix, Filter filter, JarConfig jarConfig) {
+    public SvnModule(String type, String name, Node indexFile, Index index, long lastModifiedModule, SvnNode root, boolean lavendelize, String resourcePathPrefix,
+                     String targetPathPrefix, Filter filter, JarConfig jarConfig) throws IOException {
         super(type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
         this.root = root;
-        this.index = index;
         this.indexFile = indexFile;
-        this.jarConfig = jarConfig;
+        this.index = index;
+        this.lastModifiedModule = lastModifiedModule;
         this.lastModifiedRepository = 0;
-        this.lastModifiedModule = 0;
+        this.jarConfig = jarConfig;
     }
 
     protected Map<String, SVNDirEntry> scan(final Filter filter) throws SVNException {
