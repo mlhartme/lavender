@@ -20,22 +20,22 @@ import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.svn.SvnNode;
+import net.oneandone.sushi.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tmatesoft.svn.core.ISVNDirEntryHandler;
 import org.tmatesoft.svn.core.SVNDepth;
-import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.io.SVNRepository;
-import org.tmatesoft.svn.core.wc.SVNRevision;
+import org.tmatesoft.svn.core.wc.ISVNInfoHandler;
+import org.tmatesoft.svn.core.wc.SVNInfo;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 /** Extracts resources from svn */
-public class SvnModule extends Module<SVNDirEntry> {
+public class SvnModule extends Module<SVNInfo> {
     private static final Logger LOG = LoggerFactory.getLogger(SvnModule.class);
 
     private final SvnNode root;
@@ -46,7 +46,7 @@ public class SvnModule extends Module<SVNDirEntry> {
      */
     private Index index;
     private final Node indexFile;
-    private Map<String, SVNDirEntry> lastScan;
+    private Map<String, SVNInfo> lastScan;
     private long lastScanRevision;
 
     /** may be null */
@@ -61,7 +61,7 @@ public class SvnModule extends Module<SVNDirEntry> {
         this.jarConfig = jarConfig;
     }
 
-    protected Map<String, SVNDirEntry> scan(final Filter filter) throws SVNException {
+    protected Map<String, SVNInfo> scan(final Filter filter) throws SVNException {
         SVNRepository repository;
         long latest;
 
@@ -84,35 +84,34 @@ public class SvnModule extends Module<SVNDirEntry> {
         return lastScan;
     }
 
-    protected Map<String, SVNDirEntry> doScan(final Filter filter) throws SVNException {
-        final Map<String, SVNDirEntry> files;
+    protected Map<String, SVNInfo> doScan(final Filter filter) throws SVNException {
+        final Map<String, SVNInfo> files;
         final Index oldIndex;
 
         oldIndex = index;
         index = new Index();
         files = new HashMap<>();
-        root.getRoot().getClientMananger().getLogClient().doList(
-                root.getSvnurl(), null, SVNRevision.HEAD, true, SVNDepth.INFINITY,
-                SVNDirEntry.DIRENT_KIND + SVNDirEntry.DIRENT_SIZE + SVNDirEntry.DIRENT_TIME + SVNDirEntry.DIRENT_CREATED_REVISION,
-                new ISVNDirEntryHandler() {
+        // looks silly to use the WCClient even though I don't have a checkout. But get LogClient doesn't return enough information
+        // to read files for the given revision (because the returned paths don't point to the origin of a copy
+        root.getRoot().getClientMananger().getWCClient().doInfo(root.getSvnurl(), null, null, SVNDepth.INFINITY, new ISVNInfoHandler() {
             @Override
-            public void handleDirEntry(SVNDirEntry entry) throws SVNException {
+            public void handleInfo(SVNInfo info) throws SVNException {
                 String path;
                 Label label;
 
-                if (entry.getKind() == SVNNodeKind.FILE) {
-                    path = entry.getRelativePath();
+                if (info.getKind() == SVNNodeKind.FILE) {
+                    path = relativePath(info);
                     if (filter.matches(path)) {
                         if (jarConfig != null) {
                             path = jarConfig.getPath(path);
                         }
                         if (path != null) {
-                            if (entry.getSize() > Integer.MAX_VALUE) {
+                            if (info.getRepositorySize() > Integer.MAX_VALUE) {
                                 throw new UnsupportedOperationException("file too big: " + path);
                             }
-                            files.put(path, entry);
+                            files.put(path, info);
                             label = oldIndex.lookup(path);
-                            if (label != null && entry.getRevision() == Long.parseLong(label.getLavendelizedPath())) {
+                            if (label != null && info.getCommittedRevision().getNumber() == Long.parseLong(label.getLavendelizedPath())) {
                                 index.add(label);
                             }
                         }
@@ -123,25 +122,29 @@ public class SvnModule extends Module<SVNDirEntry> {
         return files;
     }
 
-    @Override
-    protected SvnResource createResource(String resourcePath, SVNDirEntry entry) {
-        String svnPath;
-
-        svnPath = entry.getRelativePath();
-        return new SvnResource(this, entry.getRevision(), resourcePath,
-                (int) entry.getSize(), entry.getDate().getTime(), root.join(svnPath), md5(entry));
+    private String relativePath(SVNInfo info) {
+        return Strings.removeLeft(info.getURL().toDecodedString(), root.getSvnurl().toDecodedString() + "/");
     }
 
-    protected byte[] md5(SVNDirEntry entry) {
+    @Override
+    protected SvnResource createResource(String resourcePath, SVNInfo info) {
+        String svnPath;
+
+        svnPath = relativePath(info);
+        return new SvnResource(this, info.getCommittedRevision().getNumber(), resourcePath,
+                (int) info.getRepositorySize(), info.getCommittedDate().getTime(), root.join(svnPath), md5(info));
+    }
+
+    protected byte[] md5(SVNInfo info) {
         String path;
         Label label;
 
-        path = entry.getRelativePath();
+        path = relativePath(info);
         if (jarConfig != null) {
             path = jarConfig.getPath(path);
         }
         label = index.lookup(path);
-        if (label != null && label.getLavendelizedPath().equals(Long.toString(entry.getRevision()))) {
+        if (label != null && label.getLavendelizedPath().equals(Long.toString(info.getCommittedRevision().getNumber()))) {
             return label.md5();
         } else {
             return null;
