@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Extracts resources from svn */
-public class SvnModule extends Module<SVNDirEntry> {
+public class SvnModule extends Module<SvnEntry> {
     public static SvnModule create(String type, String name, Node indexFile, SvnNode root, boolean lavendelize, String resourcePathPrefix,
                      String targetPathPrefix, Filter filter, JarConfig jarConfig) throws IOException {
         Index index;
@@ -63,7 +63,7 @@ public class SvnModule extends Module<SVNDirEntry> {
      */
     private Index index;
     private final Node indexFile;
-    private Map<String, SVNDirEntry> lastScan;
+    private Map<String, SvnEntry> lastScan;
     private long lastModifiedRepository;
     private long lastModifiedModule;
 
@@ -81,7 +81,7 @@ public class SvnModule extends Module<SVNDirEntry> {
         this.jarConfig = jarConfig;
     }
 
-    protected Map<String, SVNDirEntry> scan(final Filter filter) throws SVNException {
+    protected Map<String, SvnEntry> scan(final Filter filter) throws SVNException {
         SVNRepository repository;
         long modifiedRepository;
         long modifiedModule;
@@ -128,8 +128,8 @@ public class SvnModule extends Module<SVNDirEntry> {
         return result.get(0).getRevision();
     }
 
-    protected Map<String, SVNDirEntry> doScan(final Filter filter) throws SVNException {
-        final Map<String, SVNDirEntry> files;
+    protected Map<String, SvnEntry> doScan(final Filter filter) throws SVNException {
+        final Map<String, SvnEntry> files;
         final Index oldIndex;
 
         oldIndex = index;
@@ -154,7 +154,7 @@ public class SvnModule extends Module<SVNDirEntry> {
                             if (entry.getSize() > Integer.MAX_VALUE) {
                                 throw new UnsupportedOperationException("file too big: " + path);
                             }
-                            files.put(path, entry);
+                            files.put(path, SvnEntry.create(entry));
                             label = oldIndex.lookup(path);
                             if (label != null && entry.getRevision() == Long.parseLong(label.getLavendelizedPath())) {
                                 index.add(label);
@@ -168,24 +168,24 @@ public class SvnModule extends Module<SVNDirEntry> {
     }
 
     @Override
-    protected SvnResource createResource(String resourcePath, SVNDirEntry entry) {
+    protected SvnResource createResource(String resourcePath, SvnEntry entry) {
         String svnPath;
 
-        svnPath = entry.getRelativePath();
-        return new SvnResource(this, entry.getRevision(), lastModifiedRepository /* not module, because paths might already be out-dated */,
-                resourcePath, (int) entry.getSize(), entry.getDate().getTime(), root.join(svnPath), md5(entry));
+        svnPath = entry.relativePath;
+        return new SvnResource(this, entry.revision, lastModifiedRepository /* not module, because paths might already be out-dated */,
+                resourcePath, (int) entry.size, entry.time, root.join(svnPath), md5(entry));
     }
 
-    protected byte[] md5(SVNDirEntry entry) {
+    protected byte[] md5(SvnEntry entry) {
         String path;
         Label label;
 
-        path = entry.getRelativePath();
+        path = entry.relativePath;
         if (jarConfig != null) {
             path = jarConfig.getPath(path);
         }
         label = index.lookup(path);
-        if (label != null && label.getLavendelizedPath().equals(Long.toString(entry.getRevision()))) {
+        if (label != null && label.getLavendelizedPath().equals(Long.toString(entry.revision))) {
             return label.md5();
         } else {
             return null;

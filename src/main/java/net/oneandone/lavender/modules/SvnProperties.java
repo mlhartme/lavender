@@ -15,7 +15,6 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.lavender.index.Index;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
