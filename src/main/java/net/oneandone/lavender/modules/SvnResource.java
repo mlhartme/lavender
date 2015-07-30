@@ -16,18 +16,13 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.index.Label;
-import net.oneandone.sushi.fs.FileNotFoundException;
 import net.oneandone.sushi.fs.GetLastModifiedException;
-import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.svn.SvnNode;
-import net.oneandone.sushi.io.Buffer;
 import net.oneandone.sushi.util.Strings;
 import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.io.SVNRepository;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 public class SvnResource extends Resource {
@@ -64,7 +59,7 @@ public class SvnResource extends Resource {
     public byte[] getMd5() throws IOException {
         if (lazyMd5 == null) {
             lazyMd5 = md5(getData());
-            module.addIndex(new Label(Strings.removeLeft(getPath(), module.getResourcePathPrefix()), Long.toString(lastCheckedRevision), lazyMd5));
+            module.addIndex(new Label(Strings.removeLeft(getPath(), module.getResourcePathPrefix()), Long.toString(lastModifiedRevision), lazyMd5));
         }
         return lazyMd5;
     }
@@ -102,7 +97,7 @@ public class SvnResource extends Resource {
 
         if (dataBytes == null) {
             dataBytes = new byte[length];
-            try (OutputStream dest = new FixedOutputStream(dataBytes)) {
+            try (OutputStream dest = new FillOutputStream(dataBytes)) {
                 repository = dataNode.getRoot().getRepository();
                 try {
                     loaded = repository.getFile(dataNode.getPath(), lastCheckedRevision, null, dest);
@@ -118,11 +113,11 @@ public class SvnResource extends Resource {
         return dataBytes;
     }
 
-    public static class FixedOutputStream extends OutputStream {
+    public static class FillOutputStream extends OutputStream {
         private final byte[] dest;
         private int pos;
 
-        public FixedOutputStream(byte[] dest) {
+        public FillOutputStream(byte[] dest) {
             this.dest = dest;
             this.pos = 0;
         }
