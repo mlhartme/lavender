@@ -126,7 +126,6 @@ public class SvnProperties {
             root = (SvnNode) world.node("svn:" + url);
             // make sure to get a propery error message, and to get it early
             root.checkDirectory();
-            root.getRoot().getClientMananger().setIgnoreExternals(true);
             idxName = root.getSvnurl().getPath().replace('/', '.') + ".idx";
             idxName = Strings.removeLeftOpt(idxName, ".");
             cache = (FileNode) world.getHome().join(".cache/lavender",
