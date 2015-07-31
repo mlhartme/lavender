@@ -146,27 +146,28 @@ public class SvnModule extends Module<SvnEntry> {
                 new ISVNDirEntryHandler() {
             @Override
             public void handleDirEntry(SVNDirEntry entry) throws SVNException {
-                String origPath;
-                String path;
+                String accessPath;
+                String publicPath;
                 SvnEntry old;
 
                 if (entry.getKind() == SVNNodeKind.FILE) {
-                    origPath = entry.getRelativePath();
-                    if (filter.matches(origPath)) {
+                    accessPath = entry.getRelativePath();
+                    if (filter.matches(accessPath)) {
                         if (jarConfig != null) {
-                            path = jarConfig.getPath(origPath);
+                            publicPath = jarConfig.getPath(accessPath);
                         } else {
-                            path = origPath;
+                            publicPath = accessPath;
                         }
-                        if (path != null) {
+                        if (publicPath != null) {
                             if (entry.getSize() > Integer.MAX_VALUE) {
-                                throw new UnsupportedOperationException("file too big: " + path);
+                                throw new UnsupportedOperationException("file too big: " + publicPath + " " + entry.getSize());
                             }
-                            old = entries.get(path);
+                            old = entries.get(publicPath);
                             if (old != null && entry.getRevision() == old.revision) {
-                                newEntries.put(path, old);
+                                newEntries.put(publicPath, old);
                             } else {
-                                newEntries.put(path, new SvnEntry(path, origPath, entry.getRevision(), entry.getSize(), entry.getDate().getTime(), null));
+                                newEntries.put(publicPath, new SvnEntry(publicPath, accessPath, entry.getRevision(),
+                                        (int) entry.getSize(), entry.getDate().getTime(), null));
                             }
                         }
                     }
@@ -179,23 +180,7 @@ public class SvnModule extends Module<SvnEntry> {
     @Override
     protected SvnResource createResource(String resourcePath, SvnEntry entry) {
         return new SvnResource(this, entry, entry.revision, lastModifiedRepository /* not module, because paths might already be out-dated */,
-                resourcePath, (int) entry.size, entry.time, root.join(entry.accessPath), md5(entry));
-    }
-
-    protected byte[] md5(SvnEntry entry) {
-        String path;
-        SvnEntry e;
-
-        path = entry.publicPath;
-        if (jarConfig != null) {
-            path = jarConfig.getPath(path);
-        }
-        e = entries.get(path);
-        if (e != null && e.revision == entry.revision) {
-            return e.md5;
-        } else {
-            return null;
-        }
+                resourcePath, entry.size, entry.time, root.join(entry.accessPath));
     }
 
     public String uri() {

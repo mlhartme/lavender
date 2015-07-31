@@ -18,7 +18,7 @@ public class SvnEntry {
         String publicPath;
         String accessPath;
         long revision;
-        long size;
+        int size;
         long time;
         byte[] md5;
 
@@ -32,7 +32,7 @@ public class SvnEntry {
         revision = Long.parseLong(str.substring(prev, idx));
         prev = idx + LEN;
         idx = str.indexOf(SEP, prev);
-        size = Long.parseLong(str.substring(prev, idx));
+        size = Integer.parseInt(str.substring(prev, idx));
         prev = idx + LEN;
         idx = str.indexOf(SEP, prev);
         time = Long.parseLong(str.substring(prev, idx));
@@ -48,11 +48,12 @@ public class SvnEntry {
     public final String publicPath;
     public final String accessPath;
     public final long revision;
-    public final long size;
+    /** not long because I have to keep temp in memory */
+    public final int size;
     public final long time;
     public byte[] md5;
 
-    public SvnEntry(String publicPath, String accessPath, long revision, long size, long time, byte[] md5) {
+    public SvnEntry(String publicPath, String accessPath, long revision, int size, long time, byte[] md5) {
         this.publicPath = publicPath;
         this.accessPath = accessPath;
         this.revision = revision;

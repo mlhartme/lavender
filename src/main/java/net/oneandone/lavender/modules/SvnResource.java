@@ -40,7 +40,7 @@ public class SvnResource extends Resource {
     private final int length;
     private final long lastModified;
 
-    public SvnResource(SvnModule module, SvnEntry entry, long lastModifiedRevision, long accessRevision, String path, int length, long lastModified, SvnNode dataNode, byte[] lazyMd5) {
+    public SvnResource(SvnModule module, SvnEntry entry, long lastModifiedRevision, long accessRevision, String path, int length, long lastModified, SvnNode dataNode) {
         this.module = module;
         this.entry = entry;
         this.lastModifiedRevision = lastModifiedRevision;
@@ -51,24 +51,19 @@ public class SvnResource extends Resource {
 
         this.dataNode = dataNode;
         this.dataBytes = null;
-
-        this.lazyMd5 = lazyMd5;
     }
 
     @Override
     public byte[] getMd5() throws IOException {
-        if (lazyMd5 == null) {
-            lazyMd5 = md5(getData());
-            entry.md5 = lazyMd5;
+        if (entry.md5 == null) {
+            entry.md5 = md5(getData());
         }
-        return lazyMd5;
+        return entry.md5;
     }
 
     // dataNode xor dataBytes is null
     private SvnNode dataNode;
     private byte[] dataBytes;
-
-    protected byte[] lazyMd5;
 
     public String getPath() {
         return path;

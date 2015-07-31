@@ -95,8 +95,8 @@ public class WarEngine {
         outputNodesFile.writeString(nodes);
         warStart = System.currentTimeMillis();
         updateWarFile(result.get(Docroot.WEB));
-        LOG.info("updated war: " + (System.currentTimeMillis() - warStart)
-                + " ms, in=" + (inputWar.length() / 1024) + "k, out=" + (outputWar.length() / 1024) + "k");
+        LOG.info("updated war in=" + (inputWar.length() / 1024) + "k, out=" + (outputWar.length() / 1024) + "k, "
+                + (System.currentTimeMillis() - warStart) + " ms");
         for (Module module : modules) {
             module.saveCaches();
         }
