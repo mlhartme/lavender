@@ -35,15 +35,15 @@ public class SvnResource extends Resource {
     private final long lastModifiedRevision;
 
     /** revision this resource was seen in svn */
-    private final long lastCheckedRevision;
+    private final long accessRevision;
     private final String path;
     private final int length;
     private final long lastModified;
 
-    public SvnResource(SvnModule module, long lastModifiedRevision, long lastCheckedRevision, String path, int length, long lastModified, SvnNode dataNode, byte[] lazyMd5) {
+    public SvnResource(SvnModule module, long lastModifiedRevision, long accessRevision, String path, int length, long lastModified, SvnNode dataNode, byte[] lazyMd5) {
         this.module = module;
         this.lastModifiedRevision = lastModifiedRevision;
-        this.lastCheckedRevision = lastCheckedRevision;
+        this.accessRevision = accessRevision;
         this.path = path;
         this.length = length;
         this.lastModified = lastModified;
@@ -99,12 +99,12 @@ public class SvnResource extends Resource {
             try (OutputStream dest = new FillOutputStream(dataBytes)) {
                 repository = dataNode.getRoot().getRepository();
                 try {
-                    loaded = repository.getFile(dataNode.getPath(), lastCheckedRevision, null, dest);
+                    loaded = repository.getFile(dataNode.getPath(), accessRevision, null, dest);
                 } catch (SVNException e) {
                     throw new IOException("svn failure: " + e.getMessage(), e);
                 }
-                if (loaded != lastCheckedRevision) {
-                    throw new IllegalStateException(loaded + " " + lastCheckedRevision);
+                if (loaded != accessRevision) {
+                    throw new IllegalStateException(loaded + " " + accessRevision);
                 }
             }
             dataNode = null;
