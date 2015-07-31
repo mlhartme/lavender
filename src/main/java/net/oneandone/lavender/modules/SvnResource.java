@@ -15,7 +15,6 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.fs.GetLastModifiedException;
 import net.oneandone.sushi.fs.svn.SvnNode;
 import net.oneandone.sushi.util.Strings;
@@ -57,12 +56,9 @@ public class SvnResource extends Resource {
 
     @Override
     public byte[] getMd5() throws IOException {
-        SvnEntry entry;
-
         if (lazyMd5 == null) {
             lazyMd5 = md5(getData());
-            entry = new SvnEntry(Strings.removeLeft(getPath(), module.getResourcePathPrefix()), lastModifiedRevision, length, lastModified, lazyMd5);
-            module.addIndex(entry);
+            module.updateMd5(Strings.removeLeft(getPath(), module.getResourcePathPrefix()), lazyMd5);
         }
         return lazyMd5;
     }

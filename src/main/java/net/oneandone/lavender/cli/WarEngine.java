@@ -78,6 +78,7 @@ public class WarEngine {
         long absolute;
         long changed;
         Map<String, Index> result;
+        long warStart;
 
         started = System.currentTimeMillis();
         modules = DefaultModule.fromWebapp(true, inputWar.openZip(), svnUsername, svnPassword);
@@ -92,7 +93,10 @@ public class WarEngine {
         LOG.info("lavender servers updated: "
                 + changed + "/" + absolute + " files changed (" + (System.currentTimeMillis() - started) + " ms)");
         outputNodesFile.writeString(nodes);
+        warStart = System.currentTimeMillis();
         updateWarFile(result.get(Docroot.WEB));
+        LOG.info("updated war: " + (System.currentTimeMillis() - warStart)
+                + " ms, in=" + (inputWar.length() / 1024) + "k, out=" + (outputWar.length() / 1024) + "k");
         for (Module module : modules) {
             module.saveCaches();
         }

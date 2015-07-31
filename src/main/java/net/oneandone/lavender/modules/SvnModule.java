@@ -52,9 +52,9 @@ public class SvnModule extends Module<SvnEntry> {
         if (cacheFile.exists()) {
             try (Reader reader = cacheFile.createReader();
                  LineReader lines = new LineReader(reader, new LineFormat(LineFormat.LF_SEPARATOR, LineFormat.Trim.ALL))) {
-                //line = lines.next();
-                // TODO: lastModifiedModule = Long.parseLong(line.toString());
-                //if (line != null) {
+                line = lines.next();
+                lastModifiedModule = Long.parseLong(line.toString());
+                if (line != null) {
                     while (true) {
                         line = lines.next();
                         if (line == null) {
@@ -63,7 +63,7 @@ public class SvnModule extends Module<SvnEntry> {
                         entry = SvnEntry.parse(line);
                         entries.put(entry.relativePath, entry);
                     }
-            //    }
+                }
             }
         }
         return new SvnModule(type, name, cacheFile, entries, lastModifiedModule, root, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
@@ -79,7 +79,6 @@ public class SvnModule extends Module<SvnEntry> {
      */
     private Map<String, SvnEntry> entries;
     private final Node indexFile;
-    private Map<String, SvnEntry> lastScan;
     private long lastModifiedRepository;
     private long lastModifiedModule;
 
@@ -106,25 +105,18 @@ public class SvnModule extends Module<SvnEntry> {
         modifiedRepository = repository.getLatestRevision();
         if (modifiedRepository == lastModifiedRepository) {
             LOG.info("no changes in repository: " + modifiedRepository);
-            if (lastScan == null) {
-                throw new IllegalStateException();
-            }
-            return lastScan;
+            return entries;
         }
         lastModifiedRepository = modifiedRepository;
         modifiedModule = getLastModified();
-        LOG.info("latest " + root.getURI() + ": " + modifiedModule + " " + modifiedRepository);
         if (modifiedModule == lastModifiedModule) {
-            LOG.info("re-using last scan for revision " + modifiedModule);
-            if (lastScan == null) {
-                throw new IllegalStateException();
-            }
-            return lastScan;
+            LOG.info(root.getURI() + ": re-using scan for revision " + modifiedModule);
+            return entries;
         }
-        LOG.info("new scan: " + modifiedModule + " vs " + lastModifiedModule);
+        LOG.info(root.getURI() + ": scan " + lastModifiedModule + " is out-dated, rescanning revision " + modifiedModule);
+        entries = doScan(filter);
         lastModifiedModule = modifiedModule;
-        lastScan = doScan(filter);
-        return lastScan;
+        return entries;
     }
 
     private long getLastModified() throws SVNException {
@@ -145,51 +137,49 @@ public class SvnModule extends Module<SvnEntry> {
     }
 
     protected Map<String, SvnEntry> doScan(final Filter filter) throws SVNException {
-        final Map<String, SvnEntry> files;
-        final Map<String, SvnEntry> oldEntries;
+        final Map<String, SvnEntry> newEntries;
 
-        oldEntries = entries;
-        entries = new HashMap<>();
-        files = new HashMap<>();
+        newEntries = new HashMap<>();
         root.getRoot().getClientMananger().getLogClient().doList(
                 root.getSvnurl(), null, SVNRevision.create(lastModifiedRepository), true, SVNDepth.INFINITY,
                 SVNDirEntry.DIRENT_KIND + SVNDirEntry.DIRENT_SIZE + SVNDirEntry.DIRENT_TIME + SVNDirEntry.DIRENT_CREATED_REVISION,
                 new ISVNDirEntryHandler() {
             @Override
             public void handleDirEntry(SVNDirEntry entry) throws SVNException {
+                String origPath;
                 String path;
                 SvnEntry old;
 
                 if (entry.getKind() == SVNNodeKind.FILE) {
-                    path = entry.getRelativePath();
-                    if (filter.matches(path)) {
+                    origPath = entry.getRelativePath();
+                    if (filter.matches(origPath)) {
                         if (jarConfig != null) {
-                            path = jarConfig.getPath(path);
+                            path = jarConfig.getPath(origPath);
+                        } else {
+                            path = origPath;
                         }
                         if (path != null) {
                             if (entry.getSize() > Integer.MAX_VALUE) {
                                 throw new UnsupportedOperationException("file too big: " + path);
                             }
-                            files.put(path, SvnEntry.create(entry));
-                            old = oldEntries.get(path);
+                            old = entries.get(path);
                             if (old != null && entry.getRevision() == old.revision) {
-                                entries.put(path, old);
+                                newEntries.put(path, old);
+                            } else {
+                                newEntries.put(path, new SvnEntry(path, origPath, entry.getRevision(), entry.getSize(), entry.getDate().getTime(), null));
                             }
                         }
                     }
                 }
             }
         });
-        return files;
+        return newEntries;
     }
 
     @Override
     protected SvnResource createResource(String resourcePath, SvnEntry entry) {
-        String svnPath;
-
-        svnPath = entry.relativePath;
         return new SvnResource(this, entry.revision, lastModifiedRepository /* not module, because paths might already be out-dated */,
-                resourcePath, (int) entry.size, entry.time, root.join(svnPath), md5(entry));
+                resourcePath, (int) entry.size, entry.time, root.join(entry.origPath), md5(entry));
     }
 
     protected byte[] md5(SvnEntry entry) {
@@ -208,10 +198,8 @@ public class SvnModule extends Module<SvnEntry> {
         }
     }
 
-    public void addIndex(SvnEntry entry) {
-        if (entries.put(entry.relativePath, entry) != null) {
-            throw new IllegalStateException("duplicate path: " + entry.relativePath);
-        }
+    public void updateMd5(String path, byte[] md5) {
+        entries.get(path).md5 = md5;
     }
 
     public String uri() {
@@ -221,8 +209,8 @@ public class SvnModule extends Module<SvnEntry> {
     public void saveCaches() throws IOException {
         indexFile.getParent().mkdirsOpt(); // TODO
         try (Writer dest = indexFile.createWriter()) {
-            // TODO: dest.write(Long.toString(lastModifiedModule));
-            // dest.write('\n');
+            dest.write(Long.toString(lastModifiedModule));
+            dest.write('\n');
             for (SvnEntry entry : entries.values()) {
                 dest.write(entry.toString());
                 dest.write('\n');

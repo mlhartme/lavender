@@ -36,7 +36,7 @@ public class SvnEntryTest {
         SvnEntry entry;
         SvnEntry parsed;
 
-        entry = new SvnEntry("my path", 1, 2, 3, new byte[] { 4, 5, 6});
+        entry = new SvnEntry("my path", "origPath", 1, 2, 3, new byte[] { 4, 5, 6});
         parsed = SvnEntry.parse(entry.toString());
         assertEquals(entry, parsed);
     }
