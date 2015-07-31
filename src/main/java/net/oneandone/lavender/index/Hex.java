@@ -36,7 +36,7 @@ public final class Hex {
         return result;
     }
 
-    private static int decode(char ch) {
+    public static int decode(char ch) {
         return ch >= 'a' ? ch - 'a' + 10 : (ch >= 'A' ? ch - 'A' + 10 : ch - '0');
     }
 
@@ -57,7 +57,7 @@ public final class Hex {
         return new String(encode(data));
     }
 
-    private static char encode(int b) {
+    public static char encode(int b) {
         return (char) (b >= 10 ? 'a' - 10 + b : '0' + b);
     }
 
