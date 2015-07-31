@@ -27,21 +27,14 @@ public class SvnResource extends Resource {
     private final SvnModule module;
 
     private final SvnEntry entry;
-    /**
-     * revision this resource was last modified; not that copying a resource is not a modification.
-     * Thus, the path pointing for this revision might differ from the current path. (This is usually happens if the resource is
-     * tagged as part of the release process.
-     */
-    private final long lastModifiedRevision;
 
     /** revision this resource was seen in svn */
     private final long accessRevision;
     private final String path;
 
-    public SvnResource(SvnModule module, SvnEntry entry, long lastModifiedRevision, long accessRevision, String path, SvnNode dataNode) {
+    public SvnResource(SvnModule module, SvnEntry entry, long accessRevision, String path, SvnNode dataNode) {
         this.module = module;
         this.entry = entry;
-        this.lastModifiedRevision = lastModifiedRevision;
         this.accessRevision = accessRevision;
         this.path = path;
         this.dataNode = dataNode;
@@ -118,7 +111,7 @@ public class SvnResource extends Resource {
         }
 
         @Override
-        public void write(byte bytes[], int ofs, int len) throws IOException {
+        public void write(byte[] bytes, int ofs, int len) throws IOException {
             System.arraycopy(bytes, ofs, dest, pos, len);
             pos += len;
         }

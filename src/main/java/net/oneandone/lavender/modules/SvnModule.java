@@ -53,8 +53,8 @@ public class SvnModule extends Module<SvnEntry> {
             try (Reader reader = cacheFile.createReader();
                  LineReader lines = new LineReader(reader, new LineFormat(LineFormat.LF_SEPARATOR, LineFormat.Trim.ALL))) {
                 line = lines.next();
-                lastModifiedModule = Long.parseLong(line.toString());
                 if (line != null) {
+                    lastModifiedModule = Long.parseLong(line);
                     while (true) {
                         line = lines.next();
                         if (line == null) {
@@ -179,7 +179,7 @@ public class SvnModule extends Module<SvnEntry> {
 
     @Override
     protected SvnResource createResource(String resourcePath, SvnEntry entry) {
-        return new SvnResource(this, entry, entry.revision, lastModifiedRepository /* not module, because paths might already be out-dated */,
+        return new SvnResource(this, entry, lastModifiedRepository /* not module, because paths might already be out-dated */,
                 resourcePath, root.join(entry.accessPath));
     }
 
