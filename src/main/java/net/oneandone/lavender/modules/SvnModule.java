@@ -179,7 +179,7 @@ public class SvnModule extends Module<SvnEntry> {
     @Override
     protected SvnResource createResource(String resourcePath, SvnEntry entry) {
         return new SvnResource(this, entry.revision, lastModifiedRepository /* not module, because paths might already be out-dated */,
-                resourcePath, (int) entry.size, entry.time, root.join(entry.origPath), md5(entry));
+                resourcePath, (int) entry.size, entry.time, root.join(entry.accessPath), md5(entry));
     }
 
     protected byte[] md5(SvnEntry entry) {

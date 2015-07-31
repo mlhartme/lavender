@@ -16,7 +16,7 @@ public class SvnEntry {
         int idx;
         int prev;
         String publicPath;
-        String origPath;
+        String accessPath;
         long revision;
         long size;
         long time;
@@ -26,7 +26,7 @@ public class SvnEntry {
         publicPath = decode(str.substring(0, idx));
         prev = idx + LEN;
         idx = str.indexOf(SEP, prev);
-        origPath = decode(str.substring(prev, idx));
+        accessPath = decode(str.substring(prev, idx));
         prev = idx + LEN;
         idx = str.indexOf(SEP, prev);
         revision = Long.parseLong(str.substring(prev, idx));
@@ -42,19 +42,19 @@ public class SvnEntry {
         } else {
             md5 = Hex.decode(str.substring(prev).toCharArray());
         }
-        return new SvnEntry(publicPath, origPath, revision, size, time, md5);
+        return new SvnEntry(publicPath, accessPath, revision, size, time, md5);
     }
 
     public final String publicPath;
-    public final String origPath;
+    public final String accessPath;
     public final long revision;
     public final long size;
     public final long time;
     public byte[] md5;
 
-    public SvnEntry(String publicPath, String origPath, long revision, long size, long time, byte[] md5) {
+    public SvnEntry(String publicPath, String accessPath, long revision, long size, long time, byte[] md5) {
         this.publicPath = publicPath;
-        this.origPath = origPath;
+        this.accessPath = accessPath;
         this.revision = revision;
         this.size = size;
         this.time = time;
@@ -62,7 +62,7 @@ public class SvnEntry {
     }
 
     public String toString() {
-        return encode(publicPath) + SEP + encode(origPath)
+        return encode(publicPath) + SEP + encode(accessPath)
                 + SEP + revision + SEP + size + SEP + time + SEP + (md5 == null ? "" : new String(Hex.encode(md5)));
     }
 
@@ -75,7 +75,7 @@ public class SvnEntry {
 
         if (obj instanceof SvnEntry) {
             entry = (SvnEntry) obj;
-            return publicPath.equals(entry.publicPath) && origPath.equals(entry.origPath)
+            return publicPath.equals(entry.publicPath) && accessPath.equals(entry.accessPath)
                     && revision == entry.revision && size == entry.size && time == entry.time
                     && Arrays.equals(md5, entry.md5);
         }
