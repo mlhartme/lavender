@@ -145,7 +145,7 @@ public class SvnModule extends Module<SvnEntry> {
 
         newEntries = new HashMap<>();
         root.getRoot().getClientMananger().getLogClient().doList(
-                root.getSvnurl(), null, SVNRevision.create(lastModifiedRepository), true, SVNDepth.INFINITY,
+                root.getSvnurl(), null, SVNRevision.create(lastModifiedRepository), false, SVNDepth.INFINITY,
                 SVNDirEntry.DIRENT_KIND + SVNDirEntry.DIRENT_SIZE + SVNDirEntry.DIRENT_TIME + SVNDirEntry.DIRENT_CREATED_REVISION,
                 new ISVNDirEntryHandler() {
             @Override
