@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.config;
 
+import net.oneandone.sushi.fs.MkdirException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -71,6 +72,8 @@ public class Properties {
     private static Properties properties(Node file) throws IOException {
         java.util.Properties properties;
         List<Node> sshKeys;
+        String cache;
+        FileNode cacheNode;
 
         properties = file.readProperties();
         sshKeys = new ArrayList<>();
@@ -79,8 +82,15 @@ public class Properties {
                 sshKeys.add(file.getWorld().file(properties.getProperty(key)));
             }
         }
+        cache = properties.getProperty("cache");
+        if (cache == null) {
+            cacheNode = (FileNode) file.getWorld().getHome().join(".cache/lavender");
+        } else {
+            cacheNode = file.getWorld().file(cache);
+        }
         try {
-            return new Properties(file.getWorld(), new URI(properties.getProperty("svn")), properties.getProperty("svn.username"), properties.getProperty("svn.password"), sshKeys);
+            return new Properties(file.getWorld(), cacheNode,
+                    new URI(properties.getProperty("svn")), properties.getProperty("svn.username"), properties.getProperty("svn.password"), sshKeys);
         } catch (URISyntaxException e) {
             throw new IOException("invalid properties file " + file + ": " + e.getMessage(), e);
         }
@@ -89,14 +99,16 @@ public class Properties {
     //--
 
     public final World world;
+    private final FileNode cache;
     /** don't store the node, so I can create properties without accessing svn (and thus without svn credentials) */
     public final URI svn;
     public final String svnUsername;
     public final String svnPassword;
     private final List<Node> sshKeys;
 
-    public Properties(World world, URI svn, String svnUsername, String svnPassword, List<Node> sshKeys) {
+    public Properties(World world, FileNode cache, URI svn, String svnUsername, String svnPassword, List<Node> sshKeys) {
         this.world = world;
+        this.cache = cache;
         this.svn = svn;
         this.svnUsername = svnUsername;
         this.svnPassword = svnPassword;
@@ -165,5 +177,10 @@ public class Properties {
 
     private FileNode lastNetNode() {
         return (FileNode) world.getHome().join(".lavender.net.xml");
+    }
+
+    public FileNode createdCache() throws MkdirException {
+        cache.mkdirsOpt();
+        return cache;
     }
 }

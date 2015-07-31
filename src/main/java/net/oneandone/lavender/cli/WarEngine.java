@@ -44,6 +44,7 @@ import java.util.zip.ZipOutputStream;
 public class WarEngine {
     private static final Logger LOG = LoggerFactory.getLogger(WarEngine.class);
 
+    private final FileNode cache;
     /** maps type to Distributor */
     private final Map<String, Distributor> distributors;
     private final String indexName;
@@ -54,8 +55,9 @@ public class WarEngine {
     private final FileNode outputNodesFile;
     private final String nodes;
 
-    public WarEngine(Map<String, Distributor> distributors, String indexName, String svnUsername, String svnPassword,
+    public WarEngine(FileNode cache, Map<String, Distributor> distributors, String indexName, String svnUsername, String svnPassword,
                      FileNode inputWar, FileNode outputWar, FileNode outputNodesFile, String nodes) {
+        this.cache = cache;
         this.distributors = distributors;
         this.indexName = indexName;
         this.svnUsername = svnUsername;
@@ -81,7 +83,7 @@ public class WarEngine {
         long warStart;
 
         started = System.currentTimeMillis();
-        modules = DefaultModule.fromWebapp(true, inputWar.openZip(), svnUsername, svnPassword);
+        modules = DefaultModule.fromWebapp(cache, true, inputWar.openZip(), svnUsername, svnPassword);
         absolute = 0;
         changed = extract(modules);
         result = new HashMap<>();

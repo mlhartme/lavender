@@ -25,6 +25,7 @@ import net.oneandone.lavender.modules.Module;
 import net.oneandone.lavender.modules.Resource;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.xml.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,7 +99,7 @@ public class Lavender implements Filter, LavenderMBean {
                 started = System.currentTimeMillis();
                 properties = Properties.load(Properties.file(world), false);
                 processorFactory = null;
-                develModules = DefaultModule.fromWebapp(false, webapp, properties.svnUsername, properties.svnPassword);
+                develModules = DefaultModule.fromWebapp(properties.createdCache(), false, webapp, properties.svnUsername, properties.svnPassword);
                 LOG.info("Lavender devel filter for " + webapp + ", " + develModules.size()
                         + " resources. Init in " + (System.currentTimeMillis() - started + " ms"));
             }

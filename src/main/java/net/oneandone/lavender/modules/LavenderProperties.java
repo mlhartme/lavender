@@ -19,6 +19,7 @@ import net.oneandone.lavender.config.Docroot;
 import net.oneandone.sushi.fs.FileNotFoundException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.util.Separator;
 import net.oneandone.sushi.util.Strings;
@@ -239,10 +240,10 @@ public class LavenderProperties {
         this.configs = new ArrayList<>();
     }
 
-    public void addModules(World world, boolean prod, String svnUsername, String svnPassword, List<Module> result, JarConfig jarConfig)
+    public void addModules(FileNode cache, boolean prod, String svnUsername, String svnPassword, List<Module> result, JarConfig jarConfig)
             throws IOException {
         for (SvnProperties config : configs) {
-            result.add(config.create(world, prod, svnUsername, svnPassword, jarConfig));
+            result.add(config.create(cache, prod, svnUsername, svnPassword, jarConfig));
         }
     }
 

@@ -60,14 +60,15 @@ public class SvnProperties {
         this.source = source;
     }
 
-    public Module create(World world, boolean prod, String svnUsername, String svnPassword, final JarConfig jarConfig) throws IOException {
-        FileNode cacheDir;
+    public Module create(FileNode cacheDir, boolean prod, String svnUsername, String svnPassword, final JarConfig jarConfig) throws IOException {
+        World world;
         FileNode cache;
         final SvnNode root;
         String idxName;
         final FileNode checkout;
         String url;
 
+        world = cacheDir.getWorld();
         if (svnurl == null) {
             throw new IllegalArgumentException("missing svn url");
         }
@@ -127,8 +128,6 @@ public class SvnProperties {
             root.checkDirectory();
             idxName = root.getSvnurl().getPath().replace('/', '.') + ".idx";
             idxName = Strings.removeLeftOpt(idxName, ".");
-            cacheDir = (FileNode) world.getHome().join(".cache/lavender");
-            cacheDir.mkdirsOpt();
             cache = cacheDir.join(root.getRoot().getRepository().getRepositoryRoot(false).getHost(), idxName);
             return SvnModule.create(type, name, cache, root, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
         } catch (RuntimeException | IOException e) {

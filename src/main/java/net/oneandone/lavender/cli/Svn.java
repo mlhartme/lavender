@@ -29,6 +29,7 @@ import net.oneandone.sushi.cli.ArgumentException;
 import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.cli.Option;
 import net.oneandone.sushi.cli.Value;
+import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
 
 import java.io.IOException;
@@ -73,7 +74,7 @@ public class Svn extends Base {
         filter.includeAll();
         svnurl = svn + "/data/" + directory;
         moduleConfig = new SvnProperties("svn", filter, svnurl, svnurl, Docroot.WEB, false, "", directory + "/", null);
-        module = moduleConfig.create(console.world, true, properties.svnUsername, properties.svnPassword, null);
+        module = moduleConfig.create(properties.createdCache(), true, properties.svnUsername, properties.svnPassword, null);
         try (Pool pool = pool()) {
             distributor = target.open(pool, directory + ".idx");
             changed = module.publish(distributor);

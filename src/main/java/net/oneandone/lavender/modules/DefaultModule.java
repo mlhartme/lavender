@@ -45,7 +45,7 @@ public abstract class DefaultModule extends Module<Node> {
     private static final String RESOURCE_INDEX = "META-INF/pustefix-resource.index";
 
 
-    public static List<Module> fromWebapp(boolean prod, Node webapp, String svnUsername, String svnPassword) throws IOException, SAXException, XmlException {
+    public static List<Module> fromWebapp(FileNode cache, boolean prod, Node webapp, String svnUsername, String svnPassword) throws IOException, SAXException, XmlException {
         Node webappSource;
         List<Module> result;
         WarConfig rootConfig;
@@ -58,16 +58,16 @@ public abstract class DefaultModule extends Module<Node> {
         rootConfig = WarConfig.fromXml(webapp);
         // add modules before webapp, because they have a prefix
         for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
-            result.addAll(jarModuleOpt(rootConfig, prod, jar, svnUsername, svnPassword));
+            result.addAll(jarModuleOpt(cache, rootConfig, prod, jar, svnUsername, svnPassword));
         }
         webappSource = lp.live(webapp);
         root = warModule(rootConfig, lp.filter, webappSource);
         result.add(root);
-        lp.addModules(webapp.getWorld(), prod, svnUsername, svnPassword, result, null);
+        lp.addModules(cache, prod, svnUsername, svnPassword, result, null);
         return result;
     }
 
-    public static List<Module> jarModuleOpt(WarConfig rootConfig, boolean prod, Node jarOrig,
+    public static List<Module> jarModuleOpt(FileNode cache, WarConfig rootConfig, boolean prod, Node jarOrig,
                                             String svnUsername, String svnPassword) throws IOException, XmlException, SAXException {
         Node configFile;
         final JarConfig config;
@@ -139,7 +139,7 @@ public abstract class DefaultModule extends Module<Node> {
         // continue without lavender.properties -- we have to support this mode for a some time ... :(
         result.add(jarModule);
         if (lp != null) {
-            lp.addModules(jarOrig.getWorld(), prod, svnUsername, svnPassword, result, config);
+            lp.addModules(cache, prod, svnUsername, svnPassword, result, config);
         }
         return result;
     }

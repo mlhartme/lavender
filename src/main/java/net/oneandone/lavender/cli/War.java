@@ -103,7 +103,7 @@ public class War extends Base {
         outputNodesFile = tmp.createTempFile();
         try (Pool pool = pool()) {
             distributors = distributors(pool);
-            engine = new WarEngine(distributors, indexName, properties.svnUsername, properties.svnPassword,
+            engine = new WarEngine(properties.createdCache(), distributors, indexName, properties.svnUsername, properties.svnPassword,
                     inputWar, outputWar, outputNodesFile, nodes);
             engine.run();
         }
