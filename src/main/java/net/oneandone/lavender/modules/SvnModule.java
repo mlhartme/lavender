@@ -178,7 +178,7 @@ public class SvnModule extends Module<SvnEntry> {
 
     @Override
     protected SvnResource createResource(String resourcePath, SvnEntry entry) {
-        return new SvnResource(this, entry.revision, lastModifiedRepository /* not module, because paths might already be out-dated */,
+        return new SvnResource(this, entry, entry.revision, lastModifiedRepository /* not module, because paths might already be out-dated */,
                 resourcePath, (int) entry.size, entry.time, root.join(entry.accessPath), md5(entry));
     }
 
@@ -196,10 +196,6 @@ public class SvnModule extends Module<SvnEntry> {
         } else {
             return null;
         }
-    }
-
-    public void updateMd5(String path, byte[] md5) {
-        entries.get(path).md5 = md5;
     }
 
     public String uri() {

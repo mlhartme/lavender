@@ -17,7 +17,6 @@ package net.oneandone.lavender.modules;
 
 import net.oneandone.sushi.fs.GetLastModifiedException;
 import net.oneandone.sushi.fs.svn.SvnNode;
-import net.oneandone.sushi.util.Strings;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.io.SVNRepository;
 
@@ -27,6 +26,7 @@ import java.io.OutputStream;
 public class SvnResource extends Resource {
     private final SvnModule module;
 
+    private final SvnEntry entry;
     /**
      * revision this resource was last modified; not that copying a resource is not a modification.
      * Thus, the path pointing for this revision might differ from the current path. (This is usually happens if the resource is
@@ -40,8 +40,9 @@ public class SvnResource extends Resource {
     private final int length;
     private final long lastModified;
 
-    public SvnResource(SvnModule module, long lastModifiedRevision, long accessRevision, String path, int length, long lastModified, SvnNode dataNode, byte[] lazyMd5) {
+    public SvnResource(SvnModule module, SvnEntry entry, long lastModifiedRevision, long accessRevision, String path, int length, long lastModified, SvnNode dataNode, byte[] lazyMd5) {
         this.module = module;
+        this.entry = entry;
         this.lastModifiedRevision = lastModifiedRevision;
         this.accessRevision = accessRevision;
         this.path = path;
@@ -58,7 +59,7 @@ public class SvnResource extends Resource {
     public byte[] getMd5() throws IOException {
         if (lazyMd5 == null) {
             lazyMd5 = md5(getData());
-            module.updateMd5(Strings.removeLeft(getPath(), module.getResourcePathPrefix()), lazyMd5);
+            entry.md5 = lazyMd5;
         }
         return lazyMd5;
     }

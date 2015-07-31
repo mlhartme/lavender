@@ -91,7 +91,7 @@ public class WarEngine {
             result.put(entry.getKey(), index);
         }
         LOG.info("lavender servers updated: "
-                + changed + "/" + absolute + " files changed (" + (System.currentTimeMillis() - started) + " ms)");
+                + changed + "/" + absolute + " files changed in " + modules.size() + " modules, " + (System.currentTimeMillis() - started) + " ms");
         outputNodesFile.writeString(nodes);
         warStart = System.currentTimeMillis();
         updateWarFile(result.get(Docroot.WEB));
