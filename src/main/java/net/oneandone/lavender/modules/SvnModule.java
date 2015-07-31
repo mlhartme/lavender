@@ -61,7 +61,7 @@ public class SvnModule extends Module<SvnEntry> {
                             break;
                         }
                         entry = SvnEntry.parse(line);
-                        entries.put(entry.relativePath, entry);
+                        entries.put(entry.publicPath, entry);
                     }
                 }
             }
@@ -186,7 +186,7 @@ public class SvnModule extends Module<SvnEntry> {
         String path;
         SvnEntry e;
 
-        path = entry.relativePath;
+        path = entry.publicPath;
         if (jarConfig != null) {
             path = jarConfig.getPath(path);
         }
