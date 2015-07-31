@@ -8,7 +8,7 @@
         Read svn resource the the scanned revision, not with latest revision.
       </action>
       <action date="2015-07-29" dev="mhm" type="update">
-        Speedup reading files from svn: read without temporary local file; get rid of checkPath call.
+        Speedup Svn modules: read without tmp files; get rid of checkPath call; cache scan results
       </action>
       <action date="2015-07-29" dev="mhm" type="fix">
         Fixed SvnModule caching. Reduces the time to publish a module without changes by more than 50%.

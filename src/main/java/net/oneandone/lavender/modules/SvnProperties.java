@@ -128,7 +128,8 @@ public class SvnProperties {
             root.checkDirectory();
             idxName = root.getSvnurl().getPath().replace('/', '.') + ".idx";
             idxName = Strings.removeLeftOpt(idxName, ".");
-            cache = cacheDir.join(root.getRoot().getRepository().getRepositoryRoot(false).getHost(), idxName);
+            // CAUTION: place all files directly in the configured cache directory - sub directories would cause permission problems
+            cache = cacheDir.join(root.getRoot().getRepository().getRepositoryRoot(false).getHost() + "_" + idxName);
             return SvnModule.create(type, name, cache, root, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
         } catch (RuntimeException | IOException e) {
             throw e;

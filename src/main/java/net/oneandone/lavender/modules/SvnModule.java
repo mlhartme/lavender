@@ -18,6 +18,7 @@ package net.oneandone.lavender.modules;
 import net.oneandone.sushi.fs.LineFormat;
 import net.oneandone.sushi.fs.LineReader;
 import net.oneandone.sushi.fs.Node;
+import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.svn.SvnNode;
 import org.slf4j.Logger;
@@ -46,27 +47,58 @@ public class SvnModule extends Module<SvnEntry> {
         long lastModifiedModule;
         String line;
         SvnEntry entry;
+        FileNode lock;
 
         entries = new HashMap<>();
         lastModifiedModule = 0;
-        if (cacheFile.exists()) {
-            try (Reader reader = cacheFile.createReader();
-                 LineReader lines = new LineReader(reader, new LineFormat(LineFormat.LF_SEPARATOR, LineFormat.Trim.ALL))) {
-                line = lines.next();
-                if (line != null) {
-                    lastModifiedModule = Long.parseLong(line);
-                    while (true) {
-                        line = lines.next();
-                        if (line == null) {
-                            break;
+        lock = createLock((FileNode) cacheFile.getParent());
+        try {
+            if (cacheFile.exists()) {
+                try (Reader reader = cacheFile.createReader();
+                     LineReader lines = new LineReader(reader, new LineFormat(LineFormat.LF_SEPARATOR, LineFormat.Trim.ALL))) {
+                    line = lines.next();
+                    if (line != null) {
+                        lastModifiedModule = Long.parseLong(line);
+                        while (true) {
+                            line = lines.next();
+                            if (line == null) {
+                                break;
+                            }
+                            entry = SvnEntry.parse(line);
+                            entries.put(entry.publicPath, entry);
                         }
-                        entry = SvnEntry.parse(line);
-                        entries.put(entry.publicPath, entry);
                     }
                 }
             }
+        } finally {
+            lock.deleteFile();
         }
         return new SvnModule(type, name, cacheFile, entries, lastModifiedModule, root, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
+    }
+
+    private static FileNode createLock(FileNode dir) throws IOException {
+        int retries;
+        FileNode lock;
+
+        retries = 0;
+        while (true) {
+            lock = dir.join(".lock");
+            try {
+                lock.mkfile();
+                break;
+            } catch (IOException e) {
+                retries++;
+                if (retries > 10) {
+                    throw new IOException("cannot create " + lock);
+                }
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e1) {
+                    break;
+                }
+            }
+        }
+        return lock;
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(SvnModule.class);
@@ -191,8 +223,15 @@ public class SvnModule extends Module<SvnEntry> {
     }
 
     public void saveCaches() throws IOException {
-        indexFile.getParent().mkdirsOpt(); // TODO
-        try (Writer dest = indexFile.createWriter()) {
+        FileNode parent;
+        FileNode tmp;
+
+        // first write to a temp file, then move it (which is atomic) because
+        // * no corruption by crashed/killed processes
+        // * works for multiple users as long as the cache directory has the proper permissions
+        parent = (FileNode) indexFile.getParent();
+        tmp = parent.createTempFile();
+        try (Writer dest = tmp.createWriter()) {
             dest.write(Long.toString(lastModifiedModule));
             dest.write('\n');
             for (SvnEntry entry : entries.values()) {
@@ -200,5 +239,6 @@ public class SvnModule extends Module<SvnEntry> {
                 dest.write('\n');
             }
         }
+        tmp.move(indexFile, true);
     }
 }
