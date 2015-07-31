@@ -30,10 +30,14 @@ import org.xml.sax.SAXException;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.RandomAccess;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -42,6 +46,61 @@ import java.util.zip.ZipOutputStream;
  * nodes files.
  */
 public class WarEngine {
+    public static void main(String[] args) throws IOException {
+        RandomAccessFile file;
+        long cdh;
+
+        file = new RandomAccessFile(new java.io.File("t.jar"), "r");
+        file.seek(eocd(file) + 16);
+        cdh = read4(file);
+        file.seek(cdh);
+        if (0x02014b50 != read4(file)) {
+            throw new IOException("broken");
+        }
+        System.out.println(cdh);
+        file.close();
+    }
+
+    private static int read2(RandomAccessFile file) throws IOException {
+        int result;
+
+        result = file.readUnsignedByte();
+        result = result | file.readUnsignedByte() << 8;
+        return result;
+    }
+
+    private static int read4(RandomAccessFile file) throws IOException {
+        int result;
+
+        result = file.readUnsignedByte();
+        result = result | file.readUnsignedByte() << 8;
+        result = result | file.readUnsignedByte() << 16;
+        result = result | file.readUnsignedByte() << 24;
+        return result;
+    }
+
+    private static long eocd(RandomAccessFile file) throws IOException {
+        long length;
+        long pos;
+
+        length = file.length();
+        pos = length - 22;
+        while (true) {
+            file.seek(pos);
+            if (0x06054b50 == read4(file)) {
+                file.seek(pos + 20);
+                if (pos + 22 + read2(file) == length) {
+                    return pos;
+                }
+            }
+            if (pos == 0) {
+                throw new IOException("not found");
+            }
+            pos--;
+        }
+
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(WarEngine.class);
 
     private final FileNode cache;
