@@ -63,6 +63,7 @@ public class Svn extends Base {
         Distributor distributor;
         long changed;
         Index index;
+        FileNode cache;
 
         if (directory.isEmpty() || directory.contains("/")) {
             throw new ArgumentException("invalid directory: " + directory);
@@ -74,12 +75,17 @@ public class Svn extends Base {
         filter.includeAll();
         svnurl = svn + "/data/" + directory;
         moduleConfig = new SvnProperties("svn", filter, svnurl, svnurl, Docroot.WEB, false, "", directory + "/", null);
-        module = moduleConfig.create(properties.createdCache(), true, properties.svnUsername, properties.svnPassword, null);
-        try (Pool pool = pool()) {
-            distributor = target.open(pool, directory + ".idx");
-            changed = module.publish(distributor);
-            index = distributor.close();
-            module.saveCaches();
+        cache = properties.lockedCache();
+        try {
+            module = moduleConfig.create(cache, true, properties.svnUsername, properties.svnPassword, null);
+            try (Pool pool = pool()) {
+                distributor = target.open(pool, directory + ".idx");
+                changed = module.publish(distributor);
+                index = distributor.close();
+                module.saveCaches();
+            }
+        } finally {
+            properties.unlockCache();
         }
         console.info.println("done: " + changed + "/" + index.size() + " files changed");
     }

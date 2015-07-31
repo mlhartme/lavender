@@ -15,6 +15,8 @@
  */
 package net.oneandone.lavender.config;
 
+import net.oneandone.sushi.fs.DeleteException;
+import net.oneandone.sushi.fs.FileNotFoundException;
 import net.oneandone.sushi.fs.MkdirException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
@@ -179,8 +181,41 @@ public class Properties {
         return (FileNode) world.getHome().join(".lavender.net.xml");
     }
 
-    public FileNode createdCache() throws MkdirException {
+    public FileNode lockedCache() throws IOException {
         cache.mkdirsOpt();
+        doLock();
         return cache;
+    }
+
+    private void doLock() throws IOException {
+        int retries;
+        FileNode lock;
+
+        retries = 0;
+        while (true) {
+            lock = cacheLock();
+            try {
+                lock.mkfile();
+                break;
+            } catch (IOException e) {
+                retries++;
+                if (retries > 10) {
+                    throw new IOException("cannot create " + lock);
+                }
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e1) {
+                    break;
+                }
+            }
+        }
+    }
+
+    private FileNode cacheLock() {
+        return cache.join(".lock");
+    }
+
+    public void unlockCache() throws IOException {
+        cacheLock().deleteFile();
     }
 }

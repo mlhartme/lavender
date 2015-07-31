@@ -3,6 +3,8 @@
     <release date="2015-07-29" version="2.2.7">
       <action date="2015-07-29" dev="mhm" type="update">
         lavender.properties: Added optional cache property to configure svn cache directory. Default is ~/.cache/lavender.
+        The cache directory may be shared, it's properly locked and cache files are deleted before writing to avoid permission
+        problems.
       </action>
       <action date="2015-07-29" dev="mhm" type="fix">
         Read svn resource the the scanned revision, not with latest revision.

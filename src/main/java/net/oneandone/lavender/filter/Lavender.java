@@ -99,7 +99,8 @@ public class Lavender implements Filter, LavenderMBean {
                 started = System.currentTimeMillis();
                 properties = Properties.load(Properties.file(world), false);
                 processorFactory = null;
-                develModules = DefaultModule.fromWebapp(properties.createdCache(), false, webapp, properties.svnUsername, properties.svnPassword);
+                develModules = DefaultModule.fromWebapp(properties.lockedCache(), false, webapp, properties.svnUsername, properties.svnPassword);
+                properties.unlockCache(); // TODO
                 LOG.info("Lavender devel filter for " + webapp + ", " + develModules.size()
                         + " resources. Init in " + (System.currentTimeMillis() - started + " ms"));
             }

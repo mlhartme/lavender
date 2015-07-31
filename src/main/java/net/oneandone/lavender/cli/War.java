@@ -87,6 +87,7 @@ public class War extends Base {
     @Override
     public void invoke() throws IOException, SAXException, XmlException {
         FileNode tmp;
+        FileNode cache;
         FileNode outputNodesFile;
         WarEngine engine;
         Map<String, Distributor> distributors;
@@ -103,9 +104,14 @@ public class War extends Base {
         outputNodesFile = tmp.createTempFile();
         try (Pool pool = pool()) {
             distributors = distributors(pool);
-            engine = new WarEngine(properties.createdCache(), distributors, indexName, properties.svnUsername, properties.svnPassword,
-                    inputWar, outputWar, outputNodesFile, nodes);
-            engine.run();
+            cache = properties.lockedCache();
+            try {
+                engine = new WarEngine(cache, distributors, indexName, properties.svnUsername, properties.svnPassword,
+                        inputWar, outputWar, outputNodesFile, nodes);
+                engine.run();
+            } finally {
+                properties.unlockCache();
+            }
         }
         outputNodesFile.deleteFile();
     }

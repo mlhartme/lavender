@@ -47,58 +47,27 @@ public class SvnModule extends Module<SvnEntry> {
         long lastModifiedModule;
         String line;
         SvnEntry entry;
-        FileNode lock;
 
         entries = new HashMap<>();
         lastModifiedModule = 0;
-        lock = createLock((FileNode) cacheFile.getParent());
-        try {
-            if (cacheFile.exists()) {
-                try (Reader reader = cacheFile.createReader();
-                     LineReader lines = new LineReader(reader, new LineFormat(LineFormat.LF_SEPARATOR, LineFormat.Trim.ALL))) {
-                    line = lines.next();
-                    if (line != null) {
-                        lastModifiedModule = Long.parseLong(line);
-                        while (true) {
-                            line = lines.next();
-                            if (line == null) {
-                                break;
-                            }
-                            entry = SvnEntry.parse(line);
-                            entries.put(entry.publicPath, entry);
+        if (cacheFile.exists()) {
+            try (Reader reader = cacheFile.createReader();
+                 LineReader lines = new LineReader(reader, new LineFormat(LineFormat.LF_SEPARATOR, LineFormat.Trim.ALL))) {
+                line = lines.next();
+                if (line != null) {
+                    lastModifiedModule = Long.parseLong(line);
+                    while (true) {
+                        line = lines.next();
+                        if (line == null) {
+                            break;
                         }
+                        entry = SvnEntry.parse(line);
+                        entries.put(entry.publicPath, entry);
                     }
                 }
             }
-        } finally {
-            lock.deleteFile();
         }
         return new SvnModule(type, name, cacheFile, entries, lastModifiedModule, root, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
-    }
-
-    private static FileNode createLock(FileNode dir) throws IOException {
-        int retries;
-        FileNode lock;
-
-        retries = 0;
-        while (true) {
-            lock = dir.join(".lock");
-            try {
-                lock.mkfile();
-                break;
-            } catch (IOException e) {
-                retries++;
-                if (retries > 10) {
-                    throw new IOException("cannot create " + lock);
-                }
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e1) {
-                    break;
-                }
-            }
-        }
-        return lock;
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(SvnModule.class);
