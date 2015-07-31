@@ -57,9 +57,12 @@ public class SvnResource extends Resource {
 
     @Override
     public byte[] getMd5() throws IOException {
+        SvnEntry entry;
+
         if (lazyMd5 == null) {
             lazyMd5 = md5(getData());
-            module.addIndex(new Label(Strings.removeLeft(getPath(), module.getResourcePathPrefix()), Long.toString(lastModifiedRevision), lazyMd5));
+            entry = new SvnEntry(Strings.removeLeft(getPath(), module.getResourcePathPrefix()), lastModifiedRevision, length, lastModified, lazyMd5);
+            module.addIndex(entry);
         }
         return lazyMd5;
     }

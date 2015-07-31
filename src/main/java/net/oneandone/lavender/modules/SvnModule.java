@@ -15,8 +15,8 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.lavender.index.Index;
-import net.oneandone.lavender.index.Label;
+import net.oneandone.sushi.fs.LineFormat;
+import net.oneandone.sushi.fs.LineReader;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.svn.SvnNode;
@@ -31,6 +31,8 @@ import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,19 +40,33 @@ import java.util.Map;
 
 /** Extracts resources from svn */
 public class SvnModule extends Module<SvnEntry> {
-    public static SvnModule create(String type, String name, Node indexFile, SvnNode root, boolean lavendelize, String resourcePathPrefix,
+    public static SvnModule create(String type, String name, Node cacheFile, SvnNode root, boolean lavendelize, String resourcePathPrefix,
                      String targetPathPrefix, Filter filter, JarConfig jarConfig) throws IOException {
-        Index index;
+        Map<String, SvnEntry> entries;
         long lastModifiedModule;
+        String line;
+        SvnEntry entry;
 
-        if (indexFile.exists()) {
-            index = Index.load(indexFile);
-            lastModifiedModule = 0; // TODO
-        } else {
-            index = new Index();
-            lastModifiedModule = 0;
+        entries = new HashMap<>();
+        lastModifiedModule = 0;
+        if (cacheFile.exists()) {
+            try (Reader reader = cacheFile.createReader();
+                 LineReader lines = new LineReader(reader, new LineFormat(LineFormat.LF_SEPARATOR, LineFormat.Trim.ALL))) {
+                //line = lines.next();
+                // TODO: lastModifiedModule = Long.parseLong(line.toString());
+                //if (line != null) {
+                    while (true) {
+                        line = lines.next();
+                        if (line == null) {
+                            break;
+                        }
+                        entry = SvnEntry.parse(line);
+                        entries.put(entry.relativePath, entry);
+                    }
+            //    }
+            }
         }
-        return new SvnModule(type, name, indexFile, index, lastModifiedModule, root, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
+        return new SvnModule(type, name, cacheFile, entries, lastModifiedModule, root, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(SvnModule.class);
@@ -61,7 +77,7 @@ public class SvnModule extends Module<SvnEntry> {
      * Maps svn paths (relative to root (i.e. without modulePrefix), with jarConfig applied) to revision numbers and md5 hashes.
      * Contains only entries where the md5 sum is known.
      */
-    private Index index;
+    private Map<String, SvnEntry> entries;
     private final Node indexFile;
     private Map<String, SvnEntry> lastScan;
     private long lastModifiedRepository;
@@ -70,12 +86,12 @@ public class SvnModule extends Module<SvnEntry> {
     /** may be null */
     private final JarConfig jarConfig;
 
-    public SvnModule(String type, String name, Node indexFile, Index index, long lastModifiedModule, SvnNode root, boolean lavendelize, String resourcePathPrefix,
+    public SvnModule(String type, String name, Node indexFile, Map<String, SvnEntry> entries, long lastModifiedModule, SvnNode root, boolean lavendelize, String resourcePathPrefix,
                      String targetPathPrefix, Filter filter, JarConfig jarConfig) throws IOException {
         super(type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
         this.root = root;
         this.indexFile = indexFile;
-        this.index = index;
+        this.entries = entries;
         this.lastModifiedModule = lastModifiedModule;
         this.lastModifiedRepository = 0;
         this.jarConfig = jarConfig;
@@ -130,10 +146,10 @@ public class SvnModule extends Module<SvnEntry> {
 
     protected Map<String, SvnEntry> doScan(final Filter filter) throws SVNException {
         final Map<String, SvnEntry> files;
-        final Index oldIndex;
+        final Map<String, SvnEntry> oldEntries;
 
-        oldIndex = index;
-        index = new Index();
+        oldEntries = entries;
+        entries = new HashMap<>();
         files = new HashMap<>();
         root.getRoot().getClientMananger().getLogClient().doList(
                 root.getSvnurl(), null, SVNRevision.create(lastModifiedRepository), true, SVNDepth.INFINITY,
@@ -142,7 +158,7 @@ public class SvnModule extends Module<SvnEntry> {
             @Override
             public void handleDirEntry(SVNDirEntry entry) throws SVNException {
                 String path;
-                Label label;
+                SvnEntry old;
 
                 if (entry.getKind() == SVNNodeKind.FILE) {
                     path = entry.getRelativePath();
@@ -155,9 +171,9 @@ public class SvnModule extends Module<SvnEntry> {
                                 throw new UnsupportedOperationException("file too big: " + path);
                             }
                             files.put(path, SvnEntry.create(entry));
-                            label = oldIndex.lookup(path);
-                            if (label != null && entry.getRevision() == Long.parseLong(label.getLavendelizedPath())) {
-                                index.add(label);
+                            old = oldEntries.get(path);
+                            if (old != null && entry.getRevision() == old.revision) {
+                                entries.put(path, old);
                             }
                         }
                     }
@@ -178,22 +194,24 @@ public class SvnModule extends Module<SvnEntry> {
 
     protected byte[] md5(SvnEntry entry) {
         String path;
-        Label label;
+        SvnEntry e;
 
         path = entry.relativePath;
         if (jarConfig != null) {
             path = jarConfig.getPath(path);
         }
-        label = index.lookup(path);
-        if (label != null && label.getLavendelizedPath().equals(Long.toString(entry.revision))) {
-            return label.md5();
+        e = entries.get(path);
+        if (e != null && e.revision == entry.revision) {
+            return e.md5;
         } else {
             return null;
         }
     }
 
-    public void addIndex(Label label) {
-        index.add(label);
+    public void addIndex(SvnEntry entry) {
+        if (entries.put(entry.relativePath, entry) != null) {
+            throw new IllegalStateException("duplicate path: " + entry.relativePath);
+        }
     }
 
     public String uri() {
@@ -201,6 +219,14 @@ public class SvnModule extends Module<SvnEntry> {
     }
 
     public void saveCaches() throws IOException {
-        index.save(indexFile);
+        indexFile.getParent().mkdirsOpt(); // TODO
+        try (Writer dest = indexFile.createWriter()) {
+            // TODO: dest.write(Long.toString(lastModifiedModule));
+            // dest.write('\n');
+            for (SvnEntry entry : entries.values()) {
+                dest.write(entry.toString());
+                dest.write('\n');
+            }
+        }
     }
 }
