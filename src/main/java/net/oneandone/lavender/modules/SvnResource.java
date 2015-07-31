@@ -37,18 +37,13 @@ public class SvnResource extends Resource {
     /** revision this resource was seen in svn */
     private final long accessRevision;
     private final String path;
-    private final int length;
-    private final long lastModified;
 
-    public SvnResource(SvnModule module, SvnEntry entry, long lastModifiedRevision, long accessRevision, String path, int length, long lastModified, SvnNode dataNode) {
+    public SvnResource(SvnModule module, SvnEntry entry, long lastModifiedRevision, long accessRevision, String path, SvnNode dataNode) {
         this.module = module;
         this.entry = entry;
         this.lastModifiedRevision = lastModifiedRevision;
         this.accessRevision = accessRevision;
         this.path = path;
-        this.length = length;
-        this.lastModified = lastModified;
-
         this.dataNode = dataNode;
         this.dataBytes = null;
     }
@@ -70,12 +65,12 @@ public class SvnResource extends Resource {
     }
 
     public long getLastModified() throws IOException {
-        return lastModified;
+        return entry.time;
     }
 
     public boolean isOutdated() {
         try {
-            return lastModified == dataNode.getLastModified();
+            return entry.time == dataNode.getLastModified();
         } catch (GetLastModifiedException e) {
             // not found
             return true;
@@ -91,7 +86,7 @@ public class SvnResource extends Resource {
         long loaded;
 
         if (dataBytes == null) {
-            dataBytes = new byte[length];
+            dataBytes = new byte[entry.size];
             try (OutputStream dest = new FillOutputStream(dataBytes)) {
                 repository = dataNode.getRoot().getRepository();
                 try {

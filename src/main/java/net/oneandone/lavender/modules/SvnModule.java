@@ -180,7 +180,7 @@ public class SvnModule extends Module<SvnEntry> {
     @Override
     protected SvnResource createResource(String resourcePath, SvnEntry entry) {
         return new SvnResource(this, entry, entry.revision, lastModifiedRepository /* not module, because paths might already be out-dated */,
-                resourcePath, entry.size, entry.time, root.join(entry.accessPath));
+                resourcePath, root.join(entry.accessPath));
     }
 
     public String uri() {
