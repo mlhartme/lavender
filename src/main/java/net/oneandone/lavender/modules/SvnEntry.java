@@ -5,7 +5,6 @@ import net.oneandone.lavender.index.Hex;
 import java.util.Arrays;
 
 public class SvnEntry {
-    // TODO
     private static final char SEP = ' ';
     private static final char ESCAPE = '%';
     private static final char LF = '\n';
@@ -83,33 +82,6 @@ public class SvnEntry {
         return false;
     }
 
-    public static String decode(String str) {
-        int prev;
-        int idx;
-        StringBuilder decoded;
-        char c;
-
-        idx = str.indexOf(ESCAPE);
-        if (idx == -1) {
-            return str;
-        }
-        prev = 0;
-        decoded = new StringBuilder(str.length());
-        do {
-            decoded.append(str.substring(prev, idx));
-            decoded.append(decoded(str.charAt(idx + 1), str.charAt(idx + 2)));
-            prev = idx + 3;
-            idx = str.indexOf(ESCAPE, prev);
-        } while (idx != -1);
-        decoded.append(str.substring(prev));
-        return decoded.toString();
-
-    }
-
-    private static char decoded(char c2, char c1) {
-        return (char) (Hex.decode(c2) << 4 | Hex.decode(c1));
-    }
-
     public static String encode(String str) {
         StringBuilder encoded;
         int len;
@@ -135,5 +107,32 @@ public class SvnEntry {
             }
         }
         return encoded.toString();
+    }
+
+    public static String decode(String str) {
+        int prev;
+        int idx;
+        StringBuilder decoded;
+        char c;
+
+        idx = str.indexOf(ESCAPE);
+        if (idx == -1) {
+            return str;
+        }
+        prev = 0;
+        decoded = new StringBuilder(str.length());
+        do {
+            decoded.append(str.substring(prev, idx));
+            decoded.append(decoded(str.charAt(idx + 1), str.charAt(idx + 2)));
+            prev = idx + 3;
+            idx = str.indexOf(ESCAPE, prev);
+        } while (idx != -1);
+        decoded.append(str.substring(prev));
+        return decoded.toString();
+
+    }
+
+    private static char decoded(char c2, char c1) {
+        return (char) (Hex.decode(c2) << 4 | Hex.decode(c1));
     }
 }

@@ -16,7 +16,6 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.sushi.fs.GetLastModifiedException;
-import net.oneandone.sushi.fs.svn.SvnNode;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.io.SVNRepository;
 
@@ -26,19 +25,20 @@ import java.io.OutputStream;
 public class SvnResource extends Resource {
     private final SvnModule module;
 
+    private final String resourcePath;
+
     private final SvnEntry entry;
 
-    /** revision this resource was seen in svn */
     private final long accessRevision;
-    private final String path;
 
-    public SvnResource(SvnModule module, SvnEntry entry, long accessRevision, String path, SvnNode dataNode) {
+    private byte[] lazyData;
+
+    public SvnResource(SvnModule module, String resourcePath, SvnEntry entry, long accessRevision) {
         this.module = module;
+        this.resourcePath = resourcePath;
         this.entry = entry;
         this.accessRevision = accessRevision;
-        this.path = path;
-        this.dataNode = dataNode;
-        this.dataBytes = null;
+        this.lazyData = null;
     }
 
     @Override
@@ -49,12 +49,8 @@ public class SvnResource extends Resource {
         return entry.md5;
     }
 
-    // dataNode xor dataBytes is null
-    private SvnNode dataNode;
-    private byte[] dataBytes;
-
     public String getPath() {
-        return path;
+        return resourcePath;
     }
 
     public long getLastModified() throws IOException {
@@ -63,7 +59,7 @@ public class SvnResource extends Resource {
 
     public boolean isOutdated() {
         try {
-            return entry.time == dataNode.getLastModified();
+            return entry.time == module.getRoot().join(entry.accessPath).getLastModified();
         } catch (GetLastModifiedException e) {
             // not found
             return true;
@@ -71,19 +67,19 @@ public class SvnResource extends Resource {
     }
 
     public String getOrigin() {
-        return module.uri() + "/" + path;
+        return module.uri() + "/" + resourcePath;
     }
 
     public byte[] getData() throws IOException {
         SVNRepository repository;
         long loaded;
 
-        if (dataBytes == null) {
-            dataBytes = new byte[entry.size];
-            try (OutputStream dest = new FillOutputStream(dataBytes)) {
-                repository = dataNode.getRoot().getRepository();
+        if (lazyData == null) {
+            lazyData = new byte[entry.size];
+            try (OutputStream dest = new FillOutputStream(lazyData)) {
+                repository = module.getRoot().getRoot().getRepository();
                 try {
-                    loaded = repository.getFile(dataNode.getPath(), accessRevision, null, dest);
+                    loaded = repository.getFile(module.getRoot().join(entry.accessPath).getPath(), accessRevision, null, dest);
                 } catch (SVNException e) {
                     throw new IOException("svn failure: " + e.getMessage(), e);
                 }
@@ -91,9 +87,8 @@ public class SvnResource extends Resource {
                     throw new IllegalStateException(loaded + " " + accessRevision);
                 }
             }
-            dataNode = null;
         }
-        return dataBytes;
+        return lazyData;
     }
 
     public static class FillOutputStream extends OutputStream {

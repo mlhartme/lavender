@@ -96,6 +96,10 @@ public class SvnModule extends Module<SvnEntry> {
         this.jarConfig = jarConfig;
     }
 
+    public SvnNode getRoot() {
+        return root;
+    }
+
     protected Map<String, SvnEntry> scan(final Filter filter) throws SVNException {
         SVNRepository repository;
         long modifiedRepository;
@@ -179,8 +183,7 @@ public class SvnModule extends Module<SvnEntry> {
 
     @Override
     protected SvnResource createResource(String resourcePath, SvnEntry entry) {
-        return new SvnResource(this, entry, lastModifiedRepository /* not module, because paths might already be out-dated */,
-                resourcePath, root.join(entry.accessPath));
+        return new SvnResource(this, resourcePath, entry, lastModifiedRepository /* not module, because paths might already be out-dated */);
     }
 
     public String uri() {
