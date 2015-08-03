@@ -51,7 +51,6 @@ public class LavenderIT {
         FileNode target;
         FileNode testhosts;
         FileNode war;
-        FileNode warModified;
         long started;
         Net net;
 
@@ -60,8 +59,6 @@ public class LavenderIT {
         System.out.println(name + " started: ");
         src = world.file(warFile);
         war = world.getTemp().createTempFile();
-        warModified = world.getTemp().createTempFile();
-        warModified.deleteFile();
         src.copyFile(war);
         target = world.guessProjectHome(getClass()).join("target");
         testhosts = target.join("it", name);
@@ -70,14 +67,13 @@ public class LavenderIT {
         started = System.currentTimeMillis();
         net = net(testhosts);
         properties.initTemp(target.join("ittemp"));
-        assertEquals(0, Main.doMain(properties, net, "-e", "war", war.getAbsolute(), warModified.getAbsolute(), INDEX_NAME, "web=test"));
+        assertEquals(0, Main.doMain(properties, net, "-e", "war", war.getAbsolute(), INDEX_NAME, "web=test"));
         System.out.println(name + " done: " + (System.currentTimeMillis() - started) + " ms");
         for (FileNode host : testhosts.list()) {
             assertEquals(expected, md5(host.join("htdocs")));
         }
         // tmp space on pearls is very restricted
         war.deleteFile();
-        warModified.deleteFile();
     }
 
     private Net net(FileNode testhosts) throws IOException {

@@ -82,8 +82,8 @@ public class Main extends Cli implements Command {
         console.info.println("usage: 'lavender' command");
         console.info.println();
         console.info.println("publishing commands");
-        console.info.println("  'war' global-options inputWar outputWar idxName target+");
-        console.info.println("                            publish resources from the specified war,");
+        console.info.println("  'war' global-options war idxName target+");
+        console.info.println("                            publish resources from the specified war, addes nodes- and index file to the war;");
         console.info.println("                            target = type '=' cluster ['/' alias]");
         console.info.println("  'svn' global-options ['-type' type] directory cluster");
         console.info.println("                            publish resources from <svn>/data/<directory> to <docroot>/<directory>");

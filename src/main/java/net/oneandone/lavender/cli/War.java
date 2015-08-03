@@ -36,13 +36,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class War extends Base {
-    @Value(name = "inputWar", position = 1)
-    private FileNode inputWar;
+    @Value(name = "war", position = 1)
+    private FileNode war;
 
-    @Value(name = "outputWar", position = 2)
-    private FileNode outputWar;
-
-    @Value(name = "idxName", position = 3)
+    @Value(name = "idxName", position = 2)
     private String indexName;
 
     private final Map<String, Target> targets = new HashMap<>();
@@ -98,16 +95,15 @@ public class War extends Base {
         if (nodes == null) {
             throw new ArgumentException("missing web target");
         }
-        inputWar.checkFile();
-        outputWar.checkNotExists();
-        tmp = inputWar.getWorld().getTemp();
+        war.checkFile();
+        tmp = war.getWorld().getTemp();
         outputNodesFile = tmp.createTempFile();
         try (Pool pool = pool()) {
             distributors = distributors(pool);
             cache = properties.lockedCache();
             try {
                 engine = new WarEngine(cache, distributors, indexName, properties.svnUsername, properties.svnPassword,
-                        inputWar, outputWar, outputNodesFile, nodes);
+                        war, outputNodesFile, nodes);
                 engine.run();
             } finally {
                 properties.unlockCache();

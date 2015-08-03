@@ -49,20 +49,18 @@ public class WarEngine {
     private final String indexName;
     private final String svnUsername;
     private final String svnPassword;
-    private final FileNode inputWar;
-    private final FileNode outputWar;
+    private final FileNode war;
     private final FileNode outputNodesFile;
     private final String nodes;
 
     public WarEngine(FileNode cache, Map<String, Distributor> distributors, String indexName, String svnUsername, String svnPassword,
-                     FileNode inputWar, FileNode outputWar, FileNode outputNodesFile, String nodes) {
+                     FileNode war, FileNode outputNodesFile, String nodes) {
         this.cache = cache;
         this.distributors = distributors;
         this.indexName = indexName;
         this.svnUsername = svnUsername;
         this.svnPassword = svnPassword;
-        this.inputWar = inputWar;
-        this.outputWar = outputWar;
+        this.war = war;
         this.outputNodesFile = outputNodesFile;
         this.nodes = nodes;
     }
@@ -82,7 +80,7 @@ public class WarEngine {
         long warStart;
 
         started = System.currentTimeMillis();
-        modules = DefaultModule.fromWebapp(cache, true, inputWar.openZip(), svnUsername, svnPassword);
+        modules = DefaultModule.fromWebapp(cache, true, war.openZip(), svnUsername, svnPassword);
         absolute = 0;
         changed = extract(modules);
         result = new HashMap<>();
@@ -96,8 +94,7 @@ public class WarEngine {
         outputNodesFile.writeString(nodes);
         warStart = System.currentTimeMillis();
         updateWarFile(result.get(Docroot.WEB));
-        LOG.info("updated war in=" + (inputWar.length() / 1024) + "k, out=" + (outputWar.length() / 1024) + "k, "
-                + (System.currentTimeMillis() - warStart) + " ms");
+        LOG.info("updated war " + (war.length() / 1024) + "k, " + (System.currentTimeMillis() - warStart) + " ms");
         for (Module module : modules) {
             module.saveCaches();
         }
@@ -123,9 +120,8 @@ public class WarEngine {
     }
 
     private void updateWarFile(Index webIndex) throws IOException {
-        inputWar.copyFile(outputWar);
-        try (OutputStream dest = outputWar.createAppendStream();
-             ZipOutputStream app = new ZipOutputStream(dest, new ZipFile(outputWar.toPath().toFile()))) {
+        try (OutputStream dest = war.createAppendStream();
+             ZipOutputStream app = new ZipOutputStream(dest, new ZipFile(war.toPath().toFile()))) {
 
             ZipEntry indexEntry = new ZipEntry(Lavender.LAVENDER_IDX);
             app.putNextEntry(indexEntry);
