@@ -35,6 +35,8 @@ public class SvnProperties {
     public final String name;
     public final Filter filter;
     public final String svnurl;
+    /** to pin svnurl -- not for svnurlDevel */
+    public final long svnurlRevision;
     public final String svnurlDevel;
     public final String type;
     public final boolean lavendelize;
@@ -44,7 +46,7 @@ public class SvnProperties {
     /** Absolute path relative to local sources for this module, null if not available */
     public final String source;
 
-    public SvnProperties(String name, Filter filter, String svnurl, String svnurlDevel, String type, boolean lavendelize, String resourcePathPrefix,
+    public SvnProperties(String name, Filter filter, String svnurl, long svnurlRevision, String svnurlDevel, String type, boolean lavendelize, String resourcePathPrefix,
                          String targetPathPrefix, String source) {
         if (name.startsWith("/") || name.endsWith("/")) {
             throw new IllegalArgumentException(name);
@@ -52,6 +54,7 @@ public class SvnProperties {
         this.name = name;
         this.filter = filter;
         this.svnurl = svnurl;
+        this.svnurlRevision = svnurlRevision;
         this.svnurlDevel = svnurlDevel;
         this.type = type;
         this.lavendelize = lavendelize;
@@ -67,6 +70,7 @@ public class SvnProperties {
         String idxName;
         final FileNode checkout;
         String url;
+        long pinnedRevision;
 
         world = cacheDir.getWorld();
         if (svnurl == null) {
@@ -121,7 +125,14 @@ public class SvnProperties {
                 };
             }
         }
-        url = prod ? svnurl : svnurlDevel;
+        if (prod) {
+            url = svnurl;
+            pinnedRevision = svnurlRevision;
+        } else {
+            url = svnurlDevel;
+            // devel url is never pinned:
+            pinnedRevision = -1;
+        }
         try {
             root = (SvnNode) world.node("svn:" + url);
             // make sure to get a propery error message, and to get it early
@@ -130,7 +141,7 @@ public class SvnProperties {
             idxName = Strings.removeLeftOpt(idxName, ".");
             // CAUTION: place all files directly in the configured cache directory - sub directories would cause permission problems
             cache = cacheDir.join(root.getRoot().getRepository().getRepositoryRoot(false).getHost() + "_" + idxName);
-            return SvnModule.create(type, name, cache, root, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
+            return SvnModule.create(type, name, cache, root, pinnedRevision, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
         } catch (RuntimeException | IOException e) {
             throw e;
         } catch (Exception e) {

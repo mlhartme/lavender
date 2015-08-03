@@ -102,6 +102,7 @@ public class LavenderProperties {
         String relative;
         String source;
         String svnurl;
+        long svnurlRevision;
         String svnurlDevel;
         String svnsrc;
 
@@ -115,6 +116,7 @@ public class LavenderProperties {
         result = new LavenderProperties(eatFilter(properties, "pustefix", DEFAULT_INCLUDES), source);
         for (String prefix : svnPrefixes(properties)) {
             svnurl = strip((String) properties.remove(prefix));
+            svnurlRevision = Long.parseLong(eatOpt(properties, prefix + ".revision", "-1"));
             svnurlDevel = strip(eatOpt(properties, prefix + ".devel", svnurl));
             svnsrc = eatSvnSource(properties, prefix, source);
             svnsrc = fallback(svnurl, svnsrc);
@@ -122,7 +124,7 @@ public class LavenderProperties {
                     new SvnProperties(
                             prefix.substring(SvnProperties.SVN_PREFIX.length()),
                             eatFilter(properties, prefix, DEFAULT_INCLUDES),
-                            svnurl, svnurlDevel,
+                            svnurl, svnurlRevision, svnurlDevel,
                             eatOpt(properties, prefix + ".type", Docroot.WEB),
                             eatBoolean(properties, prefix + ".lavendelize", true),
                             eatOpt(properties, prefix + ".resourcePathPrefix", ""),

@@ -41,7 +41,7 @@ import java.util.Map;
 
 /** Extracts resources from svn */
 public class SvnModule extends Module<SvnEntry> {
-    public static SvnModule create(String type, String name, Node cacheFile, SvnNode root, boolean lavendelize, String resourcePathPrefix,
+    public static SvnModule create(String type, String name, Node cacheFile, SvnNode root, long pinnedRevision, boolean lavendelize, String resourcePathPrefix,
                      String targetPathPrefix, Filter filter, JarConfig jarConfig) throws IOException {
         Map<String, SvnEntry> entries;
         long lastModifiedModule;
@@ -67,12 +67,14 @@ public class SvnModule extends Module<SvnEntry> {
                 }
             }
         }
-        return new SvnModule(type, name, cacheFile, entries, lastModifiedModule, root, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
+        return new SvnModule(type, name, cacheFile, entries, lastModifiedModule, root, pinnedRevision, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(SvnModule.class);
 
     private final SvnNode root;
+    /** Revision you want to pin this module to, -1 for no pinning */
+    private final long pinnedRevision;
 
     /**
      * Maps svn paths (relative to root (i.e. without modulePrefix), with jarConfig applied) to revision numbers and md5 hashes.
@@ -80,16 +82,19 @@ public class SvnModule extends Module<SvnEntry> {
      */
     private Map<String, SvnEntry> entries;
     private final Node indexFile;
+    /** if pinnedRevision == 1: lastModified reported by repository, otherwise pinnedRevision */
     private long lastModifiedRepository;
     private long lastModifiedModule;
 
     /** may be null */
     private final JarConfig jarConfig;
 
-    public SvnModule(String type, String name, Node indexFile, Map<String, SvnEntry> entries, long lastModifiedModule, SvnNode root, boolean lavendelize, String resourcePathPrefix,
+    public SvnModule(String type, String name, Node indexFile, Map<String, SvnEntry> entries, long lastModifiedModule, SvnNode root,
+                     long pinnedRevision, boolean lavendelize, String resourcePathPrefix,
                      String targetPathPrefix, Filter filter, JarConfig jarConfig) throws IOException {
         super(type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
         this.root = root;
+        this.pinnedRevision = pinnedRevision;
         this.indexFile = indexFile;
         this.entries = entries;
         this.lastModifiedModule = lastModifiedModule;
@@ -107,7 +112,7 @@ public class SvnModule extends Module<SvnEntry> {
         long modifiedModule;
 
         repository = root.getRoot().getRepository();
-        modifiedRepository = repository.getLatestRevision();
+        modifiedRepository = pinnedRevision == -1 ? repository.getLatestRevision() : pinnedRevision;
         if (modifiedRepository == lastModifiedRepository) {
             LOG.info("no changes in repository: " + modifiedRepository);
             return entries;
@@ -127,14 +132,17 @@ public class SvnModule extends Module<SvnEntry> {
     private long getLastModified() throws SVNException {
         final List<SVNDirEntry> result;
 
+        if (pinnedRevision != -1) {
+            return pinnedRevision;
+        }
         result = new ArrayList<>();
         root.getRoot().getClientMananger().getLogClient().doList(root.getSvnurl(), null, SVNRevision.create(lastModifiedRepository),
                 false, SVNDepth.EMPTY, SVNDirEntry.DIRENT_ALL, new ISVNDirEntryHandler() {
-            @Override
-            public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException {
-                result.add(dirEntry);
-            }
-        });
+                    @Override
+                    public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException {
+                        result.add(dirEntry);
+                    }
+                });
         if (result.size() != 1) {
             throw new IllegalStateException("" + result.size());
         }
