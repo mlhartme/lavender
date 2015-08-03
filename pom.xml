@@ -83,6 +83,21 @@
       <version>0.1.51</version>
     </dependency>
     <dependency>
+      <groupId>de.schlichtherle.truezip</groupId>
+      <artifactId>truezip-driver-zip</artifactId>
+      <version>7.7.9</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.bouncycastle</groupId>
+          <artifactId>bcprov-jdk15on</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>de.schlichtherle.truezip</groupId>
+          <artifactId>truezip-swing</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>com.jcraft</groupId>
       <artifactId>jsch.agentproxy.core</artifactId>
       <version>0.0.7</version>

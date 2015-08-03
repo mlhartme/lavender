@@ -15,6 +15,9 @@
  */
 package net.oneandone.lavender.cli;
 
+import de.schlichtherle.truezip.zip.ZipEntry;
+import de.schlichtherle.truezip.zip.ZipFile;
+import de.schlichtherle.truezip.zip.ZipOutputStream;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.filter.Lavender;
 import net.oneandone.lavender.index.Distributor;
@@ -22,85 +25,22 @@ import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.DefaultModule;
 import net.oneandone.lavender.modules.Module;
 import net.oneandone.sushi.fs.file.FileNode;
-import net.oneandone.sushi.io.Buffer;
 import net.oneandone.sushi.xml.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.Enumeration;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.RandomAccess;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
 
 /**
  * Drives the war publishing process: Extracts resources from a war files to distributors and creates a new war file with an index and a
  * nodes files.
  */
 public class WarEngine {
-    public static void main(String[] args) throws IOException {
-        RandomAccessFile file;
-        long cdh;
-
-        file = new RandomAccessFile(new java.io.File("t.jar"), "r");
-        file.seek(eocd(file) + 16);
-        cdh = read4(file);
-        file.seek(cdh);
-        if (0x02014b50 != read4(file)) {
-            throw new IOException("broken");
-        }
-        System.out.println(cdh);
-        file.close();
-    }
-
-    private static int read2(RandomAccessFile file) throws IOException {
-        int result;
-
-        result = file.readUnsignedByte();
-        result = result | file.readUnsignedByte() << 8;
-        return result;
-    }
-
-    private static int read4(RandomAccessFile file) throws IOException {
-        int result;
-
-        result = file.readUnsignedByte();
-        result = result | file.readUnsignedByte() << 8;
-        result = result | file.readUnsignedByte() << 16;
-        result = result | file.readUnsignedByte() << 24;
-        return result;
-    }
-
-    private static long eocd(RandomAccessFile file) throws IOException {
-        long length;
-        long pos;
-
-        length = file.length();
-        pos = length - 22;
-        while (true) {
-            file.seek(pos);
-            if (0x06054b50 == read4(file)) {
-                file.seek(pos + 20);
-                if (pos + 22 + read2(file) == length) {
-                    return pos;
-                }
-            }
-            if (pos == 0) {
-                throw new IOException("not found");
-            }
-            pos--;
-        }
-
-    }
-
     private static final Logger LOG = LoggerFactory.getLogger(WarEngine.class);
 
     private final FileNode cache;
@@ -183,31 +123,21 @@ public class WarEngine {
     }
 
     private void updateWarFile(Index webIndex) throws IOException {
-        ZipInputStream zin = new ZipInputStream(new FileInputStream(inputWar.toPath().toFile()));
-        ZipOutputStream out = new ZipOutputStream(outputWar.createOutputStream());
-        Buffer buffer;
-        String name;
+        inputWar.copyFile(outputWar);
+        try (OutputStream dest = outputWar.createAppendStream();
+             ZipOutputStream app = new ZipOutputStream(dest, new ZipFile(outputWar.toPath().toFile()))) {
 
-        buffer = outputWar.getWorld().getBuffer();
-        for (ZipEntry entry = zin.getNextEntry(); entry != null; entry = zin.getNextEntry()) {
-            name = entry.getName();
-            ZipEntry outEntry = new ZipEntry(name);
-            out.putNextEntry(outEntry);
-            buffer.copy(zin, out);
-            out.closeEntry();
+            ZipEntry indexEntry = new ZipEntry(Lavender.LAVENDER_IDX);
+            app.putNextEntry(indexEntry);
+            webIndex.save(app);
+            app.closeEntry();
+
+            ZipEntry nodesEntry = new ZipEntry(Lavender.LAVENDER_NODES);
+            app.putNextEntry(nodesEntry);
+            outputNodesFile.writeTo(app);
+            app.closeEntry();
+
+            app.close();
         }
-        zin.close();
-
-        ZipEntry indexEntry = new ZipEntry(Lavender.LAVENDER_IDX);
-        out.putNextEntry(indexEntry);
-        webIndex.save(out);
-        out.closeEntry();
-
-        ZipEntry nodesEntry = new ZipEntry(Lavender.LAVENDER_NODES);
-        out.putNextEntry(nodesEntry);
-        outputNodesFile.writeTo(out);
-        out.closeEntry();
-
-        out.close();
     }
 }
