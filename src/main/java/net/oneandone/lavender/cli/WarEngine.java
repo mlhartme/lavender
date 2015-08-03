@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -120,8 +121,11 @@ public class WarEngine {
     }
 
     private void updateWarFile(Index webIndex) throws IOException {
-        try (OutputStream dest = war.createAppendStream();
-             ZipOutputStream app = new ZipOutputStream(dest, new ZipFile(war.toPath().toFile()))) {
+        java.io.File zip;
+
+        zip = war.toPath().toFile();
+        try (OutputStream dest = new FileOutputStream(zip, true);
+             ZipOutputStream app = new ZipOutputStream(dest, new ZipFile(zip))) {
 
             ZipEntry indexEntry = new ZipEntry(Lavender.LAVENDER_IDX);
             app.putNextEntry(indexEntry);
