@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
   <body>
-    <release date="2015-08-01" version="2.3.0">
+    <release date="2015-08-04" version="2.3.0">
       <action date="2015-08-01" dev="mhm" type="update">
         Added revision property to svn properties to pin a module to one revision.
       </action>
@@ -10,13 +10,11 @@
         problems.
       </action>
       <action date="2015-07-29" dev="mhm" type="fix">
-        Read svn resource the the scanned revision, not with latest revision.
+        Read svn resource with the scanned revision, not with latest revision.
       </action>
       <action date="2015-07-29" dev="mhm" type="update">
-        Speedup Svn modules: read without tmp files; get rid of checkPath call; cache scan results; append to war using TrueZip
-      </action>
-      <action date="2015-07-29" dev="mhm" type="fix">
-        Fixed SvnModule caching. Reduces the time to publish a module without changes by more than 50%.
+        Speedup Svn modules: fixed path problem that prevended some caching; 
+        read without tmp files; get rid of checkPath call; cache scan results; append to war using TrueZip.
       </action>
     </release>
     <release date="2015-07-08" version="2.2.6">
