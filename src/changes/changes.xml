@@ -13,8 +13,13 @@
         Read svn resource with the scanned revision, not with latest revision.
       </action>
       <action date="2015-07-29" dev="mhm" type="update">
+        The war command takes on war argument now, and this war file is modified. 
+        This is an incompatible change, and this is the reason for the minor version bump.
+      </action>
+      <action date="2015-07-29" dev="mhm" type="update">
         Speedup Svn modules: fixed path problem that prevended some caching; 
-        read without tmp files; get rid of checkPath call; cache scan results; append to war using TrueZip.
+        read without tmp files; get rid of checkPath call; cache scan results; 
+        append to war using TrueZip. 
       </action>
     </release>
     <release date="2015-07-08" version="2.2.6">
