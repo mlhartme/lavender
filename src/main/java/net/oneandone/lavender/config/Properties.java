@@ -15,14 +15,13 @@
  */
 package net.oneandone.lavender.config;
 
-import net.oneandone.sushi.fs.DeleteException;
-import net.oneandone.sushi.fs.FileNotFoundException;
-import net.oneandone.sushi.fs.MkdirException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.ssh.SshFilesystem;
 import net.oneandone.sushi.fs.svn.SvnFilesystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -31,6 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Properties {
+    private static final Logger LOG = LoggerFactory.getLogger(Properties.class);
+
     /** convenience method */
     public static Properties load() throws IOException {
         return load(file(new World()), true);
@@ -181,34 +182,38 @@ public class Properties {
         return (FileNode) world.getHome().join(".lavender.net.xml");
     }
 
-    public FileNode lockedCache() throws IOException {
+    public FileNode lockedCache(int wait, String lockContent) throws IOException {
         cache.mkdirsOpt();
-        doLock();
+        doLock(wait, lockContent);
         return cache;
     }
 
-    private void doLock() throws IOException {
-        int retries;
+    private void doLock(int wait, String lockContent) throws IOException {
         FileNode lock;
+        int seconds;
 
-        retries = 0;
+        lock = cacheLock();
+        seconds = 0;
         while (true) {
-            lock = cacheLock();
             try {
                 lock.mkfile();
                 break;
             } catch (IOException e) {
-                retries++;
-                if (retries > 10) {
+                seconds++;
+                if (seconds >= wait) {
                     throw new IOException("cannot create " + lock);
                 }
+                if (seconds % 10 == 0) {
+                    LOG.info("waiting for cache-lock " + lock + ", seconds=" + seconds);
+                }
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e1) {
-                    break;
+                    // fall-through
                 }
             }
         }
+        lock.writeString(lockContent);
     }
 
     private FileNode cacheLock() {

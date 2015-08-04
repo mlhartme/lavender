@@ -100,7 +100,7 @@ public class War extends Base {
         outputNodesFile = tmp.createTempFile();
         try (Pool pool = pool()) {
             distributors = distributors(pool);
-            cache = properties.lockedCache();
+            cache = properties.lockedCache(await, user);
             try {
                 engine = new WarEngine(cache, distributors, indexName, properties.svnUsername, properties.svnPassword,
                         war, outputNodesFile, nodes);
