@@ -25,7 +25,6 @@ import net.oneandone.lavender.modules.Module;
 import net.oneandone.lavender.modules.Resource;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
-import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.xml.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

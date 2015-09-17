@@ -35,6 +35,9 @@ public class Host {
     @Value
     private String name;
 
+    @Option
+    private Integer port;
+
     /** or path for if name is localhost */
     @Value
     private String login;
@@ -47,7 +50,12 @@ public class Host {
     }
 
     public Host(String name, String login, String path) {
+        this(name, 22, login, path);
+    }
+
+    public Host(String name, int port, String login, String path) {
         this.name = name;
+        this.port = port;
         this.login = login;
         this.path = path;
     }
@@ -68,6 +76,14 @@ public class Host {
         this.login = login;
     }
 
+    public Integer getPort() {
+        return port;
+    }
+
+    public void setPort(Integer port) {
+        this.port = port;
+    }
+
     public String getPath() {
         return path;
     }
@@ -80,7 +96,7 @@ public class Host {
     public Connection connect(World world, String lockContent, int wait) throws IOException {
         Node node;
 
-        node = world.validNode("ssh://" + login + "@" + name);
+        node = world.validNode("ssh://" + login + "@" + name + ":" + port);
         if (path != null) {
             node = node.join(path);
         }
