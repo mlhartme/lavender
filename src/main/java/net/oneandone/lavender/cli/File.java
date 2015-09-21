@@ -57,6 +57,10 @@ public class File extends Base {
         super(console, properties, net);
     }
 
+    private boolean isZipFile(FileNode file) {
+        return file.getName().toLowerCase().endsWith(".zip");
+    }
+
     @Override
     public void invoke() throws IOException {
         final Node exploded;
@@ -71,7 +75,7 @@ public class File extends Base {
 
         cluster = net.get(clusterName);
         file.checkExists();
-        if (file.isFile()) {
+        if (isZipFile(file)) {
             exploded = file.openZip();
         } else {
             exploded = file;
