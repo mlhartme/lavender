@@ -88,8 +88,9 @@ public class Main extends Cli implements Command {
         console.info.println("  'svn' global-options ['-type' type] directory cluster");
         console.info.println("                            publish resources from <svn>/data/<directory> to <docroot>/<directory>");
         console.info.println("                            type defaults to 'svn'; <svn> is picked from lavender.properties");
-        console.info.println("  'file' global-options ['-prefix' prefix] file idxName type cluster");
-        console.info.println("                            publish resources from file to the specified cluster");
+        console.info.println("  'file' global-options ['-prefix' prefix] archive idxName type cluster");
+        console.info.println("                            publish resources from archive to the specified cluster;");
+        console.info.println("                            archive is simply a directory or an zip archive (e.g. a jar- or zip file9");
         console.info.println("other commands");
         console.info.println("  'help'                    print this message");
         console.info.println("  'version'                 print version information");

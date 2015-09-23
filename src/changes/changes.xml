@@ -2,6 +2,9 @@
   <body>
     <release date="2015-09-xx" version="2.3.1">
       <action date="2015-09-23" dev="mhm" type="update">
+        Properly document and check the first file command argument. It's now called archive.
+      </action>
+      <action date="2015-09-23" dev="mhm" type="update">
         Improved search order to locate lavender.properties: It's now what you'll normally expect:
         1) "lavender.properties" system property
         2) "LAVENDER_PROPERTIES" environment variable

@@ -25,6 +25,7 @@ import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.DefaultModule;
 import net.oneandone.lavender.modules.Module;
+import net.oneandone.sushi.cli.ArgumentException;
 import net.oneandone.sushi.cli.Console;
 import net.oneandone.sushi.cli.Option;
 import net.oneandone.sushi.cli.Value;
@@ -38,8 +39,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class File extends Base {
-    @Value(name = "file", position = 1)
-    private FileNode file;
+    @Value(name = "archive", position = 1)
+    private FileNode archive;
 
     @Value(name = "idxName", position = 2)
     private String name;
@@ -70,11 +71,15 @@ public class File extends Base {
         Index index;
 
         cluster = net.get(clusterName);
-        file.checkExists();
-        if (file.isFile()) {
-            exploded = file.openZip();
+        archive.checkExists();
+        if (archive.isFile()) {
+            try {
+                exploded = archive.openZip();
+            } catch (IOException e) {
+                throw new ArgumentException(archive + ": cannot open zip archive: " + e.getMessage(), e);
+            }
         } else {
-            exploded = file;
+            exploded = archive;
         }
         docroot = cluster.docroot(type);
         target = new Target(cluster, docroot, docroot.aliases().get(0));
