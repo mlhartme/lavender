@@ -29,35 +29,28 @@ import java.net.UnknownHostException;
 @Type
 public class Host {
     public static Host localhost(FileNode basedir) throws UnknownHostException {
-        return new Host(InetAddress.getLocalHost().getHostName(), System.getProperty("user.name"), basedir.getPath());
+        return new Host(InetAddress.getLocalHost().getHostName(), null, basedir.getURI().toString());
     }
 
     @Value
     private String name;
 
+    /** Specify login XOR uri */
     @Option
-    private Integer port;
-
-    /** or path for if name is localhost */
-    @Value
     private String login;
 
+    /** Specify login XOR uri */
     @Option
-    private String path;
+    private String uri;
 
     public Host() {
         this(null, null, null);
     }
 
-    public Host(String name, String login, String path) {
-        this(name, 22, login, path);
-    }
-
-    public Host(String name, int port, String login, String path) {
+    public Host(String name, String login, String uri) {
         this.name = name;
-        this.port = port;
         this.login = login;
-        this.path = path;
+        this.uri = uri;
     }
 
     public String getName() {
@@ -76,29 +69,29 @@ public class Host {
         this.login = login;
     }
 
-    public Integer getPort() {
-        return port;
+    public String getUri() {
+        return uri;
     }
 
-    public void setPort(Integer port) {
-        this.port = port;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
     /** do not call directly, use pool.connect instead. */
     public Connection connect(World world, String lockContent, int wait) throws IOException {
         Node node;
 
-        node = world.validNode("ssh://" + login + "@" + name + ":" + port);
-        if (path != null) {
-            node = node.join(path);
+        if (login == null && uri == null) {
+            throw new IllegalStateException("missing login or uri");
+        }
+        if (login != null && uri != null) {
+            throw new IllegalStateException("cannot use both login and uri");
+        }
+
+        if (login != null) {
+            node = world.validNode("ssh://" + login + "@" + name);
+        } else {
+            node = world.validNode(uri);
         }
         return lockContent == null ? Connection.openSimple(this, node) : Connection.openLocked(this, node, "tmp/lavender.lock", lockContent, wait);
     }

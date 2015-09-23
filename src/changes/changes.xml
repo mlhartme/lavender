@@ -10,8 +10,8 @@
         5) /etc/lavender.properties
         Thus, there's a new system property that's searched first. And the classpath is now searched before the home directory.
       </action>
-      <action date="2015-09-17" dev="mhm" type="update">
-        Support configurable ssh ports for hosts.
+      <action date="2015-09-23" dev="mhm" type="update">
+        Support configurable uri for hosts. This replaces the option to specify a path.
       </action>
     </release>
     <release date="2015-08-04" version="2.3.0">
