@@ -50,10 +50,10 @@ public class Host {
     }
 
     public Host(String name, String login, String path) {
-        this(name, 22, login, path);
+        this(name, null, login, path);
     }
 
-    public Host(String name, int port, String login, String path) {
+    public Host(String name, Integer port, String login, String path) {
         this.name = name;
         this.port = port;
         this.login = login;
@@ -96,11 +96,32 @@ public class Host {
     public Connection connect(World world, String lockContent, int wait) throws IOException {
         Node node;
 
-        node = world.validNode("ssh://" + login + "@" + name + ":" + port);
-        if (path != null) {
-            node = node.join(path);
-        }
+        node = world.validNode(getUri());
         return lockContent == null ? Connection.openSimple(this, node) : Connection.openLocked(this, node, "tmp/lavender.lock", lockContent, wait);
+    }
+
+    /**
+     * @return Return URI of host. Use ssh schema if none is given
+     */
+    private String getUri() {
+        int idx;
+        String uri = name;
+
+        idx = uri.indexOf("@");
+        if (idx == -1 && login != null && login.length() > 0) {
+            uri = login + "@" + uri;
+        }
+        idx = uri.indexOf("://");
+        if (idx == -1) {
+            uri = "ssh://" + uri;
+        }
+        if (port != null) {
+            uri += port;
+        }
+        if (path != null) {
+            uri += "/" + path;
+        }
+        return uri;
     }
 
     public String toString() {
