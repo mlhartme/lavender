@@ -52,24 +52,26 @@ public class Properties {
 
         path = System.getenv("LAVENDER_PROPERTIES");
         if (path != null) {
-            file = world.file(path);
-        } else {
-            file = world.getHome().join(".lavender.properties");
-            if (!file.exists()) {
-                parent = world.locateClasspathItem(Properties.class).getParent();
-                file = parent.join("lavender.properties");
-                if (!file.exists()) {
-                    file = parent.getParent().join("etc/lavender.properties");
-                    if (!file.exists()) {
-                        file = world.file("/etc/lavender.properties");
-                        if (!file.exists()) {
-                            throw new IOException("cannot locate lavender properties");
-                        }
-                    }
-                }
-            }
+            return world.file(path);
         }
-        return file;
+        file = world.getHome().join(".lavender.properties");
+        if (file.exists()) {
+            return file;
+        }
+        parent = world.locateClasspathItem(Properties.class).getParent();
+        file = parent.join("lavender.properties");
+        if (file.exists()) {
+            return file;
+        }
+        file = parent.getParent().join("etc/lavender.properties");
+        if (file.exists()) {
+            return file;
+        }
+        file = world.file("/etc/lavender.properties");
+        if (file.exists()) {
+            return file;
+        }
+        throw new IOException("cannot locate lavender properties");
     }
 
     private static Properties properties(Node file) throws IOException {
