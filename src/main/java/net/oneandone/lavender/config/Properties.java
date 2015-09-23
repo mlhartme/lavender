@@ -50,16 +50,20 @@ public class Properties {
         Node file;
         FileNode parent;
 
+        path = System.getProperty("lavender.properties");
+        if (path != null) {
+            return world.file(path);
+        }
         path = System.getenv("LAVENDER_PROPERTIES");
         if (path != null) {
             return world.file(path);
         }
-        file = world.getHome().join(".lavender.properties");
+        parent = world.locateClasspathItem(Properties.class).getParent();
+        file = parent.join("lavender.properties");
         if (file.exists()) {
             return file;
         }
-        parent = world.locateClasspathItem(Properties.class).getParent();
-        file = parent.join("lavender.properties");
+        file = world.getHome().join(".lavender.properties");
         if (file.exists()) {
             return file;
         }

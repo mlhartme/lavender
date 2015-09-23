@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?><document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
   <body>
     <release date="2015-09-xx" version="2.3.1">
-      <action date="2015-08-01" dev="mhm" type="update">
+      <action date="2015-09-23" dev="mhm" type="update">
+        Improved search order to locate lavender.properties: It's now what you'll normally expect:
+        1) "lavender.properties" system property
+        2) "LAVENDER_PROPERTIES" environment variable
+        3) classpath
+        4) ~/.lavender.properties
+        5) /etc/lavender.properties
+        Thus, there's a new system property that's searched first. And the classpath is now searched before the home directory.
+      </action>
+      <action date="2015-09-17" dev="mhm" type="update">
         Support configurable ssh ports for hosts.
       </action>
     </release>
