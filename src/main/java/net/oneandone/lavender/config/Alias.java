@@ -66,8 +66,12 @@ public class Alias {
 
         builder = new StringBuilder();
         for (String domain : domains) {
-            builder.append("http://").append(domain).append('\n');
-            builder.append("https://").append(domain).append('\n');
+            if (domain.indexOf("://") < 0) {
+                builder.append("http://").append(domain).append('\n');
+                builder.append("https://").append(domain).append('\n');
+            } else {
+                builder.append(domain).append('\n');
+            }
         }
         return builder.toString();
     }
