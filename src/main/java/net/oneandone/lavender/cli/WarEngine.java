@@ -15,24 +15,25 @@
  */
 package net.oneandone.lavender.cli;
 
-import de.schlichtherle.truezip.zip.ZipEntry;
-import de.schlichtherle.truezip.zip.ZipFile;
-import de.schlichtherle.truezip.zip.ZipOutputStream;
+import com.sun.nio.zipfs.ZipFileSystemProvider;
+import com.sun.nio.zipfs.ZipPath;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.filter.Lavender;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.DefaultModule;
 import net.oneandone.lavender.modules.Module;
+import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.xml.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,7 +95,7 @@ public class WarEngine {
                 + changed + "/" + absolute + " files changed in " + modules.size() + " modules, " + (System.currentTimeMillis() - started) + " ms");
         outputNodesFile.writeString(nodes);
         warStart = System.currentTimeMillis();
-        updateWarFile(result.get(Docroot.WEB));
+        updateWarFile(result.get(Docroot.WEB), outputNodesFile);
         LOG.info("updated war " + (war.length() / 1024) + "k, " + (System.currentTimeMillis() - warStart) + " ms");
         for (Module module : modules) {
             module.saveCaches();
@@ -120,24 +121,28 @@ public class WarEngine {
         return changed;
     }
 
-    private void updateWarFile(Index webIndex) throws IOException {
-        java.io.File zip;
+    /**
+     * Add lavender.idx and lavender.nodes to war file using ZipFileSystemProvider. It assumes that the
+     * WEB-INF directory already in the war file
+     *
+     * @param webIndex Lavender index for lavender.idx file containing mappings from originalPath to
+     *                 lavenderized path (CDN paths)
+     * @param nodesFile Nodes for lavender.nodes file containing all CDN hosts
+     * @throws IOException
+     */
+    private void updateWarFile(Index webIndex, Node nodesFile) throws IOException {
+        ZipFileSystemProvider provider = new ZipFileSystemProvider();
+        Map<String, Object> env = new HashMap<>();
 
-        zip = war.toPath().toFile();
-        try (OutputStream dest = new FileOutputStream(zip, true);
-             ZipOutputStream app = new ZipOutputStream(dest, new ZipFile(zip))) {
+        try (FileSystem fs = provider.newFileSystem(war.toPath(), env)) {
+            ZipPath entry = (ZipPath) fs.getPath(Lavender.LAVENDER_IDX);
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            webIndex.save(output);
+            Files.copy(new ByteArrayInputStream(output.toByteArray()), entry, StandardCopyOption.REPLACE_EXISTING);
 
-            ZipEntry indexEntry = new ZipEntry(Lavender.LAVENDER_IDX);
-            app.putNextEntry(indexEntry);
-            webIndex.save(app);
-            app.closeEntry();
-
-            ZipEntry nodesEntry = new ZipEntry(Lavender.LAVENDER_NODES);
-            app.putNextEntry(nodesEntry);
-            outputNodesFile.writeTo(app);
-            app.closeEntry();
-
-            app.close();
-        }
+            entry = (ZipPath) fs.getPath(Lavender.LAVENDER_NODES);
+            Files.copy(nodesFile.createInputStream(), entry, StandardCopyOption.REPLACE_EXISTING);
+        };
     }
+
 }
