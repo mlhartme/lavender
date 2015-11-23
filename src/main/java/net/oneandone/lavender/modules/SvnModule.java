@@ -61,7 +61,11 @@ public class SvnModule extends Module<SvnEntry> {
                         if (line == null) {
                             break;
                         }
-                        entry = SvnEntry.parse(line);
+                        try {
+                            entry = SvnEntry.parse(line);
+                        } catch (RuntimeException e) {
+                            throw new RuntimeException("failed to load cache file " + cacheFile + ": " + e.getMessage(), e);
+                        }
                         entries.put(entry.publicPath, entry);
                     }
                 }
