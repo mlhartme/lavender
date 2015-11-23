@@ -25,6 +25,7 @@ import net.oneandone.lavender.modules.Module;
 import net.oneandone.lavender.modules.Resource;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.xml.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +81,7 @@ public class Lavender implements Filter, LavenderMBean {
         RewriteEngine rewriteEngine;
         Properties properties;
         Node webapp;
+        FileNode cache;
 
         try {
             LOG.info("init");
@@ -98,15 +100,21 @@ public class Lavender implements Filter, LavenderMBean {
                 started = System.currentTimeMillis();
                 properties = Properties.load(Properties.file(world), false);
                 processorFactory = null;
-                develModules = DefaultModule.fromWebapp(properties.lockedCache(5, "lavenderServlet"), false, webapp, properties.svnUsername, properties.svnPassword);
-                properties.unlockCache(); // TODO
+                cache = properties.lockedCache(5, "lavenderServlet");
+                try {
+                    develModules = DefaultModule.fromWebapp(cache, false, webapp, properties.svnUsername, properties.svnPassword);
+                } finally {
+                    properties.unlockCache();
+                }
                 LOG.info("Lavender devel filter for " + webapp + ", " + develModules.size()
                         + " resources. Init in " + (System.currentTimeMillis() - started + " ms"));
             }
         } catch (IOException | XmlException | SAXException ie) {
+            ie.printStackTrace();
             LOG.error("Error in Lavendelizer.init()", ie);
             throw new ServletException("io error", ie);
         } catch (RuntimeException se) {
+            se.printStackTrace();
             LOG.error("Error in Lavendelizer.init()", se);
             throw se;
         }

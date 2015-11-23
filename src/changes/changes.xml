@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?><document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
   <body>
     <release date="2015-09-xx" version="2.3.1">
+      <action date="2015-11-23" dev="mhm" type="update">
+        Print servlet filter startup exceptions to stderr because logging might not be configured yet.
+      </action>
+      <action date="2015-11-23" dev="mhm" type="fix">
+        Properly unlock svn cache when servlet filter startup fails with an exception.
+      </action>
       <action date="2015-09-23" dev="mhm" type="update">
         Properly document and check the first file command argument. It's now called archive.
       </action>
