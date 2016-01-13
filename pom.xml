@@ -241,7 +241,7 @@
               <dataSet>
                 <data>
                   <src>${project.build.directory}/lavender</src>
-                  <dst>/opt/ui/bin/lavender</dst>
+                  <dst>/usr/bin/lavender</dst>
                   <type>file</type>
                   <mapper>
                     <type>perm</type>
@@ -252,7 +252,7 @@
                 </data>
                 <data>
                   <src>${basedir}/src/deb/lavender.properties</src>
-                  <dst>/opt/ui/etc/lavender.properties</dst>
+                  <dst>/etc/lavender.properties</dst>
                   <type>file</type>
                   <conffile>true</conffile>
                   <mapper>

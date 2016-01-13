@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?><document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
   <body>
-    <release date="2015-09-xx" version="2.3.1">
-      <action date="2015-11-23" dev="mhm" type="update">
+    <release date="2016-01-xx" version="2.3.1">
+      <action data="2016-01-13" dev="mlhartme" type="update">
+        Dumped /opt/ui from binary and properties path. Adjusted properties search path accordingly.
+      </action>
+      <action date="2015-11-23" dev="mlhartme" type="update">
         Print servlet filter startup exceptions to stderr because logging might not be configured yet.
       </action>
-      <action date="2015-11-23" dev="mhm" type="fix">
+      <action date="2015-11-23" dev="mlhartme" type="fix">
         Properly unlock svn cache when servlet filter startup fails with an exception.
       </action>
-      <action date="2015-09-23" dev="mhm" type="update">
+      <action date="2015-09-23" dev="mlhartme" type="update">
         Properly document and check the first file command argument. It's now called archive.
       </action>
-      <action date="2015-09-23" dev="mhm" type="update">
+      <action date="2015-09-23" dev="mlhartme" type="update">
         Improved search order to locate lavender.properties: It's now what you'll normally expect:
         1) "lavender.properties" system property
         2) "LAVENDER_PROPERTIES" environment variable
@@ -19,420 +22,420 @@
         5) /etc/lavender.properties
         Thus, there's a new system property that's searched first. And the classpath is now searched before the home directory.
       </action>
-      <action date="2015-09-23" dev="mhm" type="update">
+      <action date="2015-09-23" dev="mlhartme" type="update">
         Support configurable uri for hosts. This replaces the option to specify a path.
       </action>
     </release>
     <release date="2015-08-04" version="2.3.0">
-      <action date="2015-08-01" dev="mhm" type="update">
+      <action date="2015-08-01" dev="mlhartme" type="update">
         Added revision property to svn properties to pin a module to one revision.
       </action>
-      <action date="2015-07-29" dev="mhm" type="update">
+      <action date="2015-07-29" dev="mlhartme" type="update">
         lavender.properties: Added optional cache property to configure svn cache directory. Default is ~/.cache/lavender.
         The cache directory may be shared, it's properly locked and cache files are deleted before writing to avoid permission
         problems.
       </action>
-      <action date="2015-07-29" dev="mhm" type="fix">
+      <action date="2015-07-29" dev="mlhartme" type="fix">
         Read svn resource with the scanned revision, not with latest revision.
       </action>
-      <action date="2015-07-29" dev="mhm" type="update">
+      <action date="2015-07-29" dev="mlhartme" type="update">
         The war command takes on war argument now, and this war file is modified. 
         This is an incompatible change, and this is the reason for the minor version bump.
       </action>
-      <action date="2015-07-29" dev="mhm" type="update">
+      <action date="2015-07-29" dev="mlhartme" type="update">
         Speedup Svn modules: fixed path problem that prevended some caching; 
         read without tmp files; get rid of checkPath call; cache scan results; 
         append to war using TrueZip. 
       </action>
     </release>
     <release date="2015-07-08" version="2.2.6">
-      <action date="2015-07-29" dev="mhm" type="update">
+      <action date="2015-07-29" dev="mlhartme" type="update">
         Replaced cluster@lockPath by host@path.
       </action>
     </release>
     <release date="2015-07-08" version="2.2.6">
-      <action date="2015-06-29" dev="mhm" type="fix">
+      <action date="2015-06-29" dev="mlhartme" type="fix">
         Debian package fixes: properly flag conffiles.
       </action>
     </release>
     <release date="2015-06-29" version="2.2.5">
-      <action date="2015-06-26" dev="mhm" type="add">
+      <action date="2015-06-26" dev="mlhartme" type="add">
         Build Debian packages.
       </action>
-      <action date="2015-06-26" dev="mhm" type="update">
+      <action date="2015-06-26" dev="mlhartme" type="update">
         Renamed settings to properties, in particular the file name and the environment variable.
         Extended search path to include /etc and $INSTALL_DIR/../etc. Behavior is simular to puc now.
       </action>
-      <action date="2015-03-12" dev="mhm" type="update">
+      <action date="2015-03-12" dev="mlhartme" type="update">
         Improved error messages for broken indexes.
       </action>
     </release>
     <release date="2015-02-04" version="2.2.4">
-      <action date="2015-02-04" dev="mhm" type="fix">
+      <action date="2015-02-04" dev="mlhartme" type="fix">
         Fix permissions of /tmp/lavender, has to be world-writable.
       </action>
     </release>
     <release date="2015-02-02" version="2.2.3">
-      <action date="2015-01-30" dev="mhm" type="fix">
+      <action date="2015-01-30" dev="mlhartme" type="fix">
         Fix temp file location - caused problems on Waterloos.
       </action>
-      <action date="2015-30-01" dev="mhm" type="fix">
+      <action date="2015-30-01" dev="mlhartme" type="fix">
         Update sushi to 2.8.18 to fix svn node problem with temp files.
       </action>
-      <action date="2015-14-01" dev="mhm" type="fix">
+      <action date="2015-14-01" dev="mlhartme" type="fix">
         Fix escaping problem for file names with &amp; in md5 checks.
       </action>
-      <action date="2014-08-14" dev="mhm" type="update">
+      <action date="2014-08-14" dev="mlhartme" type="update">
         Update sushi to 2.8.17 to fix identity accumulation problem.
       </action>
     </release>
     <release date="2014-07-31" version="2.2.2">
-      <action date="2014-07-31" dev="mhm" type="update">
+      <action date="2014-07-31" dev="mlhartme" type="update">
         Settings.load with Node instead of World"
       </action>
-      <action date="2014-07-31" dev="mhm" type="update">
+      <action date="2014-07-31" dev="mlhartme" type="update">
         Use gzip content encoding as advertised by client request. Removed browser white lists.
       </action>
     </release>
     <release date="2014-07-28" version="2.2.1">
-      <action date="2014-07-25" dev="mhm" type="update">
+      <action date="2014-07-25" dev="mlhartme" type="update">
         Update slf4j-api 1.7.2 to 1.7.5.
       </action>
-      <action date="2014-07-25" dev="mhm" type="fix">
+      <action date="2014-07-25" dev="mlhartme" type="fix">
         Don't use jsch and ssh agent proxy in servlet filter: it's not needed there.
       </action>
-      <action date="2014-07-23" dev="mhm" type="update">
+      <action date="2014-07-23" dev="mlhartme" type="update">
         Update jsch 0.1.50 to 0.1.51 and agentproxy 0.0.6 to 0.0.7. 
       </action>
-      <action date="2014-07-23" dev="mhm" type="update">
+      <action date="2014-07-23" dev="mlhartme" type="update">
         Update sushi 2.8.14 to 2.8.15.
       </action>
-      <action date="2014-07-23" dev="mhm" type="update">
+      <action date="2014-07-23" dev="mlhartme" type="update">
         Update svnkit 1.7.8 to 1.8.5.
       </action>
     </release>
     <release date="2014-06-26" version="2.2.0">
-      <action date="2014-05-15" dev="mhm" type="add">
+      <action date="2014-05-15" dev="mlhartme" type="add">
         Rewrite all attributes starting with "data-lavender-". 
       </action>
-      <action date="2014-05-15" dev="mhm" type="remove">
+      <action date="2014-05-15" dev="mlhartme" type="remove">
         Removed direct flash support (i.e. object and param rewriting), it never worked reliably.
       </action>
-      <action date="2014-03-20" dev="mhm" type="fix">
+      <action date="2014-03-20" dev="mlhartme" type="fix">
         Usage message was wrong, gc command has long been removed.
       </action>
-      <action date="2014-03-20" dev="mhm" type="fix">
+      <action date="2014-03-20" dev="mlhartme" type="fix">
         md5 check failed for file names containing a single quote.
       </action>
     </release>
     <release date="2014-03-20" version="2.1.0">
-      <action date="2014-03-20" dev="mhm" type="update">
+      <action date="2014-03-20" dev="mlhartme" type="update">
         Modules with a recent parent pom (i.e. they have resources properties) without lavender.properties are not lavendelized.
       </action>
-      <action date="2014-03-20" dev="mhm" type="fix">
+      <action date="2014-03-20" dev="mlhartme" type="fix">
         Fixed path translation for svn modules.
       </action>
-      <action date="2014-03-18" dev="mhm" type="update">
+      <action date="2014-03-18" dev="mlhartme" type="update">
         Moved module lavender.properties from PUSTEFIX_INF/ to META_INF/.
       </action>
     </release>
     <release date="2014-03-13" version="2.0.8">
-      <action date="2014-03-13" dev="mhm" type="update">
+      <action date="2014-03-13" dev="mlhartme" type="update">
         Updating all.idx throws an exception now, when a removed reference is not found.
       </action>
-      <action date="2014-03-13" dev="mhm" type="update">
+      <action date="2014-03-13" dev="mlhartme" type="update">
         Changed "all.idx broken" from a warning to an error.
       </action>
-      <action date="2014-03-13" dev="mhm" type="update">
+      <action date="2014-03-13" dev="mlhartme" type="update">
         Changed garbage collection: a file is unreferenced if it has normal references, all.idx is no longer checked.
       </action>
-      <action date="2014-03-13" dev="mhm" type="update">
+      <action date="2014-03-13" dev="mlhartme" type="update">
         Added svn.devel property to configure the url to load from in devel mode.
       </action>
     </release>
     <release date="2014-02-25" version="2.0.7">
-      <action date="2014-02-25" dev="mhm" type="update">
+      <action date="2014-02-25" dev="mlhartme" type="update">
         Performace improvements for Devel filter: invalidate at most once in 5 seconds.
       </action>
-      <action date="2014-02-20" dev="mhm" type="update">
+      <action date="2014-02-20" dev="mlhartme" type="update">
         Lock path is configurable now (per cluster).
       </action>
     </release>
     <release date="2014-02-13" version="2.0.6">
-      <action date="2014-02-13" dev="mhm" type="update">
+      <action date="2014-02-13" dev="mlhartme" type="update">
         Devel filter: use local directories, even if the svn url in the pom does not match the checkout.
         Because that's frequently used in temporary branches by frontend development.
       </action>
-      <action date="2014-02-13" dev="mhm" type="fix">
+      <action date="2014-02-13" dev="mlhartme" type="fix">
         Devel filter: fix live resource handling for modules without lavender descriptor.
       </action>
-      <action date="2014-02-12" dev="mhm" type="fix">
+      <action date="2014-02-12" dev="mlhartme" type="fix">
         Do not garbage-collect files that are still in all.idx.
       </action>
-      <action date="2014-02-11" dev="mhm" type="update">
+      <action date="2014-02-11" dev="mlhartme" type="update">
         Renamed validate to fsck.
       </action>
-      <action date="2014-02-11" dev="mhm" type="update">
+      <action date="2014-02-11" dev="mlhartme" type="update">
         Moved gc command into fsck -gc.
       </action>
-      <action date="2014-02-11" dev="mhm" type="add">
+      <action date="2014-02-11" dev="mlhartme" type="add">
         Fsck writes repaired indexes for dangling references.
       </action>
-      <action date="2014-02-11" dev="mhm" type="add">
+      <action date="2014-02-11" dev="mlhartme" type="add">
         Fsck always writes a repaired .all.idx now, the explicit option is gone.
       </action>
     </release>
     <release date="2014-02-10" version="2.0.5">
-      <action date="2014-02-10" dev="mhm" type="add">
+      <action date="2014-02-10" dev="mlhartme" type="add">
         Add support for HTML 5 source tags, they are properly rewritten now.
       </action>
-      <action date="2014-02-10" dev="mhm" type="add">
+      <action date="2014-02-10" dev="mlhartme" type="add">
         Add support for Flash Objects, data attributes and movie params are properly rewritten now.
       </action>
     </release>
     <release date="2014-02-06" version="2.0.4">
-      <action date="2014-02-06" dev="mhm" type="fix">
+      <action date="2014-02-06" dev="mlhartme" type="fix">
         Fix NPE when called without path prefix in devel mode.
       </action>
-      <action date="2014-02-06" dev="mhm" type="update">
+      <action date="2014-02-06" dev="mlhartme" type="update">
         Bump lock timeout from 30 seconds to 1 hour.
       </action>
     </release>
     <release date="2014-01-31" version="2.0.3">
-      <action date="2014-01-31" dev="mhm" type="fix">
+      <action date="2014-01-31" dev="mlhartme" type="fix">
         Fix unsynchronized message digest call.
       </action>
-      <action date="2014-01-31" dev="mhm" type="fix">
+      <action date="2014-01-31" dev="mlhartme" type="fix">
         Update sushi 2.8.12 to 2.8.13 to fix verbose console output.
       </action>
     </release>
     <release date="2014-01-28" version="2.0.2">
-      <action date="2014-01-28" dev="mhm" type="fix">
+      <action date="2014-01-28" dev="mlhartme" type="fix">
         Fix explicit alias name passed to publish command.
       </action>
     </release>
     <release date="2014-01-22" version="2.0.1">
-      <action date="2014-01-22" dev="mhm" type="fix">
+      <action date="2014-01-22" dev="mlhartme" type="fix">
         Create log directory recursively.
       </action>
-      <action date="2013-10-23" dev="mhm" type="update">
+      <action date="2013-10-23" dev="mlhartme" type="update">
         Configurable type for svn command.
       </action>
-      <action date="2013-10-22" dev="mhm" type="fix">
+      <action date="2013-10-22" dev="mlhartme" type="fix">
         Fix public-resource check with PUSTEFIX-INF prefix.
       </action>
-      <action date="2013-10-22" dev="mhm" type="fix">
+      <action date="2013-10-22" dev="mlhartme" type="fix">
         Fix filter when scanning module streams.
       </action>
     </release>
     <release date="2013-10-22" version="2.0.0">
-      <action date="2013-10-16" dev="mhm" type="update">
+      <action date="2013-10-16" dev="mlhartme" type="update">
         Replaced bazaar command by generic file command.
       </action>
-      <action date="2013-09-17" dev="mhm" type="update">
+      <action date="2013-09-17" dev="mlhartme" type="update">
         lavender.properties: Added livePath to configure svn checkout location.
       </action>
-      <action date="2013-10-02" dev="mhm" type="update">
+      <action date="2013-10-02" dev="mlhartme" type="update">
         lavender.properties: Renamed sourcePathPrefix to resourcePathPrefix.
       </action>
-      <action date="2013-09-17" dev="mhm" type="fix">
+      <action date="2013-09-17" dev="mlhartme" type="fix">
         Fixed module config to read both old and new descriptors. Removed resourceMapping support since it was removed from pustefix long ago.
       </action>
-      <action date="2013-09-16" dev="mhm" type="update">
+      <action date="2013-09-16" dev="mlhartme" type="update">
         Moved WEB-INF/lavendel.properties to WEB-INF/lavender.properties; jar modules now also read a descriptor
         from PUSTEFIX-INF/lavender.properties.
       </action>
-      <action date="2013-09-16" dev="mhm" type="update">
+      <action date="2013-09-16" dev="mlhartme" type="update">
         Renamed svn.pathPrefix to svn.targetPathPrefix. The old config is still supported, but yields a warning.
       </action>
-      <action date="2013-07-25" dev="mhm" type="add">
+      <action date="2013-07-25" dev="mlhartme" type="add">
         Added verify command.
       </action>
-      <action date="2013-07-25" dev="mhm" type="update">
+      <action date="2013-07-25" dev="mlhartme" type="update">
         Move indexes for 'fix' into 'indexes/fix'.
       </action>
-      <action date="2013-07-25" dev="mhm" type="update">
+      <action date="2013-07-25" dev="mlhartme" type="update">
         Changed svn.storage to svn.type. The old configuration is still supported, but yields a warning.
       </action>
-      <action date="2013-07-23" dev="mhm" type="update">
+      <action date="2013-07-23" dev="mlhartme" type="update">
         Rewrite engine removes quotes now.
       </action>
-      <action date="2013-07-15" dev="mhm" type="update">
+      <action date="2013-07-15" dev="mlhartme" type="update">
         Merged all modules into one Lavender artifact and moved to github. Changed package/groupId to net.oneandone.lavender.
       </action>
-      <action date="2013-07-17" dev="mhm" type="update">
+      <action date="2013-07-17" dev="mlhartme" type="update">
         Servlet 3.0 (e.g. Tomcat 7) is a prerequisite now.
       </action>
-      <action date="2013-07-17" dev="mhm" type="update">
+      <action date="2013-07-17" dev="mlhartme" type="update">
         Lavender Filter is mandatory in web.xml now, it is no longer added automatically.
       </action>
-      <action date="2013-07-17" dev="mhm" type="update">
+      <action date="2013-07-17" dev="mlhartme" type="update">
         svn and ssh are configured in ~/.lavendel.settings now.
       </action>
-      <action date="2013-07-15" dev="mhm" type="update">
+      <action date="2013-07-15" dev="mlhartme" type="update">
         Replace log4j by slf4j.
       </action>
-      <action date="2013-07-12" dev="mhm" type="add">
+      <action date="2013-07-12" dev="mlhartme" type="add">
         Added gc dryrun switch.
       </action>
-      <action date="2013-07-15" dev="mhm" type="remove">
+      <action date="2013-07-15" dev="mlhartme" type="remove">
         Dumped Mojo, we always configure a filter now.
       </action>
-      <action date="2013-07-04" dev="mhm" type="update">
+      <action date="2013-07-04" dev="mlhartme" type="update">
         "gc" command takes a cluster argument now.
       </action>
-      <action date="2013-07-04" dev="mhm" type="update">
+      <action date="2013-07-04" dev="mlhartme" type="update">
         Index always contains the path on the target machine as the lavendelized path;
         as a consequence, indexes on flash servers map to plain paths now.
       </action>
-      <action date="2013-07-04" dev="mhm" type="update">
+      <action date="2013-07-04" dev="mlhartme" type="update">
         Index on flash servers no longer contains lavendelized paths.
       </action>
-      <action date="2013-07-04" dev="mhm" type="add">
+      <action date="2013-07-04" dev="mlhartme" type="add">
         Added "svn" command to publish svn directories.
       </action>
-      <action date="2013-07-04" dev="mhm" type="update">
+      <action date="2013-07-04" dev="mlhartme" type="update">
         Renamed "publish" command to "war".
       </action>
     </release>
     <release date="2013-01-02" version="1.4.2">
-      <action date="2013-01-02" dev="mhm" type="update">
+      <action date="2013-01-02" dev="mlhartme" type="update">
         Use /home/mhm/logs/lavendel for temp files.
       </action>
-      <action date="2013-01-02" dev="mhm" type="update">
+      <action date="2013-01-02" dev="mlhartme" type="update">
         Reduce disk space consumption sharing svn checkouts for different tags.
       </action>
     </release>
     <release date="2012-11-09" version="1.4.1">
-      <action date="2012-11-08" dev="mhm" type="fix">
+      <action date="2012-11-08" dev="mlhartme" type="fix">
         Fix deleteTree exception during publish.
       </action>
     </release>
     <release date="2012-11-08" version="1.4.0">
-      <action date="2012-11-08" dev="mhm" type="fix">
+      <action date="2012-11-08" dev="mlhartme" type="fix">
         Fix invalid originalPath for modules with static entries in their module descriptor.
       </action>
-      <action date="2012-10-01" dev="mhm" type="add">
+      <action date="2012-10-01" dev="mlhartme" type="add">
         Add bazaar command for carsten.
       </action>
-      <action date="2012-10-01" dev="mhm" type="update">
+      <action date="2012-10-01" dev="mlhartme" type="update">
         Update Sushi 2.6.2 to 2.8.0.
       </action>
     </release>
     <release date="2012-08-13" version="1.3.7">
-      <action date="2012-08-13" dev="mhm" type="fix">
+      <action date="2012-08-13" dev="mlhartme" type="fix">
         Fix missing lavendel subdirectory with -Plavendel.
       </action>
-      <action date="2012-08-13" dev="mhm" type="update">
+      <action date="2012-08-13" dev="mlhartme" type="update">
         GC output tweaks.
       </action>
     </release>
     <release date="2012-08-13" version="1.3.6">
-      <action date="2012-08-13" dev="mhm" type="update">
+      <action date="2012-08-13" dev="mlhartme" type="update">
         GC output tweaks.
       </action>
     </release>
     <release date="2012-03-16" version="1.3.5">
-      <action date="2012-03-16" dev="mhm" type="fix">
+      <action date="2012-03-16" dev="mlhartme" type="fix">
         Fix NPE in cluster initialization.
       </action>
     </release>
     <release date="2012-03-16" version="1.3.4">
-      <action date="2012-03-07" dev="mhm" type="update">
+      <action date="2012-03-07" dev="mlhartme" type="update">
         Add us lavendel server config.
       </action>
     </release>
     <release date="2012-02-27" version="1.3.3">
-      <action date="2012-02-27" dev="mhm" type="fix">
+      <action date="2012-02-27" dev="mlhartme" type="fix">
         Fix -Plavendel.
       </action>
     </release>
     <release date="2012-02-25" version="1.3.2">
-      <action date="2012-02-25" dev="mhm" type="fix">
+      <action date="2012-02-25" dev="mlhartme" type="fix">
         Fix pustefix config problem.
       </action>
     </release>
     <release date="2012-02-25" version="1.3.1">
-      <action date="2012-02-25" dev="mhm" type="fix">
+      <action date="2012-02-25" dev="mlhartme" type="fix">
         Fix publisher argument bug.
       </action>
     </release>
     <release date="2012-02-25" version="1.3.0">
-      <action date="2012-02-23" dev="mhm" type="add">
+      <action date="2012-02-23" dev="mlhartme" type="add">
         Add multi-cluster support.
       </action>
-      <action date="2011-12-12" dev="mhm" type="add">
+      <action date="2011-12-12" dev="mlhartme" type="add">
         Add Flash Storage.
       </action>
-      <action date="2012-02-14" dev="mhm" type="add">
+      <action date="2012-02-14" dev="mlhartme" type="add">
         Includes and excludes.
       </action>
     </release>
     <release date="2011-12-12" version="1.2.7">
-      <action date="2011-12-12" dev="mhm" type="fix">
+      <action date="2011-12-12" dev="mlhartme" type="fix">
         Fix svn auth cache pollution.
       </action>
     </release>
     <release date="2011-12-07" version="1.2.6">
-      <action date="2011-12-07" dev="mhm" type="update">
+      <action date="2011-12-07" dev="mlhartme" type="update">
         Adjust to new htdocs directory for static content.
       </action>
     </release>
     <release date="2011-11-24" version="1.2.5">
-      <action date="2011-11-24" dev="mhm" type="update">
+      <action date="2011-11-24" dev="mlhartme" type="update">
         Update Sushi 2.6.0 to 2.6.1 and Lavendelizer 1.1.9 to 1.1.10.
       </action>
     </release>
     <release date="2011-09-05" version="1.2.4">
-      <action date="2011-07-21" dev="mhm" type="update">
+      <action date="2011-07-21" dev="mlhartme" type="update">
         Update lavendelizer 1.1.8 to 1.1.9 to fix Richi's encoding problem.
       </action>
     </release>
     <release date="2011-07-21" version="1.2.3">
-      <action date="2011-07-21" dev="mhm" type="update">
+      <action date="2011-07-21" dev="mlhartme" type="update">
         Update lavendelizer 1.1.7 to 1.1.8 to fix NPE when mime type is not defined.
       </action>
     </release>
     <release date="2011-07-21" version="1.2.2">
-      <action date="2011-07-19" dev="mhm" type="update">
+      <action date="2011-07-19" dev="mlhartme" type="update">
         Generalize status command to direct command.
       </action>
-      <action date="2011-07-15" dev="mhm" type="update">
+      <action date="2011-07-15" dev="mlhartme" type="update">
         Update Lavendelizer 1.1.5 to 1.1.6.
       </action>
     </release>
     <release date="2011-07-12" version="1.2.1">
-      <action date="2011-07-12" dev="mhm" type="fix">
+      <action date="2011-07-12" dev="mlhartme" type="fix">
         Fix return code for IOExceptions.
       </action>
     </release>
     <release date="2011-07-12" version="1.2.0">
-      <action date="2011-07-11" dev="mhm" type="add">
+      <action date="2011-07-11" dev="mlhartme" type="add">
         Add CLI
       </action>
-      <action date="2011-07-11" dev="mhm" type="update">
+      <action date="2011-07-11" dev="mlhartme" type="update">
         Reject war files without log4j.jar.
       </action>
-      <action date="2011-07-11" dev="mhm" type="update">
+      <action date="2011-07-11" dev="mlhartme" type="update">
         Automatically add lavendelizer.jar; report error if it's already in the war file.
       </action>
-      <action dev="mhm" type="update">
+      <action dev="mlhartme" type="update">
         WEB-INF/lavendel.properties are mandatory now.
       </action>
     </release>
     <release date="2011-07-08" version="1.1.4">
-      <action dev="mhm" type="update">
+      <action dev="mlhartme" type="update">
         Stand-alone build.
       </action>
-      <action dev="mhm" type="update">
+      <action dev="mlhartme" type="update">
         Update Sushi 2.4.0 to 2.6.0.
       </action>
     </release>
     <release date="2011-05-31" version="1.1.3">
-      <action dev="mhm" type="update">
+      <action dev="mlhartme" type="update">
         Improved error message for SVN failures (for Cyril).
       </action>
-      <action dev="mhm" type="update">
+      <action dev="mlhartme" type="update">
         Do not send 404 warning for favicon.ico.
       </action>
     </release>
