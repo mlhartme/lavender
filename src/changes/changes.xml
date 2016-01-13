@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
   <body>
-    <release date="2016-01-xx" version="2.3.1">
+    <release date="2016-01-xx" version="2.4.0">
       <action data="2016-01-13" dev="mlhartme" type="update">
         Dumped /opt/ui from binary and properties path. Adjusted properties search path accordingly.
       </action>
