@@ -49,12 +49,18 @@ public class SvnEntry {
         size = Integer.parseInt(str.substring(prev, idx));
         prev = idx + LEN;
         idx = str.indexOf(SEP, prev);
-        time = Long.parseLong(str.substring(prev, idx));
-        prev = idx + LEN;
-        if (prev == str.length()) {
+        if (idx == -1) {
+            // str has been trimmed, it does not contain the tailing ' ' added by SvnEntry.toString()
+            time = Long.parseLong(str.substring(prev));
             md5 = null;
         } else {
-            md5 = Hex.decode(str.substring(prev).toCharArray());
+            time = Long.parseLong(str.substring(prev, idx));
+            prev = idx + LEN;
+            if (prev == str.length()) {
+                md5 = null;
+            } else {
+                md5 = Hex.decode(str.substring(prev).toCharArray());
+            }
         }
         return new SvnEntry(publicPath, accessPath, revision, size, time, md5);
     }
