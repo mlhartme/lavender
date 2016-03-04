@@ -23,6 +23,7 @@ import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.DefaultModule;
 import net.oneandone.lavender.modules.Module;
 import net.oneandone.lavender.modules.Resource;
+import net.oneandone.sushi.fs.ExistsException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -75,50 +76,86 @@ public class Lavender implements Filter, LavenderMBean {
 
     @Override
     public void init(FilterConfig config) throws ServletException {
-        long started;
-        Node src;
-        Index index;
-        RewriteEngine rewriteEngine;
-        Properties properties;
-        Node webapp;
-        FileNode cache;
+        filterConfig = config;
 
         try {
-            LOG.info("init");
-            filterConfig = config;
+            LOG.info("Start initializing Lavender filter");
             // do not try ssh agent, because it crashes )with an abstract method error)
             // when jna is not in version 3.4.0. Which happens easily ...
             world = new World(false);
-            webapp = world.file(filterConfig.getServletContext().getRealPath(""));
-            src = webapp.join(LAVENDER_IDX);
-            if (src.exists()) {
-                index = Index.load(src);
-                rewriteEngine = RewriteEngine.load(index, webapp.join(LAVENDER_NODES));
-                processorFactory = new ProcessorFactory(rewriteEngine);
-                LOG.info("Lavender prod filter");
+            Node webapp = world.file(filterConfig.getServletContext().getRealPath(""));
+
+            if (useProductionFilter(webapp)) {
+                initProductionFilter(webapp);
             } else {
-                started = System.currentTimeMillis();
-                properties = Properties.load(Properties.file(world), false);
-                processorFactory = null;
-                cache = properties.lockedCache(5, "lavenderServlet");
-                try {
-                    develModules = DefaultModule.fromWebapp(cache, false, webapp, properties.svnUsername, properties.svnPassword);
-                } finally {
-                    properties.unlockCache();
-                }
-                LOG.info("Lavender devel filter for " + webapp + ", " + develModules.size()
-                        + " resources. Init in " + (System.currentTimeMillis() - started + " ms"));
+                initDevelopmentFilter(world, webapp);
             }
-        } catch (IOException | XmlException | SAXException ie) {
-            ie.printStackTrace();
-            LOG.error("Error in Lavendelizer.init()", ie);
-            throw new ServletException("io error", ie);
+        } catch (ExistsException e) {
+            e.printStackTrace();
+            throw new ServletException("Could not initialize Lavender filter", e);
         } catch (RuntimeException se) {
             se.printStackTrace();
-            LOG.error("Error in Lavendelizer.init()", se);
+            LOG.error("Error in Lavender.init()", se);
             throw se;
         }
 
+        registerMBean();
+    }
+
+    private void initDevelopmentFilter(World world, Node webapp) throws ServletException {
+        long started = System.currentTimeMillis();
+        Properties properties = null;
+
+        try {
+            properties = Properties.load(Properties.file(world), false);
+            FileNode cache = properties.lockedCache(5, "lavenderServlet");
+            develModules = loadModulesFromWebapp(webapp, properties, cache);
+            processorFactory = null;
+        } catch (XmlException | IOException | SAXException e) {
+            e.printStackTrace();
+            throw new ServletException("Could not initialize Lavender development filter", e);
+        } finally {
+            unlockPropertiesCache(properties);
+        }
+        LOG.info("Lavender development filter for " + webapp + ", " + develModules.size()
+                + " resources. Init in " + (System.currentTimeMillis() - started + " ms"));
+    }
+
+    List<Module> loadModulesFromWebapp(Node webapp, Properties properties, FileNode cache)
+            throws IOException, SAXException, XmlException {
+        return DefaultModule.fromWebapp(cache, false, webapp, properties.svnUsername, properties.svnPassword);
+    }
+
+    private void unlockPropertiesCache(Properties properties) {
+        if (properties != null) {
+            try {
+                properties.unlockCache();
+            } catch (IOException e) {
+                LOG.error("Could not unlock properties cache", e);
+            }
+        }
+    }
+
+    private boolean useProductionFilter(Node webapp) throws ExistsException {
+        Node indexSource = webapp.join(LAVENDER_IDX);
+        return indexSource.exists();
+    }
+
+    private void initProductionFilter(Node webapp) throws ServletException {
+        Node indexSource = webapp.join(LAVENDER_IDX);
+        Node nodesSource = webapp.join(LAVENDER_NODES);
+        try {
+            Index index = Index.load(indexSource);
+            RewriteEngine rewriteEngine = RewriteEngine.load(index, nodesSource);
+            processorFactory = new ProcessorFactory(rewriteEngine);
+            LOG.info("Lavender prod filter");
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ServletException("Could not initialize Lavender production filter", e);
+        }
+    }
+
+    private void registerMBean() {
         try {
             ManagementFactory.getPlatformMBeanServer().registerMBean(this,
                     new ObjectName("net.oneandone:type=Lavender,name=" + UUID.randomUUID().toString()));
