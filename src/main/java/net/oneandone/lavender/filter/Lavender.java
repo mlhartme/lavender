@@ -65,14 +65,7 @@ public class Lavender implements Filter, LavenderMBean {
             // when jna is not in version 3.4.0. Which happens easily ...
             world = new World(false);
 
-            Filter filter = null;
-            if (useProductionFilter(world)) {
-                filter = createProductionFilter();
-            } else {
-                filter = createDevelopmentFilter();
-            }
-            filter.init(filterConfig);
-            delegate.set(filter);
+            loadFilter();
 
         } catch (ExistsException e) {
             e.printStackTrace();
@@ -84,6 +77,28 @@ public class Lavender implements Filter, LavenderMBean {
         }
 
         registerMBean();
+    }
+
+    private void loadFilter() throws ExistsException, ServletException {
+        Filter filter = createFilter();
+        filter.init(filterConfig);
+
+        Filter previousFilter = delegate.get();
+        delegate.set(filter);
+
+        if (previousFilter != null) {
+            previousFilter.destroy();
+        }
+    }
+
+    private Filter createFilter() throws ExistsException, ServletException {
+        Filter filter;
+        if (useProductionFilter(world)) {
+            filter = createProductionFilter();
+        } else {
+            filter = createDevelopmentFilter();
+        }
+        return filter;
     }
 
     Filter createProductionFilter() throws ServletException {
@@ -126,6 +141,15 @@ public class Lavender implements Filter, LavenderMBean {
             return ((DevelopmentFilter) filter).getModulesCount();
         }
         return -1;
+    }
+
+    @Override
+    public void reload() {
+        try {
+            loadFilter();
+        } catch (ExistsException | ServletException e) {
+            LOG.error("Could not reload filter", e);
+        }
     }
 
 
