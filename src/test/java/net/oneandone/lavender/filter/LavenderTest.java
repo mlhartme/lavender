@@ -15,9 +15,9 @@
  */
 package net.oneandone.lavender.filter;
 
-import net.oneandone.lavender.config.Properties;
-import net.oneandone.lavender.modules.Module;
-import net.oneandone.sushi.fs.*;
+import net.oneandone.sushi.fs.DeleteException;
+import net.oneandone.sushi.fs.NodeNotFoundException;
+import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import org.junit.After;
 import org.junit.Before;
@@ -28,14 +28,11 @@ import org.mockito.MockitoAnnotations;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
-
 import java.io.IOException;
-import java.util.ArrayList;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class LavenderTest {
@@ -44,9 +41,9 @@ public class LavenderTest {
 
     private FileNode root;
 
-    private FileNode lavender;
+    private FileNode lavenderRoot;
 
-    private Lavender filter;
+    private Lavender lavenderFilter;
 
     @Mock
     private FilterConfig filterConfig;
@@ -59,13 +56,14 @@ public class LavenderTest {
         MockitoAnnotations.initMocks(this);
         root = WORLD.getTemp().createTempDirectory();
 
-        lavender = root.join("lavender");
-        lavender.mkdir();
-        lavender.join("WEB-INF").mkdir();
+        lavenderRoot = root.join("lavenderRoot");
+        lavenderRoot.mkdir();
+        lavenderRoot.join("WEB-INF").mkdir();
 
-        filter = new Lavender();
+        lavenderFilter = new Lavender();
+
         when(filterConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getRealPath("")).thenReturn(lavender.getAbsolute());
+        when(servletContext.getRealPath("")).thenReturn(lavenderRoot.getAbsolute());
 
         System.setProperty("lavender.properties", getClass().getClassLoader().getResource("lavender.properties").getFile());
     }
@@ -78,33 +76,36 @@ public class LavenderTest {
     }
 
     @Test
-    public void initShouldUseProductionFilter() throws Exception {
+    public void initShouldBeInProduction() throws Exception {
         givenFile(Lavender.LAVENDER_IDX);
         givenFile(Lavender.LAVENDER_NODES, "http://s1.uicdn.net/m1", "https://s1.uicdn.net/m1");
 
 
-        filter.init(filterConfig);
+        lavenderFilter.init(filterConfig);
 
 
-        assertNotNull(filter.processorFactory);
-        assertNull(filter.develModules);
+        assertTrue(lavenderFilter.getProd());
+        assertEquals(-1, lavenderFilter.getModules());
     }
 
     @Test
     public void initShouldUseDevelopmentFilter() throws Exception {
-        Lavender filterSpy = Mockito.spy(filter);
-        doReturn(new ArrayList<Module>()).when(filterSpy).loadModulesFromWebapp(any(Node.class), any(Properties.class), any(FileNode.class));
+        DevelopmentFilter developmentFilterMock = mock(DevelopmentFilter.class);
+        Mockito.when(developmentFilterMock.getModulesCount()).thenReturn(5);
+
+        Lavender lavenderFilterSpy = Mockito.spy(lavenderFilter);
+        doReturn(developmentFilterMock).when(lavenderFilterSpy).createDevelopmentFilter();
 
 
-        filterSpy.init(filterConfig);
+        lavenderFilterSpy.init(filterConfig);
 
 
-        assertNull(filterSpy.processorFactory);
-        assertNotNull(filterSpy.develModules);
+        assertFalse(lavenderFilterSpy.getProd());
+        assertEquals(5, lavenderFilterSpy.getModules());
     }
 
     private void givenFile(String filename, String... lines) throws IOException {
-        FileNode file = lavender.join(filename);
+        FileNode file = lavenderRoot.join(filename);
         file.mkfile();
         file.writeLines(lines);
 
