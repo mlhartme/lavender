@@ -100,10 +100,12 @@ public class Distributor {
         if (allLabel != null && Arrays.equals(allLabel.md5(), label.md5())) {
             changed = false;
         } else {
-            if (allLabel == null) {
-                LOG.info("A " + destPath);
-            } else {
-                LOG.info("U " + destPath);
+            if (LOG.isDebugEnabled()) {
+                if (allLabel == null) {
+                    LOG.debug("A " + destPath);
+                } else {
+                    LOG.debug("U " + destPath);
+                }
             }
             for (Node destroot : targets.values()) {
                 dest = destroot.join(destPath);
