@@ -44,7 +44,7 @@ public class MainManual {
         FileNode testfile;
         List<? extends Node> lst;
 
-        world = new World();
+        world = new World(false);
         hostdir = world.getTemp().createTempDirectory().join("testcluster");
         cluster = new Cluster("test");
         cluster.addLocalhost(hostdir);

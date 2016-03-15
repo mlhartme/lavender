@@ -29,7 +29,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class IndexTest {
-    private static final World WORLD = new World();
+    private static final World WORLD = new World(false);
 
     private FileNode indexFile;
     private Index index;

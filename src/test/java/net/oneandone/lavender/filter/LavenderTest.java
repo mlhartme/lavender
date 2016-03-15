@@ -27,7 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class LavenderTest {
-    private static final World WORLD = new World();
+    private static final World WORLD = new World(false);
 
     @Test
     public void init() throws Exception {

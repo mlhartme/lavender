@@ -34,7 +34,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class DefaultModuleTest {
-    private static World WORLD = new World();
+    private static World WORLD = new World(false);
 
     @Test
     public void oldModule() throws Exception {
