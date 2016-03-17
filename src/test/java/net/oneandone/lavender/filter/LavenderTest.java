@@ -36,7 +36,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class LavenderTest {
-
     private static final World WORLD = new World(false);
 
     private FileNode root;

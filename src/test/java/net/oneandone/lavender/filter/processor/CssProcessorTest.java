@@ -31,7 +31,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class CssProcessorTest {
-    private static final World WORLD = new World();
+    private static final World WORLD = new World(false);
 
     protected StringWriter out;
     protected CssProcessor processor;
