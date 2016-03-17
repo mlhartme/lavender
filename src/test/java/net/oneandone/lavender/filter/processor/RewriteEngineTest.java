@@ -156,6 +156,21 @@ public class RewriteEngineTest {
         }
     }
 
+    @Test
+    public void nodeHostWithPort() {
+        RewriteEngine engine = new RewriteEngine(new Index());
+        engine.add(URI.create("http://s1.uicdn.net:8080/m1/"));
+
+        byte[] md5 = Resource.md5("content".getBytes());
+        String md5str = Hex.encodeString(md5);
+        Label label = new Label("logo.png", md5str + "/logo.png", md5);
+
+        URI baseURI = URI.create("http://host.net");
+        URI uri = engine.calculateURL(label, baseURI);
+
+        assertEquals("http://s1.uicdn.net:8080/m1/9a0364b9e99bb480dd25e1f0284c8555/logo.png", uri.toString());
+    }
+
     private RewriteEngine testEngine() {
         RewriteEngine engine;
 
