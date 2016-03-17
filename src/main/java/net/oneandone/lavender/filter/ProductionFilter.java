@@ -59,7 +59,7 @@ public class ProductionFilter implements Filter {
             URI requestURI = URI.create(url.toString());
 
             // use custom request and response objects
-            lavenderRequest = new LavendelizeHttpServletRequest((HttpServletRequest) request);
+            lavenderRequest = new LavendelizeHttpServletRequest(request);
             lavenderResponse = new LavendelizeHttpServletResponse(response, processorFactory,
                     requestURI, request.getHeader("User-Agent"), request.getContextPath() + "/", Gzip.canGzip(request));
             logRequest(url, request);
