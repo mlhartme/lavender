@@ -47,9 +47,6 @@ public class Lavender implements Filter, LavenderMBean {
     public static final String LAVENDER_IDX = "WEB-INF/lavender.idx";
     public static final String LAVENDER_NODES = "WEB-INF/lavender.nodes";
 
-
-    private World world;
-
     private AtomicReference<Filter> delegate = new AtomicReference<>();
 
     /** The delegate configuration. */
@@ -61,12 +58,7 @@ public class Lavender implements Filter, LavenderMBean {
 
         try {
             LOG.info("Start initializing Lavender delegate");
-            // do not try ssh agent, because it crashes )with an abstract method error)
-            // when jna is not in version 3.4.0. Which happens easily ...
-            world = new World(false);
-
             loadFilter();
-
         } catch (ExistsException e) {
             e.printStackTrace();
             throw new ServletException("Could not initialize Lavender delegate", e);
@@ -83,6 +75,10 @@ public class Lavender implements Filter, LavenderMBean {
         Filter filter = createFilter();
         filter.init(filterConfig);
 
+        setFilter(filter);
+    }
+
+    private void setFilter(Filter filter) {
         Filter previousFilter = delegate.get();
         delegate.set(filter);
 
@@ -93,7 +89,7 @@ public class Lavender implements Filter, LavenderMBean {
 
     private Filter createFilter() throws ExistsException, ServletException {
         Filter filter;
-        if (useProductionFilter(world)) {
+        if (useProductionFilter()) {
             filter = createProductionFilter();
         } else {
             filter = createDevelopmentFilter();
@@ -109,7 +105,11 @@ public class Lavender implements Filter, LavenderMBean {
         return new DevelopmentFilter();
     }
 
-    private boolean useProductionFilter(World world) throws ExistsException {
+    private boolean useProductionFilter() throws ExistsException {
+        // do not try ssh agent, because it crashes )with an abstract method error)
+        // when jna is not in version 3.4.0. Which happens easily ...
+        World world = new World(false);
+
         String contextPath = filterConfig.getServletContext().getRealPath("");
         Node indexSource = world.file(contextPath).join(LAVENDER_IDX);
         return indexSource.exists();
@@ -129,7 +129,6 @@ public class Lavender implements Filter, LavenderMBean {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         delegate.get().doFilter(request, response, chain);
     }
-
 
     public boolean getProd() {
         return delegate.get() instanceof ProductionFilter;
