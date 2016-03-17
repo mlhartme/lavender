@@ -27,7 +27,7 @@ public class NetTest {
         Properties properties;
 
         world = new World(false);
-        properties = Properties.load(world.guessProjectHome(Net.class).join("src/test/lavender.properties"), false);
+        properties = Properties.load(world.guessProjectHome(Net.class).join("src/test/resources/lavender.properties"), false);
         properties.loadNet();
     }
 }

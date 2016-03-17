@@ -15,47 +15,100 @@
  */
 package net.oneandone.lavender.filter;
 
+import net.oneandone.sushi.fs.DeleteException;
+import net.oneandone.sushi.fs.NodeNotFoundException;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
+import java.io.IOException;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class LavenderTest {
     private static final World WORLD = new World(false);
 
-    @Test
-    public void init() throws Exception {
-        FileNode root;
-        FileNode lavender;
+    private FileNode root;
 
+    private FileNode lavenderRoot;
+
+    private Lavender lavenderFilter;
+
+    @Mock
+    private FilterConfig filterConfig;
+
+    @Mock
+    private ServletContext servletContext;
+
+    @Before
+    public void setUp() throws IOException {
+        MockitoAnnotations.initMocks(this);
         root = WORLD.getTemp().createTempDirectory();
-        lavender = root.join("lavender");
-        lavender.mkdir();
-        lavender.join("WEB-INF").mkdir();
 
-        FileNode indexFile = root.join("lavender", Lavender.LAVENDER_IDX).mkfile();
-        FileNode nodesFile = root.join("lavender", Lavender.LAVENDER_NODES);
+        lavenderRoot = root.join("lavenderRoot");
+        lavenderRoot.mkdir();
+        lavenderRoot.join("WEB-INF").mkdir();
 
-        nodesFile.writeLines("http://s1.uicdn.net/m1",
-                "https://s1.uicdn.net/m1",
-                "http://s2.uicdn.net/m1",
-                "https://s2.uicdn.net/m1");
+        lavenderFilter = new Lavender();
 
-        FilterConfig filterConfig = mock(FilterConfig.class);
-        ServletContext servletContext = mock(ServletContext.class);
-        when(servletContext.getResource("/" + Lavender.LAVENDER_IDX)).thenReturn(indexFile.getURI().toURL());
-        when(servletContext.getResource("/" + Lavender.LAVENDER_NODES)).thenReturn(nodesFile.getURI().toURL());
-        when(servletContext.getRealPath("")).thenReturn(lavender.getAbsolute());
         when(filterConfig.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getRealPath("")).thenReturn(lavenderRoot.getAbsolute());
 
-        Lavender filter = new Lavender();
-        filter.init(filterConfig);
-        assertNotNull(filter.processorFactory);
+        System.setProperty("lavender.properties", getClass().getClassLoader().getResource("lavender.properties").getFile());
     }
+
+    @After
+    public void tearDown() throws NodeNotFoundException, DeleteException {
+        if (root != null) {
+            root.deleteTree();
+        }
+    }
+
+    @Test
+    public void initShouldBeInProduction() throws Exception {
+        givenFile(Lavender.LAVENDER_IDX);
+        givenFile(Lavender.LAVENDER_NODES, "http://s1.uicdn.net/m1", "https://s1.uicdn.net/m1");
+
+
+        lavenderFilter.init(filterConfig);
+
+
+        assertTrue(lavenderFilter.getProd());
+        assertEquals(-1, lavenderFilter.getModules());
+    }
+
+    @Test
+    public void initShouldUseDevelopmentFilter() throws Exception {
+        DevelopmentFilter developmentFilterMock = mock(DevelopmentFilter.class);
+        Mockito.when(developmentFilterMock.getModulesCount()).thenReturn(5);
+
+        Lavender lavenderFilterSpy = Mockito.spy(lavenderFilter);
+        doReturn(developmentFilterMock).when(lavenderFilterSpy).createDevelopmentFilter();
+
+
+        lavenderFilterSpy.init(filterConfig);
+
+
+        assertFalse(lavenderFilterSpy.getProd());
+        assertEquals(5, lavenderFilterSpy.getModules());
+    }
+
+    private void givenFile(String filename, String... lines) throws IOException {
+        FileNode file = lavenderRoot.join(filename);
+        file.mkfile();
+        file.writeLines(lines);
+
+        when(servletContext.getResource("/" + filename)).thenReturn(file.getURI().toURL());
+    }
+
 }
