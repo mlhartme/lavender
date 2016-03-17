@@ -116,11 +116,15 @@ public class DevelopmentFilter implements Filter {
         switch (request.getMethod()) {
             case "GET":
                 doGetRequest(resource, request, response, true);
-                LOG.info(response.getStatus() + " GET " + path + " -> " + resource.getOrigin());
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug(response.getStatus() + " GET " + path + " -> " + resource.getOrigin());
+                }
                 return true;
             case "HEAD":
                 doGetRequest(resource, request, response, false);
-                LOG.info(response.getStatus() + " HEAD " + path + " -> " + resource.getOrigin());
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug(response.getStatus() + " HEAD " + path + " -> " + resource.getOrigin());
+                }
                 return true;
             default:
                 return false;
