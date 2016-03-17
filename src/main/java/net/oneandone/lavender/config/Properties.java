@@ -67,10 +67,6 @@ public class Properties {
         if (file.exists()) {
             return file;
         }
-        file = parent.getParent().join("etc/lavender.properties");
-        if (file.exists()) {
-            return file;
-        }
         file = world.file("/etc/lavender.properties");
         if (file.exists()) {
             return file;

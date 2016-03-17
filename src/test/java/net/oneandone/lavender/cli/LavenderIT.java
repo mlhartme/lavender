@@ -24,11 +24,9 @@ import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.filter.Predicate;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,10 +34,13 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class LavenderIT {
+    /**
+     * Test war file extraction from war and nested jar to two local CDNs
+     */
     @Test
     public void war() throws Exception {
-        // TODO
-        check("war", "/Users/mhm/Downloads/dslcancel-de-1.5.9.war", "4f08b13013aa6020a76b230debc9851f");
+        String warFile = ClassLoader.getSystemResource("app-example-1.0.0.war").getFile();
+        check("warFile", warFile, "39c34e3d6170d1cbc49eb625f18f4825");
     }
 
     private static final String INDEX_NAME = "indexfilefortests.idx";
@@ -54,8 +55,9 @@ public class LavenderIT {
         long started;
         Net net;
 
-        world = new World();
-        properties = Properties.load(world.file("test.properties"), true);
+        boolean withSsh = false;
+        world = new World(withSsh);
+        properties = Properties.load(world.file("test.properties.sample"), withSsh);
         System.out.println(name + " started: ");
         src = world.file(warFile);
         war = world.getTemp().createTempFile();
