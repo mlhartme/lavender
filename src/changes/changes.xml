@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?><document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
   <body>
+    <release date="2016-03-22" version="2.5.1">
+      <action date="2016-03-22" dev="mlhartme" type="fix">
+        Fix java debian dependency, see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=803152.
+      </action>
+    </release>
     <release date="2016-03-22" version="2.5.0">
       <action date="2016-03-22" dev="sfelis" type="update">
         Make Lavender filter reloadable
