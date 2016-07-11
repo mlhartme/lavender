@@ -25,12 +25,11 @@ import org.junit.Test;
 import java.net.URI;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-public class RewriteEngineTest {
-    private RewriteEngine engine;
+public class LavenderRewriteEngineTest {
+    private LavenderRewriteEngine engine;
 
     @Before
     public void setUp() {
@@ -38,7 +37,7 @@ public class RewriteEngineTest {
 
         index = new Index();
         index.add(new Label("in.jpg", "out.jpg", Resource.md5()));
-        engine = new RewriteEngine(index);
+        engine = new LavenderRewriteEngine(index);
         engine.add(URI.create("http://s1.cdn.net/"));
         engine.add(URI.create("http://s2.cdn.net/"));
     }
@@ -85,58 +84,10 @@ public class RewriteEngineTest {
     }
 
 
-    //-- resolve (an important helper method for rewrite)
-
-    @Test
-    public void resolveNormal() {
-        assertEquals("img/close.gif", doResolve("img/close.gif", "http://localhost:80", "/"));
-    }
-
-    @Test
-    public void resolveNullPath() {
-        assertNull(doResolve("mailto:michael.hartmeier@1und1.de", "http://localhost:80", "/"));
-    }
-
-    @Test
-    public void resolveRelativeReferenceRootcontext() {
-        assertEquals("img/close.gif", doResolve("img/close.gif", "http://localhost:80/", "/"));
-    }
-
-    @Test
-    public void resolveAbsoluteReferenceRootContext() {
-        assertEquals("img/close.gif", doResolve("/img/close.gif", "http://localhost:80/", "/"));
-    }
-
-    @Test
-    public void resolveRelativeReferenceSubContext() {
-        assertEquals("img/close.gif", doResolve("img/close.gif", "http://localhost:80/app/", "/app/"));
-    }
-
-    @Test
-    public void resolveAbsoluteReferenceSubContext() {
-        assertEquals("img/close.gif", doResolve("/app/img/close.gif", "http://localhost:80/app/", "/app/"));
-    }
-
-    @Test
-    public void resolveChildRelativeReferenceSubContext() {
-        assertEquals("img/close.gif", doResolve("close.gif", "http://localhost:80/app/img/", "/app/"));
-    }
-
-    @Test
-    public void resolveParentRelativeReferenceSubContext() {
-        assertEquals("img/close.gif", doResolve("../img/close.gif", "http://localhost:80/app/img/", "/app/"));
-    }
-
-    private String doResolve(String reference, String baseUri, String contextPath) {
-        return engine.resolve(URI.create(reference), URI.create(baseUri), contextPath);
-    }
-
-
     //-- calculate URL
 
     @Test
     public void calculateURL() {
-        RewriteEngine engine;
         byte[] md5;
         String md5str;
         Label label;
@@ -144,13 +95,13 @@ public class RewriteEngineTest {
         URI uri;
         String pattern;
 
-        engine = testEngine();
+        LavenderRewriteEngine rewriteStrategy = testRewriteStrategy();
         baseURI = URI.create("http://somehost.somedomain.net/abc/def/xyz.html?a=b");
         for (char c = 'A'; c <= 'Z'; c++) {
             md5 = Resource.md5((byte) c);
             md5str = Hex.encodeString(md5);
             label = new Label("logo.png", md5str + "/logo.png", md5);
-            uri = engine.calculateURL(label, baseURI);
+            uri = rewriteStrategy.calculateURL(label, baseURI);
             pattern = "http://s[1-2]\\.uicdn\\.net/m1/" + md5str + "/logo\\.png";
             assertTrue(uri.toString().matches(pattern));
         }
@@ -158,7 +109,7 @@ public class RewriteEngineTest {
 
     @Test
     public void nodeHostWithPort() {
-        RewriteEngine engine = new RewriteEngine(new Index());
+        LavenderRewriteEngine engine = new LavenderRewriteEngine(new Index());
         engine.add(URI.create("http://s1.uicdn.net:8080/m1/"));
 
         byte[] md5 = Resource.md5("content".getBytes());
@@ -171,15 +122,14 @@ public class RewriteEngineTest {
         assertEquals("http://s1.uicdn.net:8080/m1/9a0364b9e99bb480dd25e1f0284c8555/logo.png", uri.toString());
     }
 
-    private RewriteEngine testEngine() {
-        RewriteEngine engine;
+    private LavenderRewriteEngine testRewriteStrategy() {
+        LavenderRewriteEngine rewriteStrategy = new LavenderRewriteEngine(new Index());
 
-        engine = new RewriteEngine(new Index());
-        engine.add(URI.create("http://s1.uicdn.net/m1/"));
-        engine.add(URI.create("https://s1.uicdn.net/m1/"));
-        engine.add(URI.create("http://s2.uicdn.net/m1/"));
-        engine.add(URI.create("https://s2.uicdn.net/m1/"));
-        return engine;
+        rewriteStrategy.add(URI.create("http://s1.uicdn.net/m1/"));
+        rewriteStrategy.add(URI.create("https://s1.uicdn.net/m1/"));
+        rewriteStrategy.add(URI.create("http://s2.uicdn.net/m1/"));
+        rewriteStrategy.add(URI.create("https://s2.uicdn.net/m1/"));
+        return rewriteStrategy;
     }
 
 }

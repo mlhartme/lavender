@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.filter;
 
+import net.oneandone.lavender.filter.processor.LavenderRewriteEngine;
 import net.oneandone.lavender.filter.processor.ProcessorFactory;
 import net.oneandone.lavender.filter.processor.RewriteEngine;
 import net.oneandone.lavender.index.Index;
@@ -23,7 +24,12 @@ import net.oneandone.sushi.fs.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -49,7 +55,7 @@ public class ProductionFilter implements Filter {
         Node nodesSource = webapp.join(Lavender.LAVENDER_NODES);
         try {
             Index index = Index.load(indexSource);
-            RewriteEngine rewriteEngine = RewriteEngine.load(index, nodesSource);
+            RewriteEngine rewriteEngine = LavenderRewriteEngine.load(index, nodesSource);
             processorFactory = new ProcessorFactory(rewriteEngine);
             LOG.info("Lavender prod filter");
         } catch (IOException e) {
