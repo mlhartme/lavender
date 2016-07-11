@@ -61,7 +61,7 @@ public class HtmlProcessor extends AbstractProcessor {
      * An enum to track the current tag.
      */
     enum Tag {
-        NULL, IMG, LINK, SCRIPT, INPUT, A, SOURCE, OTHER;
+        NULL, IMG, LINK, SCRIPT, INPUT, A, SOURCE, FORM, IFRAME, OTHER;
 
         public static Tag forString(String str) {
             if ("img".equals(str)) {
@@ -76,6 +76,10 @@ public class HtmlProcessor extends AbstractProcessor {
                 return Tag.A;
             } else if ("source".equals(str)) {
                 return Tag.SOURCE;
+            } else if ("form".equals(str)) {
+                return Tag.FORM;
+            } else if ("iframe".equals(str)) {
+                return Tag.IFRAME;
             } else {
                 return Tag.OTHER;
             }
@@ -86,12 +90,12 @@ public class HtmlProcessor extends AbstractProcessor {
      * An enum to track the current attribute.
      */
     enum Attr {
-        NULL, SRC, HREF, REL, STYLE, TYPE, NAME, VALUE,
+        NULL, SRC, HREF, REL, STYLE, TYPE, NAME, VALUE, ACTION,
 
         /** everything starting with "data-lavender-" */
         DATA_LAVENDER,
 
-        /** everything else */
+        DATA_FNLINK, DATA_PAGE, /** everything else */
         OTHER
     }
 
@@ -313,7 +317,9 @@ public class HtmlProcessor extends AbstractProcessor {
             } else if ("name".equalsIgnoreCase(a)) {
                 attr = Attr.NAME;
             } else if ("value".equalsIgnoreCase(a)) {
-                attr = attr.VALUE;
+                attr = Attr.VALUE;
+            } else if ("action".equalsIgnoreCase(a)) {
+                attr = Attr.ACTION;
             } else if (a.startsWith("data-lavender-")) {
                 attr = Attr.DATA_LAVENDER;
             } else {
@@ -409,6 +415,10 @@ public class HtmlProcessor extends AbstractProcessor {
             } else if (tag == Tag.A && value.attr == Attr.HREF) {
                 rewriteUrl(value);
             } else if (tag == Tag.SOURCE && value.attr == Attr.SRC) {
+                rewriteUrl(value);
+            } else if (tag == Tag.FORM && value.attr == Attr.ACTION) {
+                rewriteUrl(value);
+            } else if (tag == Tag.IFRAME && value.attr == Attr.SRC) {
                 rewriteUrl(value);
             } else if (tag == Tag.LINK && value.attr == Attr.HREF) {
                 boolean rewritten = false;

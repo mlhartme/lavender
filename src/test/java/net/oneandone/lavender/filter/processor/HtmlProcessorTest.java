@@ -84,6 +84,39 @@ public class HtmlProcessorTest {
     }
 
     @Test
+    public void testAHrefAttributes() throws IOException {
+        String input = "<a href='/x/y/z'>";
+        String output = "<a href='http://a.b.c'>";
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(output, out.getBuffer().toString());
+    }
+
+    @Test
+    public void testFormActionAttributes() throws IOException {
+        String input = "<form action='/x/y/z'>";
+        String output = "<form action='http://a.b.c'>";
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(output, out.getBuffer().toString());
+    }
+
+    @Test
+    public void testIframeSourceAttributes() throws IOException {
+        String input = "<iframe src='/x/y/z'>";
+        String output = "<iframe src='http://a.b.c'>";
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(output, out.getBuffer().toString());
+    }
+
+    @Test
     public void testDataOther() throws IOException {
         String input = "<foo src='/x/y/z' data-a='x/y/z' data='x/y/z' >";
 
