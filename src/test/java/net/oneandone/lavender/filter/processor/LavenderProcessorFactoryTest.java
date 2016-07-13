@@ -24,13 +24,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public class DefaultProcessorFactoryTest {
+public class LavenderProcessorFactoryTest {
 
-    protected ProcessorFactory processorFactory;
+    protected LavenderProcessorFactory processorFactory;
 
     @Before
     public void setUp() {
-        processorFactory = new ProcessorFactory(null);
+        processorFactory = new LavenderProcessorFactory(null);
     }
 
     @Test

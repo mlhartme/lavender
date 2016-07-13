@@ -16,7 +16,7 @@
 package net.oneandone.lavender.filter;
 
 import net.oneandone.lavender.filter.processor.Processor;
-import net.oneandone.lavender.filter.processor.ProcessorFactory;
+import net.oneandone.lavender.filter.processor.LavenderProcessorFactory;
 import net.oneandone.sushi.io.MultiWriter;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,12 +44,12 @@ public class LavendelizeHttpServletResponseTest {
 
     private LavendelizeHttpServletResponse response;
     private HttpServletResponse wrappedResponse;
-    private ProcessorFactory processorFactory;
+    private LavenderProcessorFactory processorFactory;
 
     @Before
     public void setUp() {
         wrappedResponse = mock(HttpServletResponse.class);
-        processorFactory = mock(ProcessorFactory.class);
+        processorFactory = mock(LavenderProcessorFactory.class);
         URI requestURI = URI.create("http://localhost:8080/a/b/c.html");
         String contextPath = "/a/";
         response = new LavendelizeHttpServletResponse(wrappedResponse, processorFactory, requestURI, null, contextPath, false);

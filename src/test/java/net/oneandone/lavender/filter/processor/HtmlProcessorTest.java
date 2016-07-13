@@ -15,6 +15,9 @@
  */
 package net.oneandone.lavender.filter.processor;
 
+import net.oneandone.lavender.filter.processor.Processor;
+import net.oneandone.lavender.filter.processor.RewriteEngine;
+import net.oneandone.lavender.filter.processor.HtmlProcessor;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

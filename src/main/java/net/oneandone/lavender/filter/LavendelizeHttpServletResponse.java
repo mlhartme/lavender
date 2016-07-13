@@ -16,6 +16,7 @@
 package net.oneandone.lavender.filter;
 
 import net.oneandone.lavender.filter.processor.Processor;
+import net.oneandone.lavender.filter.processor.LavenderProcessorFactory;
 import net.oneandone.lavender.filter.processor.ProcessorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

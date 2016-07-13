@@ -16,7 +16,7 @@
 package net.oneandone.lavender.filter.pt;
 
 import net.oneandone.lavender.filter.LavendelizeHttpServletResponse;
-import net.oneandone.lavender.filter.processor.ProcessorFactory;
+import net.oneandone.lavender.filter.processor.LavenderProcessorFactory;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -36,7 +36,7 @@ public class LavendelizeHttpServletResponsePT {
 
     private static URI requestURI;
     private static String contextPath;
-    private static ProcessorFactory processorFactory;
+    private static LavenderProcessorFactory processorFactory;
     private static String content;
 
     @BeforeClass
@@ -48,7 +48,7 @@ public class LavendelizeHttpServletResponsePT {
 
         requestURI = URI.create("http://localhost:8080/a/b/c.html");
         contextPath = "";
-        processorFactory = new ProcessorFactory(null);
+        processorFactory = new LavenderProcessorFactory(null);
     }
 
     @Test

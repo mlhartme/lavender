@@ -31,10 +31,10 @@ public class HtmlProcessor extends AbstractProcessor {
     protected State state = State.NULL;
 
     /** The current tag, but only if it has attributes. CAUTION: properly set only between &lt; ... &gt;; outside of angle brackets, it contains the last value of tag. */
-    protected Tag tag = Tag.NULL;
+    protected HtmlTag tag = LavendertHtmlTag.NULL;
 
     /** The current attribute within an tag. */
-    protected Attr attr = Attr.NULL;
+    protected HtmlAttribute attr = LavenderHtmlAttribute.NULL;
 
     protected int attrIndex = -1;
 
@@ -43,6 +43,10 @@ public class HtmlProcessor extends AbstractProcessor {
 
     /** The relevant attributes in the current tag, in order. */
     protected List<Value> attrs = new ArrayList<>();
+
+    private HtmlTag[] knownTags;
+    private HtmlAttribute[] knownAttributes;
+    private UrlRewriteMatcher[] urlRewriteMatchers;
 
     /**
      * An enum to track the state of this processor.
@@ -57,54 +61,12 @@ public class HtmlProcessor extends AbstractProcessor {
         TAG_START, TAG, ATTRIBUTE_START, ATTRIBUTE, ATTRIBUTE_EQUALS, VALUE_START_SQ, VALUE_START_DQ, VALUE_START_UQ, VALUE
     }
 
-    /**
-     * An enum to track the current tag.
-     */
-    enum Tag {
-        NULL, IMG, LINK, SCRIPT, INPUT, A, SOURCE, FORM, IFRAME, OTHER;
-
-        public static Tag forString(String str) {
-            if ("img".equals(str)) {
-                return Tag.IMG;
-            } else if ("link".equals(str)) {
-                return Tag.LINK;
-            } else if ("script".equals(str)) {
-                return Tag.SCRIPT;
-            } else if ("input".equals(str)) {
-                return Tag.INPUT;
-            } else if ("a".equals(str)) {
-                return Tag.A;
-            } else if ("source".equals(str)) {
-                return Tag.SOURCE;
-            } else if ("form".equals(str)) {
-                return Tag.FORM;
-            } else if ("iframe".equals(str)) {
-                return Tag.IFRAME;
-            } else {
-                return Tag.OTHER;
-            }
-        }
-    }
-
-    /**
-     * An enum to track the current attribute.
-     */
-    enum Attr {
-        NULL, SRC, HREF, REL, STYLE, TYPE, NAME, VALUE, ACTION,
-
-        /** everything starting with "data-lavender-" */
-        DATA_LAVENDER,
-
-        DATA_FNLINK, DATA_PAGE, /** everything else */
-        OTHER
-    }
-
     private static final class Value {
-        private Attr attr;
+        private HtmlAttribute attr;
         private int start;
         private int end;
 
-        private Value(Attr attr, int start) {
+        private Value(HtmlAttribute attr, int start) {
             this.attr = attr;
             this.start = start;
         }
@@ -114,8 +76,18 @@ public class HtmlProcessor extends AbstractProcessor {
     /**
      * Instantiates a new HTML processor.
      */
-    protected HtmlProcessor() {
+    public HtmlProcessor() {
+        this(LavendertHtmlTag.values(), LavenderHtmlAttribute.values(), LavenderUrlRewriteMatcher.values());
+    }
+
+    /**
+     * Instantiates a new HTML processor.
+     */
+    public HtmlProcessor(HtmlTag[] knownTags, HtmlAttribute[] knownAttributes, UrlRewriteMatcher[] urlRewriteMatchers) {
         super(LOG);
+        this.knownTags = knownTags;
+        this.knownAttributes = knownAttributes;
+        this.urlRewriteMatchers = urlRewriteMatchers;
     }
 
     @Override
@@ -132,47 +104,47 @@ public class HtmlProcessor extends AbstractProcessor {
     public void process(char c) throws IOException {
 
         switch (state) {
-        case NULL:
-            matchTagStart(c);
-            break;
-        case SPECIAL_START:
-            matchSpecialStart(c);
-            break;
-        case SPECIAL_START_COMMENT_OR_CONDITION:
-            matchSpecialStartCommentOrCondition(c);
-            break;
-        case SPECIAL_DOCTYPE:
-        case SPECIAL_COMMENT:
-        case SPECIAL_CDATA:
-            matchSpecialEnd(c);
-            break;
-        case TAG_START:
-            matchTag(c);
-            break;
-        case TAG:
-            matchInTag(c);
-            break;
-        case ATTRIBUTE_START:
-            matchAttribute(c);
-            break;
-        case ATTRIBUTE:
-            matchInAttribute(c);
-            break;
-        case ATTRIBUTE_EQUALS:
-            matchValueStart(c);
-            break;
-        case VALUE_START_DQ:
-            matchDoubleQuotedValue(c);
-            break;
-        case VALUE_START_SQ:
-            matchSingleQuotedValue(c);
-            break;
-        case VALUE_START_UQ:
-            matchUnquotedValue(c);
-            break;
+            case NULL:
+                matchTagStart(c);
+                break;
+            case SPECIAL_START:
+                matchSpecialStart(c);
+                break;
+            case SPECIAL_START_COMMENT_OR_CONDITION:
+                matchSpecialStartCommentOrCondition(c);
+                break;
+            case SPECIAL_DOCTYPE:
+            case SPECIAL_COMMENT:
+            case SPECIAL_CDATA:
+                matchSpecialEnd(c);
+                break;
+            case TAG_START:
+                matchTag(c);
+                break;
+            case TAG:
+                matchInTag(c);
+                break;
+            case ATTRIBUTE_START:
+                matchAttribute(c);
+                break;
+            case ATTRIBUTE:
+                matchInAttribute(c);
+                break;
+            case ATTRIBUTE_EQUALS:
+                matchValueStart(c);
+                break;
+            case VALUE_START_DQ:
+                matchDoubleQuotedValue(c);
+                break;
+            case VALUE_START_SQ:
+                matchSingleQuotedValue(c);
+                break;
+            case VALUE_START_UQ:
+                matchUnquotedValue(c);
+                break;
 
-        default:
-            throw new IllegalStateException("Unexpected state: " + state);
+            default:
+                throw new IllegalStateException("Unexpected state: " + state);
         }
     }
 
@@ -213,40 +185,40 @@ public class HtmlProcessor extends AbstractProcessor {
     private void matchSpecialEnd(char c) throws IOException {
         switch (state) {
 
-        case SPECIAL_DOCTYPE:
-            if (c == '>') {
-                state = State.NULL;
-            }
-            break;
-
-        case SPECIAL_COMMENT:
-            if (c == '-') {
-                tagBuffer.append(c);
-            } else if (c == '>') {
-                if (tagBuffer.toString().endsWith("--")) {
+            case SPECIAL_DOCTYPE:
+                if (c == '>') {
                     state = State.NULL;
                 }
-                tagBuffer.setLength(0);
-            } else {
-                tagBuffer.setLength(0);
-            }
-            break;
+                break;
 
-        case SPECIAL_CDATA:
-            if (c == ']') {
-                tagBuffer.append(c);
-            } else if (c == '>') {
-                if (tagBuffer.toString().endsWith("]]")) {
-                    state = State.NULL;
+            case SPECIAL_COMMENT:
+                if (c == '-') {
+                    tagBuffer.append(c);
+                } else if (c == '>') {
+                    if (tagBuffer.toString().endsWith("--")) {
+                        state = State.NULL;
+                    }
+                    tagBuffer.setLength(0);
+                } else {
+                    tagBuffer.setLength(0);
                 }
-                tagBuffer.setLength(0);
-            } else {
-                tagBuffer.setLength(0);
-            }
-            break;
+                break;
 
-        default:
-            throw new IllegalStateException("" + state);
+            case SPECIAL_CDATA:
+                if (c == ']') {
+                    tagBuffer.append(c);
+                } else if (c == '>') {
+                    if (tagBuffer.toString().endsWith("]]")) {
+                        state = State.NULL;
+                    }
+                    tagBuffer.setLength(0);
+                } else {
+                    tagBuffer.setLength(0);
+                }
+                break;
+
+            default:
+                throw new IllegalStateException("" + state);
         }
 
         out.write(c);
@@ -263,7 +235,7 @@ public class HtmlProcessor extends AbstractProcessor {
     protected void matchTag(char c) throws IOException {
         if (Character.isSpaceChar(c)) {
             state = State.TAG;
-            tag = Tag.forString(tagBuffer.toString().toLowerCase());
+            tag = findTagByName(tagBuffer.toString().toLowerCase());
             tagBuffer.append(c);
         } else if (c == '>') {
             processTagBuffer();
@@ -304,27 +276,7 @@ public class HtmlProcessor extends AbstractProcessor {
 
             // match the attribute
             String a = tagBuffer.substring(attrIndex);
-            if ("src".equalsIgnoreCase(a)) {
-                attr = Attr.SRC;
-            } else if ("href".equalsIgnoreCase(a)) {
-                attr = Attr.HREF;
-            } else if ("style".equalsIgnoreCase(a)) {
-                attr = Attr.STYLE;
-            } else if ("rel".equalsIgnoreCase(a)) {
-                attr = Attr.REL;
-            } else if ("type".equalsIgnoreCase(a)) {
-                attr = Attr.TYPE;
-            } else if ("name".equalsIgnoreCase(a)) {
-                attr = Attr.NAME;
-            } else if ("value".equalsIgnoreCase(a)) {
-                attr = Attr.VALUE;
-            } else if ("action".equalsIgnoreCase(a)) {
-                attr = Attr.ACTION;
-            } else if (a.startsWith("data-lavender-")) {
-                attr = Attr.DATA_LAVENDER;
-            } else {
-                attr = Attr.OTHER;
-            }
+            attr = findMatchingAttribute(a);
 
             attrIndex = -1;
 
@@ -409,64 +361,17 @@ public class HtmlProcessor extends AbstractProcessor {
         int index = 0;
         for (Value value : attrs) {
             out.write(tagBuffer.substring(index, value.start));
+            boolean rewritten = false;
 
-            if (tag == Tag.IMG && value.attr == Attr.SRC) {
-                rewriteUrl(value);
-            } else if (tag == Tag.A && value.attr == Attr.HREF) {
-                rewriteUrl(value);
-            } else if (tag == Tag.SOURCE && value.attr == Attr.SRC) {
-                rewriteUrl(value);
-            } else if (tag == Tag.FORM && value.attr == Attr.ACTION) {
-                rewriteUrl(value);
-            } else if (tag == Tag.IFRAME && value.attr == Attr.SRC) {
-                rewriteUrl(value);
-            } else if (tag == Tag.LINK && value.attr == Attr.HREF) {
-                boolean rewritten = false;
-                Value rel = lookupAttribute(Attr.REL);
-                if (rel != null) {
-                    if ("stylesheet".equalsIgnoreCase(tagBuffer.substring(rel.start, rel.end))) {
-                        rewriteUrl(value);
-                        rewritten = true;
-                    } else if ("icon".equalsIgnoreCase(tagBuffer.substring(rel.start, rel.end))) {
-                        rewriteUrl(value);
-                        rewritten = true;
-                    } else if ("shortcut icon".equalsIgnoreCase(tagBuffer.substring(rel.start, rel.end))) {
-                        rewriteUrl(value);
-                        rewritten = true;
-                    }
-                }
-                if (!rewritten) {
-                    out.write(tagBuffer.substring(value.start, value.end));
-                }
-            } else if (tag == Tag.SCRIPT && value.attr == Attr.SRC) {
-                boolean rewritten = false;
-                Value type = lookupAttribute(Attr.TYPE);
-                if (type != null) {
-                    if ("text/javascript".equalsIgnoreCase(tagBuffer.substring(type.start, type.end))) {
-                        rewriteUrl(value);
-                        rewritten = true;
-                    }
-                }
-                if (!rewritten) {
-                    out.write(tagBuffer.substring(value.start, value.end));
-                }
-            } else if (tag == Tag.INPUT && value.attr == Attr.SRC) {
-                boolean rewritten = false;
-                Value type = lookupAttribute(Attr.TYPE);
-                if (type != null) {
-                    if ("image".equalsIgnoreCase(tagBuffer.substring(type.start, type.end))) {
-                        rewriteUrl(value);
-                        rewritten = true;
-                    }
-                }
-                if (!rewritten) {
-                    out.write(tagBuffer.substring(value.start, value.end));
-                }
-            } else if (value.attr == Attr.STYLE) {
+            if (value.attr == LavenderHtmlAttribute.STYLE) {
                 rewriteCss(value);
-            } else if (value.attr == Attr.DATA_LAVENDER) {
+                rewritten = true;
+            } else if (matchesUrlRewriteMatcher(tag, value.attr)) {
                 rewriteUrl(value);
-            } else {
+                rewritten = true;
+            }
+
+            if (rewritten == false) {
                 out.write(tagBuffer.substring(value.start, value.end));
             }
 
@@ -496,7 +401,7 @@ public class HtmlProcessor extends AbstractProcessor {
     }
 
     protected void markValueStart() throws IOException {
-        if (attr != Attr.OTHER) {
+        if (attr != LavenderHtmlAttribute.OTHER) {
             attrs.add(new Value(attr, tagBuffer.length()));
         }
     }
@@ -515,12 +420,49 @@ public class HtmlProcessor extends AbstractProcessor {
     }
 
     /** @return first match or null */
-    private Value lookupAttribute(Attr attr) {
+    private Value lookupAttribute(HtmlAttribute attr) {
         for (Value value : attrs) {
             if (value.attr == attr) {
                 return value;
             }
         }
         return null;
+    }
+
+    private HtmlTag findTagByName(String name) {
+        for (HtmlTag tag : knownTags) {
+            if (name.equals(tag.getName())) {
+                return tag;
+            }
+        }
+
+        return LavendertHtmlTag.OTHER;
+    }
+
+    private HtmlAttribute findMatchingAttribute(String name) {
+        for (HtmlAttribute attribute : knownAttributes) {
+            if (attribute.attributeMatches(name)) {
+                return attribute;
+            }
+        }
+        return LavenderHtmlAttribute.OTHER;
+    }
+
+    private boolean matchesUrlRewriteMatcher(HtmlTag htmlTag, HtmlAttribute rewriteAttribute) {
+        for (UrlRewriteMatcher urlRewriteMatcher : urlRewriteMatchers) {
+            HtmlAttribute matchingAttributeType = urlRewriteMatcher.getAttributeToMatch();
+            String attributeValueToMatch = null;
+
+            Value rel = lookupAttribute(matchingAttributeType);
+
+            if (rel != null) {
+                attributeValueToMatch = tagBuffer.substring(rel.start, rel.end);
+            }
+
+            if (urlRewriteMatcher.matches(htmlTag, rewriteAttribute, matchingAttributeType, attributeValueToMatch)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
