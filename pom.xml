@@ -33,6 +33,9 @@
     <cpd.skip>true</cpd.skip>
     <findbugs.skip>true</findbugs.skip>
     <jacoco.skip>true</jacoco.skip>
+    <oneandone.java.source>1.8</oneandone.java.source>
+    <oneandone.java.target>1.8</oneandone.java.target>
+
   </properties>
 
   <developers>
