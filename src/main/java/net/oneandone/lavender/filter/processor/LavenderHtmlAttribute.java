@@ -6,13 +6,17 @@ import java.util.function.Predicate;
  */
 public enum LavenderHtmlAttribute implements HtmlAttribute {
 
-    NULL(""), SRC("src"), HREF("href"), REL("rel"), STYLE("style"), TYPE("type"), NAME("name"), VALUE("value"),
+    SRC("src"),
+    HREF("href"),
+    REL("rel"),
+    STYLE("style"),
+    TYPE("type"),
+    NAME("name"),
+    VALUE("value"),
     ACTION("action"),
 
     /** everything starting with "data-lavender-" */
-    DATA_LAVENDER_ATTR(x -> x.startsWith("data-lavender-")),
-
-    OTHER("");
+    DATA_LAVENDER_ATTR(x -> x.startsWith("data-lavender-"));
 
     private Predicate<String> attributeMatch;
 

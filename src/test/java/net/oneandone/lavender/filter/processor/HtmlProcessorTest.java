@@ -15,9 +15,6 @@
  */
 package net.oneandone.lavender.filter.processor;
 
-import net.oneandone.lavender.filter.processor.Processor;
-import net.oneandone.lavender.filter.processor.RewriteEngine;
-import net.oneandone.lavender.filter.processor.HtmlProcessor;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -259,7 +256,7 @@ public class HtmlProcessorTest {
     public void testOnlyScriptTypeTextJavascript() throws IOException {
 
         String input = "<script type='other' src='/x/y/z' /><script src='/x/y/z' /><script type='text/javascript' src='/x/y/z' />";
-        String expected = "<script type='other' src='/x/y/z' /><script src='/x/y/z' /><script type='text/javascript' src='http://a.b.c' />";
+        String expected = "<script type='other' src='/x/y/z' /><script src='http://a.b.c' /><script type='text/javascript' src='http://a.b.c' />";
 
         processor.process(input, 0, input.length());
         processor.flush();

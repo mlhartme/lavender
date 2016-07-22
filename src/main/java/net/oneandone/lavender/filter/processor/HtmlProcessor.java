@@ -27,26 +27,30 @@ public class HtmlProcessor extends AbstractProcessor {
     /** The logger. */
     private static final Logger LOG = LoggerFactory.getLogger(HtmlProcessor.class);
 
+    private static final HtmlTag OTHER_HTML_TAG = () -> "";
+    private static final HtmlAttribute OTHER_HTML_ATTRIBUTE = x -> false;
+
     /** The main state of this processor. */
     protected State state = State.NULL;
 
-    /** The current tag, but only if it has attributes. CAUTION: properly set only between &lt; ... &gt;; outside of angle brackets, it contains the last value of tag. */
-    protected HtmlTag tag = LavendertHtmlTag.NULL;
+    /** The current currentTag, but only if it has attributes. CAUTION: properly set only between &lt; ... &gt;; outside of angle brackets, it contains the last value of currentTag. */
+    protected HtmlTag currentTag;
 
-    /** The current attribute within an tag. */
-    protected HtmlAttribute attr = LavenderHtmlAttribute.NULL;
+    /** The current attribute within a currentTag. */
+    protected HtmlAttribute currentAttribute;
+    private int attributeValueStartIndex = -1;
+    private int attributeNameStartIndex = -1;
 
-    protected int attrIndex = -1;
-
-    /** The tag buffer. */
+    /** The currentTag buffer. */
     protected StringBuilder tagBuffer = new StringBuilder(100);
 
-    /** The relevant attributes in the current tag, in order. */
-    protected List<Value> attrs = new ArrayList<>();
+    /** The relevant attributes in the current currentTag, in order. */
+    protected List<HtmlAttributeValue> attributes = new ArrayList<>();
 
     private HtmlTag[] knownTags;
     private HtmlAttribute[] knownAttributes;
     private UrlRewriteMatcher[] urlRewriteMatchers;
+
 
     /**
      * An enum to track the state of this processor.
@@ -55,20 +59,43 @@ public class HtmlProcessor extends AbstractProcessor {
         NULL,
 
         //
-        SPECIAL_START, SPECIAL_START_COMMENT_OR_CONDITION, SPECIAL_DOCTYPE, SPECIAL_CDATA, SPECIAL_COMMENT,
+        SPECIAL_START,
+        SPECIAL_START_COMMENT_OR_CONDITION,
+        SPECIAL_DOCTYPE,
+        SPECIAL_CDATA,
+        SPECIAL_COMMENT,
 
         //
-        TAG_START, TAG, ATTRIBUTE_START, ATTRIBUTE, ATTRIBUTE_EQUALS, VALUE_START_SQ, VALUE_START_DQ, VALUE_START_UQ, VALUE
+        TAG_START,
+        TAG,
+        ATTRIBUTE_START,
+        ATTRIBUTE,
+        ATTRIBUTE_EQUALS,
+        VALUE_START_SQ,
+        VALUE_START_DQ,
+        VALUE_START_UQ,
+        VALUE
     }
 
-    private static final class Value {
-        private HtmlAttribute attr;
-        private int start;
-        private int end;
+    static final class HtmlAttributeValue {
+        private final HtmlAttribute attr;
+        private final int start;
+        private final int end;
+        private final StringBuilder tagBuffer;
 
-        private Value(HtmlAttribute attr, int start) {
+        private HtmlAttributeValue(HtmlAttribute attr, int start, int end, StringBuilder tagBuffer) {
             this.attr = attr;
             this.start = start;
+            this.end = end;
+            this.tagBuffer = tagBuffer;
+        }
+
+        public HtmlAttribute getAttribute() {
+            return attr;
+        }
+
+        public String getValue() {
+            return tagBuffer.substring(start, end);
         }
     }
 
@@ -77,7 +104,7 @@ public class HtmlProcessor extends AbstractProcessor {
      * Instantiates a new HTML processor.
      */
     public HtmlProcessor() {
-        this(LavendertHtmlTag.values(), LavenderHtmlAttribute.values(), LavenderUrlRewriteMatcher.values());
+        this(LavenderHtmlTag.values(), LavenderHtmlAttribute.values(), LavenderUrlRewriteMatcher.values());
     }
 
     /**
@@ -101,7 +128,7 @@ public class HtmlProcessor extends AbstractProcessor {
     /**
      * {@inheritDoc}
      */
-    public void process(char c) throws IOException {
+    protected void process(char c) throws IOException {
 
         switch (state) {
             case NULL:
@@ -148,7 +175,7 @@ public class HtmlProcessor extends AbstractProcessor {
         }
     }
 
-    protected void matchSpecialStart(char c) throws IOException {
+    private void matchSpecialStart(char c) throws IOException {
         String t = tagBuffer.append(c).toString();
         if (t.equalsIgnoreCase("--")) {
             state = State.SPECIAL_START_COMMENT_OR_CONDITION;
@@ -166,7 +193,7 @@ public class HtmlProcessor extends AbstractProcessor {
         out.write(c);
     }
 
-    protected void matchSpecialStartCommentOrCondition(char c) throws IOException {
+    private void matchSpecialStartCommentOrCondition(char c) throws IOException {
         if (c == '[') {
             // condition
             state = State.NULL;
@@ -224,7 +251,7 @@ public class HtmlProcessor extends AbstractProcessor {
         out.write(c);
     }
 
-    protected void matchTagStart(char c) throws IOException {
+    private void matchTagStart(char c) throws IOException {
         if (c == '<') {
             state = State.TAG_START;
         }
@@ -232,10 +259,10 @@ public class HtmlProcessor extends AbstractProcessor {
         out.write(c);
     }
 
-    protected void matchTag(char c) throws IOException {
+    private void matchTag(char c) throws IOException {
         if (Character.isSpaceChar(c)) {
             state = State.TAG;
-            tag = findTagByName(tagBuffer.toString().toLowerCase());
+            currentTag = findTagByName(tagBuffer.toString().toLowerCase());
             tagBuffer.append(c);
         } else if (c == '>') {
             processTagBuffer();
@@ -247,12 +274,12 @@ public class HtmlProcessor extends AbstractProcessor {
             state = State.SPECIAL_START;
             out.write(c);
         } else {
-            // still in tag
+            // still in currentTag
             tagBuffer.append(c);
         }
     }
 
-    protected void matchInTag(char c) throws IOException {
+    private void matchInTag(char c) throws IOException {
         if (c == '>') {
             processTagBuffer();
             state = State.NULL;
@@ -263,22 +290,22 @@ public class HtmlProcessor extends AbstractProcessor {
             tagBuffer.append(c);
         } else if (!Character.isSpaceChar(c)) {
             state = State.ATTRIBUTE_START;
-            attrIndex = tagBuffer.length();
+            attributeNameStartIndex = tagBuffer.length();
             tagBuffer.append(c);
         } else {
             tagBuffer.append(c);
         }
     }
 
-    protected void matchAttribute(char c) throws IOException {
+    private void matchAttribute(char c) throws IOException {
         if (c == '=' || Character.isSpaceChar(c)) {
             state = State.ATTRIBUTE;
 
             // match the attribute
-            String a = tagBuffer.substring(attrIndex);
-            attr = findMatchingAttribute(a);
+            String attributeName = tagBuffer.substring(attributeNameStartIndex);
+            currentAttribute = findMatchingAttribute(attributeName);
 
-            attrIndex = -1;
+            attributeNameStartIndex = -1;
 
             if (c == '=') {
                 matchInAttribute(c);
@@ -291,13 +318,13 @@ public class HtmlProcessor extends AbstractProcessor {
         }
     }
 
-    protected void matchInAttribute(char c) throws IOException {
+    private void matchInAttribute(char c) throws IOException {
         if (c == '=') {
             state = State.ATTRIBUTE_EQUALS;
             tagBuffer.append(c);
         } else if (!Character.isSpaceChar(c)) {
             state = State.ATTRIBUTE_START;
-            attrIndex = tagBuffer.length();
+            attributeNameStartIndex = tagBuffer.length();
             matchAttribute(c);
         } else {
             // space
@@ -305,7 +332,7 @@ public class HtmlProcessor extends AbstractProcessor {
         }
     }
 
-    protected void matchValueStart(char c) throws IOException {
+    private void matchValueStart(char c) throws IOException {
         if (c == '"') {
             state = State.VALUE_START_DQ;
             tagBuffer.append(c);
@@ -324,7 +351,7 @@ public class HtmlProcessor extends AbstractProcessor {
         }
     }
 
-    protected void matchUnquotedValue(char c) throws IOException {
+    private void matchUnquotedValue(char c) throws IOException {
         if (Character.isSpaceChar(c)) {
             state = State.VALUE;
             markValueLength();
@@ -335,7 +362,7 @@ public class HtmlProcessor extends AbstractProcessor {
         }
     }
 
-    protected void matchSingleQuotedValue(char c) throws IOException {
+    private void matchSingleQuotedValue(char c) throws IOException {
         if (c == '\'') {
             state = State.VALUE;
             markValueLength();
@@ -346,7 +373,7 @@ public class HtmlProcessor extends AbstractProcessor {
         }
     }
 
-    protected void matchDoubleQuotedValue(char c) throws IOException {
+    private void matchDoubleQuotedValue(char c) throws IOException {
         if (c == '"') {
             state = State.VALUE;
             markValueLength();
@@ -357,76 +384,56 @@ public class HtmlProcessor extends AbstractProcessor {
         }
     }
 
-    protected void processTagBuffer() throws IOException {
+    private void processTagBuffer() throws IOException {
         int index = 0;
-        for (Value value : attrs) {
-            out.write(tagBuffer.substring(index, value.start));
-            boolean rewritten = false;
+        for (HtmlAttributeValue attributeValue : attributes) {
+            out.write(tagBuffer.substring(index, attributeValue.start));
 
-            if (value.attr == LavenderHtmlAttribute.STYLE) {
-                rewriteCss(value);
-                rewritten = true;
-            } else if (matchesUrlRewriteMatcher(tag, value.attr)) {
-                rewriteUrl(value);
-                rewritten = true;
+            if (attributeValue.attr == LavenderHtmlAttribute.STYLE) {
+                rewriteCss(attributeValue);
+            } else if (matchesRewriteUrl(currentTag, attributeValue.attr, attributes)) {
+                matchesRewriteUrl(attributeValue);
+            } else {
+                out.write(tagBuffer.substring(attributeValue.start, attributeValue.end));
             }
 
-            if (rewritten == false) {
-                out.write(tagBuffer.substring(value.start, value.end));
-            }
-
-            index = value.end;
+            index = attributeValue.end;
         }
 
         out.write(tagBuffer.substring(index));
 
-        attrIndex = -1;
-        attrs.clear();
+        attributeNameStartIndex = -1;
+        attributes.clear();
         tagBuffer.setLength(0);
         uriBuffer.setLength(0);
     }
 
-    protected void rewriteUrl(Value value) throws IOException {
-        String str;
-
-        str = rewriteEngine.rewrite(tagBuffer.substring(value.start, value.end), baseURI, contextPath);
+    private void matchesRewriteUrl(HtmlAttributeValue htmlAttributeValue) throws IOException {
+        String str = rewriteEngine.rewrite(tagBuffer.substring(htmlAttributeValue.start, htmlAttributeValue.end),
+                baseURI, contextPath);
         out.write(str);
     }
 
-    protected void rewriteCss(Value value) throws IOException {
+    private void rewriteCss(HtmlAttributeValue htmlAttributeValue) throws IOException {
         CssProcessor cssProcessor = new CssProcessor();
         cssProcessor.setRewriteEngine(rewriteEngine, baseURI, contextPath);
         cssProcessor.setWriter(out);
-        cssProcessor.process(tagBuffer, value.start, value.end - value.start);
+        cssProcessor.process(tagBuffer, htmlAttributeValue.start, htmlAttributeValue.end - htmlAttributeValue.start);
     }
 
-    protected void markValueStart() throws IOException {
-        if (attr != LavenderHtmlAttribute.OTHER) {
-            attrs.add(new Value(attr, tagBuffer.length()));
+    private void markValueStart() throws IOException {
+        if (currentAttribute != OTHER_HTML_ATTRIBUTE) {
+            attributeValueStartIndex = tagBuffer.length();
         }
     }
 
-    protected void markValueLength() throws IOException {
-        int size;
-        Value value;
-
-        size = attrs.size();
-        if (size > 0) {
-            value = attrs.get(size - 1);
-            if (value.attr == attr) {
-                value.end = tagBuffer.length();
-            }
+    private void markValueLength() throws IOException {
+        int attributeEndInTagBuffer = tagBuffer.length();
+        if (currentAttribute != OTHER_HTML_ATTRIBUTE) {
+            attributes.add(new HtmlAttributeValue(currentAttribute, attributeValueStartIndex, attributeEndInTagBuffer,
+                    tagBuffer));
+            attributeValueStartIndex = -1;
         }
-    }
-
-    /** @return first match or null */
-    private Value lookupAttribute(HtmlAttribute attr) {
-        for (Value value : attrs) {
-            if (value.attr == attr) {
-                return value;
-            }
-        }
-        return null;
     }
 
     private HtmlTag findTagByName(String name) {
@@ -436,7 +443,7 @@ public class HtmlProcessor extends AbstractProcessor {
             }
         }
 
-        return LavendertHtmlTag.OTHER;
+        return OTHER_HTML_TAG;
     }
 
     private HtmlAttribute findMatchingAttribute(String name) {
@@ -445,21 +452,16 @@ public class HtmlProcessor extends AbstractProcessor {
                 return attribute;
             }
         }
-        return LavenderHtmlAttribute.OTHER;
+        return OTHER_HTML_ATTRIBUTE;
     }
 
-    private boolean matchesUrlRewriteMatcher(HtmlTag htmlTag, HtmlAttribute rewriteAttribute) {
+    private boolean matchesRewriteUrl(HtmlTag currentTag, HtmlAttribute currentAttribute,
+            List<HtmlAttributeValue> attributeValues) {
+        HtmlElement htmlElement = new HtmlElement(currentTag, attributeValues);
+
         for (UrlRewriteMatcher urlRewriteMatcher : urlRewriteMatchers) {
-            HtmlAttribute matchingAttributeType = urlRewriteMatcher.getAttributeToMatch();
-            String attributeValueToMatch = null;
-
-            Value rel = lookupAttribute(matchingAttributeType);
-
-            if (rel != null) {
-                attributeValueToMatch = tagBuffer.substring(rel.start, rel.end);
-            }
-
-            if (urlRewriteMatcher.matches(htmlTag, rewriteAttribute, matchingAttributeType, attributeValueToMatch)) {
+            if (currentAttribute == urlRewriteMatcher.getAttributeToRewrite() &&
+                    urlRewriteMatcher.matches(htmlElement)) {
                 return true;
             }
         }

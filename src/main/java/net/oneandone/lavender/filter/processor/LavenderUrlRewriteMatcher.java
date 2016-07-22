@@ -1,90 +1,54 @@
 package net.oneandone.lavender.filter.processor;
 
+import java.util.Arrays;
+import java.util.function.Predicate;
+
 import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.ACTION;
 import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.DATA_LAVENDER_ATTR;
 import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.HREF;
 import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.REL;
 import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.SRC;
 import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.TYPE;
-import static net.oneandone.lavender.filter.processor.LavendertHtmlTag.A;
-import static net.oneandone.lavender.filter.processor.LavendertHtmlTag.FORM;
-import static net.oneandone.lavender.filter.processor.LavendertHtmlTag.IFRAME;
-import static net.oneandone.lavender.filter.processor.LavendertHtmlTag.IMG;
-import static net.oneandone.lavender.filter.processor.LavendertHtmlTag.INPUT;
-import static net.oneandone.lavender.filter.processor.LavendertHtmlTag.LINK;
-import static net.oneandone.lavender.filter.processor.LavendertHtmlTag.SCRIPT;
-import static net.oneandone.lavender.filter.processor.LavendertHtmlTag.SOURCE;
+import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.A;
+import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.FORM;
+import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.IFRAME;
+import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.IMG;
+import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.INPUT;
+import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.LINK;
+import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.SCRIPT;
+import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.SOURCE;
 
 public enum LavenderUrlRewriteMatcher implements UrlRewriteMatcher {
 
-    IMG_MATCHER(IMG, SRC),
-    LINK_MATCHER(LINK, HREF, new HtmlAttributeValue(REL, "stylesheet", "icon", "shortcut icon")),
-    SCRIPT_MATCHER(SCRIPT, SRC, new HtmlAttributeValue(TYPE, "text/javascript")),
-    INPUT_MATCHER(INPUT, SRC, new HtmlAttributeValue(TYPE, "image")),
-    A_MATCHER(A, HREF),
-    SOURCE_MATCHER(SOURCE, SRC),
-    FORM_MATCHER(FORM, ACTION),
-    IFRAME_MATCHER(IFRAME, SRC),
-    DATA_LAVENDER_MATCHER(DATA_LAVENDER_ATTR);
+    IMG_MATCHER(SRC, p -> p.getTag() == IMG),
+    LINK_MATCHER(HREF, p -> p.getTag() == LINK &&
+            Arrays.asList("stylesheet", "icon", "shortcut icon").contains(p.getAttribute(REL))),
+    SCRIPT_MATCHER(SRC, p -> p.getTag() == SCRIPT &&
+            (("text/javascript".equals(p.getAttribute(TYPE))) || !p.containsAttribute(TYPE))),
+    INPUT_MATCHER(SRC, p -> p.getTag() == INPUT && "image".equals(p.getAttribute(TYPE))),
+    A_MATCHER(HREF, p -> p.getTag() == A),
+    SOURCE_MATCHER(SRC, p -> p.getTag() == SOURCE),
+    FORM_MATCHER(ACTION, p -> p.getTag() == FORM),
+    IFRAME_MATCHER(SRC, p -> p.getTag() == IFRAME),
+    DATA_LAVENDER_MATCHER(DATA_LAVENDER_ATTR, p -> true);
 
-    private HtmlTag rewriteTag;
-    private HtmlAttribute rewriteAttribute;
-    private HtmlAttributeValue attributeTypeAndValueToMatch;
 
-    LavenderUrlRewriteMatcher(HtmlAttribute rewriteAttribute) {
-        this(null, rewriteAttribute, null);
-    }
+    private final Predicate<HtmlElement> predicate;
+    private final HtmlAttribute attributeToRewrite;
 
-    LavenderUrlRewriteMatcher(HtmlTag rewriteTag, HtmlAttribute rewriteAttribute) {
-        this(rewriteTag, rewriteAttribute, null);
-    }
-
-    LavenderUrlRewriteMatcher(HtmlTag rewriteTag, HtmlAttribute rewriteAttribute,
-            HtmlAttributeValue attributeTypeNValueToMatch) {
-        this.rewriteTag = rewriteTag;
-        this.rewriteAttribute = rewriteAttribute;
-        this.attributeTypeAndValueToMatch = attributeTypeNValueToMatch;
+    LavenderUrlRewriteMatcher(HtmlAttribute attributeToRewrite, Predicate<HtmlElement> rewritePredicate) {
+        this.attributeToRewrite = attributeToRewrite;
+        this.predicate = rewritePredicate;
     }
 
     @Override
-    public HtmlAttribute getAttributeToMatch() {
-        if (attributeTypeAndValueToMatch != null) {
-            return attributeTypeAndValueToMatch.getAttribute();
-        }
-        return null;
+    public boolean matches(HtmlElement htmlElement) {
+        return predicate.test(htmlElement);
     }
-
 
     @Override
-    public boolean matches(HtmlTag rewriteTag, HtmlAttribute rewriteAttribute, HtmlAttribute matchingAttributeType,
-            String matchingAttributeValue) {
-        if (rewriteTagMatches(this.rewriteTag, rewriteTag) && rewriteAttributeMatches(this.rewriteAttribute,
-                rewriteAttribute) && attributeTypeAndAttributeValueMatches(attributeTypeAndValueToMatch,
-                matchingAttributeType, matchingAttributeValue)) {
-            return true;
-        }
-
-        return false;
+    public HtmlAttribute getAttributeToRewrite() {
+        return attributeToRewrite;
     }
 
-    private boolean rewriteTagMatches(HtmlTag ownRewriteTag, HtmlTag otherRewriteTag) {
-        return ownRewriteTag == null || ownRewriteTag.equals(otherRewriteTag);
-    }
-
-    private boolean rewriteAttributeMatches(HtmlAttribute ownRewriteAttribute, HtmlAttribute otherRewriteAttribute) {
-        return ownRewriteAttribute.equals(otherRewriteAttribute);
-    }
-
-    private boolean attributeTypeAndAttributeValueMatches(HtmlAttributeValue attributeTypeAndValueToMatch,
-            HtmlAttribute matchingAttributeType, String matchingAttributeValue) {
-        if (matchingAttributeType == null && matchingAttributeValue == null) {
-            return true;
-        } else {
-            if (attributeTypeAndValueToMatch.getAttribute().equals(matchingAttributeType)
-                    && attributeTypeAndValueToMatch.containsAttributeValue(matchingAttributeValue)) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

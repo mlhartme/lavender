@@ -1,11 +1,10 @@
 package net.oneandone.lavender.filter.processor;
 
 /**
- * An enum to track the current tag.
+ * An enum to track the current currentTag.
  */
-public enum LavendertHtmlTag implements HtmlTag {
+public enum LavenderHtmlTag implements HtmlTag {
 
-    NULL(""),
     IMG("img"),
     LINK("link"),
     SCRIPT("script"),
@@ -13,12 +12,11 @@ public enum LavendertHtmlTag implements HtmlTag {
     A("a"),
     SOURCE("source"),
     FORM("form"),
-    IFRAME("iframe"),
-    OTHER("");
+    IFRAME("iframe");
 
     private String name;
 
-    LavendertHtmlTag(String name) {
+    LavenderHtmlTag(String name) {
         this.name = name;
     }
 
