@@ -392,9 +392,9 @@ public class HtmlProcessor extends AbstractProcessor {
             if (attributeValue.attr == LavenderHtmlAttribute.STYLE) {
                 rewriteCss(attributeValue);
             } else if (matchesRewriteUrl(currentTag, attributeValue.attr, attributes)) {
-                matchesRewriteUrl(attributeValue);
+                matchesRewriteUrl(attributeValue.getValue());
             } else {
-                out.write(tagBuffer.substring(attributeValue.start, attributeValue.end));
+                out.write(attributeValue.getValue());
             }
 
             index = attributeValue.end;
@@ -408,9 +408,8 @@ public class HtmlProcessor extends AbstractProcessor {
         uriBuffer.setLength(0);
     }
 
-    private void matchesRewriteUrl(HtmlAttributeValue htmlAttributeValue) throws IOException {
-        String str = rewriteEngine.rewrite(tagBuffer.substring(htmlAttributeValue.start, htmlAttributeValue.end),
-                baseURI, contextPath);
+    private void matchesRewriteUrl(String attributeValue) throws IOException {
+        String str = rewriteEngine.rewrite(attributeValue, baseURI, contextPath);
         out.write(str);
     }
 
