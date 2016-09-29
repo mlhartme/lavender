@@ -30,9 +30,15 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class LavenderTest {
@@ -101,6 +107,32 @@ public class LavenderTest {
 
         assertFalse(lavenderFilterSpy.getProd());
         assertEquals(5, lavenderFilterSpy.getModules());
+    }
+
+    @Test
+    public void initShouldUseProductionAndDevelopmentFilter() throws Exception {
+        givenFile(Lavender.LAVENDER_IDX);
+        givenFile(Lavender.LAVENDER_NODES, "http://s1.uicdn.net/m1", "https://s1.uicdn.net/m1");
+
+        when(servletContext.getInitParameter(eq("mode"))).thenReturn("test");
+
+        ProductionFilter productionFilterMock = mock(ProductionFilter.class);
+
+        DevelopmentFilter developmentFilterMock = mock(DevelopmentFilter.class);
+        Mockito.when(developmentFilterMock.getModulesCount()).thenReturn(5);
+
+        Lavender lavenderFilterSpy = Mockito.spy(lavenderFilter);
+        doReturn(productionFilterMock).when(lavenderFilterSpy).createProductionFilter();
+        doReturn(developmentFilterMock).when(lavenderFilterSpy).createDevelopmentFilter();
+
+
+        lavenderFilterSpy.init(filterConfig);
+
+
+        assertFalse(lavenderFilterSpy.getProd());
+        assertEquals(5, lavenderFilterSpy.getModules());
+        verify(productionFilterMock, times(1)).init(any());
+        verify(developmentFilterMock, times(1)).init(any());
     }
 
     private void givenFile(String filename, String... lines) throws IOException {

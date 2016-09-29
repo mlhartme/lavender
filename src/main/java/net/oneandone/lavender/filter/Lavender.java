@@ -34,7 +34,10 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -47,6 +50,9 @@ public class Lavender implements Filter, LavenderMBean {
     public static final String LAVENDER_IDX = "WEB-INF/lavender.idx";
     public static final String LAVENDER_NODES = "WEB-INF/lavender.nodes";
 
+    public static final String APPLICATION_MODE = "mode";
+    public static final String APPLICATION_MODE_TEST = "test";
+
     private AtomicReference<Filter> delegate = new AtomicReference<>();
 
     /** The delegate configuration. */
@@ -57,11 +63,11 @@ public class Lavender implements Filter, LavenderMBean {
         filterConfig = config;
 
         try {
-            LOG.info("Start initializing Lavender delegate");
+            LOG.info("Start initializing Lavender filter");
             loadFilter();
-        } catch (ExistsException e) {
+        } catch (ServletException e) {
             e.printStackTrace();
-            throw new ServletException("Could not initialize Lavender delegate", e);
+            throw new ServletException("Could not initialize Lavender filter", e);
         } catch (RuntimeException se) {
             se.printStackTrace();
             LOG.error("Error in Lavender.init()", se);
@@ -71,7 +77,7 @@ public class Lavender implements Filter, LavenderMBean {
         registerMBean();
     }
 
-    private void loadFilter() throws ExistsException, ServletException {
+    private void loadFilter() throws ServletException {
         Filter filter = createFilter();
         filter.init(filterConfig);
 
@@ -87,12 +93,12 @@ public class Lavender implements Filter, LavenderMBean {
         }
     }
 
-    private Filter createFilter() throws ExistsException, ServletException {
+    private Filter createFilter() throws ServletException {
         Filter filter;
         if (useProductionFilter()) {
             filter = createProductionFilter();
         } else {
-            filter = createDevelopmentFilter();
+            filter = createProductionAndDevelopmentFilter();
         }
         return filter;
     }
@@ -105,14 +111,38 @@ public class Lavender implements Filter, LavenderMBean {
         return new DevelopmentFilter();
     }
 
-    private boolean useProductionFilter() throws ExistsException {
+    private Filter createProductionAndDevelopmentFilter() throws ServletException {
+        if (hasLavenderIndexFiles()) {
+            List<Filter> filters = new ArrayList<>();
+            filters.add(createProductionFilter());
+            filters.add(createDevelopmentFilter());
+            return new FilterList(filters);
+        }
+        return createDevelopmentFilter();
+    }
+
+    private boolean useProductionFilter() throws ServletException {
+        return !isApplicationTestMode() && hasLavenderIndexFiles();
+    }
+
+    private boolean isApplicationTestMode() {
+        String applicationMode = filterConfig.getServletContext().getInitParameter(APPLICATION_MODE);
+        return applicationMode != null && APPLICATION_MODE_TEST.equals(applicationMode);
+    }
+
+    private boolean hasLavenderIndexFiles() throws ServletException {
         // do not try ssh agent, because it crashes )with an abstract method error)
         // when jna is not in version 3.4.0. Which happens easily ...
         World world = new World(false);
 
         String contextPath = filterConfig.getServletContext().getRealPath("");
         Node indexSource = world.file(contextPath).join(LAVENDER_IDX);
-        return indexSource.exists();
+        Node nodesSource = world.file(contextPath).join(LAVENDER_NODES);
+        try {
+            return indexSource.exists() && nodesSource.exists();
+        } catch (ExistsException e) {
+            throw new ServletException(e);
+        }
     }
 
     private void registerMBean() {
@@ -138,6 +168,12 @@ public class Lavender implements Filter, LavenderMBean {
         Filter filter = delegate.get();
         if (filter instanceof DevelopmentFilter) {
             return ((DevelopmentFilter) filter).getModulesCount();
+        } else if (filter instanceof FilterList) {
+            for (Filter f : ((FilterList) filter).getFilters()) {
+                if (f instanceof DevelopmentFilter) {
+                    return ((DevelopmentFilter) f).getModulesCount();
+                }
+            }
         }
         return -1;
     }
@@ -146,7 +182,7 @@ public class Lavender implements Filter, LavenderMBean {
     public void reload() {
         try {
             loadFilter();
-        } catch (ExistsException | ServletException e) {
+        } catch (ServletException e) {
             LOG.error("Could not reload filter", e);
         }
     }
