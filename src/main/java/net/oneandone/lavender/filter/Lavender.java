@@ -37,7 +37,6 @@ import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -50,8 +49,7 @@ public class Lavender implements Filter, LavenderMBean {
     public static final String LAVENDER_IDX = "WEB-INF/lavender.idx";
     public static final String LAVENDER_NODES = "WEB-INF/lavender.nodes";
 
-    public static final String APPLICATION_MODE = "mode";
-    public static final String APPLICATION_MODE_TEST = "test";
+    public static final String ALLOW_PROD_DEV_MIX_MODE = "allowProdDevMixMode";
 
     private AtomicReference<Filter> delegate = new AtomicReference<>();
 
@@ -94,13 +92,18 @@ public class Lavender implements Filter, LavenderMBean {
     }
 
     private Filter createFilter() throws ServletException {
-        Filter filter;
-        if (useProductionFilter()) {
-            filter = createProductionFilter();
-        } else {
-            filter = createProductionAndDevelopmentFilter();
+        if (hasLavenderIndexFiles()) {
+            if (isProdDevMode()) {
+                return createProductionAndDevelopmentFilter();
+            }
+            return createProductionFilter();
         }
-        return filter;
+        return createDevelopmentFilter();
+    }
+
+    private boolean isProdDevMode() {
+        String applicationMode = System.getProperty(ALLOW_PROD_DEV_MIX_MODE);
+        return applicationMode != null && applicationMode.equalsIgnoreCase("true");
     }
 
     Filter createProductionFilter() throws ServletException {
@@ -112,22 +115,10 @@ public class Lavender implements Filter, LavenderMBean {
     }
 
     private Filter createProductionAndDevelopmentFilter() throws ServletException {
-        if (hasLavenderIndexFiles()) {
-            List<Filter> filters = new ArrayList<>();
-            filters.add(createProductionFilter());
-            filters.add(createDevelopmentFilter());
-            return new FilterList(filters);
-        }
-        return createDevelopmentFilter();
-    }
-
-    private boolean useProductionFilter() throws ServletException {
-        return !isApplicationTestMode() && hasLavenderIndexFiles();
-    }
-
-    private boolean isApplicationTestMode() {
-        String applicationMode = filterConfig.getServletContext().getInitParameter(APPLICATION_MODE);
-        return applicationMode != null && APPLICATION_MODE_TEST.equals(applicationMode);
+        List<Filter> filters = new ArrayList<>();
+        filters.add(createProductionFilter());
+        filters.add(createDevelopmentFilter());
+        return new FilterList(filters);
     }
 
     private boolean hasLavenderIndexFiles() throws ServletException {

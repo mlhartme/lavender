@@ -34,7 +34,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -114,7 +113,7 @@ public class LavenderTest {
         givenFile(Lavender.LAVENDER_IDX);
         givenFile(Lavender.LAVENDER_NODES, "http://s1.uicdn.net/m1", "https://s1.uicdn.net/m1");
 
-        when(servletContext.getInitParameter(eq("mode"))).thenReturn("test");
+        System.setProperty("allowProdDevMixMode", "true");
 
         ProductionFilter productionFilterMock = mock(ProductionFilter.class);
 
