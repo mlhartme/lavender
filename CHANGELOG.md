@@ -30,6 +30,7 @@
 
 * Fixed tailing space problem when loading devel svn caches.
 
+
 ### 2.4.0 (2016-01-16)
 
 * Dumped /opt/ui from binary and properties path. Adjusted properties search path accordingly.
@@ -44,6 +45,7 @@
   5) /etc/lavender.properties
  Thus, there's a new system property that's searched first. And the classpath is now searched before the home directory.
 * Support configurable uri for hosts. This replaces the option to specify a path.
+
 
 ### 2.3.0 (2015-08-04)
 
