@@ -113,7 +113,7 @@ public class LavenderTest {
         givenFile(Lavender.LAVENDER_IDX);
         givenFile(Lavender.LAVENDER_NODES, "http://s1.uicdn.net/m1", "https://s1.uicdn.net/m1");
 
-        System.setProperty("allowProdDevMixMode", "true");
+        System.setProperty("lavender.allowProdDevMixMode", "true");
 
         ProductionFilter productionFilterMock = mock(ProductionFilter.class);
 

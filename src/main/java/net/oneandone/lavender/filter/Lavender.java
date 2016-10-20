@@ -49,7 +49,7 @@ public class Lavender implements Filter, LavenderMBean {
     public static final String LAVENDER_IDX = "WEB-INF/lavender.idx";
     public static final String LAVENDER_NODES = "WEB-INF/lavender.nodes";
 
-    public static final String ALLOW_PROD_DEV_MIX_MODE = "allowProdDevMixMode";
+    public static final String ALLOW_PROD_DEV_MIX_MODE = "lavender.allowProdDevMixMode";
 
     private AtomicReference<Filter> delegate = new AtomicReference<>();
 
