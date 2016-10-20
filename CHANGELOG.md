@@ -2,7 +2,7 @@
 
 ### 2.5.3 (pending)
 
-* production/development mixed mode can be triggered via system property 'allowProdDevMixMode'
+* production/development mixed mode can be triggered via system property 'lavender.allowProdDevMixMode'
 
 
 ### 2.5.2 (2016-09-30)
