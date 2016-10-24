@@ -95,7 +95,7 @@ public class CssProcessor extends AbstractProcessor {
     }
 
     protected void processUrl(char c) throws IOException {
-        if (c == ')') {
+        if (c == ')' && uriBuffer.length() > 0 && uriBuffer.charAt(uriBuffer.length() - 1) != '\\') {
             rewriteUrl();
             state = State.OTHER;
             out.write(c);
@@ -108,8 +108,50 @@ public class CssProcessor extends AbstractProcessor {
      * Rewrites the URL stored in urlBuffer.
      */
     protected void rewriteUrl() throws IOException {
-        out.write(rewriteEngine.rewrite(uriBuffer.toString(), baseURI, contextPath));
+        int start = 0;
+        int end = uriBuffer.length();
+
+        // Trim whitespaces
+        while (start < uriBuffer.length() && isWhiteSpace(uriBuffer.charAt(start))) {
+            start++;
+        }
+        while (end > 0 && isWhiteSpace(uriBuffer.charAt(end - 1))) {
+            end--;
+        }
+
+        // Remove quotes
+        if ((uriBuffer.charAt(start) == '\'' && uriBuffer.charAt(end - 1) == '\'') ||
+                (uriBuffer.charAt(start) == '"' && uriBuffer.charAt(end - 1) == '"')) {
+            start++;
+            end--;
+        }
+        if (start > end) {
+            throw new IllegalStateException("Uri is empty " + state);
+        }
+
+        String uri = unescapeUri(uriBuffer.substring(start, end));
+
+        out.write(uriBuffer.substring(0, start));
+        out.write(rewriteEngine.rewrite(uri, baseURI, contextPath));
+        out.write(uriBuffer.substring(end));
         uriBuffer.setLength(0);
+    }
+
+    private String unescapeUri(String uri) {
+        StringBuilder buffer = new StringBuilder();
+        int pos = 0;
+        while (pos < uri.length()) {
+            char c = uri.charAt(pos);
+            if (c != '\\') {
+                buffer.append(c);
+            }
+            pos++;
+        }
+        return buffer.toString();
+    }
+
+    private boolean isWhiteSpace(char c) {
+        return c == ' ' || c == '\n' || c == '\t' || c == '\r';
     }
 
     protected void match(char c, State... states) throws IOException {

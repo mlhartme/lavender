@@ -1,6 +1,11 @@
 ## Changelog 
 
-### 2.5.3 (pending)
+### 2.5.4 (pending)
+
+* Fix CSS image urls with quotes, whitespaces and escaped chars
+
+
+### 2.5.3 (2016-10-20)
 
 * production/development mixed mode can be triggered via system property 'lavender.allowProdDevMixMode'
 
@@ -20,6 +25,7 @@
 
 * Make Lavender filter reloadable
 * Refactored Lavender filter by ProductionFilter and DevelopmentFilter
+
 
 ### 2.4.2 (2016-02-11)
 

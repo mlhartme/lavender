@@ -35,11 +35,12 @@ public class CssProcessorTest {
 
     protected StringWriter out;
     protected CssProcessor processor;
+    protected RewriteEngine rewriteEngine;
 
     @Before
     public void setUp() throws Exception {
-        RewriteEngine rewriteEngine = mock(RewriteEngine.class);
-        when(rewriteEngine.rewrite(any(String.class), eq(URI.create("http://x.y.z")), anyString())).thenReturn("http://a.b.c");
+        rewriteEngine = mock(RewriteEngine.class);
+        when(rewriteEngine.rewrite(eq("/x/y/z.gif"), eq(URI.create("http://x.y.z")), anyString())).thenReturn("http://a.b.c");
 
         processor = new CssProcessor();
         processor.setRewriteEngine(rewriteEngine, URI.create("http://x.y.z"), "/");
@@ -61,6 +62,68 @@ public class CssProcessorTest {
     }
 
     @Test
+    public void testWhiteSpace() throws IOException {
+
+        String input = "background: transparent url( /x/y/z.gif ) no-repeat top left;";
+        String expected = "background: transparent url( http://a.b.c ) no-repeat top left;";
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(expected, out.getBuffer().toString());
+    }
+
+    @Test
+    public void testEscapedParenthesis() throws IOException {
+        when(rewriteEngine.rewrite(eq("/x/y/z(2).gif"), eq(URI.create("http://x.y.z")), anyString())).thenReturn("http://a.b.c(2)");
+
+        String input = "background: transparent url( /x/y/z\\(2\\).gif ) no-repeat top left;";
+        String expected = "background: transparent url( http://a.b.c(2) ) no-repeat top left;";
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(expected, out.getBuffer().toString());
+    }
+
+    @Test
+    public void testSingleQuote() throws IOException {
+
+        String input = "background: transparent url('/x/y/z.gif') no-repeat top left;";
+        String expected = "background: transparent url('http://a.b.c') no-repeat top left;";
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(expected, out.getBuffer().toString());
+    }
+
+    @Test
+    public void testDoubleQuote() throws IOException {
+
+        String input = "background: transparent url(\"/x/y/z.gif\") no-repeat top left;";
+        String expected = "background: transparent url(\"http://a.b.c\") no-repeat top left;";
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(expected, out.getBuffer().toString());
+    }
+
+    @Test
+    public void testSingleAndDoubleQuote() throws IOException {
+        when(rewriteEngine.rewrite(eq("'/x/y/z.gif\""), eq(URI.create("http://x.y.z")), anyString())).thenReturn("'/x/y/z.gif\"");
+
+        String input = "background: transparent url('/x/y/z.gif\") no-repeat top left;";
+        String expected = "background: transparent url('/x/y/z.gif\") no-repeat top left;";
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(expected, out.getBuffer().toString());
+    }
+
+    @Test
     public void testNotFinished() throws IOException {
 
         String input = "background: transparent url(/x/y/z.gif";
@@ -74,6 +137,8 @@ public class CssProcessorTest {
 
     @Test
     public void testComplex() throws IOException {
+        when(rewriteEngine.rewrite(any(String.class), eq(URI.create("http://x.y.z")), anyString())).thenReturn("http://a.b.c");
+
         String input;
         String expected;
 
