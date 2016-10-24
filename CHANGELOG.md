@@ -1,6 +1,6 @@
 ## Changelog 
 
-### 2.5.4 (pending)
+### 2.5.4 (2016-10-24)
 
 * Fix CSS image urls with quotes, whitespaces and escaped chars
 
