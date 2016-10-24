@@ -105,7 +105,8 @@ public class CssProcessor extends AbstractProcessor {
     }
 
     /**
-     * Rewrites the URL stored in urlBuffer.
+     * Rewrites the URL stored in urlBuffer with support of whitespaces, quotes and escaped chars
+     * as in <a href="https://www.w3.org/TR/CSS21/syndata.html#uri">CSS 2.1 specification</a>
      */
     protected void rewriteUrl() throws IOException {
         int start = 0;
@@ -119,7 +120,7 @@ public class CssProcessor extends AbstractProcessor {
             end--;
         }
 
-        // Remove quotes
+        // Handle quotes
         if ((uriBuffer.charAt(start) == '\'' && uriBuffer.charAt(end - 1) == '\'') ||
                 (uriBuffer.charAt(start) == '"' && uriBuffer.charAt(end - 1) == '"')) {
             start++;
