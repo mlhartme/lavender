@@ -3,8 +3,8 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>net.oneandone.maven.poms</groupId>
-    <artifactId>foss-parent</artifactId>
-    <version>1.5.7</version>
+    <artifactId>lazy-foss-parent</artifactId>
+    <version>1.0.2</version>
     <relativePath />
   </parent>
 
@@ -25,17 +25,8 @@
 
   <properties>
     <tomcat.version>7.0.42</tomcat.version>
-
-    <!-- too picky -->
-    <enforcer.skip>true</enforcer.skip>
-    <checkstyle.skip>true</checkstyle.skip>
-    <pmd.skip>true</pmd.skip>
-    <cpd.skip>true</cpd.skip>
-    <findbugs.skip>true</findbugs.skip>
-    <jacoco.skip>true</jacoco.skip>
     <oneandone.java.source>1.8</oneandone.java.source>
     <oneandone.java.target>1.8</oneandone.java.target>
-
   </properties>
 
   <developers>
