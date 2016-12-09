@@ -148,6 +148,11 @@ public class Index implements Iterable<Label> {
 
     //--
 
+    // from normal idx
+    public boolean removeEntryOpt(String path) {
+        return properties.remove(path) != null;
+    }
+
     public Iterator<Label> iterator() {
         final Iterator<String> iter = properties.stringPropertyNames().iterator();
         return new Iterator<Label>() {

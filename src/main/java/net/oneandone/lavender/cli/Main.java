@@ -73,8 +73,13 @@ public class Main extends Cli implements Command {
     }
 
     @Child("fsck")
-    public Command validate() throws IOException {
+    public Command fsck() throws IOException {
         return new Fsck(console, properties, net());
+    }
+
+    @Child("remove-entry")
+    public Command removeEntry() throws IOException {
+        return new RemoveEntry(console, properties, net());
     }
 
     @Override
@@ -97,6 +102,9 @@ public class Main extends Cli implements Command {
         console.info.println("  'direct' cluster arg+     executes the specified command on all machines of the cluster");
         console.info.println("  'fsck' ['-md5'] ['-gc'] cluster");
         console.info.println("                            checks if all files are indexed and referenced and the same on all machines");
+        console.info.println("  'remove-entry' cluster originalPath");
+        console.info.println("                            removes the specified entry from from all indexes where it is found");
+        console.info.println("                            Note that the referenced file is not deleted - that's up to the next gc run.");
         console.info.println("global options");
         console.info.println("  '-await' seconds          how long to wait for a lock before giving up; default is 3600");
         console.info.println("  '-user' email             written to lock files to know who's currently holding the lock; defaults to unknown@all");
