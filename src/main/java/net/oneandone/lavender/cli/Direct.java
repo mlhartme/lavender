@@ -38,7 +38,7 @@ public class Direct extends Base {
     @Value(name = "cluster", position = 1)
     private String cluster;
 
-    @Remaining(name = "hosts")
+    @Remaining(name = "command")
     public void command(String arg) {
         command.add(arg);
     }
