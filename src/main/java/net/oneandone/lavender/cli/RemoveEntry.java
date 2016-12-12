@@ -64,7 +64,9 @@ public class RemoveEntry extends Base {
         Index all;
         Index index;
         Label label;
+        boolean modified;
 
+        modified = false;
         allFile = docroot.index(connection, Index.ALL_IDX);
         all = Index.load(allFile);
         for (Node file : docroot.indexList(connection)) {
@@ -77,8 +79,13 @@ public class RemoveEntry extends Base {
                 if (!all.removeReferenceOpt(label.getLavendelizedPath())) {
                     throw new IllegalStateException(label.toString());
                 }
-                System.out.println("M " + file.getName());
+                console.info.println("M " + file.getName());
+                index.save(file);
+                modified = true;
             }
+        }
+        if (modified) {
+            all.save(allFile);
         }
     }
 
