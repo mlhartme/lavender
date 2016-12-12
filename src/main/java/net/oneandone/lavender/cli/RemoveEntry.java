@@ -24,17 +24,26 @@ import net.oneandone.lavender.config.Properties;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.cli.Console;
+import net.oneandone.sushi.cli.Remaining;
 import net.oneandone.sushi.cli.Value;
 import net.oneandone.sushi.fs.Node;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RemoveEntry extends Base {
     @Value(name = "cluster", position = 1)
     private String clusterName;
 
     @Value(name = "originalPath", position = 2)
-    private String originalPath;
+    private final List<String> originalPaths = new ArrayList<>();
+
+    @Remaining(name = "originalPaths")
+    public void path(String arg) {
+        originalPaths.add(arg);
+    }
+
 
     public RemoveEntry(Console console, Properties properties, Net net) {
         super(console, properties, net);
@@ -64,27 +73,34 @@ public class RemoveEntry extends Base {
         Index all;
         Index index;
         Label label;
+        boolean allModified;
         boolean modified;
 
-        modified = false;
+        allModified = false;
         allFile = docroot.index(connection, Index.ALL_IDX);
         all = Index.load(allFile);
         for (Node file : docroot.indexList(connection)) {
             index = Index.load(file);
-            label = index.lookup(originalPath);
-            if (label != null) {
-                if (!index.removeEntryOpt(originalPath)) {
-                    throw new IllegalStateException(originalPath);
+            modified = false;
+            for (String originalPath : originalPaths) {
+                label = index.lookup(originalPath);
+                if (label != null) {
+                    if (!index.removeEntryOpt(originalPath)) {
+                        throw new IllegalStateException(originalPath);
+                    }
+                    if (!all.removeReferenceOpt(label.getLavendelizedPath())) {
+                        throw new IllegalStateException(label.toString());
+                    }
+                    modified = true;
                 }
-                if (!all.removeReferenceOpt(label.getLavendelizedPath())) {
-                    throw new IllegalStateException(label.toString());
-                }
+            }
+            if (modified) {
                 console.info.println("M " + file.getName());
                 index.save(file);
-                modified = true;
+                allModified = true;
             }
         }
-        if (modified) {
+        if (allModified) {
             all.save(allFile);
         }
     }
