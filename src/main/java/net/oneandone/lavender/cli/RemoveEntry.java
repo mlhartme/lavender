@@ -36,7 +36,6 @@ public class RemoveEntry extends Base {
     @Value(name = "cluster", position = 1)
     private String clusterName;
 
-    @Value(name = "originalPath", position = 2)
     private final List<String> originalPaths = new ArrayList<>();
 
     @Remaining(name = "originalPaths")
