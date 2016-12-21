@@ -1,6 +1,6 @@
 ## Changelog 
 
-### 2.5.5 (pending)
+### 2.5.5 (2016-12-21)
 
 * Added `remove-entry` command
 
