@@ -34,7 +34,7 @@ public class Properties {
 
     /** convenience method */
     public static Properties load() throws IOException {
-        return load(file(new World()), true);
+        return load(file(World.create()), true);
     }
 
     public static Properties load(Node file, boolean withSsh) throws IOException {

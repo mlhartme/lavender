@@ -45,7 +45,8 @@ public abstract class DefaultModule extends Module<Node> {
     private static final String RESOURCE_INDEX = "META-INF/pustefix-resource.index";
 
 
-    public static List<Module> fromWebapp(FileNode cache, boolean prod, Node webapp, String svnUsername, String svnPassword) throws IOException, SAXException, XmlException {
+    public static List<Module> fromWebapp(FileNode cache, boolean prod, Node webapp, String svnUsername, String svnPassword)
+            throws IOException, SAXException, XmlException {
         Node webappSource;
         List<Module> result;
         WarConfig rootConfig;
@@ -89,7 +90,7 @@ public abstract class DefaultModule extends Module<Node> {
             if (!configFile.exists()) {
                 return result;
             }
-            try (InputStream src = configFile.createInputStream()) {
+            try (InputStream src = configFile.newInputStream()) {
                 config = JarConfig.load(jarOrig.getWorld().getXml(), rootConfig, src);
             }
             lp = LavenderProperties.loadModuleOpt(prod, exploded);
@@ -251,7 +252,7 @@ public abstract class DefaultModule extends Module<Node> {
         if (loaded[0] == null) {
             return null;
         }
-        try (InputStream configSrc = loaded[0].createInputStream()) {
+        try (InputStream configSrc = loaded[0].newInputStream()) {
             config = JarConfig.load(jar.getWorld().getXml(), parent, configSrc);
         } catch (SAXException | XmlException e) {
             throw new IOException(jar + ": cannot load module descriptor:" + e.getMessage(), e);
@@ -266,7 +267,7 @@ public abstract class DefaultModule extends Module<Node> {
         }
         world = jar.getWorld();
         root = world.getMemoryFilesystem().root().node(UUID.randomUUID().toString(), null).mkdir();
-        src = new ZipInputStream(jar.createInputStream());
+        src = new ZipInputStream(jar.newInputStream());
         files = new HashMap<>();
         while ((entry = src.getNextEntry()) != null) {
             path = entry.getName();

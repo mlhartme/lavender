@@ -122,9 +122,15 @@ public class Lavender implements Filter, LavenderMBean {
     }
 
     private boolean hasLavenderIndexFiles() throws ServletException {
-        // do not try ssh agent, because it crashes )with an abstract method error)
+        World world;
+
+        // do not try ssh agent, because it crashes (with an abstract method error)
         // when jna is not in version 3.4.0. Which happens easily ...
-        World world = new World(false);
+        try {
+            world = World.create(false);
+        } catch (IOException e) {
+            throw new ServletException(e);
+        }
 
         String contextPath = filterConfig.getServletContext().getRealPath("");
         Node indexSource = world.file(contextPath).join(LAVENDER_IDX);

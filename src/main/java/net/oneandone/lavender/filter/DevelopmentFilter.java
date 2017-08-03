@@ -54,7 +54,7 @@ public class DevelopmentFilter implements Filter {
         this.filterConfig = filterConfig;
 
         try {
-            world = new World(false);
+            world = World.create(false);
             webapp = world.file(filterConfig.getServletContext().getRealPath(""));
             properties = Properties.load(Properties.file(world), false);
             FileNode cache = properties.lockedCache(5, "lavenderServlet");

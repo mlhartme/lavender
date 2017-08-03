@@ -96,7 +96,7 @@ public class WarEngine {
         outputNodesFile.writeString(nodes);
         warStart = System.currentTimeMillis();
         updateWarFile(result.get(Docroot.WEB), outputNodesFile);
-        LOG.info("updated war " + (war.length() / 1024) + "k, " + (System.currentTimeMillis() - warStart) + " ms");
+        LOG.info("updated war " + (war.size() / 1024) + "k, " + (System.currentTimeMillis() - warStart) + " ms");
         for (Module module : modules) {
             module.saveCaches();
         }
@@ -141,7 +141,7 @@ public class WarEngine {
             Files.copy(new ByteArrayInputStream(output.toByteArray()), entry, StandardCopyOption.REPLACE_EXISTING);
 
             entry = (ZipPath) fs.getPath(Lavender.LAVENDER_NODES);
-            Files.copy(nodesFile.createInputStream(), entry, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(nodesFile.newInputStream(), entry, StandardCopyOption.REPLACE_EXISTING);
         };
     }
 

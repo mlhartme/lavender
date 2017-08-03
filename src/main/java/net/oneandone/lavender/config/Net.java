@@ -15,7 +15,7 @@
  */
 package net.oneandone.lavender.config;
 
-import net.oneandone.sushi.cli.ArgumentException;
+import net.oneandone.inline.ArgumentException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.metadata.ComplexType;
 import net.oneandone.sushi.metadata.Schema;

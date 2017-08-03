@@ -26,7 +26,7 @@ public class DefaultResource extends Resource {
     }
 
     public static DefaultResource forNode(Node node, String path) throws IOException {
-        return new DefaultResource(node.getURI().toString(), path, node.getLastModified(), node, null, null);
+        return new DefaultResource(node.getUri().toString(), path, node.getLastModified(), node, null, null);
     }
 
     private final String origin;

@@ -69,7 +69,17 @@
     <dependency>
       <groupId>net.oneandone</groupId>
       <artifactId>sushi</artifactId>
-      <version>2.8.19</version>
+      <version>3.1.6-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>net.oneandone</groupId>
+      <artifactId>inline</artifactId>
+      <version>1.1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>net.oneandone</groupId>
+      <artifactId>metadata</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.jcraft</groupId>
@@ -199,7 +209,7 @@
       <plugin>
         <groupId>net.oneandone.maven.plugins</groupId>
         <artifactId>application</artifactId>
-        <version>1.5.1</version>
+        <version>1.6.2</version>
         <configuration>
           <name>lavender</name>
           <main>net.oneandone.lavender.cli.Main</main>

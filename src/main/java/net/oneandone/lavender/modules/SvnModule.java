@@ -15,12 +15,12 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.sushi.fs.LineFormat;
-import net.oneandone.sushi.fs.LineReader;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.svn.SvnNode;
+import net.oneandone.sushi.io.LineFormat;
+import net.oneandone.sushi.io.LineReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tmatesoft.svn.core.ISVNDirEntryHandler;
@@ -51,7 +51,7 @@ public class SvnModule extends Module<SvnEntry> {
         entries = new HashMap<>();
         lastModifiedModule = 0;
         if (cacheFile.exists()) {
-            try (Reader reader = cacheFile.createReader();
+            try (Reader reader = cacheFile.newReader();
                  LineReader lines = new LineReader(reader, new LineFormat(LineFormat.LF_SEPARATOR, LineFormat.Trim.ALL))) {
                 line = lines.next();
                 if (line != null) {
@@ -124,10 +124,10 @@ public class SvnModule extends Module<SvnEntry> {
         lastModifiedRepository = modifiedRepository;
         modifiedModule = getLastModified();
         if (modifiedModule == lastModifiedModule) {
-            LOG.info(root.getURI() + ": re-using scan for revision " + modifiedModule);
+            LOG.info(root.getUri() + ": re-using scan for revision " + modifiedModule);
             return entries;
         }
-        LOG.info(root.getURI() + ": scan " + lastModifiedModule + " is out-dated, rescanning revision " + modifiedModule);
+        LOG.info(root.getUri() + ": scan " + lastModifiedModule + " is out-dated, rescanning revision " + modifiedModule);
         entries = doScan(filter);
         lastModifiedModule = modifiedModule;
         return entries;
@@ -200,7 +200,7 @@ public class SvnModule extends Module<SvnEntry> {
     }
 
     public String uri() {
-        return root.getURI().toString();
+        return root.getUri().toString();
     }
 
     public void saveCaches() throws IOException {
@@ -212,7 +212,7 @@ public class SvnModule extends Module<SvnEntry> {
         // * works for multiple users as long as the cache directory has the proper permissions
         parent = (FileNode) indexFile.getParent();
         tmp = parent.createTempFile();
-        try (Writer dest = tmp.createWriter()) {
+        try (Writer dest = tmp.newWriter()) {
             dest.write(Long.toString(lastModifiedModule));
             dest.write('\n');
             for (SvnEntry entry : entries.values()) {

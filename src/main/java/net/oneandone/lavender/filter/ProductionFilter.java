@@ -48,7 +48,12 @@ public class ProductionFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        world = new World(false);
+        try {
+            world = World.create(false);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ServletException("Could not initialize Lavender production filter", e);
+        }
         Node webapp = world.file(filterConfig.getServletContext().getRealPath(""));
 
         Node indexSource = webapp.join(Lavender.LAVENDER_IDX);

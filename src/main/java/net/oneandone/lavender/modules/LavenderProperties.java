@@ -366,7 +366,7 @@ public class LavenderProperties {
         world = jar.getWorld();
         count = 0;
         result = new Node[names.length];
-        try (ZipInputStream src = new ZipInputStream(jar.createInputStream())) {
+        try (ZipInputStream src = new ZipInputStream(jar.newInputStream())) {
             while ((entry = src.getNextEntry()) != null) {
                 path = entry.getName();
                 idx = indexOf(names, path);

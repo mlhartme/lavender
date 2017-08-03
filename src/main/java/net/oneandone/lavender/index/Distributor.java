@@ -69,7 +69,7 @@ public class Distributor {
             return tmp;
         } else {
             if (!prev.equals(tmp)) {
-                throw new IOException("index mismatch: " + src.getURI());
+                throw new IOException("index mismatch: " + src.getUri());
             }
             return prev;
         }

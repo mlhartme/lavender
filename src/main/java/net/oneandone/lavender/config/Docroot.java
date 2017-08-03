@@ -15,7 +15,7 @@
  */
 package net.oneandone.lavender.config;
 
-import net.oneandone.sushi.cli.ArgumentException;
+import net.oneandone.inline.ArgumentException;
 import net.oneandone.sushi.fs.DirectoryNotFoundException;
 import net.oneandone.sushi.fs.ListException;
 import net.oneandone.sushi.fs.Node;

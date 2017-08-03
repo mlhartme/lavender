@@ -48,7 +48,7 @@ public class Index implements Iterable<Label> {
         Index index;
 
         index = new Index();
-        try (Reader reader = src.createReader()) {
+        try (Reader reader = src.newReader()) {
             index.load(reader);
         }
         return index;
@@ -204,7 +204,7 @@ public class Index implements Iterable<Label> {
     }
 
     public void save(Node indexFile) throws IOException {
-        try (OutputStream dest = indexFile.createOutputStream()) {
+        try (OutputStream dest = indexFile.newOutputStream()) {
             save(dest);
         }
     }

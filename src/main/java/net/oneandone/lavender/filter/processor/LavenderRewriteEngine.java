@@ -43,7 +43,7 @@ public class LavenderRewriteEngine implements RewriteEngine {
     //--
 
     public static RewriteEngine load(Index index, Node nodesFiles) throws IOException {
-        try (InputStream src = nodesFiles.createInputStream()) {
+        try (InputStream src = nodesFiles.newInputStream()) {
             return load(index, src);
         }
     }

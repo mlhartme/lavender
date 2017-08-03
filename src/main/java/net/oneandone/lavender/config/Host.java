@@ -29,7 +29,7 @@ import java.net.UnknownHostException;
 @Type
 public class Host {
     public static Host localhost(FileNode basedir) throws UnknownHostException {
-        return new Host(InetAddress.getLocalHost().getHostName(), null, basedir.getURI().toString());
+        return new Host(InetAddress.getLocalHost().getHostName(), null, basedir.getUri().toString());
     }
 
     @Value
