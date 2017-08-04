@@ -94,7 +94,7 @@ public class War extends Base {
         war.checkFile();
         tmp = war.getWorld().getTemp();
         outputNodesFile = tmp.createTempFile();
-        properties = globals.getProperties();
+        properties = globals.properties();
         try (Pool pool = globals.pool()) {
             distributors = distributors(pool);
             cache = globals.lockedCache();

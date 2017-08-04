@@ -60,7 +60,7 @@ public class Svn extends Base {
         if (directory.isEmpty() || directory.contains("/")) {
             throw new ArgumentException("invalid directory: " + directory);
         }
-        properties = globals.getProperties();
+        properties = globals.properties();
         svn = Strings.removeLeft(properties.svn.toString(), "svn:");
         docroot = cluster.docroot(type);
         target = new Target(cluster, docroot, docroot.aliases().get(0));

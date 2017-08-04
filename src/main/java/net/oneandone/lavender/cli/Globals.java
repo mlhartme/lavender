@@ -53,7 +53,7 @@ public class Globals {
         this.lazyNet = net;
     }
 
-    public Properties getProperties() throws IOException {
+    public Properties properties() throws IOException {
         if (lazyProperties == null) {
             lazyProperties = Properties.load(world);
         }
@@ -61,14 +61,14 @@ public class Globals {
     }
 
     public FileNode lockedCache() throws IOException {
-        return getProperties().lockedCache(await, user);
+        return properties().lockedCache(await, user);
     }
 
     public Net net() throws IOException {
         Properties p;
 
         if (lazyNet == null) {
-            p = getProperties();
+            p = properties();
             lazyNet = lastConfig ? p.loadLastNet() : p.loadNet();
         }
         return lazyNet;
