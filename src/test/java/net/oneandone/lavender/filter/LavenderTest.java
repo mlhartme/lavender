@@ -41,7 +41,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class LavenderTest {
-    private static final World WORLD = new World(false);
+    private static final World WORLD = World.createMinimal();
 
     private FileNode root;
 
@@ -139,7 +139,7 @@ public class LavenderTest {
         file.mkfile();
         file.writeLines(lines);
 
-        when(servletContext.getResource("/" + filename)).thenReturn(file.getURI().toURL());
+        when(servletContext.getResource("/" + filename)).thenReturn(file.getUri().toURL());
     }
 
 }

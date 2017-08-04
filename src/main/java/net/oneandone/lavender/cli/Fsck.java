@@ -19,15 +19,10 @@ import com.jcraft.jsch.JSchException;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Connection;
 import net.oneandone.lavender.config.Docroot;
-import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Pool;
-import net.oneandone.lavender.config.Properties;
 import net.oneandone.lavender.index.Hex;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
-import net.oneandone.sushi.cli.Console;
-import net.oneandone.sushi.cli.Option;
-import net.oneandone.sushi.cli.Value;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.ssh.SshNode;
@@ -44,25 +39,20 @@ import java.util.Map;
 import java.util.Set;
 
 public class Fsck extends Base {
-    @Option("md5")
-    private boolean md5check;
+    private final boolean md5check;
+    private final boolean mac;
+    private final boolean gc;
+    private final Cluster cluster;
 
-    @Option("mac")
-    private boolean mac;
-
-    @Option("gc")
-    private boolean gc;
-
-    @Value(name = "cluster", position = 1)
-    private String clusterName;
-
-    public Fsck(Console console, Properties properties, Net net) {
-        super(console, properties, net);
+    public Fsck(Globals globals, boolean md5check, boolean gc, boolean mac, String clusterName) throws IOException {
+        super(globals);
+        this.md5check = md5check;
+        this.mac = mac;
+        this.gc = gc;
+        this.cluster = globals.net().get(clusterName);
     }
 
-    @Override
-    public void invoke() throws IOException {
-        Cluster cluster;
+    public void run() throws IOException {
         Node docrootNode;
         boolean problem;
         Map<String, Index> prevIndexes;
@@ -71,8 +61,7 @@ public class Fsck extends Base {
         Index right;
 
         problem = false;
-        cluster = net.get(clusterName);
-        try (Pool pool = pool()) {
+        try (Pool pool = globals.pool()) {
             for (Docroot docroot : cluster.docroots()) {
                 prevIndexes = null;
                 for (Connection connection : cluster.connect(pool)) {
@@ -124,7 +113,7 @@ public class Fsck extends Base {
         result = new HashMap<>();
         problem = false;
         references = new HashSet<>();
-        console.verbose.println("  docroot "  + docroot.getURI().toString());
+        console.verbose.println("  docroot "  + docroot.getUri().toString());
         console.info.print("  files: ");
         files = find(docroot, "-type", "f");
         console.info.println(files.size());
@@ -139,7 +128,7 @@ public class Fsck extends Base {
                     all.addReference(label.getLavendelizedPath(), label.md5());
                 }
             } catch (IllegalStateException e) {
-                throw new IllegalStateException(file.getURI() + ": " + e.getMessage(), e);
+                throw new IllegalStateException(file.getUri() + ": " + e.getMessage(), e);
             }
         }
         console.info.println(references.size());

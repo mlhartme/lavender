@@ -15,110 +15,80 @@
  */
 package net.oneandone.lavender.cli;
 
-import net.oneandone.lavender.config.Net;
-import net.oneandone.lavender.config.Properties;
-import net.oneandone.sushi.cli.Child;
-import net.oneandone.sushi.cli.Cli;
-import net.oneandone.sushi.cli.Command;
-import net.oneandone.sushi.cli.Option;
-import net.oneandone.sushi.util.Strings;
+import net.oneandone.inline.Cli;
+import net.oneandone.inline.Console;
+import net.oneandone.inline.commands.Help;
+import net.oneandone.inline.commands.PackageVersion;
+import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.file.FileNode;
 
 import java.io.IOException;
 
-public class Main extends Cli implements Command {
+public class Main {
     public static void main(String[] args) throws IOException {
-        Properties properties;
-
-        properties = Properties.load();
-        System.exit(doMain(properties, null, args));
+        System.exit(doMain(null, args));
     }
 
-    public static int doMain(Properties properties, Net net, String ... args) {
-        Main main;
+    public static int doMain(Globals globals, String ... args) throws IOException {
+        World world;
+        Console console;
+        Cli cli;
 
-        main = new Main(properties, net);
-        return main.run(args);
+        world = World.create();
+        console = Console.create();
+        cli = new Cli(console::handleException);
+        cli.primitive(FileNode.class, "file name", world.getWorking(), world::file);
+        cli.begin(world);
+          cli.begin(console, "-v -e { setVerbose(v) setStacktraces(e) }");
+            cli.add(PackageVersion.class, "version");
+            cli.addDefault(Help.class, "help command?=null");
+
+            if (globals == null) {
+                cli.begin(Globals.class, "-lastconfig -user=unknown@all noLock=false -await=600");
+            } else {
+                cli.begin(globals);
+            }
+
+              cli.add(War.class, "war war idxName target+");
+              cli.add(Svn.class, "svn -type=svn directory cluster");
+              cli.add(File.class, "file -prefix archive idxName type cluster");
+              cli.add(Direct.class, "direct cluster arg+");
+              cli.add(Fsck.class, "fsck -md5 -gc -mac cluster");
+              cli.add(RemoveEntry.class, "remove-entry cluster originalPath+");
+
+        return cli.run(args);
     }
 
-    @Option("lastconfig")
-    private boolean lastConfig;
 
-    private Net lazyNet;
-    private final Properties properties;
+    private static String help() {
+        StringBuilder help;
 
-    public Main(Properties properties, Net net) {
-        super(properties.world);
-        this.properties = properties;
-        this.lazyNet = net;
-    }
+        help = new StringBuilder();
+        help.append("usage: 'lavender' global-options command\n");
+        help.append("\n");
+        help.append("publishing commands\n");
+        help.append("  'war' war idxName target+\n");
+        help.append("                            publish resources from the specified war, addes nodes- and index file to the war;\n");
+        help.append("                            target = type '=' cluster ['/' alias]\n");
+        help.append("  'svn' ['-type' type] directory cluster\n");
+        help.append("                            publish resources from <svn>/data/<directory> to <docroot>/<directory>\n");
+        help.append("                            type defaults to 'svn'; <svn> is picked from lavender.properties\n");
+        help.append("  'file' ['-prefix' prefix] archive idxName type cluster\n");
+        help.append("                            publish resources from archive to the specified cluster;\n");
+        help.append("                            archive is simply a directory or an zip archive (e.g. a jar- or zip file)\n");
+        help.append("other commands\n");
+        help.append("  'help'                    print this message\n");
+        help.append("  'version'                 print version information\n");
+        help.append("  'direct' cluster arg+     executes the specified command on all machines of the cluster\n");
+        help.append("  'fsck' ['-md5'] ['-gc'] cluster\n");
+        help.append("                            checks if all files are indexed and referenced and the same on all machines\n");
+        help.append("  'remove-entry' cluster originalPath+\n");
+        help.append("                            removes the specified entries from from all indexes where it is found\n");
+        help.append("                            Note that the referenced file is not deleted - that's up to the next gc run.\n");
+        help.append("global options\n");
+        help.append("  '-await' seconds          how long to wait for a lock before giving up; default is 600\n");
+        help.append("  '-user' email             written to lock files to know who's currently holding the lock; defaults to unknown@all\n");
 
-    @Child("war")
-    public Command war() throws IOException {
-        return new War(console, properties, net());
-    }
-
-    @Child("svn")
-    public Command svn() throws IOException {
-        return new Svn(console, properties, Strings.removeLeft(properties.svn.toString(), "svn:"), net());
-    }
-
-    @Child("file")
-    public Command file() throws IOException {
-        return new File(console, properties, net());
-    }
-
-    @Child("direct")
-    public Command direct() throws IOException {
-        return new Direct(console, properties, net());
-    }
-
-    @Child("fsck")
-    public Command fsck() throws IOException {
-        return new Fsck(console, properties, net());
-    }
-
-    @Child("remove-entry")
-    public Command removeEntry() throws IOException {
-        return new RemoveEntry(console, properties, net());
-    }
-
-    @Override
-    public void printHelp() {
-        console.info.println("usage: 'lavender' command");
-        console.info.println();
-        console.info.println("publishing commands");
-        console.info.println("  'war' global-options war idxName target+");
-        console.info.println("                            publish resources from the specified war, addes nodes- and index file to the war;");
-        console.info.println("                            target = type '=' cluster ['/' alias]");
-        console.info.println("  'svn' global-options ['-type' type] directory cluster");
-        console.info.println("                            publish resources from <svn>/data/<directory> to <docroot>/<directory>");
-        console.info.println("                            type defaults to 'svn'; <svn> is picked from lavender.properties");
-        console.info.println("  'file' global-options ['-prefix' prefix] archive idxName type cluster");
-        console.info.println("                            publish resources from archive to the specified cluster;");
-        console.info.println("                            archive is simply a directory or an zip archive (e.g. a jar- or zip file)");
-        console.info.println("other commands");
-        console.info.println("  'help'                    print this message");
-        console.info.println("  'version'                 print version information");
-        console.info.println("  'direct' cluster arg+     executes the specified command on all machines of the cluster");
-        console.info.println("  'fsck' ['-md5'] ['-gc'] cluster");
-        console.info.println("                            checks if all files are indexed and referenced and the same on all machines");
-        console.info.println("  'remove-entry' cluster originalPath+");
-        console.info.println("                            removes the specified entries from from all indexes where it is found");
-        console.info.println("                            Note that the referenced file is not deleted - that's up to the next gc run.");
-        console.info.println("global options");
-        console.info.println("  '-await' seconds          how long to wait for a lock before giving up; default is 600");
-        console.info.println("  '-user' email             written to lock files to know who's currently holding the lock; defaults to unknown@all");
-    }
-
-    @Override
-    public void invoke() {
-        printHelp();
-    }
-
-    private Net net() throws IOException {
-        if (lazyNet == null) {
-            lazyNet = lastConfig ? properties.loadLastNet() : properties.loadNet();
-        }
-        return lazyNet;
+        return help.toString();
     }
 }

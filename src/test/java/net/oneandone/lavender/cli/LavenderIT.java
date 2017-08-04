@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.cli;
 
+import net.oneandone.inline.Console;
 import net.oneandone.lavender.config.Alias;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Net;
@@ -46,6 +47,7 @@ public class LavenderIT {
     private static final String INDEX_NAME = "indexfilefortests.idx";
 
     public void check(String name, String warFile, String expected) throws Exception {
+        Globals globals;
         Properties properties;
         World world;
         Node src;
@@ -56,7 +58,7 @@ public class LavenderIT {
         Net net;
 
         boolean withSsh = false;
-        world = new World(withSsh);
+        world = World.create(withSsh);
         properties = Properties.load(world.file("test.properties.sample"), withSsh);
         System.out.println(name + " started: ");
         src = world.file(warFile);
@@ -69,7 +71,8 @@ public class LavenderIT {
         started = System.currentTimeMillis();
         net = net(testhosts);
         properties.initTemp(target.join("ittemp"));
-        assertEquals(0, Main.doMain(properties, net, "-e", "war", war.getAbsolute(), INDEX_NAME, "web=test"));
+        globals = new Globals(world, Console.create(), false, "nouser", false, 600, properties, net);
+        assertEquals(0, Main.doMain(globals, "-e", "war", war.getAbsolute(), INDEX_NAME, "web=test"));
         System.out.println(name + " done: " + (System.currentTimeMillis() - started) + " ms");
         for (FileNode host : testhosts.list()) {
             assertEquals(expected, md5(host.join("htdocs")));
@@ -92,7 +95,7 @@ public class LavenderIT {
         return net;
     }
 
-    private String md5(Node directory) throws IOException {
+    private String md5(Node<?> directory) throws IOException {
         World world;
         Filter filter;
         List<String> entries;
@@ -104,7 +107,7 @@ public class LavenderIT {
         filter.include("**/*");
         filter.predicate(Predicate.FILE);
         entries = new ArrayList<>();
-        for (Node file : directory.find(filter)) {
+        for (Node<?> file : directory.find(filter)) {
             if (file.getName().startsWith(INDEX_NAME)) {
                 // because different machine sort entries differently. And there's a timestamp comment in the beginning
                 md5 = Integer.toHexString(file.readProperties().hashCode());

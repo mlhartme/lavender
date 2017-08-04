@@ -16,37 +16,17 @@
 package net.oneandone.lavender.cli;
 
 
-import net.oneandone.lavender.config.Net;
-import net.oneandone.lavender.config.Pool;
-import net.oneandone.lavender.config.Properties;
-import net.oneandone.sushi.cli.Command;
-import net.oneandone.sushi.cli.Console;
-import net.oneandone.sushi.cli.Option;
+import net.oneandone.inline.Console;
+import net.oneandone.sushi.fs.World;
 
-public abstract class Base implements Command {
+public abstract class Base {
+    protected final Globals globals;
     protected final Console console;
-    protected final Properties properties;
-    protected final Net net;
+    protected final World world;
 
-    @Option("user")
-    protected String user = "unknown@all";
-
-    @Option("await")
-    protected int await = 60 * 10;  // 10 minutes
-
-    @Option("no-lock")
-    protected boolean noLock = false;
-
-    protected Base(Console console, Properties properties, Net net) {
-        this.console = console;
-        this.properties = properties;
-        this.net = net;
-    }
-
-    @Override
-    public abstract void invoke() throws Exception;
-
-    protected Pool pool() {
-        return new Pool(console.world, noLock ? null : user, await);
+    protected Base(Globals globals) {
+        this.globals = globals;
+        this.console = globals.console;
+        this.world = globals.world;
     }
 }

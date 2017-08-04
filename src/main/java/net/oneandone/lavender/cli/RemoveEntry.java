@@ -18,43 +18,31 @@ package net.oneandone.lavender.cli;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Connection;
 import net.oneandone.lavender.config.Docroot;
-import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Pool;
-import net.oneandone.lavender.config.Properties;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
-import net.oneandone.sushi.cli.Console;
-import net.oneandone.sushi.cli.Remaining;
-import net.oneandone.sushi.cli.Value;
 import net.oneandone.sushi.fs.Node;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class RemoveEntry extends Base {
-    @Value(name = "cluster", position = 1)
-    private String clusterName;
+    private final String clusterName;
+    private final List<String> originalPaths;
 
-    private final List<String> originalPaths = new ArrayList<>();
 
-    @Remaining(name = "originalPaths")
-    public void path(String arg) {
-        originalPaths.add(arg);
+    public RemoveEntry(Globals globals, String clusterName, List<String> originalPaths) {
+        super(globals);
+        this.clusterName = clusterName;
+        this.originalPaths = originalPaths;
     }
 
-
-    public RemoveEntry(Console console, Properties properties, Net net) {
-        super(console, properties, net);
-    }
-
-    @Override
-    public void invoke() throws IOException {
+    public void run() throws IOException {
         Cluster cluster;
         Node docrootNode;
 
-        cluster = net.get(clusterName);
-        try (Pool pool = pool()) {
+        cluster = globals.net().get(clusterName);
+        try (Pool pool = globals.pool()) {
             for (Docroot docroot : cluster.docroots()) {
                 for (Connection connection : cluster.connect(pool)) {
                     console.info.println(connection.getHost() + " " + docroot.aliases().get(0).getName());

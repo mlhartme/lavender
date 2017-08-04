@@ -16,12 +16,9 @@
 package net.oneandone.lavender.cli;
 
 import net.oneandone.inline.ArgumentException;
-import net.oneandone.inline.Console;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
-import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Pool;
-import net.oneandone.lavender.config.Properties;
 import net.oneandone.lavender.config.Target;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
@@ -37,28 +34,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class File extends Base {
-    @Value(name = "archive", position = 1)
-    private FileNode archive;
+    private final String prefix;
 
-    @Value(name = "idxName", position = 2)
-    private String name;
+    private final FileNode archive;
+    private final String name;
+    private final String type;
+    private final String clusterName;
 
-    @Value(name = "type", position = 3)
-    private String type;
-
-    @Value(name = "cluster", position = 4)
-    private String clusterName;
-
-    @Option("prefix")
-    private String prefix;
-
-    public File(Console console, Properties properties, Net net) {
-        super(console, properties, net);
+    public File(Globals globals, String prefix, FileNode archive, String idxName, String type, String clusterName) {
+        super(globals);
+        this.prefix = prefix;
+        this.archive = archive;
+        this.name = idxName;
+        this.type = type;
+        this.clusterName = clusterName;
     }
 
-    @Override
-    public void invoke() throws IOException {
-        final Node exploded;
+    public void run() throws IOException {
+        final Node<?> exploded;
         Cluster cluster;
         Docroot docroot;
         Target target;
@@ -68,7 +61,7 @@ public class File extends Base {
         long changed;
         Index index;
 
-        cluster = net.get(clusterName);
+        cluster = globals.net().get(clusterName);
         archive.checkExists();
         if (archive.isFile()) {
             try {
@@ -97,7 +90,7 @@ public class File extends Base {
             }
         };
 
-        try (Pool pool = pool()) {
+        try (Pool pool = globals.pool()) {
             distributor = target.open(pool, name);
             changed = module.publish(distributor);
             index = distributor.close();

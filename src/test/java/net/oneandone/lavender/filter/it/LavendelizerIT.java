@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
  * Runs Lavendelizer in Tomcat.
  */
 public class LavendelizerIT {
-    private static final World WORLD = new World(false);
+    private static final World WORLD = World.createMinimal();
     private static final FileNode HOME = WORLD.guessProjectHome(LavendelizerIT.class);
 
     private static final int PORT = 8087;

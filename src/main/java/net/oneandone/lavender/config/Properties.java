@@ -32,9 +32,8 @@ import java.util.List;
 public class Properties {
     private static final Logger LOG = LoggerFactory.getLogger(Properties.class);
 
-    /** convenience method */
-    public static Properties load() throws IOException {
-        return load(file(World.create()), true);
+    public static Properties load(World world) throws IOException {
+        return load(file(world), true);
     }
 
     public static Properties load(Node file, boolean withSsh) throws IOException {

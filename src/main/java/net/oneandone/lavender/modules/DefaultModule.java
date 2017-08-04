@@ -45,9 +45,9 @@ public abstract class DefaultModule extends Module<Node> {
     private static final String RESOURCE_INDEX = "META-INF/pustefix-resource.index";
 
 
-    public static List<Module> fromWebapp(FileNode cache, boolean prod, Node webapp, String svnUsername, String svnPassword)
+    public static List<Module> fromWebapp(FileNode cache, boolean prod, Node<?> webapp, String svnUsername, String svnPassword)
             throws IOException, SAXException, XmlException {
-        Node webappSource;
+        Node<?> webappSource;
         List<Module> result;
         WarConfig rootConfig;
         DefaultModule root;
@@ -58,7 +58,7 @@ public abstract class DefaultModule extends Module<Node> {
         result = new ArrayList<>();
         rootConfig = WarConfig.fromXml(webapp);
         // add modules before webapp, because they have a prefix
-        for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
+        for (Node<?> jar : webapp.find("WEB-INF/lib/*.jar")) {
             result.addAll(jarModuleOpt(cache, rootConfig, prod, jar, svnUsername, svnPassword));
         }
         webappSource = lp.live(webapp);

@@ -15,38 +15,32 @@
  */
 package net.oneandone.lavender.cli;
 
+import net.oneandone.inline.ArgumentException;
 import net.oneandone.lavender.config.Alias;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
-import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Pool;
 import net.oneandone.lavender.config.Properties;
 import net.oneandone.lavender.config.Target;
 import net.oneandone.lavender.index.Distributor;
-import net.oneandone.sushi.cli.ArgumentException;
-import net.oneandone.sushi.cli.Console;
-import net.oneandone.sushi.cli.Remaining;
-import net.oneandone.sushi.cli.Value;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.xml.XmlException;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class War extends Base {
-    @Value(name = "war", position = 1)
-    private FileNode war;
-
-    @Value(name = "idxName", position = 2)
-    private String indexName;
-
-    private final Map<String, Target> targets = new HashMap<>();
+    private final FileNode war;
+    private final String indexName;
+    private final Map<String, Target> targets;
     private String nodes;
 
-    @Remaining
-    public void target(String keyvalue) {
+    public War(Globals globals, FileNode war, String indexName, List<String> targetKeyValues) throws IOException {
+        super(globals);
+
         int idx;
         String type;
         String clusterName;
@@ -55,39 +49,41 @@ public class War extends Base {
         Docroot docroot;
         Alias alias;
 
-        idx = keyvalue.indexOf('=');
-        if (idx == -1) {
-            throw new ArgumentException("<type>=<cluster> expected, got " + keyvalue);
+        this.war = war;
+        this.indexName = indexName;
+        this.targets = new HashMap<>();
+        for (String keyvalue : targetKeyValues) {
+            idx = keyvalue.indexOf('=');
+            if (idx == -1) {
+                throw new ArgumentException("<type>=<cluster> expected, got " + keyvalue);
+            }
+            type = keyvalue.substring(0, idx);
+            clusterName = keyvalue.substring(idx + 1);
+            idx = clusterName.indexOf('/');
+            if (idx == -1) {
+                aliasName = null;
+            } else {
+                aliasName = clusterName.substring(idx + 1);
+                clusterName = clusterName.substring(0, idx);
+            }
+            cluster = globals.net().get(clusterName);
+            docroot = cluster.docroot(type);
+            alias = aliasName == null ? docroot.aliases().get(0) : docroot.alias(aliasName);
+            if (Docroot.WEB.equals(type)) {
+                nodes = alias.nodesFile();
+            }
+            targets.put(type, new Target(cluster, docroot, alias));
+
         }
-        type = keyvalue.substring(0, idx);
-        clusterName = keyvalue.substring(idx + 1);
-        idx = clusterName.indexOf('/');
-        if (idx == -1) {
-            aliasName = null;
-        } else {
-            aliasName = clusterName.substring(idx + 1);
-            clusterName = clusterName.substring(0, idx);
-        }
-        cluster = net.get(clusterName);
-        docroot = cluster.docroot(type);
-        alias = aliasName == null ? docroot.aliases().get(0) : docroot.alias(aliasName);
-        if (Docroot.WEB.equals(type)) {
-            nodes = alias.nodesFile();
-        }
-        targets.put(type, new Target(cluster, docroot, alias));
     }
 
-    public War(Console console, Properties properties, Net net) {
-        super(console, properties, net);
-    }
-
-    @Override
-    public void invoke() throws IOException, SAXException, XmlException {
+    public void run() throws IOException, SAXException, XmlException {
         FileNode tmp;
         FileNode cache;
         FileNode outputNodesFile;
         WarEngine engine;
         Map<String, Distributor> distributors;
+        Properties properties;
 
         if (targets.isEmpty()) {
             throw new ArgumentException("missing targets");
@@ -98,9 +94,10 @@ public class War extends Base {
         war.checkFile();
         tmp = war.getWorld().getTemp();
         outputNodesFile = tmp.createTempFile();
-        try (Pool pool = pool()) {
+        properties = globals.getProperties();
+        try (Pool pool = globals.pool()) {
             distributors = distributors(pool);
-            cache = properties.lockedCache(await, user);
+            cache = globals.lockedCache();
             try {
                 engine = new WarEngine(cache, distributors, indexName, properties.svnUsername, properties.svnPassword,
                         war, outputNodesFile, nodes);

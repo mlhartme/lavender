@@ -15,9 +15,9 @@
  */
 package net.oneandone.lavender.cli;
 
+import net.oneandone.inline.ArgumentException;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
-import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Pool;
 import net.oneandone.lavender.config.Properties;
 import net.oneandone.lavender.config.Target;
@@ -25,34 +25,26 @@ import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.Module;
 import net.oneandone.lavender.modules.SvnProperties;
-import net.oneandone.sushi.cli.ArgumentException;
-import net.oneandone.sushi.cli.Console;
-import net.oneandone.sushi.cli.Option;
-import net.oneandone.sushi.cli.Value;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
+import net.oneandone.sushi.util.Strings;
 
 import java.io.IOException;
 
 public class Svn extends Base {
-    @Value(name = "directory", position = 1)
-    private String directory;
+    private final String type;
+    private final String directory;
+    private final String clusterName;
 
-    @Value(name = "cluster", position = 2)
-    private String clusterName;
-
-    @Option("type")
-    private String type = Docroot.SVN;
-
-    private final String svn;
-
-    public Svn(Console console, Properties properties, String svn, Net net) {
-        super(console, properties, net);
-        this.svn = svn;
+    public Svn(Globals globals, String type, String directory, String clusterName) {
+        super(globals);
+        this.type = type;
+        this.directory = directory;
+        this.clusterName = clusterName;
     }
 
-    @Override
-    public void invoke() throws IOException {
+    public void run() throws IOException {
+        String svn;
         Cluster cluster;
         Docroot docroot;
         Target target;
@@ -64,21 +56,24 @@ public class Svn extends Base {
         long changed;
         Index index;
         FileNode cache;
+        Properties properties;
 
         if (directory.isEmpty() || directory.contains("/")) {
             throw new ArgumentException("invalid directory: " + directory);
         }
-        cluster = net.get(clusterName);
+        properties = globals.getProperties();
+        svn = Strings.removeLeft(properties.svn.toString(), "svn:");
+        cluster = globals.net().get(clusterName);
         docroot = cluster.docroot(type);
         target = new Target(cluster, docroot, docroot.aliases().get(0));
         filter = new Filter();
         filter.includeAll();
         svnurl = svn + "/data/" + directory;
         moduleConfig = new SvnProperties("svn", filter, svnurl, -1, svnurl, Docroot.WEB, false, "", directory + "/", null);
-        cache = properties.lockedCache(await, user);
+        cache = globals.lockedCache();
         try {
             module = moduleConfig.create(cache, true, properties.svnUsername, properties.svnPassword, null);
-            try (Pool pool = pool()) {
+            try (Pool pool = globals.pool()) {
                 distributor = target.open(pool, directory + ".idx");
                 changed = module.publish(distributor);
                 index = distributor.close();
