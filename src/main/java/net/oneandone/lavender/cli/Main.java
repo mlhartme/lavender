@@ -41,8 +41,7 @@ public class Main {
         cli.begin(world);
           cli.begin(console, "-v -e { setVerbose(v) setStacktraces(e) }");
             cli.add(PackageVersion.class, "version");
-            cli.addDefault(Help.class, "help command?=null");
-
+            cli.addDefault(new Help(console, help()), "help");
             if (globals == null) {
                 cli.begin(Globals.class, "-lastconfig -user=unknown@all -noLock=false -await=600");
             } else {
