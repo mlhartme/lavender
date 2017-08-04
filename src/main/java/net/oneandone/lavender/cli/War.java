@@ -34,11 +34,11 @@ import java.util.Map;
 
 public class War extends Base {
     private final FileNode war;
-    private final String indexName;
+    private final String idxName;
     private final Map<String, Target> targets;
     private String nodes;
 
-    public War(Globals globals, FileNode war, String indexName, List<String> targetKeyValues) throws IOException {
+    public War(Globals globals, FileNode war, String idxName, List<String> targetKeyValues) throws IOException {
         super(globals);
 
         int idx;
@@ -50,7 +50,7 @@ public class War extends Base {
         Alias alias;
 
         this.war = war;
-        this.indexName = indexName;
+        this.idxName = idxName;
         this.targets = new HashMap<>();
         for (String keyvalue : targetKeyValues) {
             idx = keyvalue.indexOf('=');
@@ -99,7 +99,7 @@ public class War extends Base {
             distributors = distributors(pool);
             cache = globals.lockedCache();
             try {
-                engine = new WarEngine(cache, distributors, indexName, properties.svnUsername, properties.svnPassword,
+                engine = new WarEngine(cache, distributors, idxName, properties.svnUsername, properties.svnPassword,
                         war, outputNodesFile, nodes);
                 engine.run();
             } finally {
@@ -114,7 +114,7 @@ public class War extends Base {
 
         result = new HashMap<>();
         for (Map.Entry<String, Target> entry : targets.entrySet()) {
-            result.put(entry.getKey(), entry.getValue().open(pool, indexName));
+            result.put(entry.getKey(), entry.getValue().open(pool, idxName));
         }
         return result;
     }

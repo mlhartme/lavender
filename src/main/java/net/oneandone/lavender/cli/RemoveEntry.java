@@ -27,21 +27,19 @@ import java.io.IOException;
 import java.util.List;
 
 public class RemoveEntry extends Base {
-    private final String clusterName;
+    private final Cluster cluster;
     private final List<String> originalPaths;
 
 
-    public RemoveEntry(Globals globals, String clusterName, List<String> originalPaths) {
+    public RemoveEntry(Globals globals, String clusterName, List<String> originalPaths) throws IOException {
         super(globals);
-        this.clusterName = clusterName;
+        this.cluster = globals.net().get(clusterName);
         this.originalPaths = originalPaths;
     }
 
     public void run() throws IOException {
-        Cluster cluster;
         Node docrootNode;
 
-        cluster = globals.net().get(clusterName);
         try (Pool pool = globals.pool()) {
             for (Docroot docroot : cluster.docroots()) {
                 for (Connection connection : cluster.connect(pool)) {

@@ -16,13 +16,11 @@
 package net.oneandone.lavender.cli;
 
 import net.oneandone.inline.ArgumentException;
-import net.oneandone.inline.Console;
 
 import com.jcraft.jsch.JSchException;
+import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Connection;
-import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Pool;
-import net.oneandone.lavender.config.Properties;
 import net.oneandone.sushi.fs.ssh.SshRoot;
 import net.oneandone.sushi.launcher.ExitCode;
 import net.oneandone.sushi.util.Strings;
@@ -32,27 +30,22 @@ import java.util.List;
 
 public class Direct extends Base {
     private final List<String> command;
+    private final Cluster cluster;
 
-    private String cluster;
-
-    public void command(String arg) {
-        command.add(arg);
-    }
-
-    public Direct(Globals globals, String cluster, List<String> command) {
+    public Direct(Globals globals, String clusterName, List<String> command) throws IOException {
         super(globals);
-        this.cluster = cluster;
+        if (command.isEmpty()) {
+            throw new ArgumentException("missing command");
+        }
+        this.cluster = globals.net().get(clusterName);
         this.command = command;
     }
 
     public void run() throws IOException, JSchException {
         SshRoot root;
 
-        if (command.size() == 0) {
-            throw new ArgumentException("missing command");
-        }
         try (Pool pool = globals.pool()) {
-            for (Connection connection : globals.net().get(cluster).connect(pool)) {
+            for (Connection connection : cluster.connect(pool)) {
                 root = (SshRoot) connection.join().getRoot();
                 console.info.println(connection.getHost().toString());
                 try {

@@ -35,24 +35,22 @@ import java.util.Map;
 
 public class File extends Base {
     private final String prefix;
-
     private final FileNode archive;
-    private final String name;
+    private final String idxName;
     private final String type;
-    private final String clusterName;
+    private final Cluster cluster;
 
-    public File(Globals globals, String prefix, FileNode archive, String idxName, String type, String clusterName) {
+    public File(Globals globals, String prefix, FileNode archive, String idxName, String type, String clusterName) throws IOException {
         super(globals);
         this.prefix = prefix;
-        this.archive = archive;
-        this.name = idxName;
+        this.archive = archive.checkExists();
+        this.idxName = idxName;
         this.type = type;
-        this.clusterName = clusterName;
+        this.cluster = globals.net().get(clusterName);
     }
 
     public void run() throws IOException {
         final Node<?> exploded;
-        Cluster cluster;
         Docroot docroot;
         Target target;
         Filter filter;
@@ -61,8 +59,6 @@ public class File extends Base {
         long changed;
         Index index;
 
-        cluster = globals.net().get(clusterName);
-        archive.checkExists();
         if (archive.isFile()) {
             try {
                 exploded = archive.openZip();
@@ -77,7 +73,7 @@ public class File extends Base {
         filter = new Filter();
         filter.includeAll();
         filter.predicate(Predicate.FILE);
-        module = new DefaultModule(type, name, false, "", prefix, filter) {
+        module = new DefaultModule(type, idxName, false, "", prefix, filter) {
             @Override
             protected Map<String, Node> scan(Filter filter) throws Exception {
                 Map<String, Node> result;
@@ -91,7 +87,7 @@ public class File extends Base {
         };
 
         try (Pool pool = globals.pool()) {
-            distributor = target.open(pool, name);
+            distributor = target.open(pool, idxName);
             changed = module.publish(distributor);
             index = distributor.close();
             module.saveCaches();

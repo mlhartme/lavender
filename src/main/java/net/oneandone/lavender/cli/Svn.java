@@ -34,18 +34,17 @@ import java.io.IOException;
 public class Svn extends Base {
     private final String type;
     private final String directory;
-    private final String clusterName;
+    private final Cluster cluster;
 
-    public Svn(Globals globals, String type, String directory, String clusterName) {
+    public Svn(Globals globals, String type, String directory, String clusterName) throws IOException {
         super(globals);
         this.type = type;
         this.directory = directory;
-        this.clusterName = clusterName;
+        this.cluster = globals.net().get(clusterName);
     }
 
     public void run() throws IOException {
         String svn;
-        Cluster cluster;
         Docroot docroot;
         Target target;
         Filter filter;
@@ -63,7 +62,6 @@ public class Svn extends Base {
         }
         properties = globals.getProperties();
         svn = Strings.removeLeft(properties.svn.toString(), "svn:");
-        cluster = globals.net().get(clusterName);
         docroot = cluster.docroot(type);
         target = new Target(cluster, docroot, docroot.aliases().get(0));
         filter = new Filter();
