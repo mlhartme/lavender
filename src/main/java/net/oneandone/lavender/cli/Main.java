@@ -44,7 +44,7 @@ public class Main {
             cli.addDefault(Help.class, "help command?=null");
 
             if (globals == null) {
-                cli.begin(Globals.class, "-lastconfig -user=unknown@all noLock=false -await=600");
+                cli.begin(Globals.class, "-lastconfig -user=unknown@all -noLock=false -await=600");
             } else {
                 cli.begin(globals);
             }
