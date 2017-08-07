@@ -30,32 +30,32 @@ public class Main {
     }
 
     public static int doMain(Globals globals, String ... args) throws IOException {
-        World world;
         Console console;
         Cli cli;
 
-        world = World.create();
-        console = Console.create();
-        cli = new Cli(console::handleException);
-        cli.primitive(FileNode.class, "file name", world.getWorking(), world::file);
-        cli.begin(world);
-          cli.begin(console, "-v -e { setVerbose(v) setStacktraces(e) }");
+        try (World world = World.create()) {
+            console = Console.create();
+            cli = new Cli(console::handleException);
+            cli.primitive(FileNode.class, "file name", world.getWorking(), world::file);
+            cli.begin(world);
+            cli.begin(console, "-v -e { setVerbose(v) setStacktraces(e) }");
             cli.add(PackageVersion.class, "version");
             cli.addDefault(new Help(console, help()), "help");
             if (globals == null) {
-                cli.begin(Globals.class, "-lastconfig -user=unknown@all -noLock=false -await=600");
+                cli.begin(Globals.class, "-lastconfig -user=unknown@all -no-lock=false -await=600");
             } else {
                 cli.begin(globals);
             }
 
-              cli.add(War.class, "war war idxName target+");
-              cli.add(Svn.class, "svn -type=svn directory cluster");
-              cli.add(File.class, "file -prefix archive idxName type cluster");
-              cli.add(Direct.class, "direct cluster arg+");
-              cli.add(Fsck.class, "fsck -md5 -gc -mac cluster");
-              cli.add(RemoveEntry.class, "remove-entry cluster originalPath+");
+            cli.add(War.class, "war war idxName target+");
+            cli.add(Svn.class, "svn -type=svn directory cluster");
+            cli.add(File.class, "file -prefix archive idxName type cluster");
+            cli.add(Direct.class, "direct cluster arg+");
+            cli.add(Fsck.class, "fsck -md5 -gc -mac cluster");
+            cli.add(RemoveEntry.class, "remove-entry cluster originalPath+");
 
-        return cli.run(args);
+            return cli.run(args);
+        }
     }
 
 
