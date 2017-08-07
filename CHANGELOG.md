@@ -2,7 +2,8 @@
 
 ### 2.6.0 (pending)
 
-* Update Sushi 2.8.x to 3.1.x and Inline 1.1.1 and Metadata 1.0.0
+* Updated Sushi 2.8.x to 3.1.x and Inline 1.1.1 and Metadata 1.0.0
+* Updated Jsch 0.1.51 to 0.1.54
 
 
 ### 2.5.5 (2016-12-21)
