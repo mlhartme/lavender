@@ -124,6 +124,18 @@ public class CssProcessorTest {
     }
 
     @Test
+    public void testInlineSvg() throws IOException {
+        when(rewriteEngine.rewrite(eq("'/x/y/z.gif\""), eq(URI.create("http://x.y.z")), anyString())).thenReturn("'/x/y/z.gif\"");
+
+        String input = "background-image: url('data:image/svg+xml;utf8,<svg width=\"16\" height=\"16\" viewBox=\"0 0 12 12\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><polygon points=\"2,2 5,2 5,3 3,3 3,9 9,9 9,7 10,7 10,10 2,10\"/><polygon points=\"6.2,2 10,2 10,5.79 8.58,4.37 6.5,6.5 5.5,5.5 7.6,3.4\"/></svg>');";
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(input, out.getBuffer().toString());
+    }
+
+    @Test
     public void testNotFinished() throws IOException {
 
         String input = "background: transparent url(/x/y/z.gif";

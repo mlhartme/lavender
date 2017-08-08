@@ -131,10 +131,13 @@ public class CssProcessor extends AbstractProcessor {
         }
 
         String uri = unescapeUri(uriBuffer.substring(start, end));
-
-        out.write(uriBuffer.substring(0, start));
-        out.write(rewriteEngine.rewrite(uri, baseURI, contextPath));
-        out.write(uriBuffer.substring(end));
+        if (uri.startsWith("data:")) {
+            out.write(uriBuffer.toString());
+        } else {
+            out.write(uriBuffer.substring(0, start));
+            out.write(rewriteEngine.rewrite(uri, baseURI, contextPath));
+            out.write(uriBuffer.substring(end));
+        }
         uriBuffer.setLength(0);
     }
 
