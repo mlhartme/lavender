@@ -2,8 +2,8 @@
 
 ### 2.6.0 (pending)
 
-* CssProcessor url rewrite fix: don't try to rewrite data urls
-* Updated Sushi 2.8.x to 3.1.x and Inline 1.1.1 and Metadata 1.0.0
+* CssProcessor url rewrite fix: don't try to rewrite data urls (thanks to Julian B)
+* Updated Sushi 2.8.x to 3.1.x and Inline 1.1.1 and Metadata 1.0.0 (thanks to Marcus T)
 * Updated Jsch 0.1.51 to 0.1.54
 
 
