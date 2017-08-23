@@ -51,7 +51,7 @@ public class Main {
             cli.add(Svn.class, "svn -type=svn directory cluster");
             cli.add(File.class, "file -prefix archive idxName type cluster");
             cli.add(Direct.class, "direct cluster arg+");
-            cli.add(Fsck.class, "fsck -md5 -gc -mac cluster");
+            cli.add(Fsck.class, "fsck -md5 -gc -mac -repair-all-idx cluster");
             cli.add(RemoveEntry.class, "remove-entry cluster originalPath+");
 
             return cli.run(args);
@@ -79,10 +79,11 @@ public class Main {
         help.append("  'help'                    print this message\n");
         help.append("  'version'                 print version information\n");
         help.append("  'direct' cluster arg+     executes the specified command on all machines of the cluster\n");
-        help.append("  'fsck' ['-md5'] ['-gc'] cluster\n");
+        help.append("  'fsck' ['-md5'] ['-gc'] ['-repair-all-idx'] cluster\n");
         help.append("                            checks if all files are indexed and referenced and the same on all machines\n");
         help.append("                            -md5 also checks md5 sums of every file;\n");
         help.append("                            -gc removes unreferenced files\n");
+        help.append("                            -repair-all-idx automatically fixes the all idx if it is broken\n");
         help.append("  'remove-entry' cluster originalPath+\n");
         help.append("                            removes the specified entries from from all indexes where it is found\n");
         help.append("                            Note that the referenced file is not deleted - that's up to the next gc run.\n");

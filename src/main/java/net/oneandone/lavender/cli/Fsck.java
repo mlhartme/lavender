@@ -42,13 +42,15 @@ public class Fsck extends Base {
     private final boolean md5check;
     private final boolean mac;
     private final boolean gc;
+    private final boolean repairAllIdx;
     private final Cluster cluster;
 
-    public Fsck(Globals globals, boolean md5check, boolean gc, boolean mac, String clusterName) throws IOException {
+    public Fsck(Globals globals, boolean md5check, boolean gc, boolean mac, boolean repairAllIdx, String clusterName) throws IOException {
         super(globals);
         this.md5check = md5check;
         this.mac = mac;
         this.gc = gc;
+        this.repairAllIdx = repairAllIdx;
         this.cluster = globals.net().get(clusterName);
     }
 
@@ -176,18 +178,26 @@ public class Fsck extends Base {
     }
 
     private boolean allIdxBroken(Connection connection, Docroot docrootObj, Index all) throws IOException {
+        Node allLoadedFile;
         Index allLoaded;
         Node repaired;
 
-        allLoaded = Index.load(docrootObj.index(connection, Index.ALL_IDX));
+        allLoadedFile = docrootObj.index(connection, Index.ALL_IDX);
+        allLoaded = Index.load(allLoadedFile);
         if (all.equals(allLoaded)) {
             return false;
         }
-        repaired = repairedLocation(docrootObj.index(connection, Index.ALL_IDX));
-        repaired.getParent().mkdirsOpt();
-        console.error.println("all-index is broken");
-        all.save(repaired);
-        return true;
+        if (repairAllIdx) {
+            console.info.println("all-index fixed");
+            all.save(allLoadedFile);
+            return false;
+        } else {
+            repaired = repairedLocation(docrootObj.index(connection, Index.ALL_IDX));
+            repaired.getParent().mkdirsOpt();
+            console.error.println("all-index is broken");
+            all.save(repaired);
+            return true;
+        }
     }
 
     private void removeReferences(Connection connection, Docroot docrootObj, List<String> references) throws IOException {
