@@ -1,6 +1,6 @@
 ## Changelog 
 
-### 2.6.0 (pending)
+### 2.6.0 (2017-08-29)
 
 * added fsck -repair-all-idx option 
 * CssProcessor url rewrite fix: don't try to rewrite data urls (thanks to Julian B)
