@@ -25,6 +25,7 @@
 
   <properties>
     <tomcat.version>7.0.42</tomcat.version>
+    <checkstyle.skip>true</checkstyle.skip>
   </properties>
 
   <developers>
