@@ -25,8 +25,6 @@
 
   <properties>
     <tomcat.version>7.0.42</tomcat.version>
-    <oneandone.java.source>1.8</oneandone.java.source>
-    <oneandone.java.target>1.8</oneandone.java.target>
   </properties>
 
   <developers>
