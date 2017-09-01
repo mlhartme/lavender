@@ -1,5 +1,11 @@
 ## Changelog 
 
+### 2.6.1 (2017-09-01)
+
+* fixed permission problem on svn cache: create files with permissions based on umask 
+  (2.6.0 created files with rw- --- --- permissions)
+
+
 ### 2.6.0 (2017-08-29)
 
 * added fsck -repair-all-idx option 

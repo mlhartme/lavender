@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.modules;
 
+import net.oneandone.sushi.fs.MkfileException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
@@ -211,7 +212,7 @@ public class SvnModule extends Module<SvnEntry> {
         // * no corruption by crashed/killed processes
         // * works for multiple users as long as the cache directory has the proper permissions
         parent = (FileNode) indexFile.getParent();
-        tmp = parent.createTempFile();
+        tmp = newTmpFile(parent);
         try (Writer dest = tmp.newWriter()) {
             dest.write(Long.toString(lastModifiedModule));
             dest.write('\n');
@@ -221,5 +222,23 @@ public class SvnModule extends Module<SvnEntry> {
             }
         }
         tmp.move(indexFile, true);
+    }
+
+    private static int tmpNo = 1;
+
+    // TODO: the normal tmp file mechanism is allowed to create files with rw- --- --- permission - which is a problem here!
+    private FileNode newTmpFile(FileNode parent) {
+        FileNode file;
+
+        while (true) {
+            file = parent.join("_tmp_" + tmpNo);
+            try {
+                file.mkfile();
+                file.getWorld().onShutdown().deleteAtExit(file);
+                return file;
+            } catch (MkfileException e) {
+                // continue
+            }
+        }
     }
 }

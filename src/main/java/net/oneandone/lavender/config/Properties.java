@@ -127,7 +127,7 @@ public class Properties {
             parent.mkdir();
             parent.setPermissions("rwxrwxrwx");
         }
-        world.setTemp((FileNode) temp.mkdirOpt());
+        world.setTemp(temp.mkdirOpt());
     }
 
     private FileNode temp() {
