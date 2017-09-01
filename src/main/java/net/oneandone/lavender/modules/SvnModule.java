@@ -227,7 +227,7 @@ public class SvnModule extends Module<SvnEntry> {
     private static int tmpNo = 1;
 
     // TODO: the normal tmp file mechanism is allowed to create files with rw- --- --- permission - which is a problem here!
-    private FileNode newTmpFile(FileNode parent) {
+    public static FileNode newTmpFile(FileNode parent) {
         FileNode file;
 
         while (true) {

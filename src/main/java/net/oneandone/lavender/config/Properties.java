@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.config;
 
+import net.oneandone.lavender.modules.SvnModule;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -168,7 +169,7 @@ public class Properties {
         Net result;
 
         local = lastNetNode();
-        tmp = local.getParent().createTempFile();
+        tmp = SvnModule.newTmpFile(local.getParent());
         world.node(svn).join("net.xml").copyFile(tmp);
         result = Net.load(tmp);
         tmp.move(local.deleteFileOpt());
