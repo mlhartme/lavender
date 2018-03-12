@@ -238,6 +238,7 @@ public class SvnModule extends Module<SvnEntry> {
                 return file;
             } catch (MkfileException e) {
                 // continue
+                tmpNo++;
             }
         }
     }

@@ -1,5 +1,10 @@
 ## Changelog 
 
+### 2.6.2 (pending)
+
+* fixed file creation problem introducted in 2.6.1: infinite loop if _tmp_1 exists (thanks to Marcus T)
+
+
 ### 2.6.1 (2017-09-01)
 
 * fixed permission problem on svn cache: create files with permissions based on umask 
