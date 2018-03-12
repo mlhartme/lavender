@@ -1,6 +1,6 @@
 ## Changelog 
 
-### 2.6.2 (pending)
+### 2.6.2 (2018-03-12)
 
 * fixed file creation problem introducted in 2.6.1: infinite loop if _tmp_1 exists (thanks to Marcus T)
 
