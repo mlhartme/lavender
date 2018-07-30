@@ -21,12 +21,17 @@ import net.oneandone.lavender.config.Pool;
 import net.oneandone.lavender.config.Properties;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
+import net.oneandone.sushi.util.Separator;
+import net.oneandone.sushi.util.Strings;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class Globals {
     public final World world;
     public final Console console;
+    public final Main.Commandline commandline;
     public final boolean lastConfig;
 
     private final String user;
@@ -36,14 +41,15 @@ public class Globals {
     private Net lazyNet;
     private Properties lazyProperties;
 
-    public Globals(World world, Console console, boolean lastConfig, String user, boolean noLock, int await) {
-        this(world, console, lastConfig, user, noLock, await, null, null);
+    public Globals(World world, Console console, Main.Commandline commandline, boolean lastConfig, String user, boolean noLock, int await) {
+        this(world, console, commandline, lastConfig, user, noLock, await, null, null);
     }
 
-    public Globals(World world, Console console, boolean lastConfig, String user, boolean noLock, int await,
+    public Globals(World world, Console console, Main.Commandline commandline, boolean lastConfig, String user, boolean noLock, int await,
                    Properties properties, Net net) {
         this.world = world;
         this.console = console;
+        this.commandline = commandline;
         this.lastConfig = lastConfig;
         this.noLock = noLock;
         this.user = user;
@@ -75,6 +81,18 @@ public class Globals {
     }
 
     public Pool pool() {
-        return new Pool(world, noLock ? null : user, await);
+        return new Pool(world, noLock ? null : lockInfo(), await);
+    }
+
+    private String lockInfo() {
+        String hostname;
+
+        try {
+            hostname = InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            hostname = "unknownHostname";
+        }
+
+        return user + '@' + hostname + ": " + Separator.SPACE.join(commandline.args);
     }
 }

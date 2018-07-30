@@ -71,7 +71,7 @@ public class LavenderIT {
         started = System.currentTimeMillis();
         net = net(testhosts);
         properties.initTemp(target.join("ittemp"));
-        globals = new Globals(world, Console.create(), false, "nouser", false, 600, properties, net);
+        globals = new Globals(world, Console.create(), new Main.Commandline("lavenderit"), false, "nouser", false, 600, properties, net);
         assertEquals(0, Main.doMain(globals, "-e", "war", war.getAbsolute(), INDEX_NAME, "web=test"));
         System.out.println(name + " done: " + (System.currentTimeMillis() - started) + " ms");
         for (FileNode host : testhosts.list()) {

@@ -29,6 +29,14 @@ public class Main {
         System.exit(doMain(null, args));
     }
 
+    public static class Commandline {
+        public final String[] args;
+
+        public Commandline(String... args) {
+            this.args = args;
+        }
+    }
+
     public static int doMain(Globals globals, String ... args) throws IOException {
         Console console;
         Cli cli;
@@ -37,6 +45,7 @@ public class Main {
             console = Console.create();
             cli = new Cli(console::handleException);
             cli.primitive(FileNode.class, "file name", world.getWorking(), world::file);
+            cli.begin(new Commandline(args));
             cli.begin(world);
             cli.begin(console, "-v -e { setVerbose(v) setStacktraces(e) }");
             cli.add(PackageVersion.class, "version");

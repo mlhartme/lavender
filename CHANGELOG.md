@@ -2,6 +2,8 @@
 
 ### 2.7.0 (pending)
 
+* lock files now container user, machine and command being executed
+
 * dependency update: 
   * svnkit 1.8.5 to 1.9.3
   * sushi 3.1.6 to 3.1.7
