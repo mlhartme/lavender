@@ -77,7 +77,7 @@ public class Main {
         help.append("publishing commands\n");
         help.append("  'war' war idxName target+\n");
         help.append("                            publish resources from the specified war, adds nodes- and index file to the war;\n");
-        help.append("                            target = docroot '=' cluster ['/' alias]\n");
+        help.append("                            target = docroot '=' cluster\n");
         help.append("  'svn' directory cluster docroot\n");
         help.append("                            publish resources from <svn>/data/<directory> to <docroot>/<directory> on the specified cluster\n");
         help.append("                            <svn> is picked from lavender.properties; index name one the cluster will be the directory name\n");
