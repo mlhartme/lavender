@@ -15,7 +15,6 @@
  */
 package net.oneandone.lavender.cli;
 
-import net.oneandone.lavender.config.Alias;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Connection;
 import net.oneandone.lavender.config.Pool;
@@ -24,6 +23,7 @@ import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -43,7 +43,7 @@ public class MainManual {
         hostdir = world.getTemp().createTempDirectory().join("testcluster");
         cluster = new Cluster("test");
         cluster.addLocalhost(hostdir);
-        cluster.addDocroot("web", "htdocs", "indexes", new Alias("fix", "no.such.domain"));
+        cluster.addDocroot("web", Arrays.asList("no.such.domain"),"htdocs", "indexes");
         testfile = hostdir.join("htdocs").createTempFile();
         try (Pool pool = new Pool(world, null, 0)) {
             for (Connection connection : cluster.connect(pool)) {

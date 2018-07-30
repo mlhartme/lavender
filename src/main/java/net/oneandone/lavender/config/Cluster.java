@@ -16,14 +16,12 @@
 package net.oneandone.lavender.config;
 
 import net.oneandone.sushi.fs.file.FileNode;
-import net.oneandone.sushi.metadata.annotation.Option;
 import net.oneandone.sushi.metadata.annotation.Sequence;
 import net.oneandone.sushi.metadata.annotation.Type;
 import net.oneandone.sushi.metadata.annotation.Value;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Type
@@ -92,8 +90,8 @@ public class Cluster {
         return this;
     }
 
-    public Cluster addDocroot(String type, String docroot, String indexes, Alias... aliases) {
-        docroots.add(new Docroot(type, docroot, indexes, Arrays.asList(aliases)));
+    public Cluster addDocroot(String type, List<String> domains, String docroot, String indexes) {
+        docroots.add(new Docroot(type, domains, docroot, indexes));
         return this;
     }
 

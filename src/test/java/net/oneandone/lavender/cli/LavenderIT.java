@@ -16,7 +16,6 @@
 package net.oneandone.lavender.cli;
 
 import net.oneandone.inline.Console;
-import net.oneandone.lavender.config.Alias;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Network;
 import net.oneandone.lavender.config.Properties;
@@ -29,6 +28,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -90,8 +90,8 @@ public class LavenderIT {
         net.add(new Cluster("test")
                 .addLocalhost(testhosts.join("cdn1"))
                 .addLocalhost(testhosts.join("cdn2"))
-                .addDocroot("web", "htdocs", "indexes",
-                        new Alias("fix", "fix1.uicdn.net", "fix2.uicdn.net", "fix3.uicdn.net", "fix4.uicdn.net")));
+                .addDocroot("web", Arrays.asList( "fix1.uicdn.net", "fix2.uicdn.net", "fix3.uicdn.net", "fix4.uicdn.net"),
+                        "htdocs", "indexes"));
         return net;
     }
 

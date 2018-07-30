@@ -5,6 +5,7 @@
 * configuration cleanup
   * renamed net.xml to network.xml
   * renamed docroot type to docroot name
+  * merge alises into docroot
   
 * lock files now container user, machine and command being executed
 

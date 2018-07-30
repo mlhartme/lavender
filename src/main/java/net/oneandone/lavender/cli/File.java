@@ -69,7 +69,7 @@ public class File extends Base {
             exploded = archive;
         }
         docroot = cluster.docroot(docrootName);
-        target = new Target(cluster, docroot, docroot.aliases().get(0));
+        target = new Target(cluster, docroot);
         filter = new Filter();
         filter.includeAll();
         filter.predicate(Predicate.FILE);

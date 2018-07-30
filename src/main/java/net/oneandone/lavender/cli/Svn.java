@@ -63,7 +63,7 @@ public class Svn extends Base {
         properties = globals.properties();
         svn = Strings.removeLeft(properties.svn.toString(), "svn:");
         docroot = cluster.docroot(docrootName);
-        target = new Target(cluster, docroot, docroot.aliases().get(0));
+        target = new Target(cluster, docroot);
         filter = new Filter();
         filter.includeAll();
         svnurl = svn + "/data/" + directory;

@@ -43,7 +43,7 @@ public class RemoveEntry extends Base {
         try (Pool pool = globals.pool()) {
             for (Docroot docroot : cluster.docroots()) {
                 for (Connection connection : cluster.connect(pool)) {
-                    console.info.println(connection.getHost() + " " + docroot.aliases().get(0).getName());
+                    console.info.println(connection.getHost() + " " + docroot.getName());
                     docrootNode = docroot.node(connection);
                     if (docrootNode.exists()) {
                         remove(connection, docroot);

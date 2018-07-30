@@ -67,7 +67,7 @@ public class Fsck extends Base {
             for (Docroot docroot : cluster.docroots()) {
                 prevIndexes = null;
                 for (Connection connection : cluster.connect(pool)) {
-                    console.info.println(connection.getHost() + " " + docroot.aliases().get(0).getName());
+                    console.info.println(connection.getHost() + " " + docroot.getName());
                     docrootNode = docroot.node(connection);
                     if (docrootNode.exists()) {
                         indexes = filesAndReferences(connection, docrootNode, docroot);

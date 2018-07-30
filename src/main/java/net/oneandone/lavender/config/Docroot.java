@@ -15,7 +15,6 @@
  */
 package net.oneandone.lavender.config;
 
-import net.oneandone.inline.ArgumentException;
 import net.oneandone.sushi.fs.DirectoryNotFoundException;
 import net.oneandone.sushi.fs.ListException;
 import net.oneandone.sushi.fs.Node;
@@ -24,7 +23,6 @@ import net.oneandone.sushi.metadata.annotation.Type;
 import net.oneandone.sushi.metadata.annotation.Value;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -37,28 +35,21 @@ public class Docroot {
     @Value
     private String name;
 
+    @Sequence(String.class)
+    private List<String> domains;
+
     @Value
     private String docroot;
 
     @Value
     private String indexes;
 
-    @Sequence(Alias.class)
-    private final List<Alias> aliases;
-
     public Docroot() {
-        this(null, "", "");
+        this(null, new ArrayList<>(), "", "");
     }
 
-    public Docroot(String name, String docroot, String indexes, Alias... aliases) {
-        this(name, docroot, indexes, new ArrayList<>(Arrays.asList(aliases)));
-    }
-
-    public Docroot(String name, String docroot, String indexes, List<Alias> aliases) {
+    public Docroot(String name, List<String> domains, String docroot, String indexes) {
         if (name != null) {
-            if (aliases.isEmpty()) {
-                throw new IllegalArgumentException("missing alias for docroot " + docroot);
-            }
             if (docroot.startsWith("/") || docroot.endsWith("/")) {
                 throw new IllegalArgumentException(docroot);
             }
@@ -67,9 +58,9 @@ public class Docroot {
             }
         }
         this.name = name;
+        this.domains = domains;
         this.docroot = docroot;
         this.indexes = indexes;
-        this.aliases = aliases;
     }
 
     public String getName() {
@@ -78,6 +69,25 @@ public class Docroot {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<String> domains() {
+        return domains;
+    }
+
+    public String nodesFile() {
+        StringBuilder builder;
+
+        builder = new StringBuilder();
+        for (String domain : domains) {
+            if (domain.indexOf("://") < 0) {
+                builder.append("http://").append(domain).append('\n');
+                builder.append("https://").append(domain).append('\n');
+            } else {
+                builder.append(domain).append('\n');
+            }
+        }
+        return builder.toString();
     }
 
     public String getDocroot() {
@@ -94,20 +104,6 @@ public class Docroot {
 
     public void setIndexes(String indexes) {
         this.indexes = indexes;
-    }
-
-    public List<Alias> aliases() {
-        return aliases;
-    }
-
-
-    public Alias alias(String name) {
-        for (Alias alias : aliases) {
-            if (name.equals(alias.getName())) {
-                return alias;
-            }
-        }
-        throw new ArgumentException("alias not found: " + name);
     }
 
     public Node node(Connection connection) {

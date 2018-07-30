@@ -16,7 +16,6 @@
 package net.oneandone.lavender.cli;
 
 import net.oneandone.inline.ArgumentException;
-import net.oneandone.lavender.config.Alias;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Pool;
@@ -44,10 +43,8 @@ public class War extends Base {
         int idx;
         String docrootName;
         String clusterName;
-        String aliasName;
         Cluster cluster;
         Docroot docroot;
-        Alias alias;
 
         this.war = war;
         this.idxName = idxName;
@@ -59,20 +56,12 @@ public class War extends Base {
             }
             docrootName = keyvalue.substring(0, idx);
             clusterName = keyvalue.substring(idx + 1);
-            idx = clusterName.indexOf('/');
-            if (idx == -1) {
-                aliasName = null;
-            } else {
-                aliasName = clusterName.substring(idx + 1);
-                clusterName = clusterName.substring(0, idx);
-            }
             cluster = globals.net().get(clusterName);
             docroot = cluster.docroot(docrootName);
-            alias = aliasName == null ? docroot.aliases().get(0) : docroot.alias(aliasName);
             if (Docroot.WEB.equals(docrootName)) {
-                nodes = alias.nodesFile();
+                nodes = docroot.nodesFile();
             }
-            targets.put(docrootName, new Target(cluster, docroot, alias));
+            targets.put(docrootName, new Target(cluster, docroot));
 
         }
     }
