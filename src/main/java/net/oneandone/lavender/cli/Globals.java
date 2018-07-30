@@ -75,7 +75,7 @@ public class Globals {
 
         if (lazyNet == null) {
             p = properties();
-            lazyNet = lastConfig ? p.loadLastNet() : p.loadNet();
+            lazyNet = lastConfig ? p.loadLastNet() : p.loadNetwork();
         }
         return lazyNet;
     }

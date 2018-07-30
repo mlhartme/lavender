@@ -163,14 +163,14 @@ public class Properties {
         // disable them for integration tests, because I don't have .ssh on pearl/gems
     }
 
-    public Net loadNet() throws IOException {
+    public Net loadNetwork() throws IOException {
         FileNode local;
         FileNode tmp;
         Net result;
 
         local = lastNetNode();
         tmp = SvnModule.newTmpFile(local.getParent());
-        world.node(svn).join("configuration.xml").copyFile(tmp);
+        world.node(svn).join("network.xml").copyFile(tmp);
         result = Net.load(tmp);
         tmp.move(local.deleteFileOpt());
         return result;
@@ -181,7 +181,7 @@ public class Properties {
     }
 
     private FileNode lastNetNode() {
-        return world.getHome().join(".lavender.configuration.xml");
+        return world.getHome().join(".lavender.network.xml");
     }
 
     public FileNode lockedCache(int wait, String lockContent) throws IOException {

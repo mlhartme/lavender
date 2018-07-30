@@ -2,6 +2,7 @@
 
 ### 2.7.0 (pending)
 
+* renamed net.xml to network.xml
 * lock files now container user, machine and command being executed
 
 * dependency update: 
