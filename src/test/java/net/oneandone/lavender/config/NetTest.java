@@ -28,6 +28,6 @@ public class NetTest {
 
         world = World.create(false);
         properties = Properties.load(world.guessProjectHome(Net.class).join("src/test/resources/lavender.properties"), false);
-        properties.loadNet();
+        properties.loadNetwork();
     }
 }
