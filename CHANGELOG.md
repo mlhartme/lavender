@@ -2,7 +2,10 @@
 
 ### 2.7.0 (pending)
 
-* dependency update: sushi 3.1.6 to 3.1.7
+* dependency update: 
+  * svnkit 1.8.5 to 1.9.3
+  * sushi 3.1.6 to 3.1.7
+
 
 ### 2.6.2 (2018-03-12)
 

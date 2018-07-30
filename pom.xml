@@ -55,12 +55,15 @@
     <dependency>
       <groupId>org.tmatesoft.svnkit</groupId>
       <artifactId>svnkit</artifactId>
-      <!-- CAUTION: doesn't this cause problems because it brings jna 3.5.2 to jsch agent? -->
-      <version>1.8.5</version>
+      <version>1.9.3</version>
       <exclusions>
         <exclusion><!-- we don't need ssh svn urls -->
           <groupId>com.trilead</groupId>
           <artifactId>trilead-ssh2</artifactId>
+        </exclusion>
+        <exclusion><!-- without this, I get both 3.4 platform and 4.1 jna-platform -->
+          <groupId>net.java.dev.jna</groupId>
+          <artifactId>platform</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -109,6 +112,10 @@
         <exclusion>
           <groupId>net.java.dev.jna</groupId>
           <artifactId>jna</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>net.java.dev.jna</groupId>
+          <artifactId>platform</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
