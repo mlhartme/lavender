@@ -2,6 +2,9 @@
 
 ### 2.7.0 (pending)
 
+* cli
+  * simplified 'svn' command: -type option is now a mandatory argument 'docroot', passed after the cluster
+
 * configuration cleanup
   * renamed net.xml to network.xml
   * renamed docroot type to docroot name

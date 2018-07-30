@@ -32,15 +32,15 @@ import net.oneandone.sushi.util.Strings;
 import java.io.IOException;
 
 public class Svn extends Base {
-    private final String docrootName;
     private final String directory;
     private final Cluster cluster;
+    private final String docrootName;
 
-    public Svn(Globals globals, String docrootName, String directory, String clusterName) throws IOException {
+    public Svn(Globals globals, String directory, String clusterName, String docrootName) throws IOException {
         super(globals);
-        this.docrootName = docrootName;
         this.directory = directory;
         this.cluster = globals.net().get(clusterName);
+        this.docrootName = docrootName;
     }
 
     public void run() throws IOException {
