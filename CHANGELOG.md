@@ -1,5 +1,9 @@
 ## Changelog 
 
+### 2.7.0 (pending)
+
+* dependency update: sushi 3.1.6 to 3.1.7
+
 ### 2.6.2 (2018-03-12)
 
 * fixed file creation problem introducted in 2.6.1: infinite loop if _tmp_1 exists (thanks to Marcus T)
