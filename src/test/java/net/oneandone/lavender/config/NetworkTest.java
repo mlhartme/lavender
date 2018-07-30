@@ -20,14 +20,22 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 public class NetworkTest {
     @Test
     public void load() throws IOException {
         World world;
         Properties properties;
+        Network network;
+        Cluster cluster;
 
         world = World.create(false);
         properties = Properties.load(world.guessProjectHome(Network.class).join("src/test/resources/lavender.properties"), false);
-        properties.loadNetwork();
+        network = properties.loadNetwork();
+        cluster = network.lookup("localhost");
+        assertNotNull(cluster);
+        assertEquals("localhost", cluster.getName());
     }
 }
