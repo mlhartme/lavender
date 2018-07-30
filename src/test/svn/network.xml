@@ -7,7 +7,7 @@
       <login>dummy</login>
     </host>
     <docroot>
-      <type>web</type>
+      <name>web</name>
       <docroot>Users/mhm/Projects/lavender/walter/fix/htdocs</docroot>
       <indexes>Users/mhm/Projects/lavender/walter/fix/indexes</indexes>
       <aliase>

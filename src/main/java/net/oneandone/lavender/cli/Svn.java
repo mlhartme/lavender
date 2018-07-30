@@ -32,13 +32,13 @@ import net.oneandone.sushi.util.Strings;
 import java.io.IOException;
 
 public class Svn extends Base {
-    private final String type;
+    private final String docrootName;
     private final String directory;
     private final Cluster cluster;
 
-    public Svn(Globals globals, String type, String directory, String clusterName) throws IOException {
+    public Svn(Globals globals, String docrootName, String directory, String clusterName) throws IOException {
         super(globals);
-        this.type = type;
+        this.docrootName = docrootName;
         this.directory = directory;
         this.cluster = globals.net().get(clusterName);
     }
@@ -62,7 +62,7 @@ public class Svn extends Base {
         }
         properties = globals.properties();
         svn = Strings.removeLeft(properties.svn.toString(), "svn:");
-        docroot = cluster.docroot(type);
+        docroot = cluster.docroot(docrootName);
         target = new Target(cluster, docroot, docroot.aliases().get(0));
         filter = new Filter();
         filter.includeAll();

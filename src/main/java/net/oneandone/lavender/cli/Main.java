@@ -57,8 +57,8 @@ public class Main {
             }
 
             cli.add(War.class, "war war idxName target+");
-            cli.add(Svn.class, "svn -type=svn directory cluster");
-            cli.add(File.class, "file -prefix archive idxName type cluster");
+            cli.add(Svn.class, "svn -docroot=svn directory cluster");
+            cli.add(File.class, "file -prefix archive idxName docroot cluster");
             cli.add(Direct.class, "direct cluster arg+");
             cli.add(Fsck.class, "fsck -md5 -gc -mac -repair-all-idx cluster");
             cli.add(RemoveEntry.class, "remove-entry cluster originalPath+");
@@ -76,12 +76,12 @@ public class Main {
         help.append("\n");
         help.append("publishing commands\n");
         help.append("  'war' war idxName target+\n");
-        help.append("                            publish resources from the specified war, addes nodes- and index file to the war;\n");
-        help.append("                            target = type '=' cluster ['/' alias]\n");
-        help.append("  'svn' ['-type' type] directory cluster\n");
+        help.append("                            publish resources from the specified war, adds nodes- and index file to the war;\n");
+        help.append("                            target = docroot '=' cluster ['/' alias]\n");
+        help.append("  'svn' ['-docroot' docroot] directory cluster\n");
         help.append("                            publish resources from <svn>/data/<directory> to <docroot>/<directory>\n");
-        help.append("                            type defaults to 'svn'; <svn> is picked from lavender.properties\n");
-        help.append("  'file' ['-prefix' prefix] archive idxName type cluster\n");
+        help.append("                            docroot defaults to 'svn'; <svn> is picked from lavender.properties\n");
+        help.append("  'file' ['-prefix' prefix] archive idxName docroot cluster\n");
         help.append("                            publish resources from archive to the specified cluster;\n");
         help.append("                            archive is simply a directory or an zip archive (e.g. a jar- or zip file)\n");
         help.append("other commands\n");

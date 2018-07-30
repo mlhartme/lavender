@@ -35,7 +35,7 @@ public class Docroot {
     public static final String SVN = "svn";
 
     @Value
-    private String type;
+    private String name;
 
     @Value
     private String docroot;
@@ -50,12 +50,12 @@ public class Docroot {
         this(null, "", "");
     }
 
-    public Docroot(String type, String docroot, String indexes, Alias... aliases) {
-        this(type, docroot, indexes, new ArrayList<>(Arrays.asList(aliases)));
+    public Docroot(String name, String docroot, String indexes, Alias... aliases) {
+        this(name, docroot, indexes, new ArrayList<>(Arrays.asList(aliases)));
     }
 
-    public Docroot(String type, String docroot, String indexes, List<Alias> aliases) {
-        if (type != null) {
+    public Docroot(String name, String docroot, String indexes, List<Alias> aliases) {
+        if (name != null) {
             if (aliases.isEmpty()) {
                 throw new IllegalArgumentException("missing alias for docroot " + docroot);
             }
@@ -66,18 +66,18 @@ public class Docroot {
                 throw new IllegalArgumentException(indexes);
             }
         }
-        this.type = type;
+        this.name = name;
         this.docroot = docroot;
         this.indexes = indexes;
         this.aliases = aliases;
     }
 
-    public String getType() {
-        return type;
+    public String getName() {
+        return name;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setName(String type) {
+        this.name = name;
     }
 
     public String getDocroot() {

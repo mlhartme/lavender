@@ -37,15 +37,15 @@ public class File extends Base {
     private final String prefix;
     private final FileNode archive;
     private final String idxName;
-    private final String type;
+    private final String docrootName;
     private final Cluster cluster;
 
-    public File(Globals globals, String prefix, FileNode archive, String idxName, String type, String clusterName) throws IOException {
+    public File(Globals globals, String prefix, FileNode archive, String idxName, String docrootName, String clusterName) throws IOException {
         super(globals);
         this.prefix = prefix;
         this.archive = archive.checkExists();
         this.idxName = idxName;
-        this.type = type;
+        this.docrootName = docrootName;
         this.cluster = globals.net().get(clusterName);
     }
 
@@ -68,12 +68,12 @@ public class File extends Base {
         } else {
             exploded = archive;
         }
-        docroot = cluster.docroot(type);
+        docroot = cluster.docroot(docrootName);
         target = new Target(cluster, docroot, docroot.aliases().get(0));
         filter = new Filter();
         filter.includeAll();
         filter.predicate(Predicate.FILE);
-        module = new DefaultModule(type, idxName, false, "", prefix, filter) {
+        module = new DefaultModule(docrootName, idxName, false, "", prefix, filter) {
             @Override
             protected Map<String, Node> scan(Filter filter) throws Exception {
                 Map<String, Node> result;

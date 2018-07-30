@@ -2,7 +2,10 @@
 
 ### 2.7.0 (pending)
 
-* renamed net.xml to network.xml
+* configuration cleanup
+  * renamed net.xml to network.xml
+  * renamed docroot type to docroot name
+  
 * lock files now container user, machine and command being executed
 
 * dependency update: 

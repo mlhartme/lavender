@@ -74,13 +74,13 @@ public class Cluster {
         throw new IllegalArgumentException("host not found: " + name);
     }
 
-    public Docroot docroot(String type) {
+    public Docroot docroot(String name) {
         for (Docroot docroot : docroots) {
-            if (type.equals(docroot.getType())) {
+            if (name.equals(docroot.getName())) {
                 return docroot;
             }
         }
-        throw new IllegalArgumentException("no docroot for type " + type);
+        throw new IllegalArgumentException("no docroot for type " + name);
     }
 
     public Cluster addLocalhost(FileNode basedir) throws IOException {

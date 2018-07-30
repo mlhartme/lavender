@@ -42,7 +42,7 @@ public class War extends Base {
         super(globals);
 
         int idx;
-        String type;
+        String docrootName;
         String clusterName;
         String aliasName;
         Cluster cluster;
@@ -57,7 +57,7 @@ public class War extends Base {
             if (idx == -1) {
                 throw new ArgumentException("<type>=<cluster> expected, got " + keyvalue);
             }
-            type = keyvalue.substring(0, idx);
+            docrootName = keyvalue.substring(0, idx);
             clusterName = keyvalue.substring(idx + 1);
             idx = clusterName.indexOf('/');
             if (idx == -1) {
@@ -67,12 +67,12 @@ public class War extends Base {
                 clusterName = clusterName.substring(0, idx);
             }
             cluster = globals.net().get(clusterName);
-            docroot = cluster.docroot(type);
+            docroot = cluster.docroot(docrootName);
             alias = aliasName == null ? docroot.aliases().get(0) : docroot.alias(aliasName);
-            if (Docroot.WEB.equals(type)) {
+            if (Docroot.WEB.equals(docrootName)) {
                 nodes = alias.nodesFile();
             }
-            targets.put(type, new Target(cluster, docroot, alias));
+            targets.put(docrootName, new Target(cluster, docroot, alias));
 
         }
     }
