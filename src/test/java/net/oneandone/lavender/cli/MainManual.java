@@ -18,17 +18,12 @@ package net.oneandone.lavender.cli;
 import net.oneandone.lavender.config.Alias;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Connection;
-import net.oneandone.lavender.config.Docroot;
-import net.oneandone.lavender.config.Host;
-import net.oneandone.lavender.config.Net;
 import net.oneandone.lavender.config.Pool;
-import net.oneandone.lavender.config.Properties;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import org.junit.Test;
 
-import java.net.InetAddress;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;

@@ -163,21 +163,21 @@ public class Properties {
         // disable them for integration tests, because I don't have .ssh on pearl/gems
     }
 
-    public Net loadNetwork() throws IOException {
+    public Network loadNetwork() throws IOException {
         FileNode local;
         FileNode tmp;
-        Net result;
+        Network result;
 
         local = lastNetNode();
         tmp = SvnModule.newTmpFile(local.getParent());
         world.node(svn).join("network.xml").copyFile(tmp);
-        result = Net.load(tmp);
+        result = Network.load(tmp);
         tmp.move(local.deleteFileOpt());
         return result;
     }
 
-    public Net loadLastNet() throws IOException {
-        return Net.load(lastNetNode());
+    public Network loadLastNet() throws IOException {
+        return Network.load(lastNetNode());
     }
 
     private FileNode lastNetNode() {

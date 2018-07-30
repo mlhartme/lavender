@@ -16,13 +16,12 @@
 package net.oneandone.lavender.cli;
 
 import net.oneandone.inline.Console;
-import net.oneandone.lavender.config.Net;
+import net.oneandone.lavender.config.Network;
 import net.oneandone.lavender.config.Pool;
 import net.oneandone.lavender.config.Properties;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.util.Separator;
-import net.oneandone.sushi.util.Strings;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -38,7 +37,7 @@ public class Globals {
     private final boolean noLock;
     private final int await;
 
-    private Net lazyNet;
+    private Network lazyNet;
     private Properties lazyProperties;
 
     public Globals(World world, Console console, Main.Commandline commandline, boolean lastConfig, String user, boolean noLock, int await) {
@@ -46,7 +45,7 @@ public class Globals {
     }
 
     public Globals(World world, Console console, Main.Commandline commandline, boolean lastConfig, String user, boolean noLock, int await,
-                   Properties properties, Net net) {
+                   Properties properties, Network net) {
         this.world = world;
         this.console = console;
         this.commandline = commandline;
@@ -70,7 +69,7 @@ public class Globals {
         return properties().lockedCache(await, user);
     }
 
-    public Net net() throws IOException {
+    public Network net() throws IOException {
         Properties p;
 
         if (lazyNet == null) {

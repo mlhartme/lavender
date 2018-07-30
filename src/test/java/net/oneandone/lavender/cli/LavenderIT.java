@@ -18,7 +18,7 @@ package net.oneandone.lavender.cli;
 import net.oneandone.inline.Console;
 import net.oneandone.lavender.config.Alias;
 import net.oneandone.lavender.config.Cluster;
-import net.oneandone.lavender.config.Net;
+import net.oneandone.lavender.config.Network;
 import net.oneandone.lavender.config.Properties;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
@@ -55,7 +55,7 @@ public class LavenderIT {
         FileNode testhosts;
         FileNode war;
         long started;
-        Net net;
+        Network net;
 
         boolean withSsh = false;
         world = World.create(withSsh);
@@ -81,12 +81,12 @@ public class LavenderIT {
         war.deleteFile();
     }
 
-    private Net net(FileNode testhosts) throws IOException {
-        Net net;
+    private Network net(FileNode testhosts) throws IOException {
+        Network net;
 
         testhosts.deleteTreeOpt();
         testhosts.mkdir();
-        net = new Net();
+        net = new Network();
         net.add(new Cluster("test")
                 .addLocalhost(testhosts.join("cdn1"))
                 .addLocalhost(testhosts.join("cdn2"))

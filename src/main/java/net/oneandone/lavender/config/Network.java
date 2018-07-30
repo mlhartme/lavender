@@ -28,12 +28,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Type
-public class Net {
+public class Network {
     private static final Schema SCHEMA = new AnnotationSchema();
-    private static final ComplexType TYPE = SCHEMA.complex(Net.class);
+    private static final ComplexType TYPE = SCHEMA.complex(Network.class);
 
-    public static Net load(Node src) throws IOException {
-        return (Net) Net.TYPE.loadXml(src).get();
+    public static Network load(Node src) throws IOException {
+        return (Network) Network.TYPE.loadXml(src).get();
     }
 
     //--
@@ -41,7 +41,7 @@ public class Net {
     @Sequence(Cluster.class)
     private final List<Cluster> clusters;
 
-    public Net() {
+    public Network() {
         clusters = new ArrayList<>();
     }
 

@@ -20,14 +20,14 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-public class NetTest {
+public class NetworkTest {
     @Test
     public void load() throws IOException {
         World world;
         Properties properties;
 
         world = World.create(false);
-        properties = Properties.load(world.guessProjectHome(Net.class).join("src/test/resources/lavender.properties"), false);
+        properties = Properties.load(world.guessProjectHome(Network.class).join("src/test/resources/lavender.properties"), false);
         properties.loadNetwork();
     }
 }
