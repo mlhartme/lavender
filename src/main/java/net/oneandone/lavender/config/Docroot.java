@@ -39,7 +39,7 @@ public class Docroot {
     private List<String> domains;
 
     @Value
-    private String docroot;
+    private String documents;
 
     @Value
     private String indexes;
@@ -48,10 +48,10 @@ public class Docroot {
         this(null, new ArrayList<>(), "", "");
     }
 
-    public Docroot(String name, List<String> domains, String docroot, String indexes) {
+    public Docroot(String name, List<String> domains, String documents, String indexes) {
         if (name != null) {
-            if (docroot.startsWith("/") || docroot.endsWith("/")) {
-                throw new IllegalArgumentException(docroot);
+            if (documents.startsWith("/") || documents.endsWith("/")) {
+                throw new IllegalArgumentException(documents);
             }
             if (indexes.startsWith("/") || indexes.endsWith("/")) {
                 throw new IllegalArgumentException(indexes);
@@ -59,7 +59,7 @@ public class Docroot {
         }
         this.name = name;
         this.domains = domains;
-        this.docroot = docroot;
+        this.documents = documents;
         this.indexes = indexes;
     }
 
@@ -90,12 +90,12 @@ public class Docroot {
         return builder.toString();
     }
 
-    public String getDocroot() {
-        return docroot;
+    public String getDocuments() {
+        return documents;
     }
 
-    public void setDocroot(String docroot) {
-        this.docroot = docroot;
+    public void setDocuments(String documents) {
+        this.documents = documents;
     }
 
     public String getIndexes() {
@@ -107,7 +107,7 @@ public class Docroot {
     }
 
     public Node node(Connection connection) {
-        return connection.join(docroot);
+        return connection.join(documents);
     }
 
     public Node index(Connection connection, String indexName) {

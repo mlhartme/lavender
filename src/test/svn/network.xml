@@ -10,7 +10,7 @@
       <name>web</name>
       <domain>fix.lavender.walter.websales.united.domain</domain>
 
-      <docroot>Users/mhm/Projects/lavender/walter/fix/htdocs</docroot>
+      <documents>Users/mhm/Projects/lavender/walter/fix/htdocs</documents>
       <indexes>Users/mhm/Projects/lavender/walter/fix/indexes</indexes>
     </docroot>
   </cluster>
