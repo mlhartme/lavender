@@ -170,7 +170,7 @@ public class Properties {
 
         local = lastNetNode();
         tmp = SvnModule.newTmpFile(local.getParent());
-        world.node(svn).join("net.xml").copyFile(tmp);
+        world.node(svn).join("configuration.xml").copyFile(tmp);
         result = Net.load(tmp);
         tmp.move(local.deleteFileOpt());
         return result;
@@ -181,7 +181,7 @@ public class Properties {
     }
 
     private FileNode lastNetNode() {
-        return (FileNode) world.getHome().join(".lavender.net.xml");
+        return world.getHome().join(".lavender.configuration.xml");
     }
 
     public FileNode lockedCache(int wait, String lockContent) throws IOException {
