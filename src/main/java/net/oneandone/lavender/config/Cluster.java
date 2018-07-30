@@ -80,7 +80,7 @@ public class Cluster {
                 return docroot;
             }
         }
-        throw new IllegalArgumentException("no docroot for type " + name);
+        throw new IllegalArgumentException("docroot not found: " + name);
     }
 
     public Cluster addLocalhost(FileNode basedir) throws IOException {

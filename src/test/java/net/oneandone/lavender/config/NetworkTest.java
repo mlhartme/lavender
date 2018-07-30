@@ -22,6 +22,7 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class NetworkTest {
     @Test
@@ -37,5 +38,6 @@ public class NetworkTest {
         cluster = network.lookup("localhost");
         assertNotNull(cluster);
         assertEquals("localhost", cluster.getName());
+        assertNotNull(cluster.docroot("web"));
     }
 }
