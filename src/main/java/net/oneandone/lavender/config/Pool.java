@@ -18,15 +18,19 @@ package net.oneandone.lavender.config;
 import net.oneandone.sushi.fs.OnShutdown;
 import net.oneandone.sushi.fs.World;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * Manages connections.
  */
 public class Pool extends Thread implements AutoCloseable {
+    private static final Logger LOG = LoggerFactory.getLogger(Pool.class);
+
     public static Pool create(World world, String lockContent, int wait) {
         OnShutdown sushiShutdown;
         Pool result;
@@ -102,16 +106,17 @@ public class Pool extends Thread implements AutoCloseable {
 
     @Override
     public void run() {
+        LOG.warn("shutdown hook on " + connections.size() + "connections triggered");
         try {
             disconnect();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("shutdown hook failed", e);
         }
         sushiShutdown.start();
         try {
             sushiShutdown.join();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.error("shutdown hook interrupted");
         }
     }
 }
