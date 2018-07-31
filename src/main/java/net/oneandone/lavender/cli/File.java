@@ -19,7 +19,6 @@ import net.oneandone.inline.ArgumentException;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Pool;
-import net.oneandone.lavender.config.Target;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.DefaultModule;
@@ -52,7 +51,6 @@ public class File extends Base {
     public void run() throws IOException {
         final Node<?> exploded;
         Docroot docroot;
-        Target target;
         Filter filter;
         Module module;
         Distributor distributor;
@@ -69,7 +67,6 @@ public class File extends Base {
             exploded = archive;
         }
         docroot = cluster.docroot(docrootName);
-        target = new Target(cluster, docroot);
         filter = new Filter();
         filter.includeAll();
         filter.predicate(Predicate.FILE);
@@ -87,7 +84,7 @@ public class File extends Base {
         };
 
         try (Pool pool = globals.pool()) {
-            distributor = target.open(pool, idxName);
+            distributor = Distributor.open(cluster.connect(pool), docroot, idxName);
             changed = module.publish(distributor);
             index = distributor.close();
             module.saveCaches();

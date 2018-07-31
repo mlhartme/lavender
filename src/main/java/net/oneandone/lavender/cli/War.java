@@ -19,7 +19,7 @@ import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Pool;
 import net.oneandone.lavender.config.Properties;
-import net.oneandone.lavender.config.Target;
+import net.oneandone.lavender.index.Distributor;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.xml.XmlException;
 import org.xml.sax.SAXException;
@@ -56,7 +56,7 @@ public class War extends Base {
         try (Pool pool = globals.pool()) {
             cache = globals.lockedCache();
             try {
-                engine = new WarEngine(cache, new Target(cluster, docroot).open(pool, idxName), properties.svnUsername, properties.svnPassword, war, outputNodesFile, nodes);
+                engine = new WarEngine(cache, Distributor.open(cluster.connect(pool), docroot, idxName), properties.svnUsername, properties.svnPassword, war, outputNodesFile, nodes);
                 engine.run();
             } finally {
                 properties.unlockCache();
