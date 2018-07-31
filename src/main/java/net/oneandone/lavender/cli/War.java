@@ -28,16 +28,16 @@ import java.io.IOException;
 
 public class War extends Base {
     private final FileNode war;
-    private final String idxName;
+    private final String indexName;
     private final Cluster cluster;
     private final Docroot docroot;
     private String nodes;
 
-    public War(Globals globals, FileNode war, String clusterName, String docrootName, String idxName) throws IOException {
+    public War(Globals globals, FileNode war, String clusterName, String docrootName, String indexName) throws IOException {
         super(globals);
 
         this.war = war.checkFile();
-        this.idxName = idxName;
+        this.indexName = indexName;
         this.cluster = globals.net().get(clusterName);
         this.docroot = cluster.docroot(docrootName);
         this.nodes = docroot.nodesFile();
@@ -56,7 +56,7 @@ public class War extends Base {
         try (Pool pool = globals.pool()) {
             cache = globals.lockedCache();
             try {
-                engine = new WarEngine(cache, Distributor.open(cluster.connect(pool), docroot, idxName), properties.svnUsername, properties.svnPassword, war, outputNodesFile, nodes);
+                engine = new WarEngine(cache, Distributor.open(cluster.connect(pool), docroot, indexName), properties.svnUsername, properties.svnPassword, war, outputNodesFile, nodes);
                 engine.run();
             } finally {
                 properties.unlockCache();

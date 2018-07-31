@@ -35,15 +35,15 @@ import java.util.Map;
 public class File extends Base {
     private final String prefix;
     private final FileNode archive;
-    private final String idxName;
+    private final String indexName;
     private final String docrootName;
     private final Cluster cluster;
 
-    public File(Globals globals, String prefix, FileNode archive, String clusterName, String docrootName, String idxName) throws IOException {
+    public File(Globals globals, String prefix, FileNode archive, String clusterName, String docrootName, String indexName) throws IOException {
         super(globals);
         this.prefix = prefix;
         this.archive = archive.checkExists();
-        this.idxName = idxName;
+        this.indexName = indexName;
         this.docrootName = docrootName;
         this.cluster = globals.net().get(clusterName);
     }
@@ -70,7 +70,7 @@ public class File extends Base {
         filter = new Filter();
         filter.includeAll();
         filter.predicate(Predicate.FILE);
-        module = new DefaultModule(Module.TYPE, idxName, false, "", prefix, filter) {
+        module = new DefaultModule(Module.TYPE, indexName, false, "", prefix, filter) {
             @Override
             protected Map<String, Node> scan(Filter filter) throws Exception {
                 Map<String, Node> result;
@@ -84,7 +84,7 @@ public class File extends Base {
         };
 
         try (Pool pool = globals.pool()) {
-            distributor = Distributor.open(cluster.connect(pool), docroot, idxName);
+            distributor = Distributor.open(cluster.connect(pool), docroot, indexName);
             changed = module.publish(distributor);
             index = distributor.close();
             module.saveCaches();
