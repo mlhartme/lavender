@@ -77,11 +77,13 @@ public class Main {
         help.append("publishing commands\n");
         help.append("  'war' war cluster docroot index\n");
         help.append("                            publish resources from the specified war, adds nodes- and index file to the war\n");
+        help.append("                            index is a file name with suffix\n");
         help.append("  'svn' directory cluster docroot\n");
         help.append("                            publish resources from <svn>/data/<directory> to <docroot>/<directory> on the specified cluster\n");
-        help.append("                            <svn> is picked from lavender.properties; index name one the cluster will be the directory name\n");
+        help.append("                            <svn> is picked from lavender.properties; index will be the directory name with '.idx' appended\n");
         help.append("  'file' ['-prefix' prefix] archive cluster docroot index\n");
         help.append("                            publish resources from archive to docroot on the specified cluster;\n");
+        help.append("                            index is a file name with suffix\n");
         help.append("                            archive is simply a directory or an zip archive (e.g. a jar- or zip file)\n");
         help.append("other commands\n");
         help.append("  'help'                    print this message\n");
