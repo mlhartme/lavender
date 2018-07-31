@@ -216,6 +216,7 @@ public class Properties {
             }
         }
         lock.writeString(lockContent);
+        world.onShutdown().deleteAtExit(lock);
     }
 
     private FileNode cacheLock() {
