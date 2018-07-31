@@ -40,7 +40,7 @@ public class File extends Base {
     private final String docrootName;
     private final Cluster cluster;
 
-    public File(Globals globals, String prefix, FileNode archive, String idxName, String docrootName, String clusterName) throws IOException {
+    public File(Globals globals, String prefix, FileNode archive, String clusterName, String docrootName, String idxName) throws IOException {
         super(globals);
         this.prefix = prefix;
         this.archive = archive.checkExists();

@@ -5,7 +5,9 @@
 * cli
   * simplified 'war' command line, it's just "war cluster docroot index" now
   * simplified 'svn' command: -type option is now a mandatory argument 'docroot', passed after the cluster
-
+  * simplified 'file' command
+  
+  
 * configuration cleanup
   * renamed net.xml to network.xml
   * renamed docroot type to docroot name

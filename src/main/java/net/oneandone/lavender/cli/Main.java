@@ -56,9 +56,9 @@ public class Main {
                 cli.begin(globals);
             }
 
-            cli.add(War.class, "war war cluster docroot idxName");
+            cli.add(War.class, "war war cluster docroot index");
             cli.add(Svn.class, "svn directory cluster docroot");
-            cli.add(File.class, "file -prefix archive idxName docroot cluster");
+            cli.add(File.class, "file -prefix archive cluster docroot index");
             cli.add(Direct.class, "direct cluster arg+");
             cli.add(Fsck.class, "fsck -md5 -gc -mac -repair-all-idx cluster");
             cli.add(RemoveEntry.class, "remove-entry cluster originalPath+");
@@ -75,12 +75,12 @@ public class Main {
         help.append("usage: 'lavender' global-options command\n");
         help.append("\n");
         help.append("publishing commands\n");
-        help.append("  'war' war cluster docroot idxName\n");
+        help.append("  'war' war cluster docroot index\n");
         help.append("                            publish resources from the specified war, adds nodes- and index file to the war\n");
         help.append("  'svn' directory cluster docroot\n");
         help.append("                            publish resources from <svn>/data/<directory> to <docroot>/<directory> on the specified cluster\n");
         help.append("                            <svn> is picked from lavender.properties; index name one the cluster will be the directory name\n");
-        help.append("  'file' ['-prefix' prefix] archive idxName docroot cluster\n");
+        help.append("  'file' ['-prefix' prefix] archive cluster docroot index\n");
         help.append("                            publish resources from archive to docroot on the specified cluster;\n");
         help.append("                            archive is simply a directory or an zip archive (e.g. a jar- or zip file)\n");
         help.append("other commands\n");
@@ -91,7 +91,7 @@ public class Main {
         help.append("                            checks if all files are indexed and referenced and the same on all machines\n");
         help.append("                            -md5 also checks md5 sums of every file;\n");
         help.append("                            -gc removes unreferenced files\n");
-        help.append("                            -repair-all-idx automatically fixes the all idx if it is broken\n");
+        help.append("                            -repair-all-idx automatically fixes the all index if it is broken\n");
         help.append("  'remove-entry' cluster originalPath+\n");
         help.append("                            removes the specified entries from from all indexes where it is found\n");
         help.append("                            Note that the referenced file is not deleted - that's up to the next gc run.\n");
