@@ -50,10 +50,10 @@ public abstract class DefaultModule extends Module<Node> {
         List<Module> result;
         WarConfig rootConfig;
         DefaultModule root;
-        LavenderProperties lp;
+        ModuleProperties lp;
 
         LOG.trace("scanning " + webapp);
-        lp = LavenderProperties.loadApp(prod, webapp);
+        lp = ModuleProperties.loadApp(prod, webapp);
         result = new ArrayList<>();
         rootConfig = WarConfig.fromXml(webapp);
         // add modules before webapp, because they have a prefix
@@ -76,7 +76,7 @@ public abstract class DefaultModule extends Module<Node> {
         final Node jarLive;
         Module jarModule;
         Object[] tmp;
-        LavenderProperties lp;
+        ModuleProperties lp;
         Node exploded;
         final Filter filter;
         boolean hasResourceIndex;
@@ -92,7 +92,7 @@ public abstract class DefaultModule extends Module<Node> {
             try (InputStream src = configFile.newInputStream()) {
                 config = JarConfig.load(jarOrig.getWorld().getXml(), rootConfig, src);
             }
-            lp = LavenderProperties.loadModuleOpt(prod, exploded);
+            lp = ModuleProperties.loadModuleOpt(prod, exploded);
             if (!prod && lp == null) {
                 // This module has no lavender.properties, and thus pominfo.properties is outdated and thus lavender's live mechanism won't work.
                 // So we ignore this module in devel mode to get requests passed through to pustefix, which can do his old live handling
@@ -110,7 +110,7 @@ public abstract class DefaultModule extends Module<Node> {
             } else {
                 jarLive = jarTmp;
             }
-            filter = lp == null ? LavenderProperties.defaultFilter() : lp.filter;
+            filter = lp == null ? ModuleProperties.defaultFilter() : lp.filter;
             jarModule = new DefaultModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
                 @Override
                 protected Map<String, Node> scan(Filter filter) throws IOException {
@@ -127,7 +127,7 @@ public abstract class DefaultModule extends Module<Node> {
                 return result;
             }
             jarModule = (Module) tmp[0];
-            lp = (LavenderProperties) tmp[1];
+            lp = (ModuleProperties) tmp[1];
             config = (JarConfig) tmp[2];
             hasResourceIndex = (Boolean) tmp[3];
         }
@@ -244,10 +244,10 @@ public abstract class DefaultModule extends Module<Node> {
         Node propertyNode;
         final Map<String, Node> files;
         String resourcePath;
-        LavenderProperties lp;
+        ModuleProperties lp;
 
-        loaded = LavenderProperties.loadStreamNodes(jar, "META-INF/pustefix-module.xml",
-                LavenderProperties.MODULE_PROPERTIES, "META-INF/pominfo.properties", RESOURCE_INDEX);
+        loaded = ModuleProperties.loadStreamNodes(jar, "META-INF/pustefix-module.xml",
+                ModuleProperties.MODULE_PROPERTIES, "META-INF/pominfo.properties", RESOURCE_INDEX);
         if (loaded[0] == null) {
             return null;
         }
@@ -258,10 +258,10 @@ public abstract class DefaultModule extends Module<Node> {
         }
         propertyNode = loaded[1];
         if (propertyNode == null) {
-            filter = LavenderProperties.defaultFilter();
+            filter = ModuleProperties.defaultFilter();
             lp = null;
         } else {
-            lp = LavenderProperties.loadNode(prod, propertyNode, loaded[2]);
+            lp = ModuleProperties.loadNode(prod, propertyNode, loaded[2]);
             filter = lp.filter;
         }
         world = jar.getWorld();

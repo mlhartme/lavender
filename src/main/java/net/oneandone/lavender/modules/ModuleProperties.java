@@ -39,9 +39,9 @@ import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-/** represents module or application properties */
-public class LavenderProperties {
-    private static final Logger LOG = LoggerFactory.getLogger(LavenderProperties.class);
+/** represents module (or application module) properties */
+public class ModuleProperties {
+    private static final Logger LOG = LoggerFactory.getLogger(ModuleProperties.class);
 
     public static final String MODULE_PROPERTIES = "META-INF/lavender.properties";
     private static final String APP_PROPERTIES = "WEB-INF/lavender.properties";
@@ -52,30 +52,30 @@ public class LavenderProperties {
         return new Filter().include(DEFAULT_INCLUDES);
     }
 
-    public static LavenderProperties loadNode(boolean prod, Node root, Node pominfo) throws IOException {
-        return LavenderProperties.parse(prod, root.readProperties(), pominfoOpt(pominfo));
+    public static ModuleProperties loadNode(boolean prod, Node root, Node pominfo) throws IOException {
+        return ModuleProperties.parse(prod, root.readProperties(), pominfoOpt(pominfo));
     }
 
-    public static LavenderProperties loadModuleOpt(boolean prod, Node root) throws IOException {
+    public static ModuleProperties loadModuleOpt(boolean prod, Node root) throws IOException {
         Node src;
         Properties properties;
 
         if (root == null) {
             return null;
         }
-        src = root.join(LavenderProperties.MODULE_PROPERTIES);
+        src = root.join(ModuleProperties.MODULE_PROPERTIES);
         if (!src.exists()) {
             return null;
         }
         properties = src.readProperties();
-        return LavenderProperties.parse(prod, properties, pominfoOpt(root));
+        return ModuleProperties.parse(prod, properties, pominfoOpt(root));
     }
 
-    public static LavenderProperties loadApp(boolean prod, Node webapp) throws IOException {
+    public static ModuleProperties loadApp(boolean prod, Node webapp) throws IOException {
         Node src;
         Properties pominfo;
 
-        src = webapp.join(LavenderProperties.APP_PROPERTIES);
+        src = webapp.join(ModuleProperties.APP_PROPERTIES);
         src.checkFile();
         pominfo = pominfoOpt(webapp.join("WEB-INF/classes"));
         if (pominfo == null) {
@@ -97,8 +97,8 @@ public class LavenderProperties {
     }
 
     // public only for testing
-    public static LavenderProperties parse(boolean prod, Properties properties, Properties pominfo) throws IOException {
-        LavenderProperties result;
+    public static ModuleProperties parse(boolean prod, Properties properties, Properties pominfo) throws IOException {
+        ModuleProperties result;
         String relative;
         String source;
         String svnurl;
@@ -113,7 +113,7 @@ public class LavenderProperties {
         } else {
             source = null;
         }
-        result = new LavenderProperties(eatFilter(properties, "pustefix", DEFAULT_INCLUDES), source);
+        result = new ModuleProperties(eatFilter(properties, "pustefix", DEFAULT_INCLUDES), source);
         for (String prefix : svnPrefixes(properties)) {
             svnurl = strip((String) properties.remove(prefix));
             svnurlRevision = Long.parseLong(eatOpt(properties, prefix + ".revision", "-1"));
@@ -233,7 +233,7 @@ public class LavenderProperties {
     public final String source;
     public final Collection<SvnProperties> configs;
 
-    public LavenderProperties(Filter filter, String source) {
+    public ModuleProperties(Filter filter, String source) {
         if (filter == null) {
             throw new IllegalArgumentException();
         }
