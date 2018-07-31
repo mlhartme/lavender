@@ -27,10 +27,6 @@ import java.util.Map;
 
 /**
  * Contains resources. Can iterate all resources and probe for existing ones.
- * Type describes what kind of resources it contains; you usually have many modules
- * in one application, and the type selects which of them you want to - e.g. - publish.
- * Current types are "web" and "flash". Modules have a descriptor the specifies the
- * type.
  */
 public abstract class Module<T> implements Iterable<Resource> {
     /** currently not used */
@@ -38,6 +34,7 @@ public abstract class Module<T> implements Iterable<Resource> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Module.class);
 
+    /** currently not used; might be used again in the future if we want to publish different types do different clusters/docroots */
     private final String type;
     private final String name;
     private final boolean lavendelize;
@@ -67,7 +64,6 @@ public abstract class Module<T> implements Iterable<Resource> {
         return resourcePathPrefix;
     }
 
-    /** currently not used; might be used again in the future if we want to publish different types do different clusters/docroots */
     public String getType() {
         return type;
     }
@@ -131,7 +127,7 @@ public abstract class Module<T> implements Iterable<Resource> {
         };
     }
 
-    public String matches(String resourcePath) throws IOException {
+    public String matches(String resourcePath) {
         String path;
 
         if (!resourcePath.startsWith(resourcePathPrefix)) {
@@ -156,7 +152,7 @@ public abstract class Module<T> implements Iterable<Resource> {
         return file == null ? null : createResource(resourcePath, file);
     }
 
-    public boolean softInvalidate() throws IOException {
+    public boolean softInvalidate() {
         if (System.currentTimeMillis() - lastScan < 5000) {
             return false;
         } else {
