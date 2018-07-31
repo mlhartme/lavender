@@ -112,7 +112,7 @@ public abstract class DefaultModule extends Module<Node> {
                 jarLive = jarTmp;
             }
             filter = lp == null ? LavenderProperties.defaultFilter() : lp.filter;
-            jarModule = new DefaultModule(Docroot.WEB, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
+            jarModule = new DefaultModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
                 @Override
                 protected Map<String, Node> scan(Filter filter) throws IOException {
                     return files(filter, config, jarLive);
@@ -122,7 +122,7 @@ public abstract class DefaultModule extends Module<Node> {
             if (!prod) {
                 throw new UnsupportedOperationException("live mechanism not supported for jar streams");
             }
-            tmp = DefaultModule.fromJarStream(prod, Docroot.WEB, rootConfig, jarOrig);
+            tmp = DefaultModule.fromJarStream(prod, Module.TYPE, rootConfig, jarOrig);
             if (tmp == null) {
                 // no pustefix module config
                 return result;
@@ -189,7 +189,7 @@ public abstract class DefaultModule extends Module<Node> {
             root = webapp.join("WEB-INF/project.xml").readXml().getDocumentElement();
             selector = webapp.getWorld().getXml().getSelector();
             name = selector.string(root, "project/name");
-            return new DefaultModule(Docroot.WEB, name, true, "", "", filter) {
+            return new DefaultModule(Module.TYPE, name, true, "", "", filter) {
                 @Override
                 protected Map<String, Node> scan(Filter filter) throws IOException {
                     return scanExploded(config, filter, webapp);
@@ -290,8 +290,8 @@ public abstract class DefaultModule extends Module<Node> {
 
     //--
 
-    public DefaultModule(String docrootName, String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) throws IOException {
-        super(docrootName, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
+    public DefaultModule(String type, String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) throws IOException {
+        super(type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
     }
 
     protected Resource createResource(String resourcePath, Node file) throws IOException {

@@ -33,6 +33,9 @@ import java.util.Map;
  * type.
  */
 public abstract class Module<T> implements Iterable<Resource> {
+    /** currently not used */
+    public static final String TYPE = "web";
+
     private static final Logger LOG = LoggerFactory.getLogger(Module.class);
 
     private final String type;
@@ -64,6 +67,7 @@ public abstract class Module<T> implements Iterable<Resource> {
         return resourcePathPrefix;
     }
 
+    /** currently not used; might be used again in the future if we want to publish different types do different clusters/docroots */
     public String getType() {
         return type;
     }

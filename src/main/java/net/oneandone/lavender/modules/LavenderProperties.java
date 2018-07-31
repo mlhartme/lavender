@@ -125,7 +125,7 @@ public class LavenderProperties {
                             prefix.substring(SvnProperties.SVN_PREFIX.length()),
                             eatFilter(properties, prefix, DEFAULT_INCLUDES),
                             svnurl, svnurlRevision, svnurlDevel,
-                            eatOpt(properties, prefix + ".type", Docroot.WEB),
+                            eatOpt(properties, prefix + ".type", Module.TYPE),
                             eatBoolean(properties, prefix + ".lavendelize", true),
                             eatOpt(properties, prefix + ".resourcePathPrefix", ""),
                             eatOpt(properties, prefix + ".targetPathPrefix", ""),

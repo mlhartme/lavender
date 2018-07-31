@@ -64,7 +64,7 @@ public class Svn extends Base {
         filter = new Filter();
         filter.includeAll();
         svnurl = svn + "/data/" + directory;
-        moduleConfig = new SvnProperties("svn", filter, svnurl, -1, svnurl, Docroot.WEB, false, "", directory + "/", null);
+        moduleConfig = new SvnProperties("svn", filter, svnurl, -1, svnurl, Module.TYPE, false, "", directory + "/", null);
         cache = globals.lockedCache();
         try {
             module = moduleConfig.create(cache, true, properties.svnUsername, properties.svnPassword, null);

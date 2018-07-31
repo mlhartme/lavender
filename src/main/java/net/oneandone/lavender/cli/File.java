@@ -70,7 +70,7 @@ public class File extends Base {
         filter = new Filter();
         filter.includeAll();
         filter.predicate(Predicate.FILE);
-        module = new DefaultModule(docrootName, idxName, false, "", prefix, filter) {
+        module = new DefaultModule(Module.TYPE, idxName, false, "", prefix, filter) {
             @Override
             protected Map<String, Node> scan(Filter filter) throws Exception {
                 Map<String, Node> result;
