@@ -56,7 +56,7 @@ public class Main {
                 cli.begin(globals);
             }
 
-            cli.add(War.class, "war war idxName target+");
+            cli.add(War.class, "war war cluster docroot idxName");
             cli.add(Svn.class, "svn directory cluster docroot");
             cli.add(File.class, "file -prefix archive idxName docroot cluster");
             cli.add(Direct.class, "direct cluster arg+");
@@ -75,9 +75,8 @@ public class Main {
         help.append("usage: 'lavender' global-options command\n");
         help.append("\n");
         help.append("publishing commands\n");
-        help.append("  'war' war idxName target+\n");
-        help.append("                            publish resources from the specified war, adds nodes- and index file to the war;\n");
-        help.append("                            target = docroot '=' cluster\n");
+        help.append("  'war' war cluster docroot idxName\n");
+        help.append("                            publish resources from the specified war, adds nodes- and index file to the war\n");
         help.append("  'svn' directory cluster docroot\n");
         help.append("                            publish resources from <svn>/data/<directory> to <docroot>/<directory> on the specified cluster\n");
         help.append("                            <svn> is picked from lavender.properties; index name one the cluster will be the directory name\n");

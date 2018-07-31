@@ -17,7 +17,6 @@ package net.oneandone.lavender.cli;
 
 import com.sun.nio.zipfs.ZipFileSystemProvider;
 import com.sun.nio.zipfs.ZipPath;
-import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.filter.Lavender;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
@@ -46,20 +45,17 @@ public class WarEngine {
     private static final Logger LOG = LoggerFactory.getLogger(WarEngine.class);
 
     private final FileNode cache;
-    /** maps type to Distributor */
-    private final Map<String, Distributor> distributors;
-    private final String indexName;
+    private final Distributor distributor;
     private final String svnUsername;
     private final String svnPassword;
     private final FileNode war;
     private final FileNode outputNodesFile;
     private final String nodes;
 
-    public WarEngine(FileNode cache, Map<String, Distributor> distributors, String indexName, String svnUsername, String svnPassword,
+    public WarEngine(FileNode cache, Distributor distributor, String svnUsername, String svnPassword,
                      FileNode war, FileNode outputNodesFile, String nodes) {
         this.cache = cache;
-        this.distributors = distributors;
-        this.indexName = indexName;
+        this.distributor = distributor;
         this.svnUsername = svnUsername;
         this.svnPassword = svnPassword;
         this.war = war;
@@ -72,51 +68,40 @@ public class WarEngine {
      *
      * @return types mapped to indexes
      */
-    public Map<String, Index> run() throws IOException, XmlException, SAXException {
+    public Index run() throws IOException, XmlException, SAXException {
         long started;
         List<Module> modules;
         Index index;
         long absolute;
         long changed;
-        Map<String, Index> result;
         long warStart;
 
         started = System.currentTimeMillis();
         modules = DefaultModule.fromWebapp(cache, true, war.openZip(), svnUsername, svnPassword);
         absolute = 0;
         changed = extract(modules);
-        result = new HashMap<>();
-        for (Map.Entry<String, Distributor> entry : distributors.entrySet()) {
-            index =  entry.getValue().close();
-            absolute += index.size();
-            result.put(entry.getKey(), index);
-        }
+
+        index =  distributor.close();
+        absolute += index.size();
+
         LOG.info("lavender servers updated: "
                 + changed + "/" + absolute + " files changed in " + modules.size() + " modules, " + (System.currentTimeMillis() - started) + " ms");
         outputNodesFile.writeString(nodes);
         warStart = System.currentTimeMillis();
-        updateWarFile(result.get(Docroot.WEB), outputNodesFile);
+        updateWarFile(index, outputNodesFile);
         LOG.info("updated war " + (war.size() / 1024) + "k, " + (System.currentTimeMillis() - warStart) + " ms");
         for (Module module : modules) {
             module.saveCaches();
         }
-        return result;
+        return index;
     }
 
-    public long extract(List<Module> modules) throws IOException {
-        Distributor distributor;
-        String type;
+    private long extract(List<Module> modules) throws IOException {
         long changed;
 
         changed = 0;
         for (Module module : modules) {
-            type = module.getType();
-            distributor = distributors.get(type);
-            if (distributor == null) {
-                // nothing to do - this type is not published
-            } else {
-                changed += module.publish(distributor);
-            }
+            changed += module.publish(distributor);
         }
         return changed;
     }

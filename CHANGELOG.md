@@ -3,6 +3,7 @@
 ### 2.7.0 (pending)
 
 * cli
+  * simplified 'war' command line, it's just "war cluster docroot index" now
   * simplified 'svn' command: -type option is now a mandatory argument 'docroot', passed after the cluster
 
 * configuration cleanup

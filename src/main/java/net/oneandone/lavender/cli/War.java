@@ -15,55 +15,32 @@
  */
 package net.oneandone.lavender.cli;
 
-import net.oneandone.inline.ArgumentException;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Pool;
 import net.oneandone.lavender.config.Properties;
 import net.oneandone.lavender.config.Target;
-import net.oneandone.lavender.index.Distributor;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.xml.XmlException;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class War extends Base {
     private final FileNode war;
     private final String idxName;
-    private final Map<String, Target> targets;
+    private final Cluster cluster;
+    private final Docroot docroot;
     private String nodes;
 
-    public War(Globals globals, FileNode war, String idxName, List<String> targetKeyValues) throws IOException {
+    public War(Globals globals, FileNode war, String clusterName, String docrootName, String idxName) throws IOException {
         super(globals);
 
-        int idx;
-        String docrootName;
-        String clusterName;
-        Cluster cluster;
-        Docroot docroot;
-
-        this.war = war;
+        this.war = war.checkFile();
         this.idxName = idxName;
-        this.targets = new HashMap<>();
-        for (String keyvalue : targetKeyValues) {
-            idx = keyvalue.indexOf('=');
-            if (idx == -1) {
-                throw new ArgumentException("<type>=<cluster> expected, got " + keyvalue);
-            }
-            docrootName = keyvalue.substring(0, idx);
-            clusterName = keyvalue.substring(idx + 1);
-            cluster = globals.net().get(clusterName);
-            docroot = cluster.docroot(docrootName);
-            if (Docroot.WEB.equals(docrootName)) {
-                nodes = docroot.nodesFile();
-            }
-            targets.put(docrootName, new Target(cluster, docroot));
-
-        }
+        this.cluster = globals.net().get(clusterName);
+        this.docroot = cluster.docroot(docrootName);
+        this.nodes = docroot.nodesFile();
     }
 
     public void run() throws IOException, SAXException, XmlException {
@@ -71,40 +48,20 @@ public class War extends Base {
         FileNode cache;
         FileNode outputNodesFile;
         WarEngine engine;
-        Map<String, Distributor> distributors;
         Properties properties;
 
-        if (targets.isEmpty()) {
-            throw new ArgumentException("missing targets");
-        }
-        if (nodes == null) {
-            throw new ArgumentException("missing web target");
-        }
-        war.checkFile();
         tmp = war.getWorld().getTemp();
         outputNodesFile = tmp.createTempFile();
         properties = globals.properties();
         try (Pool pool = globals.pool()) {
-            distributors = distributors(pool);
             cache = globals.lockedCache();
             try {
-                engine = new WarEngine(cache, distributors, idxName, properties.svnUsername, properties.svnPassword,
-                        war, outputNodesFile, nodes);
+                engine = new WarEngine(cache, new Target(cluster, docroot).open(pool, idxName), properties.svnUsername, properties.svnPassword, war, outputNodesFile, nodes);
                 engine.run();
             } finally {
                 properties.unlockCache();
             }
         }
         outputNodesFile.deleteFile();
-    }
-
-    private Map<String, Distributor> distributors(Pool pool) throws IOException {
-        Map<String, Distributor> result;
-
-        result = new HashMap<>();
-        for (Map.Entry<String, Target> entry : targets.entrySet()) {
-            result.put(entry.getKey(), entry.getValue().open(pool, idxName));
-        }
-        return result;
     }
 }
