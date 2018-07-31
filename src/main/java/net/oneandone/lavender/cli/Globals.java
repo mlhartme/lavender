@@ -80,7 +80,7 @@ public class Globals {
     }
 
     public Pool pool() {
-        return new Pool(world, noLock ? null : lockInfo(), await);
+        return Pool.create(world, noLock ? null : lockInfo(), await);
     }
 
     private String lockInfo() {

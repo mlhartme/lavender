@@ -45,7 +45,7 @@ public class MainManual {
         cluster.addLocalhost(hostdir);
         cluster.addDocroot("web", Arrays.asList("no.such.domain"),"htdocs", "indexes");
         testfile = hostdir.join("htdocs").createTempFile();
-        try (Pool pool = new Pool(world, null, 0)) {
+        try (Pool pool = Pool.create(world, null, 0)) {
             for (Connection connection : cluster.connect(pool)) {
                 node = cluster.docroot("web").node(connection);
                 lst = node.list();

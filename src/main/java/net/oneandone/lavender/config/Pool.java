@@ -15,27 +15,42 @@
  */
 package net.oneandone.lavender.config;
 
+import net.oneandone.sushi.fs.OnShutdown;
 import net.oneandone.sushi.fs.World;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
  * Manages connections.
  */
-public class Pool implements AutoCloseable {
+public class Pool extends Thread implements AutoCloseable {
+    public static Pool create(World world, String lockContent, int wait) {
+        OnShutdown sushiShutdown;
+        Pool result;
+
+        sushiShutdown = world.onShutdown();
+        result = new Pool(world, lockContent, wait, sushiShutdown);
+        Runtime.getRuntime().addShutdownHook(result);
+        Runtime.getRuntime().removeShutdownHook(sushiShutdown);
+        return result;
+    }
+
     private final World world;
     private final String lockContent;
     /** seconds to wait for a lock */
     private final int wait;
     private final List<Connection> connections;
+    private final OnShutdown sushiShutdown;
 
-    public Pool(World world, String lockContent, int wait) {
+    private Pool(World world, String lockContent, int wait, OnShutdown sushiShutdown) {
         this.world = world;
         this.lockContent = lockContent;
         this.wait = wait;
         this.connections = new ArrayList<>();
+        this.sushiShutdown = sushiShutdown;
     }
 
     public Connection connect(Host host) throws IOException {
@@ -59,6 +74,14 @@ public class Pool implements AutoCloseable {
     }
 
     public void close() throws IOException {
+        disconnect();
+
+        // ok, no shutdown has occurred. Remove myself
+        Runtime.getRuntime().removeShutdownHook(this);
+        Runtime.getRuntime().addShutdownHook(sushiShutdown);
+    }
+
+    public void disconnect() throws IOException {
         IOException e;
 
         e = new IOException("cannot close connections");
@@ -69,8 +92,26 @@ public class Pool implements AutoCloseable {
                 e.addSuppressed(suppressed);
             }
         }
+        connections.clear();
         if (e.getSuppressed().length > 0) {
             throw e;
+        }
+    }
+
+    /** shutdown handling */
+
+    @Override
+    public void run() {
+        try {
+            disconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        sushiShutdown.start();
+        try {
+            sushiShutdown.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }
