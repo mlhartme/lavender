@@ -15,8 +15,8 @@
  */
 package net.oneandone.lavender.filter;
 
-import net.oneandone.lavender.filter.processor.LavenderRewriteEngine;
 import net.oneandone.lavender.filter.processor.LavenderProcessorFactory;
+import net.oneandone.lavender.filter.processor.LavenderRewriteEngine;
 import net.oneandone.lavender.filter.processor.RewriteEngine;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.sushi.fs.Node;

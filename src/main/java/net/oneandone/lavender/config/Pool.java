@@ -17,7 +17,6 @@ package net.oneandone.lavender.config;
 
 import net.oneandone.sushi.fs.OnShutdown;
 import net.oneandone.sushi.fs.World;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

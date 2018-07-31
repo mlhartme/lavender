@@ -39,6 +39,7 @@ import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+/** represents module or application properties */
 public class LavenderProperties {
     private static final Logger LOG = LoggerFactory.getLogger(LavenderProperties.class);
 
@@ -248,7 +249,7 @@ public class LavenderProperties {
         }
     }
 
-    public Node live(Node root) throws IOException {
+    public Node live(Node root) {
         return source != null ? root.getWorld().file(source) : root;
     }
 

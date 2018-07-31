@@ -15,8 +15,8 @@
  */
 package net.oneandone.lavender.filter;
 
-import net.oneandone.lavender.filter.processor.Processor;
 import net.oneandone.lavender.filter.processor.LavenderProcessorFactory;
+import net.oneandone.lavender.filter.processor.Processor;
 import net.oneandone.sushi.io.MultiWriter;
 import org.junit.Before;
 import org.junit.Test;

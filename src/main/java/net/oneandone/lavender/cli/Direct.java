@@ -15,9 +15,8 @@
  */
 package net.oneandone.lavender.cli;
 
-import net.oneandone.inline.ArgumentException;
-
 import com.jcraft.jsch.JSchException;
+import net.oneandone.inline.ArgumentException;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Connection;
 import net.oneandone.lavender.config.Pool;
