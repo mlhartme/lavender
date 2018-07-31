@@ -125,7 +125,7 @@ public class Distributor {
     }
 
 
-    /** return next index */
+    /** Writes modified indexes; return next index */
     public Index close() throws IOException {
         Node directory;
         Node index;
