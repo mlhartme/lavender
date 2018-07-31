@@ -18,7 +18,7 @@ package net.oneandone.lavender.cli;
 import net.oneandone.inline.Console;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Network;
-import net.oneandone.lavender.config.Properties;
+import net.oneandone.lavender.config.SystemProperties;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -48,7 +48,7 @@ public class LavenderIT {
 
     public void check(String name, String warFile, String expected) throws Exception {
         Globals globals;
-        Properties properties;
+        SystemProperties properties;
         World world;
         Node src;
         FileNode target;
@@ -59,7 +59,7 @@ public class LavenderIT {
 
         boolean withSsh = false;
         world = World.create(withSsh);
-        properties = Properties.load(world.file("test.properties.sample"), withSsh);
+        properties = SystemProperties.load(world.file("test.properties.sample"), withSsh);
         System.out.println(name + " started: ");
         src = world.file(warFile);
         war = world.getTemp().createTempFile();

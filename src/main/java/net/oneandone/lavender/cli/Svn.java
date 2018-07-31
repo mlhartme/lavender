@@ -19,7 +19,7 @@ import net.oneandone.inline.ArgumentException;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Pool;
-import net.oneandone.lavender.config.Properties;
+import net.oneandone.lavender.config.SystemProperties;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.Module;
@@ -53,7 +53,7 @@ public class Svn extends Base {
         long changed;
         Index index;
         FileNode cache;
-        Properties properties;
+        SystemProperties properties;
 
         if (directory.isEmpty() || directory.contains("/")) {
             throw new ArgumentException("invalid directory: " + directory);

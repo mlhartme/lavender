@@ -27,12 +27,12 @@ public class NetworkTest {
     @Test
     public void load() throws IOException {
         World world;
-        Properties properties;
+        SystemProperties properties;
         Network network;
         Cluster cluster;
 
         world = World.create(false);
-        properties = Properties.load(world.guessProjectHome(Network.class).join("src/test/resources/lavender.properties"), false);
+        properties = SystemProperties.load(world.guessProjectHome(Network.class).join("src/test/resources/lavender.properties"), false);
         network = properties.loadNetwork();
         cluster = network.lookup("localhost");
         assertNotNull(cluster);

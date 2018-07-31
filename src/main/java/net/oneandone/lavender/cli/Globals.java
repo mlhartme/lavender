@@ -18,7 +18,7 @@ package net.oneandone.lavender.cli;
 import net.oneandone.inline.Console;
 import net.oneandone.lavender.config.Network;
 import net.oneandone.lavender.config.Pool;
-import net.oneandone.lavender.config.Properties;
+import net.oneandone.lavender.config.SystemProperties;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.util.Separator;
@@ -38,14 +38,14 @@ public class Globals {
     private final int await;
 
     private Network lazyNet;
-    private Properties lazyProperties;
+    private SystemProperties lazyProperties;
 
     public Globals(World world, Console console, Main.Commandline commandline, boolean lastConfig, String user, boolean noLock, int await) {
         this(world, console, commandline, lastConfig, user, noLock, await, null, null);
     }
 
     public Globals(World world, Console console, Main.Commandline commandline, boolean lastConfig, String user, boolean noLock, int await,
-                   Properties properties, Network net) {
+                   SystemProperties properties, Network net) {
         this.world = world;
         this.console = console;
         this.commandline = commandline;
@@ -58,9 +58,9 @@ public class Globals {
         this.lazyNet = net;
     }
 
-    public Properties properties() throws IOException {
+    public SystemProperties properties() throws IOException {
         if (lazyProperties == null) {
-            lazyProperties = Properties.load(world);
+            lazyProperties = SystemProperties.load(world);
         }
         return lazyProperties;
     }
@@ -70,7 +70,7 @@ public class Globals {
     }
 
     public Network net() throws IOException {
-        Properties p;
+        SystemProperties p;
 
         if (lazyNet == null) {
             p = properties();

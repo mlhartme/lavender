@@ -30,15 +30,15 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Properties {
-    private static final Logger LOG = LoggerFactory.getLogger(Properties.class);
+public class SystemProperties {
+    private static final Logger LOG = LoggerFactory.getLogger(SystemProperties.class);
 
-    public static Properties load(World world) throws IOException {
+    public static SystemProperties load(World world) throws IOException {
         return load(file(world), true);
     }
 
-    public static Properties load(Node file, boolean withSsh) throws IOException {
-        Properties properties;
+    public static SystemProperties load(Node file, boolean withSsh) throws IOException {
+        SystemProperties properties;
 
         properties = properties(file);
         properties.initWorld(withSsh);
@@ -58,7 +58,7 @@ public class Properties {
         if (path != null) {
             return world.file(path);
         }
-        parent = world.locateClasspathItem(Properties.class).getParent();
+        parent = world.locateClasspathItem(SystemProperties.class).getParent();
         file = parent.join("lavender.properties");
         if (file.exists()) {
             return file;
@@ -74,7 +74,7 @@ public class Properties {
         throw new IOException("cannot locate lavender properties");
     }
 
-    private static Properties properties(Node file) throws IOException {
+    private static SystemProperties properties(Node file) throws IOException {
         java.util.Properties properties;
         List<Node> sshKeys;
         String cache;
@@ -94,7 +94,7 @@ public class Properties {
             cacheNode = file.getWorld().file(cache);
         }
         try {
-            return new Properties(file.getWorld(), cacheNode,
+            return new SystemProperties(file.getWorld(), cacheNode,
                     new URI(properties.getProperty("svn")), properties.getProperty("svn.username"), properties.getProperty("svn.password"), sshKeys);
         } catch (URISyntaxException e) {
             throw new IOException("invalid properties file " + file + ": " + e.getMessage(), e);
@@ -111,7 +111,7 @@ public class Properties {
     public final String svnPassword;
     private final List<Node> sshKeys;
 
-    public Properties(World world, FileNode cache, URI svn, String svnUsername, String svnPassword, List<Node> sshKeys) {
+    public SystemProperties(World world, FileNode cache, URI svn, String svnUsername, String svnPassword, List<Node> sshKeys) {
         this.world = world;
         this.cache = cache;
         this.svn = svn;

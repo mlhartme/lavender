@@ -18,7 +18,7 @@ package net.oneandone.lavender.cli;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Pool;
-import net.oneandone.lavender.config.Properties;
+import net.oneandone.lavender.config.SystemProperties;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.xml.XmlException;
@@ -48,7 +48,7 @@ public class War extends Base {
         FileNode cache;
         FileNode outputNodesFile;
         WarEngine engine;
-        Properties properties;
+        SystemProperties properties;
 
         tmp = war.getWorld().getTemp();
         outputNodesFile = tmp.createTempFile();

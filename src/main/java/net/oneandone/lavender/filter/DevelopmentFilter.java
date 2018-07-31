@@ -15,7 +15,7 @@
  */
 package net.oneandone.lavender.filter;
 
-import net.oneandone.lavender.config.Properties;
+import net.oneandone.lavender.config.SystemProperties;
 import net.oneandone.lavender.index.Hex;
 import net.oneandone.lavender.modules.DefaultModule;
 import net.oneandone.lavender.modules.Module;
@@ -54,7 +54,7 @@ public class DevelopmentFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         long started = System.currentTimeMillis();
-        Properties properties = null;
+        SystemProperties properties = null;
         Node webapp;
 
         this.filterConfig = filterConfig;
@@ -62,7 +62,7 @@ public class DevelopmentFilter implements Filter {
         try {
             world = World.create(false);
             webapp = world.file(filterConfig.getServletContext().getRealPath(""));
-            properties = Properties.load(Properties.file(world), false);
+            properties = SystemProperties.load(SystemProperties.file(world), false);
             FileNode cache = properties.lockedCache(5, "lavenderServlet");
             modules = loadModulesFromWebapp(webapp, properties, cache);
         } catch (XmlException | IOException | SAXException e) {
@@ -105,12 +105,12 @@ public class DevelopmentFilter implements Filter {
         return modules.size();
     }
 
-    List<Module> loadModulesFromWebapp(Node webapp, Properties properties, FileNode cache)
+    List<Module> loadModulesFromWebapp(Node webapp, SystemProperties properties, FileNode cache)
             throws IOException, SAXException, XmlException {
         return DefaultModule.fromWebapp(cache, false, webapp, properties.svnUsername, properties.svnPassword);
     }
 
-    private void unlockPropertiesCache(Properties properties) {
+    private void unlockPropertiesCache(SystemProperties properties) {
         if (properties != null) {
             try {
                 properties.unlockCache();
