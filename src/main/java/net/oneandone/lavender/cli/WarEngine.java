@@ -15,7 +15,6 @@
  */
 package net.oneandone.lavender.cli;
 
-import com.sun.nio.zipfs.ZipFileSystemProvider;
 import net.oneandone.lavender.filter.Lavender;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
@@ -31,7 +30,9 @@ import org.xml.sax.SAXException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -118,14 +119,12 @@ public class WarEngine {
      * @throws IOException
      */
     private void updateWarFile(Index webIndex, Node nodesFile) throws IOException {
-        ZipFileSystemProvider provider;
         Map<String, Object> env;
         Path entry;
         ByteArrayOutputStream output;
 
-        provider = new ZipFileSystemProvider();
         env = new HashMap<>();
-        try (FileSystem fs = provider.newFileSystem(war.toPath(), env)) {
+        try (FileSystem fs = FileSystems.newFileSystem(URI.create("jar:" + war.getUri().toString()), env, null)) {
             entry = fs.getPath(Lavender.LAVENDER_IDX);
             output = new ByteArrayOutputStream();
             webIndex.save(output);

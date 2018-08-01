@@ -8,6 +8,9 @@
   * simplified 'file' command
   * remove connection locks on ctrl-c (via shutdown hook)
   * remove cache lock on ctrl-c (via deleteAtExit)
+ 
+* java 10 support
+  * fixed hardcoded references to com.sun.zipfs 
   
 * configuration cleanup
   * renamed net.xml to network.xml
