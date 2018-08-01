@@ -16,7 +16,6 @@
 package net.oneandone.lavender.cli;
 
 import com.sun.nio.zipfs.ZipFileSystemProvider;
-import com.sun.nio.zipfs.ZipPath;
 import net.oneandone.lavender.filter.Lavender;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
@@ -34,6 +33,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
@@ -118,16 +118,20 @@ public class WarEngine {
      * @throws IOException
      */
     private void updateWarFile(Index webIndex, Node nodesFile) throws IOException {
-        ZipFileSystemProvider provider = new ZipFileSystemProvider();
-        Map<String, Object> env = new HashMap<>();
+        ZipFileSystemProvider provider;
+        Map<String, Object> env;
+        Path entry;
+        ByteArrayOutputStream output;
 
+        provider = new ZipFileSystemProvider();
+        env = new HashMap<>();
         try (FileSystem fs = provider.newFileSystem(war.toPath(), env)) {
-            ZipPath entry = (ZipPath) fs.getPath(Lavender.LAVENDER_IDX);
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            entry = fs.getPath(Lavender.LAVENDER_IDX);
+            output = new ByteArrayOutputStream();
             webIndex.save(output);
             Files.copy(new ByteArrayInputStream(output.toByteArray()), entry, StandardCopyOption.REPLACE_EXISTING);
 
-            entry = (ZipPath) fs.getPath(Lavender.LAVENDER_NODES);
+            entry = fs.getPath(Lavender.LAVENDER_NODES);
             Files.copy(nodesFile.newInputStream(), entry, StandardCopyOption.REPLACE_EXISTING);
         };
     }
