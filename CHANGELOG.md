@@ -11,7 +11,8 @@
  
 * java 10 support
   * fixed hardcoded references to com.sun.zipfs 
-  
+  * added explicit javax.xml.bind dependencies
+
 * configuration cleanup
   * renamed net.xml to network.xml
   * renamed docroot type to docroot name
