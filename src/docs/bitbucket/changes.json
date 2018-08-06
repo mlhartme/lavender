@@ -1,0 +1,107 @@
+{
+  "fromHash": "cd309b8a87741ded72a79f7f6f92e0aff7abf291",
+  "toHash": "ea01f95dafd",
+  "properties": {},
+  "values": [
+    {
+      "contentId": "dd069e10b1b83a59e9d2749b206093be727c6dad",
+      "fromContentId": "3053fe02635ca8337f79cac0d12386aacbcb0abe",
+      "path": {
+        "components": [
+          "CHANGELOG.md"
+        ],
+        "parent": "",
+        "name": "CHANGELOG.md",
+        "extension": "md",
+        "toString": "CHANGELOG.md"
+      },
+      "executable": false,
+      "percentUnchanged": -1,
+      "type": "MODIFY",
+      "nodeType": "FILE",
+      "srcExecutable": false,
+      "links": {
+        "self": [
+          null
+        ]
+      },
+      "properties": {
+        "gitChangeType": "MODIFY"
+      }
+    },
+    {
+      "contentId": "011277d4d0b8ddfc314b85b8b1c2848041ecaab6",
+      "fromContentId": "5568bec12d9f8d69cdcd8bbbc6ffc21653e1bd0b",
+      "path": {
+        "components": [
+          "src",
+          "main",
+          "java",
+          "com",
+          "oneandone",
+          "sales",
+          "tools",
+          "puc",
+          "Status.java"
+        ],
+        "parent": "src/main/java/com/oneandone/sales/tools/puc",
+        "name": "Status.java",
+        "extension": "java",
+        "toString": "src/main/java/com/oneandone/sales/tools/puc/Status.java"
+      },
+      "executable": false,
+      "percentUnchanged": -1,
+      "type": "MODIFY",
+      "nodeType": "FILE",
+      "srcExecutable": false,
+      "links": {
+        "self": [
+          null
+        ]
+      },
+      "properties": {
+        "gitChangeType": "MODIFY"
+      }
+    },
+    {
+      "contentId": "d4135e210238007c8d8ede1780879f04c7b30d1c",
+      "fromContentId": "23e68762da23bcbb4f7a04172e7f2c39dc40d8d0",
+      "path": {
+        "components": [
+          "src",
+          "main",
+          "java",
+          "com",
+          "oneandone",
+          "sales",
+          "tools",
+          "puc",
+          "status",
+          "HostStatus.java"
+        ],
+        "parent": "src/main/java/com/oneandone/sales/tools/puc/status",
+        "name": "HostStatus.java",
+        "extension": "java",
+        "toString": "src/main/java/com/oneandone/sales/tools/puc/status/HostStatus.java"
+      },
+      "executable": false,
+      "percentUnchanged": -1,
+      "type": "MODIFY",
+      "nodeType": "FILE",
+      "srcExecutable": false,
+      "links": {
+        "self": [
+          null
+        ]
+      },
+      "properties": {
+        "gitChangeType": "MODIFY"
+      }
+    }
+  ],
+  "size": 3,
+  "isLastPage": true,
+  "start": 0,
+  "limit": 25,
+  "nextPageStart": null
+}
