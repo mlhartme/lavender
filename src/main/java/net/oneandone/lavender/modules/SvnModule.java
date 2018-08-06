@@ -96,7 +96,7 @@ public class SvnModule extends Module<SvnEntry> {
 
     public SvnModule(String type, String name, Node indexFile, Map<String, SvnEntry> entries, long lastModifiedModule, SvnNode root,
                      long pinnedRevision, boolean lavendelize, String resourcePathPrefix,
-                     String targetPathPrefix, Filter filter, JarConfig jarConfig) throws IOException {
+                     String targetPathPrefix, Filter filter, JarConfig jarConfig) {
         super(type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
         this.root = root;
         this.pinnedRevision = pinnedRevision;
@@ -144,7 +144,7 @@ public class SvnModule extends Module<SvnEntry> {
         root.getRoot().getClientMananger().getLogClient().doList(root.getSvnurl(), null, SVNRevision.create(lastModifiedRepository),
                 false, SVNDepth.EMPTY, SVNDirEntry.DIRENT_ALL, new ISVNDirEntryHandler() {
                     @Override
-                    public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException {
+                    public void handleDirEntry(SVNDirEntry dirEntry) {
                         result.add(dirEntry);
                     }
                 });
@@ -163,7 +163,7 @@ public class SvnModule extends Module<SvnEntry> {
                 SVNDirEntry.DIRENT_KIND + SVNDirEntry.DIRENT_SIZE + SVNDirEntry.DIRENT_TIME + SVNDirEntry.DIRENT_CREATED_REVISION,
                 new ISVNDirEntryHandler() {
             @Override
-            public void handleDirEntry(SVNDirEntry entry) throws SVNException {
+            public void handleDirEntry(SVNDirEntry entry) {
                 String accessPath;
                 String publicPath;
                 SvnEntry old;
