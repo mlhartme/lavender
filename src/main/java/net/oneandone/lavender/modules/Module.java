@@ -74,7 +74,7 @@ public abstract class Module<T> implements Iterable<Resource> {
         return name;
     }
 
-    public boolean hasFiles() {
+    public boolean hasScan() {
         return lazyScan != null;
     }
 
@@ -155,7 +155,7 @@ public abstract class Module<T> implements Iterable<Resource> {
     }
 
     /** invalidate scan if it's older than 5 seconds */
-    public boolean softInvalidate() {
+    public boolean softInvalidateScan() {
         if (System.currentTimeMillis() - lastScan < 5000) {
             return false;
         } else {
