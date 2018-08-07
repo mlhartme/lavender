@@ -26,7 +26,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Contains resources. Can iterate all resources and probe for existing ones.
+ * Contains resources. Can iterate all resources and probe for existing ones. Resources orginate from "entries", that
+ * are loaded lazyly.
  */
 public abstract class Module<T> implements Iterable<Resource> {
     /** currently not used */
@@ -183,7 +184,7 @@ public abstract class Module<T> implements Iterable<Resource> {
     //--
 
     /** scan for files in this module */
-    protected abstract Map<String, T> scan(Filter filer) throws Exception;
+    protected abstract Map<String, T> scan(Filter filter) throws Exception;
 
     protected abstract Resource createResource(String path, T file) throws IOException;
 
