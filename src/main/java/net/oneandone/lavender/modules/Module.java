@@ -47,7 +47,7 @@ public abstract class Module<T> implements Iterable<Resource> {
 
     private final Filter filter;
 
-    /** maps resource names for module specific data for this resource */
+    /** maps resource names for module specific data for this resource; this data is typically used to instantiated resources */
     private Map<String, T> lazyScan;
 
     private long lastScan;
@@ -62,9 +62,7 @@ public abstract class Module<T> implements Iterable<Resource> {
         this.lazyScan = null;
     }
 
-    public String getResourcePathPrefix() {
-        return resourcePathPrefix;
-    }
+    //--
 
     public String getType() {
         return type;
@@ -74,11 +72,27 @@ public abstract class Module<T> implements Iterable<Resource> {
         return name;
     }
 
+    public String getResourcePathPrefix() {
+        return resourcePathPrefix;
+    }
+
+    //-- scans
+
     public boolean hasScan() {
         return lazyScan != null;
     }
 
-    private Map<String, T> files() throws IOException {
+    /** invalidate scan if it's older than 5 seconds */
+    public boolean softInvalidateScan() {
+        if (System.currentTimeMillis() - lastScan < 5000) {
+            return false;
+        } else {
+            lazyScan = null;
+            return true;
+        }
+    }
+
+    private Map<String, T> scan() throws IOException {
         long started;
 
         if (lazyScan == null) {
@@ -90,17 +104,50 @@ public abstract class Module<T> implements Iterable<Resource> {
             } catch (Exception e) {
                 throw new IOException(name + " scan failed: " + e.getMessage(), e);
             }
-            LOG.info(name + ": scanned " + lazyScan.size() + " files in " + (System.currentTimeMillis() - started) + "ms");
+            LOG.info(name + ": scanned " + lazyScan.size() + " names in " + (System.currentTimeMillis() - started) + "ms");
             lastScan = System.currentTimeMillis();
         }
         return lazyScan;
+    }
+
+    public String matches(String resourcePath) {
+        String path;
+
+        if (!resourcePath.startsWith(resourcePathPrefix)) {
+            return null;
+        }
+        path = resourcePath.substring(resourcePathPrefix.length());
+        if (!filter.matches(path)) {
+            return null;
+        }
+        return path;
+    }
+
+    /** do scan for resource names and possibly data to speedup resource creation */
+    protected abstract Map<String, T> doScan(Filter filter) throws Exception;
+
+    //-- resources
+
+    protected abstract Resource createResource(String path, T data) throws IOException;
+
+    /** @return null if not found */
+    public Resource probe(String resourcePath) throws IOException {
+        String path;
+        T data;
+
+        path = matches(resourcePath);
+        if (path == null) {
+            return null;
+        }
+        data = scan().get(path);
+        return data == null ? null : createResource(resourcePath, data);
     }
 
     public Iterator<Resource> iterator() {
         final Iterator<Map.Entry<String, T>> base;
 
         try {
-            base = files().entrySet().iterator();
+            base = scan().entrySet().iterator();
         } catch (IOException e) {
             throw new RuntimeException("TODO", e);
         }
@@ -129,41 +176,6 @@ public abstract class Module<T> implements Iterable<Resource> {
         };
     }
 
-    public String matches(String resourcePath) {
-        String path;
-
-        if (!resourcePath.startsWith(resourcePathPrefix)) {
-            return null;
-        }
-        path = resourcePath.substring(resourcePathPrefix.length());
-        if (!filter.matches(path)) {
-            return null;
-        }
-        return path;
-    }
-
-    public Resource probe(String resourcePath) throws IOException {
-        String path;
-        T file;
-
-        path = matches(resourcePath);
-        if (path == null) {
-            return null;
-        }
-        file = files().get(path);
-        return file == null ? null : createResource(resourcePath, file);
-    }
-
-    /** invalidate scan if it's older than 5 seconds */
-    public boolean softInvalidateScan() {
-        if (System.currentTimeMillis() - lastScan < 5000) {
-            return false;
-        } else {
-            lazyScan = null;
-            return true;
-        }
-    }
-
     /** @return number of changed (updated or added) resources */
     public long publish(Distributor distributor) throws IOException {
         Label label;
@@ -182,13 +194,6 @@ public abstract class Module<T> implements Iterable<Resource> {
         }
         return count;
     }
-
-    //--
-
-    /** do scan for resource names and possibly data to speedup resource creation */
-    protected abstract Map<String, T> doScan(Filter filter) throws Exception;
-
-    protected abstract Resource createResource(String path, T file) throws IOException;
 
     public abstract void saveCaches() throws IOException;
 }
