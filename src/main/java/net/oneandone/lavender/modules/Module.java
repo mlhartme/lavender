@@ -83,7 +83,7 @@ public abstract class Module<T> implements Iterable<Resource> {
         if (files == null) {
             started = System.currentTimeMillis();
             try {
-                files = scan(filter);
+                files = doScan(filter);
             } catch (RuntimeException e) {
                 throw e;
             } catch (Exception e) {
@@ -183,8 +183,8 @@ public abstract class Module<T> implements Iterable<Resource> {
 
     //--
 
-    /** scan for files in this module */
-    protected abstract Map<String, T> scan(Filter filter) throws Exception;
+    /** do scan for resource names and possibly data to speedup resource creation */
+    protected abstract Map<String, T> doScan(Filter filter) throws Exception;
 
     protected abstract Resource createResource(String path, T file) throws IOException;
 

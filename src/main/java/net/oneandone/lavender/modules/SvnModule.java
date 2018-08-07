@@ -111,7 +111,7 @@ public class SvnModule extends Module<SvnEntry> {
         return root;
     }
 
-    protected Map<String, SvnEntry> scan(final Filter filter) throws SVNException {
+    protected Map<String, SvnEntry> doScan(final Filter filter) throws SVNException {
         SVNRepository repository;
         long modifiedRepository;
         long modifiedModule;
@@ -125,11 +125,11 @@ public class SvnModule extends Module<SvnEntry> {
         lastModifiedRepository = modifiedRepository;
         modifiedModule = getLastModified();
         if (modifiedModule == lastModifiedModule) {
-            LOG.info(root.getUri() + ": re-using scan for revision " + modifiedModule);
+            LOG.info(root.getUri() + ": re-using doScan for revision " + modifiedModule);
             return entries;
         }
-        LOG.info(root.getUri() + ": scan " + lastModifiedModule + " is out-dated, rescanning revision " + modifiedModule);
-        entries = doScan(filter);
+        LOG.info(root.getUri() + ": doScan " + lastModifiedModule + " is out-dated, rescanning revision " + modifiedModule);
+        entries = doSvnScan(filter);
         lastModifiedModule = modifiedModule;
         return entries;
     }
@@ -154,7 +154,7 @@ public class SvnModule extends Module<SvnEntry> {
         return result.get(0).getRevision();
     }
 
-    protected Map<String, SvnEntry> doScan(final Filter filter) throws SVNException {
+    protected Map<String, SvnEntry> doSvnScan(final Filter filter) throws SVNException {
         final Map<String, SvnEntry> newEntries;
 
         newEntries = new HashMap<>();
