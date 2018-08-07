@@ -53,7 +53,7 @@ public class SvnResource extends Resource {
         return resourcePath;
     }
 
-    public long getLastModified() throws IOException {
+    public long getLastModified() {
         return entry.time;
     }
 
