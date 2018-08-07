@@ -1,0 +1,43 @@
+{
+  "path": {
+    "components": [],
+    "name": "",
+    "toString": ""
+  },
+  "revision": "01b704536f35ce390de45f745a1aa95f0aba3dbb",
+  "children": {
+    "size": 2,
+    "limit": 25,
+    "isLastPage": true,
+    "values": [
+      {
+        "path": {
+          "components": [
+            "Penny_test.jpg"
+          ],
+          "parent": "",
+          "name": "Penny_test.jpg",
+          "extension": "jpg",
+          "toString": "Penny_test.jpg"
+        },
+        "contentId": "8ca0c5b2c55bd0cdc3d9a604a91f7f476fe28583",
+        "type": "FILE",
+        "size": 11201
+      },
+      {
+        "path": {
+          "components": [
+            "README"
+          ],
+          "parent": "",
+          "name": "README",
+          "toString": "README"
+        },
+        "contentId": "d9ffe8f740c9e629005a5c30de53c92e757dfb22",
+        "type": "FILE",
+        "size": 44
+      }
+    ],
+    "start": 0
+  }
+}
