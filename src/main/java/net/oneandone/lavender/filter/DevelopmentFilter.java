@@ -17,7 +17,7 @@ package net.oneandone.lavender.filter;
 
 import net.oneandone.lavender.config.SystemProperties;
 import net.oneandone.lavender.index.Hex;
-import net.oneandone.lavender.modules.DefaultModule;
+import net.oneandone.lavender.modules.NodeModule;
 import net.oneandone.lavender.modules.Module;
 import net.oneandone.lavender.modules.Resource;
 import net.oneandone.sushi.fs.Node;
@@ -107,7 +107,7 @@ public class DevelopmentFilter implements Filter {
 
     List<Module> loadModulesFromWebapp(Node webapp, SystemProperties properties, FileNode cache)
             throws IOException, SAXException, XmlException {
-        return DefaultModule.fromWebapp(cache, false, webapp, properties.svnUsername, properties.svnPassword);
+        return NodeModule.fromWebapp(cache, false, webapp, properties.svnUsername, properties.svnPassword);
     }
 
     private void unlockPropertiesCache(SystemProperties properties) {

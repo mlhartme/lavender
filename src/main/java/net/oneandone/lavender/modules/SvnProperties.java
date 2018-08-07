@@ -86,7 +86,7 @@ public class SvnProperties {
                 // I could also check if the svnurl noted in the artifact matches the svn url of checkout,
                 // but that fails for frontend teams creating a branch without adjusting scm elements in the pom.
 
-                return new DefaultModule(type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter) {
+                return new NodeModule(type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter) {
                     @Override
                     protected Map<String, Node> scan(final Filter filter) throws Exception {
                         Filter f;

@@ -18,7 +18,7 @@ package net.oneandone.lavender.cli;
 import net.oneandone.lavender.filter.Lavender;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
-import net.oneandone.lavender.modules.DefaultModule;
+import net.oneandone.lavender.modules.NodeModule;
 import net.oneandone.lavender.modules.Module;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -80,7 +80,7 @@ public class WarEngine {
         long warStart;
 
         started = System.currentTimeMillis();
-        modules = DefaultModule.fromWebapp(cache, true, war.openZip(), svnUsername, svnPassword);
+        modules = NodeModule.fromWebapp(cache, true, war.openZip(), svnUsername, svnPassword);
         absolute = 0;
         changed = extract(modules);
 

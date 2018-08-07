@@ -21,7 +21,7 @@ import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Pool;
 import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Index;
-import net.oneandone.lavender.modules.DefaultModule;
+import net.oneandone.lavender.modules.NodeModule;
 import net.oneandone.lavender.modules.Module;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -70,7 +70,7 @@ public class File extends Base {
         filter = new Filter();
         filter.includeAll();
         filter.predicate(Predicate.FILE);
-        module = new DefaultModule(Module.TYPE, indexName, false, "", prefix, filter) {
+        module = new NodeModule(Module.TYPE, indexName, false, "", prefix, filter) {
             @Override
             protected Map<String, Node> scan(Filter filter) throws Exception {
                 Map<String, Node> result;

@@ -21,7 +21,6 @@ import net.oneandone.sushi.xml.Xml;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -33,7 +32,7 @@ import java.util.zip.ZipInputStream;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class DefaultModuleTest {
+public class NodeModuleTest {
     private static World WORLD;
 
     static {
@@ -65,11 +64,11 @@ public class DefaultModuleTest {
     public void testExtract() throws Exception {
         Map<String, Resource> resources;
         URL url;
-        DefaultModule module;
+        NodeModule module;
 
         resources = new HashMap<>();
         url = getClass().getClassLoader().getResource("dummy.war");
-        module = DefaultModule.warModule(new WarConfig(Arrays.asList("img", "modules")), new Filter().includeAll(),
+        module = NodeModule.warModule(new WarConfig(Arrays.asList("img", "modules")), new Filter().includeAll(),
                 WORLD.file(new File(url.toURI())).openZip());
         for (Resource resource : module) {
             resources.put(resource.getPath(), resource);

@@ -38,7 +38,7 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public abstract class DefaultModule extends Module<Node> {
+public abstract class NodeModule extends Module<Node> {
     private static final Logger LOG = LoggerFactory.getLogger(Module.class);
     // used to detect a recent parent pom
     private static final String RESOURCE_INDEX = "META-INF/pustefix-resource.index";
@@ -49,7 +49,7 @@ public abstract class DefaultModule extends Module<Node> {
         Node<?> webappSource;
         List<Module> result;
         WarConfig rootConfig;
-        DefaultModule root;
+        NodeModule root;
         ModuleProperties lp;
 
         LOG.trace("scanning " + webapp);
@@ -111,7 +111,7 @@ public abstract class DefaultModule extends Module<Node> {
                 jarLive = jarTmp;
             }
             filter = lp == null ? ModuleProperties.defaultFilter() : lp.filter;
-            jarModule = new DefaultModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
+            jarModule = new NodeModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
                 @Override
                 protected Map<String, Node> scan(Filter filter) throws IOException {
                     return files(filter, config, jarLive);
@@ -121,7 +121,7 @@ public abstract class DefaultModule extends Module<Node> {
             if (!prod) {
                 throw new UnsupportedOperationException("live mechanism not supported for jar streams");
             }
-            tmp = DefaultModule.fromJarStream(prod, Module.TYPE, rootConfig, jarOrig);
+            tmp = NodeModule.fromJarStream(prod, Module.TYPE, rootConfig, jarOrig);
             if (tmp == null) {
                 // no pustefix module config
                 return result;
@@ -179,7 +179,7 @@ public abstract class DefaultModule extends Module<Node> {
 
     //--
 
-    public static DefaultModule warModule(final WarConfig config, final Filter filter, final Node webapp) throws IOException {
+    public static NodeModule warModule(final WarConfig config, final Filter filter, final Node webapp) throws IOException {
         Element root;
         Selector selector;
         String name;
@@ -188,7 +188,7 @@ public abstract class DefaultModule extends Module<Node> {
             root = webapp.join("WEB-INF/project.xml").readXml().getDocumentElement();
             selector = webapp.getWorld().getXml().getSelector();
             name = selector.string(root, "project/name");
-            return new DefaultModule(Module.TYPE, name, true, "", "", filter) {
+            return new NodeModule(Module.TYPE, name, true, "", "", filter) {
                 @Override
                 protected Map<String, Node> scan(Filter filter) throws IOException {
                     return scanExploded(config, filter, webapp);
@@ -279,7 +279,7 @@ public abstract class DefaultModule extends Module<Node> {
                 }
             }
         }
-        return new Object[] { new DefaultModule(type, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
+        return new Object[] { new NodeModule(type, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
             public Map<String, Node> scan(Filter filter) {
                 // no need to re-scan files from memory
                 return files;
@@ -289,7 +289,7 @@ public abstract class DefaultModule extends Module<Node> {
 
     //--
 
-    public DefaultModule(String type, String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
+    public NodeModule(String type, String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
         super(type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
     }
 
