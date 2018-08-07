@@ -47,7 +47,8 @@ public abstract class Module<T> implements Iterable<Resource> {
 
     private final Filter filter;
 
-    private Map<String, T> files;
+    /** maps resource names for module specific data for this resource */
+    private Map<String, T> lazyScan;
 
     private long lastScan;
 
@@ -58,7 +59,7 @@ public abstract class Module<T> implements Iterable<Resource> {
         this.resourcePathPrefix = resourcePathPrefix;
         this.targetPathPrefix = targetPathPrefix;
         this.filter = filter;
-        this.files = null;
+        this.lazyScan = null;
     }
 
     public String getResourcePathPrefix() {
@@ -74,25 +75,25 @@ public abstract class Module<T> implements Iterable<Resource> {
     }
 
     public boolean hasFiles() {
-        return files != null;
+        return lazyScan != null;
     }
 
     private Map<String, T> files() throws IOException {
         long started;
 
-        if (files == null) {
+        if (lazyScan == null) {
             started = System.currentTimeMillis();
             try {
-                files = doScan(filter);
+                lazyScan = doScan(filter);
             } catch (RuntimeException e) {
                 throw e;
             } catch (Exception e) {
                 throw new IOException(name + " scan failed: " + e.getMessage(), e);
             }
-            LOG.info(name + ": scanned " + files.size() + " files in " + (System.currentTimeMillis() - started) + "ms");
+            LOG.info(name + ": scanned " + lazyScan.size() + " files in " + (System.currentTimeMillis() - started) + "ms");
             lastScan = System.currentTimeMillis();
         }
-        return files;
+        return lazyScan;
     }
 
     public Iterator<Resource> iterator() {
@@ -153,11 +154,12 @@ public abstract class Module<T> implements Iterable<Resource> {
         return file == null ? null : createResource(resourcePath, file);
     }
 
+    /** invalidate scan if it's older than 5 seconds */
     public boolean softInvalidate() {
         if (System.currentTimeMillis() - lastScan < 5000) {
             return false;
         } else {
-            files = null;
+            lazyScan = null;
             return true;
         }
     }
