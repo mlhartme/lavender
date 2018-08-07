@@ -101,12 +101,12 @@ public class SvnResource extends Resource {
         }
 
         @Override
-        public void write(int b) throws IOException {
+        public void write(int b) {
             dest[pos++] = (byte) b;
         }
 
         @Override
-        public void write(byte[] bytes, int ofs, int len) throws IOException {
+        public void write(byte[] bytes, int ofs, int len) {
             System.arraycopy(bytes, ofs, dest, pos, len);
             pos += len;
         }

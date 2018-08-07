@@ -88,7 +88,7 @@ public class DefaultModuleTest {
 
     @Ignore
     @Test
-    public void testPerformance() throws JAXBException, IOException {
+    public void testPerformance() throws IOException {
 
         URL url = getClass().getClassLoader().getResource("dummy.war");
 

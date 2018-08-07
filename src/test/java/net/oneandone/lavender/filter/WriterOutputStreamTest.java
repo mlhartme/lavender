@@ -30,7 +30,7 @@ public class WriterOutputStreamTest {
     protected StringWriter result;
 
     @Before
-    public void setup() throws IOException {
+    public void setup() {
         result = new StringWriter();
         wos = WriterOutputStream.create(result, UTF_8);
     }

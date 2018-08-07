@@ -106,15 +106,15 @@ public class Lavender implements Filter, LavenderMBean {
         return applicationMode != null && applicationMode.equalsIgnoreCase("true");
     }
 
-    Filter createProductionFilter() throws ServletException {
+    Filter createProductionFilter() {
         return new ProductionFilter();
     }
 
-    Filter createDevelopmentFilter() throws ServletException {
+    Filter createDevelopmentFilter() {
         return new DevelopmentFilter();
     }
 
-    private Filter createProductionAndDevelopmentFilter() throws ServletException {
+    private Filter createProductionAndDevelopmentFilter() {
         List<Filter> filters = new ArrayList<>();
         filters.add(createProductionFilter());
         filters.add(createDevelopmentFilter());

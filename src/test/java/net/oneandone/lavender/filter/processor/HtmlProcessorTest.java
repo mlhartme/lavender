@@ -36,7 +36,7 @@ public class HtmlProcessorTest {
     protected Processor processor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         RewriteEngine rewriteEngine = mock(RewriteEngine.class);
         when(rewriteEngine.rewrite(any(String.class), eq(URI.create("http://x.y.z")), anyString())).thenReturn("http://a.b.c");
 

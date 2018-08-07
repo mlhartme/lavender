@@ -29,7 +29,7 @@ public class ResourceTest {
     private Resource resource;
 
     @Before
-    public void setup() throws IOException {
+    public void setup() {
         resource = DefaultResource.forBytes(new byte[] {(byte) 0x00, (byte) 0x01, (byte) 0x7F, (byte) 0x80, (byte) 0x81, (byte) 0xFF},
                 "modules/x/img/close.gif");
     }

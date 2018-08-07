@@ -34,33 +34,33 @@ public class LavenderProcessorFactoryTest {
     }
 
     @Test
-    public void testHtml() throws IOException {
+    public void testHtml() {
         Processor htmlProcessor = processorFactory.createProcessor("text/html", null, "/");
         assertNotNull(htmlProcessor);
         assertTrue(htmlProcessor instanceof HtmlProcessor);
     }
 
     @Test
-    public void testCss() throws IOException {
+    public void testCss() {
         Processor cssProcessor = processorFactory.createProcessor("text/css", null, "/");
         assertNotNull(cssProcessor);
         assertTrue(cssProcessor instanceof CssProcessor);
     }
 
     @Test
-    public void testUnknownContentType() throws IOException {
+    public void testUnknownContentType() {
         Processor nullProcessor = processorFactory.createProcessor("image/png", null, "/");
         assertNull(nullProcessor);
     }
 
     @Test
-    public void testNullContentType() throws IOException {
+    public void testNullContentType() {
         Processor nullProcessor = processorFactory.createProcessor(null, null, "/");
         assertNull(nullProcessor);
     }
 
     @Test
-    public void testIllegalContentType() throws IOException {
+    public void testIllegalContentType() {
         Processor nullProcessor = processorFactory.createProcessor("<%$=/>", null, "/");
         assertNull(nullProcessor);
     }

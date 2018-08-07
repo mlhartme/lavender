@@ -106,7 +106,7 @@ public class StreamWriterPT {
     }
 
     @Test
-    public void testOutputStream() throws IOException {
+    public void testOutputStream() {
 
         long t0 = System.currentTimeMillis();
         for (int x = 0; x < 100; x++) {

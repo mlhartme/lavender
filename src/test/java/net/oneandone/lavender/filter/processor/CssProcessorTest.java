@@ -38,7 +38,7 @@ public class CssProcessorTest {
     protected RewriteEngine rewriteEngine;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         rewriteEngine = mock(RewriteEngine.class);
         when(rewriteEngine.rewrite(eq("/x/y/z.gif"), eq(URI.create("http://x.y.z")), anyString())).thenReturn("http://a.b.c");
 

@@ -122,7 +122,7 @@ public class LavendelizeHttpServletResponseTest {
     @Test
     public void testGetLavendelizedOutputStream() throws IOException {
         ServletOutputStream wrappedOutputStream = new ServletOutputStream() {
-            public void write(int b) throws IOException {
+            public void write(int b) {
             }
         };
         when(wrappedResponse.getWriter()).thenReturn(new PrintWriter(new StringWriter()));
@@ -143,7 +143,7 @@ public class LavendelizeHttpServletResponseTest {
     @Test(expected = IllegalStateException.class)
     public void testGetWriterAfterGetOutputStream() throws IOException {
         ServletOutputStream wrappedOutputStream = new ServletOutputStream() {
-            public void write(int b) throws IOException {
+            public void write(int b) {
             }
         };
         when(wrappedResponse.getCharacterEncoding()).thenReturn("UTF-8");
@@ -155,7 +155,7 @@ public class LavendelizeHttpServletResponseTest {
     }
 
     @Test
-    public void testHeader() throws IOException {
+    public void testHeader() {
         response.setHeader("a", "foo");
         response.setIntHeader("b", 2);
         response.setDateHeader("c", 1234567890);

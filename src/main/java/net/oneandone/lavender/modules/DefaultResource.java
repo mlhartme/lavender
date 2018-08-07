@@ -54,7 +54,7 @@ public class DefaultResource extends Resource {
         return path;
     }
 
-    public long getLastModified() throws IOException {
+    public long getLastModified() {
         return lastModified;
     }
 

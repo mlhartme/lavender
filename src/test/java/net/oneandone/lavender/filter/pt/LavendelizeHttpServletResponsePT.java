@@ -136,7 +136,7 @@ public class LavendelizeHttpServletResponsePT {
         //assertEquals(CONTENT, wrappedResponse.getResult().toString());
     }
 
-    private void executeRequestWithWriter() throws Exception {
+    private void executeRequestWithWriter() {
         MockHttpServletResponse wrappedResponse = new MockHttpServletResponse();
 
         LavendelizeHttpServletResponse response = new LavendelizeHttpServletResponse(wrappedResponse, processorFactory,

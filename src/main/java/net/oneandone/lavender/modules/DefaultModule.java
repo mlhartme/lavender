@@ -289,7 +289,7 @@ public abstract class DefaultModule extends Module<Node> {
 
     //--
 
-    public DefaultModule(String type, String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) throws IOException {
+    public DefaultModule(String type, String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
         super(type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
     }
 

@@ -66,13 +66,13 @@ public class MockHttpServletResponse implements HttpServletResponse {
         return null;
     }
 
-    public void sendError(int sc) throws IOException {
+    public void sendError(int sc) {
     }
 
-    public void sendError(int sc, String msg) throws IOException {
+    public void sendError(int sc, String msg) {
     }
 
-    public void sendRedirect(String location) throws IOException {
+    public void sendRedirect(String location) {
     }
 
     public void setDateHeader(String name, long date) {
@@ -110,7 +110,7 @@ public class MockHttpServletResponse implements HttpServletResponse {
         return null;
     }
 
-    public void flushBuffer() throws IOException {
+    public void flushBuffer() {
     }
 
     public int getBufferSize() {
@@ -129,10 +129,10 @@ public class MockHttpServletResponse implements HttpServletResponse {
         return null;
     }
 
-    public ServletOutputStream getOutputStream() throws IOException {
+    public ServletOutputStream getOutputStream() {
         if (outputStream == null) {
             outputStream = new ServletOutputStream() {
-                public void write(int b) throws IOException {
+                public void write(int b) {
                     result.append((char) b);
                 }
             };
@@ -140,7 +140,7 @@ public class MockHttpServletResponse implements HttpServletResponse {
         return outputStream;
     }
 
-    public PrintWriter getWriter() throws IOException {
+    public PrintWriter getWriter() {
         if (writer == null) {
             writer = new PrintWriter(result);
         }

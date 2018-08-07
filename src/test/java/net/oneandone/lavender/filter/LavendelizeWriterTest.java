@@ -185,7 +185,7 @@ public class LavendelizeWriterTest {
         private int length;
 
         @Override
-        public String answer(InvocationOnMock invocation) throws Throwable {
+        public String answer(InvocationOnMock invocation) {
             s = (CharSequence) invocation.getArguments()[0];
             offset = (Integer) invocation.getArguments()[1];
             length = (Integer) invocation.getArguments()[2];

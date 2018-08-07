@@ -120,7 +120,7 @@ public class DevelopmentFilter implements Filter {
         }
     }
 
-    public boolean intercept(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    public boolean intercept(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String path;
         Resource resource;
 

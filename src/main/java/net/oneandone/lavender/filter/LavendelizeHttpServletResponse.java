@@ -117,7 +117,7 @@ public class LavendelizeHttpServletResponse extends HttpServletResponseWrapper {
      * {@inheritDoc}
      */
     @Override
-    public PrintWriter getWriter() throws IOException {
+    public PrintWriter getWriter() {
         if (outputStream != null) {
             throw new IllegalStateException("getOutputStream() has already been called.");
         }
@@ -164,7 +164,7 @@ public class LavendelizeHttpServletResponse extends HttpServletResponseWrapper {
      * {@inheritDoc}
      */
     @Override
-    public ServletOutputStream getOutputStream() throws IOException {
+    public ServletOutputStream getOutputStream() {
         if (writer != null) {
             throw new IllegalStateException("getWriter() has already been called.");
         }
@@ -252,10 +252,8 @@ public class LavendelizeHttpServletResponse extends HttpServletResponseWrapper {
     /**
      * Creates the processor.
      * @return the processor, null if none is used for the response content type
-     * @throws IOException
-     *             Signals that an I/O exception has occurred.
      */
-    public Processor initialize() throws IOException {
+    public Processor initialize() {
         String contentType;
         Processor processor;
         MimeType mimeType;

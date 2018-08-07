@@ -332,7 +332,7 @@ public class HtmlProcessor extends AbstractProcessor {
         }
     }
 
-    private void matchValueStart(char c) throws IOException {
+    private void matchValueStart(char c) {
         if (c == '"') {
             state = State.VALUE_START_DQ;
             tagBuffer.append(c);
@@ -351,7 +351,7 @@ public class HtmlProcessor extends AbstractProcessor {
         }
     }
 
-    private void matchUnquotedValue(char c) throws IOException {
+    private void matchUnquotedValue(char c) {
         if (Character.isSpaceChar(c)) {
             state = State.VALUE;
             markValueLength();
@@ -362,7 +362,7 @@ public class HtmlProcessor extends AbstractProcessor {
         }
     }
 
-    private void matchSingleQuotedValue(char c) throws IOException {
+    private void matchSingleQuotedValue(char c) {
         if (c == '\'') {
             state = State.VALUE;
             markValueLength();
@@ -373,7 +373,7 @@ public class HtmlProcessor extends AbstractProcessor {
         }
     }
 
-    private void matchDoubleQuotedValue(char c) throws IOException {
+    private void matchDoubleQuotedValue(char c) {
         if (c == '"') {
             state = State.VALUE;
             markValueLength();
@@ -420,13 +420,13 @@ public class HtmlProcessor extends AbstractProcessor {
         cssProcessor.process(tagBuffer, htmlAttributeValue.start, htmlAttributeValue.end - htmlAttributeValue.start);
     }
 
-    private void markValueStart() throws IOException {
+    private void markValueStart() {
         if (currentAttribute != OTHER_HTML_ATTRIBUTE) {
             attributeValueStartIndex = tagBuffer.length();
         }
     }
 
-    private void markValueLength() throws IOException {
+    private void markValueLength() {
         int attributeEndInTagBuffer = tagBuffer.length();
         if (currentAttribute != OTHER_HTML_ATTRIBUTE) {
             attributes.add(new HtmlAttributeValue(currentAttribute, attributeValueStartIndex, attributeEndInTagBuffer,

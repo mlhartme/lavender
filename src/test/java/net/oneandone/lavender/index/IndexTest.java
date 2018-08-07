@@ -83,7 +83,7 @@ public class IndexTest {
     }
 
     @Test
-    public void testLookup() throws IOException {
+    public void testLookup() {
         Label label = index.lookup("img/close.gif");
         assertNotNull(label);
         assertEquals("app/ABCDEF1234567890-close.gif", label.getLavendelizedPath());
@@ -91,7 +91,7 @@ public class IndexTest {
     }
 
     @Test
-    public void testLookupNonExistingRef() throws IOException {
+    public void testLookupNonExistingRef() {
         assertNull(index.lookup("img/nonexisting.gif"));
     }
 

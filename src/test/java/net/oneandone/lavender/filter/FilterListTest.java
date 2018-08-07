@@ -114,7 +114,7 @@ public class FilterListTest {
     }
 
     @Test
-    public void destroy() throws ServletException {
+    public void destroy() {
         FilterList filterList = new FilterList(filters);
 
 

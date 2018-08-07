@@ -52,7 +52,7 @@ public class LavendelizeHttpServletRequestTest {
     }
 
     @Test
-    public void testGetHeader() throws IOException {
+    public void testGetHeader() {
         when(wrappedRequest.getHeader("Accept-Encoding")).thenReturn("gzip");
         when(wrappedRequest.getHeader("Foo")).thenReturn("Bar");
 
@@ -61,7 +61,7 @@ public class LavendelizeHttpServletRequestTest {
     }
 
     @Test
-    public void testGetHeaders() throws IOException {
+    public void testGetHeaders() {
         when(wrappedRequest.getHeaders("Accept-Encoding")).thenReturn(new Vector().elements());
         when(wrappedRequest.getHeaders("Foo")).thenReturn(Collections.enumeration(Arrays.asList("Bar")));
 
@@ -73,7 +73,7 @@ public class LavendelizeHttpServletRequestTest {
     }
 
     @Test
-    public void testGetHeaderNames() throws IOException {
+    public void testGetHeaderNames() {
         when(wrappedRequest.getHeaderNames()).thenReturn(
                 Collections.enumeration(Arrays.asList("Accept-Encoding", "Foo")));
 
