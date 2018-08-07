@@ -25,7 +25,9 @@ import net.oneandone.sushi.fs.http.HttpNode;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * As of 8-2018, we have bitbucket server 5.9.1.
@@ -44,6 +46,7 @@ public class Bitbucket {
         String cachedCommit;
         String latestCommit;
         List<String> files;
+        Map<String, String> changes;
 
         world = World.create(false);
         cache = world.file("cache");
@@ -53,8 +56,8 @@ public class Bitbucket {
             System.out.println("no cache");
             files = cache.readLines();
             cachedCommit = files.remove(0);
-            files = bitbucket.changes("CISOOPS", "lavender-test-module", latestCommit, cachedCommit);
-            System.out.println("changed: " + files);
+            changes = bitbucket.changes("CISOOPS", "lavender-test-module", latestCommit, cachedCommit);
+            System.out.println("changes: " + changes);
         } else {
             files = bitbucket.files("CISOOPS", "lavender-test-module", latestCommit);
             System.out.println("files: " + files);
@@ -90,24 +93,28 @@ public class Bitbucket {
     }
 
     /**
+     * Does not return removals!
+     *
      * @param from commit that contains the requested changes
      * @param to   what to compare to, in my case the last revision I've seen
-     * @return list of files that have changed
+     * @return path- to contentId mapping
      */
-    public List<String> changes(String project, String repository, String from, String to) throws IOException {
-        List<String> result;
+    public Map<String, String> changes(String project, String repository, String from, String to) throws IOException {
+        Map<String, String> result;
 
-        result = new ArrayList<>();
+        result = new HashMap<>();
         getPaged(element -> {
+            JsonObject obj;
             JsonObject path;
             String parent;
 
-            path = element.getAsJsonObject().get("path").getAsJsonObject();
+            obj = element.getAsJsonObject();
+            path = obj.get("path").getAsJsonObject();
             parent = path.get("parent").getAsString();
             if (!parent.isEmpty()) {
                 parent = parent + "/";
             }
-            result.add(parent + path.get("name").getAsString());
+            result.put(parent + path.get("name").getAsString(), obj.get("contentId").getAsString());
         }, root.join("projects", project, "repos", repository, "compare/changes"), "from", from, "to", to);
         return result;
     }
@@ -136,7 +143,7 @@ public class Bitbucket {
 
         start = 0;
         while (true) {
-            req = node.getRoot().node(node.getPath(), query(start, 1, params));
+            req = node.getRoot().node(node.getPath(), query(start, 25, params));
             response = parser.parse(req.readString()).getAsJsonObject();
             values = response.get("values").getAsJsonArray();
             for (JsonElement element : values) {
