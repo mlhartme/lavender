@@ -184,7 +184,6 @@ public class DevelopmentFilter implements Filter {
     public void doGetRequest(Resource resource, HttpServletRequest request, HttpServletResponse response, boolean withBody) throws IOException {
         String etag;
         String contentType;
-        long contentLength;
         ServletOutputStream out;
         byte[] data;
         String previousEtag;
@@ -203,12 +202,8 @@ public class DevelopmentFilter implements Filter {
             response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
         } else  { 		// first time through - set last modified time to now
             data = resource.getData();
-            contentLength = data.length;
-            if (contentLength >= Integer.MAX_VALUE) {
-                throw new IOException(resource.getPath() + ": resource too big: " + contentLength);
-            }
             if (withBody) {
-                response.setContentLength((int) contentLength);
+                response.setContentLength(data.length);
                 out = response.getOutputStream();
                 try {
                     response.setBufferSize(4096);
