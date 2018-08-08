@@ -23,7 +23,7 @@ import net.oneandone.sushi.fs.file.FileNode;
 import java.io.IOException;
 
 public class DefaultResource extends Resource {
-    public static DefaultResource forBytes(World world, byte[] bytes, String path) throws IOException {
+    public static DefaultResource forBytes(World world, String path, byte... bytes) throws IOException {
         FileNode temp;
 
         temp = world.getTemp().createTempFile();
