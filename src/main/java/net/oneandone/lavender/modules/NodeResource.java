@@ -22,8 +22,8 @@ import net.oneandone.sushi.fs.file.FileNode;
 
 import java.io.IOException;
 
-public class DefaultResource extends Resource {
-    public static DefaultResource forBytes(World world, String path, byte... bytes) throws IOException {
+public class NodeResource extends Resource {
+    public static NodeResource forBytes(World world, String path, byte... bytes) throws IOException {
         FileNode temp;
 
         temp = world.getTemp().createTempFile();
@@ -31,8 +31,8 @@ public class DefaultResource extends Resource {
         return forNode(temp, path);
     }
 
-    public static DefaultResource forNode(Node node, String path) throws IOException {
-        return new DefaultResource(node, path, node.getLastModified());
+    public static NodeResource forNode(Node node, String path) throws IOException {
+        return new NodeResource(node, path, node.getLastModified());
     }
 
     private final Node node;
@@ -44,7 +44,7 @@ public class DefaultResource extends Resource {
     private byte[] lazyBytes;
     private byte[] lazyMd5;
 
-    private DefaultResource(Node node, String path, long lastModified) {
+    private NodeResource(Node node, String path, long lastModified) {
         this.node = node;
         this.origin = node.getUri().toString();
         this.path = path;

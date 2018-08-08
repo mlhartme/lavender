@@ -32,7 +32,7 @@ public class ResourceTest {
 
     @Before
     public void setup() throws IOException {
-        resource = DefaultResource.forBytes(WORLD,  "modules/x/img/close.gif", (byte) 0x00, (byte) 0x01, (byte) 0x7F, (byte) 0x80, (byte) 0x81, (byte) 0xFF);
+        resource = NodeResource.forBytes(WORLD,  "modules/x/img/close.gif", (byte) 0x00, (byte) 0x01, (byte) 0x7F, (byte) 0x80, (byte) 0x81, (byte) 0xFF);
     }
 
     @Test
