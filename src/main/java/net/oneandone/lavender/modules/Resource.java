@@ -30,8 +30,8 @@ public abstract class Resource {
     /** for logging purpose */
     public abstract String getOrigin();
 
-    /** @return data hash, e.g. md5  */
-    public abstract byte[] getHash() throws IOException;
+    /** @return md5 hash on data  */
+    public abstract byte[] getMd5() throws IOException;
 
     public abstract byte[] getData() throws IOException;
 
@@ -41,7 +41,7 @@ public abstract class Resource {
         String path;
 
         path = getPath();
-        return new Label(path, targetPathPrefix + path, getHash());
+        return new Label(path, targetPathPrefix + path, getMd5());
     }
 
     public Label labelLavendelized(String targetPathPrefix, String folder) throws IOException {
@@ -51,11 +51,11 @@ public abstract class Resource {
 
         path = getPath();
         filename = path.substring(path.lastIndexOf('/') + 1); // ok when not found
-        md5str = Hex.encodeString(getHash());
+        md5str = Hex.encodeString(getMd5());
         if (md5str.length() < 3) {
             throw new IllegalArgumentException(md5str);
         }
-        return new Label(path, targetPathPrefix + md5str.substring(0, 3) + "/" + md5str.substring(3) + "/" + folder + "/" + filename, getHash());
+        return new Label(path, targetPathPrefix + md5str.substring(0, 3) + "/" + md5str.substring(3) + "/" + folder + "/" + filename, getMd5());
     }
 
     @Override
