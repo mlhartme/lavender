@@ -15,7 +15,6 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.lavender.index.Distributor;
 import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.fs.filter.Filter;
 import org.slf4j.Logger;

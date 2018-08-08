@@ -6,7 +6,8 @@
   * Resource class cleanup
     * getContentId replaces getLastModified
     * NodeResource replaces DefaultResource 
-
+  * moved Distributor class from `index` to `modules` module to  
+  
 * DevelopmentFilter
   * use etags only (based on Resource.getContentId), last-modified header is gone
        

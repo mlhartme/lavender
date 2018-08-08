@@ -16,7 +16,7 @@
 package net.oneandone.lavender.cli;
 
 import net.oneandone.lavender.filter.Lavender;
-import net.oneandone.lavender.index.Distributor;
+import net.oneandone.lavender.modules.Distributor;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.NodeModule;
 import net.oneandone.lavender.modules.Module;

@@ -19,7 +19,7 @@ import net.oneandone.inline.ArgumentException;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Pool;
-import net.oneandone.lavender.index.Distributor;
+import net.oneandone.lavender.modules.Distributor;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.NodeModule;
 import net.oneandone.lavender.modules.Module;

@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.oneandone.lavender.index;
+package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.config.Connection;
 import net.oneandone.lavender.config.Docroot;
-import net.oneandone.lavender.modules.Resource;
+import net.oneandone.lavender.index.Index;
+import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.fs.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

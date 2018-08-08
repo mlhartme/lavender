@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.oneandone.lavender.index;
+package net.oneandone.lavender.modules;
 
-import net.oneandone.lavender.modules.NodeResource;
-import net.oneandone.lavender.modules.Resource;
+import net.oneandone.lavender.index.Index;
 import net.oneandone.sushi.fs.World;
 import org.junit.Test;
 
