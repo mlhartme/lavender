@@ -127,7 +127,7 @@ public class Fsck extends Base {
             try {
                 for (Label label : index) {
                     references.add(label.getLavendelizedPath());
-                    all.addReference(label.getLavendelizedPath(), label.hash());
+                    all.addReference(label.getLavendelizedPath(), label.md5());
                 }
             } catch (IllegalStateException e) {
                 throw new IllegalStateException(file.getUri() + ": " + e.getMessage(), e);
@@ -238,7 +238,7 @@ public class Fsck extends Base {
         expecteds = new ArrayList<>();
         for (Label label : index) {
             paths.add(label.getOriginalPath());
-            expecteds.add(Hex.encodeString(label.hash()));
+            expecteds.add(Hex.encodeString(label.md5()));
             if (paths.size() > 500) {
                 if (md5check(docroot, paths, expecteds)) {
                     problem = true;

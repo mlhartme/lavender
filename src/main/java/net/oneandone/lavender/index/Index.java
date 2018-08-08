@@ -88,7 +88,7 @@ public class Index implements Iterable<Label> {
         if (lavendelized.isEmpty() || lavendelized.startsWith("/") || lavendelized.endsWith("/")) {
             throw new IllegalArgumentException("invalid lavendelizedPath" + lavendelized);
         }
-        md5hex = Hex.encodeString(label.hash());
+        md5hex = Hex.encodeString(label.md5());
         if (lavendelized.contains(DELIMITER)) {
             throw new IllegalArgumentException(lavendelized);
         }

@@ -48,7 +48,7 @@ public class LabelTest {
 
     @Test
     public void testHash() {
-        byte[] hash = label.hash();
+        byte[] hash = label.md5();
         assertNotNull(hash);
         assertEquals(16, hash.length);
         assertEquals("852e7d76cdb8af7395cd039c0ecc293a", Hex.encodeString(hash));

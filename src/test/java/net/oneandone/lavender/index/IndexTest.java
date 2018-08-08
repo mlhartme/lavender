@@ -87,7 +87,7 @@ public class IndexTest {
         Label label = index.lookup("img/close.gif");
         assertNotNull(label);
         assertEquals("app/ABCDEF1234567890-close.gif", label.getLavendelizedPath());
-        assertEquals("abcdef1234567890", Hex.encodeString(label.hash()));
+        assertEquals("abcdef1234567890", Hex.encodeString(label.md5()));
     }
 
     @Test
