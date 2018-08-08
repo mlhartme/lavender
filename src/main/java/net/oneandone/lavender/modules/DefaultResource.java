@@ -32,27 +32,26 @@ public class DefaultResource extends Resource {
     }
 
     public static DefaultResource forNode(Node node, String path) throws IOException {
-        return new DefaultResource(node.getUri().toString(), path, node.getLastModified(), node,null);
+        return new DefaultResource(node, path, node.getLastModified());
     }
 
+    private final Node node;
     private final String origin;
     private final String path;
     private final long lastModified;
 
-    private Node dataNode;
 
     private byte[] lazyBytes;
-    protected byte[] lazyMd5;
+    private byte[] lazyMd5;
 
-    private DefaultResource(String origin, String path, long lastModified, Node dataNode, byte[] lazyMd5) {
-        this.origin = origin;
+    private DefaultResource(Node node, String path, long lastModified) {
+        this.node = node;
+        this.origin = node.getUri().toString();
         this.path = path;
         this.lastModified = lastModified;
 
-        this.dataNode = dataNode;
-
         this.lazyBytes = null;
-        this.lazyMd5 = lazyMd5;
+        this.lazyMd5 = null;
     }
 
     public String getPath() {
@@ -65,7 +64,7 @@ public class DefaultResource extends Resource {
 
     public boolean isOutdated() {
         try {
-            return dataNode.getLastModified() != lastModified;
+            return node.getLastModified() != lastModified;
         } catch (GetLastModifiedException e) {
             // not found
             return true;
@@ -85,8 +84,7 @@ public class DefaultResource extends Resource {
 
     public byte[] getData() throws IOException {
         if (lazyBytes == null) {
-            lazyBytes = dataNode.readBytes();
-            dataNode = null;
+            lazyBytes = node.readBytes();
         }
         return lazyBytes;
     }
