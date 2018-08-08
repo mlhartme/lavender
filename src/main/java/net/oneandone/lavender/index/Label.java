@@ -19,12 +19,12 @@ package net.oneandone.lavender.index;
 public class Label {
     private final String originalPath;
     private final String lavendelizedPath;
-    private final byte[] md5;
+    private final byte[] hash;
 
-    public Label(String originalPath, String lavendelizedPath, byte[] md5) {
+    public Label(String originalPath, String lavendelizedPath, byte[] hash) {
         this.originalPath = originalPath;
         this.lavendelizedPath = lavendelizedPath;
-        this.md5 = md5;
+        this.hash = hash;
     }
 
     public String getOriginalPath() {
@@ -35,11 +35,11 @@ public class Label {
         return lavendelizedPath;
     }
 
-    public byte[] md5() {
-        return md5;
+    public byte[] hash() {
+        return hash;
     }
 
     public String toString() {
-        return String.format("Label [originalPath=%s, lavendelizedPath=%s, md5=%s]", originalPath, lavendelizedPath, md5);
+        return String.format("Label [originalPath=%s, lavendelizedPath=%s, md5=%s]", originalPath, lavendelizedPath, hash);
     }
 }

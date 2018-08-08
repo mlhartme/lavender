@@ -155,7 +155,7 @@ public class LavenderRewriteEngine implements RewriteEngine {
         if (label.getLavendelizedPath() == null) {
             throw new IllegalStateException();
         }
-        byte[] md5 = label.md5();
+        byte[] md5 = label.hash();
         String node = consistentHash.getNodeForHash(md5);
         String lavendelizedPath = label.getLavendelizedPath();
         URI nodeURI = baseURI.getScheme().equals("https") ? httpsNodes.get(node) : httpNodes.get(node);

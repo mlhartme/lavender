@@ -47,11 +47,11 @@ public class LabelTest {
     }
 
     @Test
-    public void testMd5() {
-        byte[] md5 = label.md5();
-        assertNotNull(md5);
-        assertEquals(16, md5.length);
-        assertEquals("852e7d76cdb8af7395cd039c0ecc293a", Hex.encodeString(md5));
+    public void testHash() {
+        byte[] hash = label.hash();
+        assertNotNull(hash);
+        assertEquals(16, hash.length);
+        assertEquals("852e7d76cdb8af7395cd039c0ecc293a", Hex.encodeString(hash));
     }
 
     @Test

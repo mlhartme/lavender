@@ -97,7 +97,7 @@ public class Distributor {
 
         destPath = label.getLavendelizedPath();
         allLabel = all.lookup(destPath);
-        if (allLabel != null && Arrays.equals(allLabel.md5(), label.md5())) {
+        if (allLabel != null && Arrays.equals(allLabel.hash(), label.hash())) {
             changed = false;
         } else {
             if (LOG.isDebugEnabled()) {
@@ -136,7 +136,7 @@ public class Distributor {
             }
         }
         for (Label label : next) {
-            all.addReference(label.getLavendelizedPath(), label.md5());
+            all.addReference(label.getLavendelizedPath(), label.hash());
         }
         for (Map.Entry<Node, Node> entry : targets.entrySet()) {
             index = entry.getKey();
