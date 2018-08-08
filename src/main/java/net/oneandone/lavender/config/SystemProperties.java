@@ -15,7 +15,7 @@
  */
 package net.oneandone.lavender.config;
 
-import net.oneandone.lavender.modules.SvnModule;
+import net.oneandone.lavender.index.Util;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -89,7 +89,7 @@ public class SystemProperties {
         }
         cache = properties.getProperty("cache");
         if (cache == null) {
-            cacheNode = (FileNode) file.getWorld().getHome().join(".cache/lavender");
+            cacheNode = file.getWorld().getHome().join(".cache/lavender");
         } else {
             cacheNode = file.getWorld().file(cache);
         }
@@ -169,7 +169,7 @@ public class SystemProperties {
         Network result;
 
         local = lastNetNode();
-        tmp = SvnModule.newTmpFile(local.getParent());
+        tmp = Util.newTmpFile(local.getParent());
         world.node(svn).join("network.xml").copyFile(tmp);
         result = Network.load(tmp);
         tmp.move(local.deleteFileOpt());

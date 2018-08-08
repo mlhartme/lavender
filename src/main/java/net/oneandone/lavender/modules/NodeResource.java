@@ -15,7 +15,7 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.lavender.index.Md5;
+import net.oneandone.lavender.index.Util;
 import net.oneandone.sushi.fs.GetLastModifiedException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
@@ -75,7 +75,7 @@ public class NodeResource extends Resource {
 
     public byte[] getMd5() throws IOException {
         if (lazyMd5 == null) {
-            lazyMd5 = Md5.md5(getData());
+            lazyMd5 = Util.md5(getData());
         }
         return lazyMd5;
     }

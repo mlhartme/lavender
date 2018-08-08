@@ -15,10 +15,13 @@
  */
 package net.oneandone.lavender.index;
 
+import net.oneandone.sushi.fs.MkfileException;
+import net.oneandone.sushi.fs.file.FileNode;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class Md5 {
+public class Util {
     private static final MessageDigest DIGEST;
 
     static {
@@ -34,4 +37,25 @@ public class Md5 {
         return DIGEST.digest();
     }
 
+    //--
+
+
+    private static int tmpNo = 1;
+
+    // TODO: the normal tmp file mechanism is allowed to create files with rw- --- --- permission - which is a problem here!
+    public static FileNode newTmpFile(FileNode parent) {
+        FileNode file;
+
+        while (true) {
+            file = parent.join("_tmp_" + tmpNo);
+            try {
+                file.mkfile();
+                file.getWorld().onShutdown().deleteAtExit(file);
+                return file;
+            } catch (MkfileException e) {
+                // continue
+                tmpNo++;
+            }
+        }
+    }
 }
