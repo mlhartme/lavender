@@ -53,8 +53,8 @@ public class SvnResource extends Resource {
         return resourcePath;
     }
 
-    public long getLastModified() {
-        return entry.time;
+    public String getContentId() {
+        return Long.toString(entry.revision);
     }
 
     public boolean isOutdated() {

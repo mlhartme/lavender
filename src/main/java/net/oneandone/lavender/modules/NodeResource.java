@@ -55,8 +55,8 @@ public class NodeResource extends Resource {
         return path;
     }
 
-    public long getLastModified() {
-        return lastModified;
+    public String getContentId() {
+        return Long.toString(lastModified);
     }
 
     public boolean isOutdated() {

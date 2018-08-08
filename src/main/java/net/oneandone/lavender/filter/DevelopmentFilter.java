@@ -16,7 +16,6 @@
 package net.oneandone.lavender.filter;
 
 import net.oneandone.lavender.config.SystemProperties;
-import net.oneandone.lavender.index.Hex;
 import net.oneandone.lavender.modules.NodeModule;
 import net.oneandone.lavender.modules.Module;
 import net.oneandone.lavender.modules.Resource;
@@ -188,8 +187,7 @@ public class DevelopmentFilter implements Filter {
         byte[] data;
         String previousEtag;
 
-        etag = Hex.encodeString(resource.getHash());
-        response.setDateHeader("Last-Modified", resource.getLastModified());
+        etag = etag(resource.getContentId());
         response.setHeader("ETag", etag);
         contentType = filterConfig.getServletContext().getMimeType(resource.getPath());
         if (contentType != null) {
@@ -213,6 +211,13 @@ public class DevelopmentFilter implements Filter {
                 out.write(data);
             }
         }
+    }
+
+    private static String etag(String str) {
+        if (str.contains("\"")) {
+            throw new UnsupportedOperationException("TODO: " + str);
+        }
+        return '"' + str + '"';
     }
 
 }

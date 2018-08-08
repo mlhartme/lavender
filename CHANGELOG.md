@@ -2,6 +2,14 @@
 
 ### 2.7.0 (pending)
 
+* api
+  * Resource class cleanup
+    * getContentId replaces getLastModified
+    * NodeResource replaces DefaultResource 
+
+* DevelopmentFilter
+  * use etags only (based on Resource.getContentId), last-modified header is gone
+       
 * cli
   * simplified 'war' command line, it's just "war cluster docroot index" now
   * simplified 'svn' command: -type option is now a mandatory argument 'docroot', passed after the cluster
