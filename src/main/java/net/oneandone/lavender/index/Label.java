@@ -19,6 +19,12 @@ package net.oneandone.lavender.index;
 public class Label {
     private final String originalPath;
     private final String lavendelizedPath;
+
+    /**
+     * Node: several places reply on the hash being an md5 hash - 1 cannot easily change it into - e.g. - sha256:
+     *  - ConsistentHash.java
+     *  - fsck command
+     */
     private final byte[] md5;
 
     public Label(String originalPath, String lavendelizedPath, byte[] md5) {
