@@ -17,36 +17,41 @@ package net.oneandone.lavender.modules;
 
 import net.oneandone.sushi.fs.GetLastModifiedException;
 import net.oneandone.sushi.fs.Node;
+import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.file.FileNode;
 
 import java.io.IOException;
 
 public class DefaultResource extends Resource {
-    public static DefaultResource forBytes(byte[] bytes, String path) {
-        return new DefaultResource("mem://" + path, path, System.currentTimeMillis(), null, bytes, null);
+    public static DefaultResource forBytes(World world, byte[] bytes, String path) throws IOException {
+        FileNode temp;
+
+        temp = world.getTemp().createTempFile();
+        temp.writeBytes(bytes);
+        return forNode(temp, path);
     }
 
     public static DefaultResource forNode(Node node, String path) throws IOException {
-        return new DefaultResource(node.getUri().toString(), path, node.getLastModified(), node, null, null);
+        return new DefaultResource(node.getUri().toString(), path, node.getLastModified(), node,null);
     }
 
     private final String origin;
     private final String path;
     private final long lastModified;
 
-    // dataNode xor dataBytes is null
     private Node dataNode;
-    private byte[] dataBytes;
 
+    private byte[] lazyBytes;
     protected byte[] lazyMd5;
 
-    public DefaultResource(String origin, String path, long lastModified, Node dataNode, byte[] dataBytes, byte[] lazyMd5) {
+    private DefaultResource(String origin, String path, long lastModified, Node dataNode, byte[] lazyMd5) {
         this.origin = origin;
         this.path = path;
         this.lastModified = lastModified;
 
         this.dataNode = dataNode;
-        this.dataBytes = dataBytes;
 
+        this.lazyBytes = null;
         this.lazyMd5 = lazyMd5;
     }
 
@@ -79,10 +84,10 @@ public class DefaultResource extends Resource {
     }
 
     public byte[] getData() throws IOException {
-        if (dataBytes == null) {
-            dataBytes = dataNode.readBytes();
+        if (lazyBytes == null) {
+            lazyBytes = dataNode.readBytes();
             dataNode = null;
         }
-        return dataBytes;
+        return lazyBytes;
     }
 }

@@ -16,6 +16,7 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.index.Hex;
+import net.oneandone.sushi.fs.World;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,11 +27,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class ResourceTest {
+    private static final World WORLD = World.createMinimal();
     private Resource resource;
 
     @Before
-    public void setup() {
-        resource = DefaultResource.forBytes(new byte[] {(byte) 0x00, (byte) 0x01, (byte) 0x7F, (byte) 0x80, (byte) 0x81, (byte) 0xFF},
+    public void setup() throws IOException {
+        resource = DefaultResource.forBytes(WORLD, new byte[] {(byte) 0x00, (byte) 0x01, (byte) 0x7F, (byte) 0x80, (byte) 0x81, (byte) 0xFF},
                 "modules/x/img/close.gif");
     }
 
