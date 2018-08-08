@@ -189,7 +189,7 @@ public class DevelopmentFilter implements Filter {
         byte[] data;
         String previousEtag;
 
-        etag = Hex.encodeString(resource.getMd5());
+        etag = Hex.encodeString(resource.getHash());
         response.setDateHeader("Last-Modified", resource.getLastModified());
         response.setHeader("ETag", etag);
         contentType = filterConfig.getServletContext().getMimeType(resource.getPath());

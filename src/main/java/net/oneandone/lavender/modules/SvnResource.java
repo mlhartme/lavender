@@ -42,7 +42,7 @@ public class SvnResource extends Resource {
     }
 
     @Override
-    public byte[] getMd5() throws IOException {
+    public byte[] getHash() throws IOException {
         if (entry.md5 == null) {
             entry.md5 = md5(getData());
         }

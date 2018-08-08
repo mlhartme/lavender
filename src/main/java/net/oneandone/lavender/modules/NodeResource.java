@@ -72,7 +72,7 @@ public class NodeResource extends Resource {
         return node.getUri().toString();
     }
 
-    public byte[] getMd5() throws IOException {
+    public byte[] getHash() throws IOException {
         if (lazyMd5 == null) {
             lazyMd5 = md5(getData());
         }
