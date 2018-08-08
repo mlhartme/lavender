@@ -24,6 +24,7 @@ import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.http.HttpNode;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +39,19 @@ public class Bitbucket {
     // https://stackoverflow.com/questions/9765453/is-gits-semi-secret-empty-tree-object-reliable-and-why-is-there-not-a-symbolic
     private static final String NULL_COMMIT = "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
+        World world;
+        FileNode file;
+
+        world = World.create();
+        System.out.println("bitbucket content id: d9ffe8f740c9e629005a5c30de53c92e757dfb22");
+        file = world.file("/Users/mhm/lavender-test-module/README");
+        for (String name : new String[] { "md5", "sha", "sha-1", "sha-256", "sha-384", "sha-512"}) {
+            System.out.println(name + ": " + file.digest(name));
+        }
+    }
+
+    public static void main2(String[] args) throws IOException {
         World world;
         Bitbucket bitbucket;
         FileNode cache;
