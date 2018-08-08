@@ -18,6 +18,7 @@ package net.oneandone.lavender.filter.processor;
 import net.oneandone.lavender.index.Hex;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
+import net.oneandone.lavender.index.Md5;
 import net.oneandone.lavender.modules.Resource;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +37,7 @@ public class LavenderRewriteEngineTest {
         Index index;
 
         index = new Index();
-        index.add(new Label("in.jpg", "out.jpg", Resource.md5()));
+        index.add(new Label("in.jpg", "out.jpg", Md5.md5()));
         engine = new LavenderRewriteEngine(index);
         engine.add(URI.create("http://s1.cdn.net/"));
         engine.add(URI.create("http://s2.cdn.net/"));
@@ -98,7 +99,7 @@ public class LavenderRewriteEngineTest {
         LavenderRewriteEngine rewriteStrategy = testRewriteStrategy();
         baseURI = URI.create("http://somehost.somedomain.net/abc/def/xyz.html?a=b");
         for (char c = 'A'; c <= 'Z'; c++) {
-            md5 = Resource.md5((byte) c);
+            md5 = Md5.md5((byte) c);
             md5str = Hex.encodeString(md5);
             label = new Label("logo.png", md5str + "/logo.png", md5);
             uri = rewriteStrategy.calculateURL(label, baseURI);
@@ -112,7 +113,7 @@ public class LavenderRewriteEngineTest {
         LavenderRewriteEngine engine = new LavenderRewriteEngine(new Index());
         engine.add(URI.create("http://s1.uicdn.net:8080/m1/"));
 
-        byte[] md5 = Resource.md5("content".getBytes());
+        byte[] md5 = Md5.md5("content".getBytes());
         String md5str = Hex.encodeString(md5);
         Label label = new Label("logo.png", md5str + "/logo.png", md5);
 

@@ -16,6 +16,7 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.index.Hex;
+import net.oneandone.lavender.index.Md5;
 import net.oneandone.sushi.fs.World;
 import org.junit.Assert;
 import org.junit.Before;
@@ -61,7 +62,7 @@ public class ResourceTest {
 
     @Test
     public void testMd5() throws IOException {
-        byte[] md5 = resource.md5(resource.getData());
+        byte[] md5 = Md5.md5(resource.getData());
         assertNotNull(md5);
         assertEquals(16, md5.length);
         Assert.assertEquals("852e7d76cdb8af7395cd039c0ecc293a", Hex.encodeString(md5));

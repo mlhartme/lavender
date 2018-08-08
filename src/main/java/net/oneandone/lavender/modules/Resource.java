@@ -62,22 +62,4 @@ public abstract class Resource {
     public String toString() {
         return getPath() + " ->" + getOrigin();
     }
-
-    //--
-
-    private static final MessageDigest DIGEST;
-
-    static {
-        try {
-            DIGEST = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e.getMessage());
-        }
-    }
-
-    public static synchronized byte[] md5(byte ... data) {
-        DIGEST.update(data, 0, data.length);
-        return DIGEST.digest();
-    }
-
 }

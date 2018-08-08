@@ -16,6 +16,7 @@
 package net.oneandone.lavender.filter.processor;
 
 import net.oneandone.lavender.index.Hex;
+import net.oneandone.lavender.index.Md5;
 import net.oneandone.lavender.modules.Resource;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,13 +56,13 @@ public class ConsistentHashTest {
     @Test(expected = IllegalStateException.class)
     public void testEmptyCircle() {
         ConsistentHash consistentHash = new ConsistentHash(200, new String[] {});
-        byte[] md5 = Resource.md5();
+        byte[] md5 = Md5.md5();
         consistentHash.getNodeForHash(md5);
     }
 
     @Test
     public void testKeyString() {
-        String md5Hex = Hex.encodeString(Resource.md5());
+        String md5Hex = Hex.encodeString(Md5.md5());
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", md5Hex);
 
         Integer key = ch.key("");
@@ -73,7 +74,7 @@ public class ConsistentHashTest {
 
     @Test
     public void testKeyByteArray() {
-        byte[] md5 = Resource.md5();
+        byte[] md5 = Md5.md5();
         String md5Hex = Hex.encodeString(md5);
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", md5Hex);
 
@@ -93,7 +94,7 @@ public class ConsistentHashTest {
         // count how often a node is used
         for (int i = 0; i < 1000000; i++) {
             String s = "" + i;
-            byte[] md5 = Resource.md5(s.getBytes());
+            byte[] md5 = Md5.md5(s.getBytes());
             String node = ch.getNodeForHash(md5);
 
             if (!map.containsKey(node)) {
@@ -112,5 +113,4 @@ public class ConsistentHashTest {
         }
         assertEquals(1000000, count);
     }
-
 }
