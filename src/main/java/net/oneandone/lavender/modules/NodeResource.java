@@ -36,17 +36,14 @@ public class NodeResource extends Resource {
     }
 
     private final Node node;
-    private final String origin;
     private final String path;
     private final long lastModified;
-
 
     private byte[] lazyBytes;
     private byte[] lazyMd5;
 
     private NodeResource(Node node, String path, long lastModified) {
         this.node = node;
-        this.origin = node.getUri().toString();
         this.path = path;
         this.lastModified = lastModified;
 
@@ -72,7 +69,7 @@ public class NodeResource extends Resource {
     }
 
     public String getOrigin() {
-        return origin;
+        return node.getUri().toString();
     }
 
     public byte[] getMd5() throws IOException {
