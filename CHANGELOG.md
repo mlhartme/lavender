@@ -7,6 +7,8 @@
     * getContentId replaces getLastModified
     * NodeResource replaces DefaultResource 
   * moved Distributor class from `index` to `modules` module to  
+
+* cached svn entry cache: dumped md5 and last modified fields
   
 * DevelopmentFilter
   * use etags only (based on Resource.getContentId), last-modified header is gone

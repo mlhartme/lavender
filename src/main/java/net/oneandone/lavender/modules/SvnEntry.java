@@ -33,8 +33,6 @@ public class SvnEntry {
         String accessPath;
         long revision;
         int size;
-        long time;
-        byte[] md5;
 
         idx = str.indexOf(SEP);
         publicPath = decode(str.substring(0, idx));
@@ -45,24 +43,8 @@ public class SvnEntry {
         idx = str.indexOf(SEP, prev);
         revision = Long.parseLong(str.substring(prev, idx));
         prev = idx + LEN;
-        idx = str.indexOf(SEP, prev);
-        size = Integer.parseInt(str.substring(prev, idx));
-        prev = idx + LEN;
-        idx = str.indexOf(SEP, prev);
-        if (idx == -1) {
-            // str has been trimmed, it does not contain the tailing ' ' added by SvnEntry.toString()
-            time = Long.parseLong(str.substring(prev));
-            md5 = null;
-        } else {
-            time = Long.parseLong(str.substring(prev, idx));
-            prev = idx + LEN;
-            if (prev == str.length()) {
-                md5 = null;
-            } else {
-                md5 = Hex.decode(str.substring(prev).toCharArray());
-            }
-        }
-        return new SvnEntry(publicPath, accessPath, revision, size, time, md5);
+        size = Integer.parseInt(str.substring(prev));
+        return new SvnEntry(publicPath, accessPath, revision, size);
     }
 
     public final String publicPath;
@@ -70,21 +52,16 @@ public class SvnEntry {
     public final long revision;
     /** not long because I have to keep temp in memory */
     public final int size;
-    public final long time;
-    public byte[] md5;
 
-    public SvnEntry(String publicPath, String accessPath, long revision, int size, long time, byte[] md5) {
+    public SvnEntry(String publicPath, String accessPath, long revision, int size) {
         this.publicPath = publicPath;
         this.accessPath = accessPath;
         this.revision = revision;
         this.size = size;
-        this.time = time;
-        this.md5 = md5;
     }
 
     public String toString() {
-        return encode(publicPath) + SEP + encode(accessPath)
-                + SEP + revision + SEP + size + SEP + time + SEP + (md5 == null ? "" : new String(Hex.encode(md5)));
+        return encode(publicPath) + SEP + encode(accessPath) + SEP + revision + SEP + size;
     }
 
     public int hashCode() {
@@ -97,8 +74,7 @@ public class SvnEntry {
         if (obj instanceof SvnEntry) {
             entry = (SvnEntry) obj;
             return publicPath.equals(entry.publicPath) && accessPath.equals(entry.accessPath)
-                    && revision == entry.revision && size == entry.size && time == entry.time
-                    && Arrays.equals(md5, entry.md5);
+                    && revision == entry.revision && size == entry.size;
         }
         return false;
     }

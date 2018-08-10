@@ -15,7 +15,6 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.sushi.fs.GetLastModifiedException;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.io.SVNRepository;
 
@@ -51,8 +50,8 @@ public class SvnResource extends Resource {
 
     public boolean isOutdated() {
         try {
-            return entry.time == module.getRoot().join(entry.accessPath).getLastModified();
-        } catch (GetLastModifiedException e) {
+            return entry.revision == module.getRoot().join(entry.accessPath).getLatestRevision();
+        } catch (SVNException e) {
             // not found
             return true;
         }
