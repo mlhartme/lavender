@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.modules;
 
+import net.oneandone.lavender.index.Hex;
 import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.fs.filter.Filter;
 import org.slf4j.Logger;
@@ -184,6 +185,22 @@ public abstract class Module<T> implements Iterable<Resource> {
     }
 
     public Label createLabel(Resource resource, byte[] md5) {
-        return lavendelize ? resource.labelLavendelized(targetPathPrefix, name, md5) : resource.labelNormal(targetPathPrefix, md5);
+        String path;
+        String targetPath;
+        String filename;
+        String md5str;
+
+        path = resource.getPath();
+        if (lavendelize) {
+            filename = path.substring(path.lastIndexOf('/') + 1); // ok when not found
+            md5str = Hex.encodeString(md5);
+            if (md5str.length() < 3) {
+                throw new IllegalArgumentException(md5str);
+            }
+            targetPath = targetPathPrefix + md5str.substring(0, 3) + "/" + md5str.substring(3) + "/" + name + "/" + filename;
+        } else {
+            targetPath = targetPathPrefix + path;
+        }
+        return new Label(path, targetPath, md5);
     }
 }

@@ -56,17 +56,6 @@ public class ResourceTest {
     }
 
     @Test
-    public void testGetOriginalPath() {
-        assertEquals("modules/x/img/close.gif", resource.getPath());
-    }
-
-    @Test
-    public void testGetLavendelizedPath() {
-        assertEquals("852/e7d76cdb8af7395cd039c0ecc293a/folder/close.gif",
-                resource.labelLavendelized("", "folder", Hex.decode( "852e7d76cdb8af7395cd039c0ecc293a".toCharArray())).getLavendelizedPath());
-    }
-
-    @Test
     public void testMd5() throws IOException {
         ByteArrayOutputStream buffer;
         byte[] data;
