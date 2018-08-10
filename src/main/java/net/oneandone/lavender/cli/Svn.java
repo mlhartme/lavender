@@ -70,7 +70,7 @@ public class Svn extends Base {
             module = moduleConfig.create(cache, true, properties.svnUsername, properties.svnPassword, null);
             try (Pool pool = globals.pool()) {
                 distributor = Distributor.open(cluster.connect(pool), docroot, directory + ".idx");
-                changed = module.publish(distributor);
+                changed = distributor.publish(world, module);
                 index = distributor.close();
                 module.saveCaches();
             }

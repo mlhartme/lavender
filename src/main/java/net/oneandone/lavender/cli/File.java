@@ -85,7 +85,7 @@ public class File extends Base {
 
         try (Pool pool = globals.pool()) {
             distributor = Distributor.open(cluster.connect(pool), docroot, indexName);
-            changed = module.publish(distributor);
+            changed = distributor.publish(world, module);
             index = distributor.close();
             module.saveCaches();
         }

@@ -19,7 +19,10 @@ import net.oneandone.lavender.config.Connection;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
+import net.oneandone.lavender.index.Util;
 import net.oneandone.sushi.fs.Node;
+import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.file.FileNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +92,41 @@ public class Distributor {
         this.next = new Index();
     }
 
-    public boolean write(Label label, Resource resource) throws IOException {
+    /** @return number of changed (updated or added) resources */
+    public long publish(World world, Module<?> module) throws IOException {
+        String path;
+        String contentId;
+        Label label;
+        long count;
+        String name;
+        Md5Cache cache;
+        byte[] md5;
+        byte[] data;
+
+        count = 0;
+        name = module.getName();
+        cache = Md5Cache.loadOrCreate(world, name);
+        for (Resource resource : module) {
+            path = resource.getPath();
+            contentId = resource.getContentId();
+            md5 = cache.lookup(path, contentId);
+            if (md5 == null) {
+                data = resource.getData();
+                md5 = Util.md5(data);
+                cache.add(path, contentId, md5);
+            } else {
+                data = null;
+            }
+            label = module.createLabel(resource, md5);
+            if (write(label, resource, data)) {
+                count++;
+            }
+        }
+        cache.save();
+        return count;
+    }
+
+    public boolean write(Label label, Resource resource, byte[] data) throws IOException {
         Node dest;
         String destPath;
         Label allLabel;
@@ -101,6 +138,9 @@ public class Distributor {
         if (allLabel != null && Arrays.equals(allLabel.md5(), label.md5())) {
             changed = false;
         } else {
+            if (data == null) {
+                data = resource.getData();
+            }
             if (LOG.isDebugEnabled()) {
                 if (allLabel == null) {
                     LOG.debug("A " + destPath);
@@ -112,10 +152,10 @@ public class Distributor {
                 dest = destroot.join(destPath);
                 if (allLabel == null) {
                     dest.getParent().mkdirsOpt();
-                    dest.writeBytes(resource.getData());
+                    dest.writeBytes(data);
                 } else {
                     tmp = dest.getParent().join(".atomicUpdate");
-                    tmp.writeBytes(resource.getData());
+                    tmp.writeBytes(data);
                     tmp.move(dest, true);
                 }
             }

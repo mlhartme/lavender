@@ -104,7 +104,7 @@ public class WarEngine {
 
         changed = 0;
         for (Module module : modules) {
-            changed += module.publish(distributor);
+            changed += distributor.publish(cache.getWorld(), module);
         }
         return changed;
     }

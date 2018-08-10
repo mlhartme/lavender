@@ -75,6 +75,14 @@ public abstract class Module<T> implements Iterable<Resource> {
         return resourcePathPrefix;
     }
 
+    public boolean getLavendeize() {
+        return lavendelize;
+    }
+
+    public String getTargetPathPrefix() {
+        return targetPathPrefix;
+    }
+
     //-- scans
 
     public boolean hasScan() {
@@ -175,24 +183,9 @@ public abstract class Module<T> implements Iterable<Resource> {
         };
     }
 
-    /** @return number of changed (updated or added) resources */
-    public long publish(Distributor distributor) throws IOException {
-        Label label;
-        long count;
-
-        count = 0;
-        for (Resource resource : this) {
-            if (lavendelize) {
-                label = resource.labelLavendelized(targetPathPrefix, name);
-            } else {
-                label = resource.labelNormal(targetPathPrefix);
-            }
-            if (distributor.write(label, resource)) {
-                count++;
-            }
-        }
-        return count;
-    }
-
     public abstract void saveCaches() throws IOException;
+
+    public Label createLabel(Resource resource, byte[] md5) {
+        return lavendelize ? resource.labelLavendelized(targetPathPrefix, name, md5) : resource.labelNormal(targetPathPrefix, md5);
+    }
 }

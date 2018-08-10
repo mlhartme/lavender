@@ -15,7 +15,6 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.lavender.index.Util;
 import net.oneandone.sushi.fs.GetLastModifiedException;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.io.SVNRepository;
@@ -40,14 +39,6 @@ public class SvnResource extends Resource {
         this.entry = entry;
         this.accessRevision = accessRevision;
         this.lazyData = null;
-    }
-
-    @Override
-    public byte[] getMd5() throws IOException {
-        if (entry.md5 == null) {
-            entry.md5 = Util.md5(getData());
-        }
-        return entry.md5;
     }
 
     public String getPath() {

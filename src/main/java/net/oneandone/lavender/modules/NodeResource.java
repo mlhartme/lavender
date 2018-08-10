@@ -15,7 +15,6 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.lavender.index.Util;
 import net.oneandone.sushi.fs.GetLastModifiedException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
@@ -41,7 +40,6 @@ public class NodeResource extends Resource {
     private final long lastModified;
 
     private byte[] lazyBytes;
-    private byte[] lazyMd5;
 
     private NodeResource(Node node, String path, long lastModified) {
         this.node = node;
@@ -49,7 +47,6 @@ public class NodeResource extends Resource {
         this.lastModified = lastModified;
 
         this.lazyBytes = null;
-        this.lazyMd5 = null;
     }
 
     public String getPath() {
@@ -71,13 +68,6 @@ public class NodeResource extends Resource {
 
     public String getOrigin() {
         return node.getUri().toString();
-    }
-
-    public byte[] getMd5() throws IOException {
-        if (lazyMd5 == null) {
-            lazyMd5 = Util.md5(getData());
-        }
-        return lazyMd5;
     }
 
     public byte[] getData() throws IOException {
