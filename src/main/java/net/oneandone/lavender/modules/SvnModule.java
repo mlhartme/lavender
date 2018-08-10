@@ -181,8 +181,7 @@ public class SvnModule extends Module<SvnEntry> {
                             if (old != null && entry.getRevision() == old.revision) {
                                 newEntries.put(publicPath, old);
                             } else {
-                                newEntries.put(publicPath, new SvnEntry(publicPath, accessPath, entry.getRevision(),
-                                        (int) entry.getSize()));
+                                newEntries.put(publicPath, new SvnEntry(publicPath, accessPath, entry.getRevision()));
                             }
                         }
                     }

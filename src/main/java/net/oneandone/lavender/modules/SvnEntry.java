@@ -23,14 +23,13 @@ public class SvnEntry {
     private static final char LF = '\n';
     private static final int LEN = 1;
 
-    // path SEP revision SEP size SEP time SEP md5
+    // path SEP accessPath SEP revision
     public static SvnEntry parse(String str) {
         int idx;
         int prev;
         String publicPath;
         String accessPath;
         long revision;
-        int size;
 
         idx = str.indexOf(SEP);
         publicPath = decode(str.substring(0, idx));
@@ -38,28 +37,22 @@ public class SvnEntry {
         idx = str.indexOf(SEP, prev);
         accessPath = decode(str.substring(prev, idx));
         prev = idx + LEN;
-        idx = str.indexOf(SEP, prev);
-        revision = Long.parseLong(str.substring(prev, idx));
-        prev = idx + LEN;
-        size = Integer.parseInt(str.substring(prev));
-        return new SvnEntry(publicPath, accessPath, revision, size);
+        revision = Long.parseLong(str.substring(prev));
+        return new SvnEntry(publicPath, accessPath, revision);
     }
 
     public final String publicPath;
     public final String accessPath;
     public final long revision;
-    /** not long because I have to keep temp in memory */
-    public final int size;
 
-    public SvnEntry(String publicPath, String accessPath, long revision, int size) {
+    public SvnEntry(String publicPath, String accessPath, long revision) {
         this.publicPath = publicPath;
         this.accessPath = accessPath;
         this.revision = revision;
-        this.size = size;
     }
 
     public String toString() {
-        return encode(publicPath) + SEP + encode(accessPath) + SEP + revision + SEP + size;
+        return encode(publicPath) + SEP + encode(accessPath) + SEP + revision;
     }
 
     public int hashCode() {
@@ -71,8 +64,7 @@ public class SvnEntry {
 
         if (obj instanceof SvnEntry) {
             entry = (SvnEntry) obj;
-            return publicPath.equals(entry.publicPath) && accessPath.equals(entry.accessPath)
-                    && revision == entry.revision && size == entry.size;
+            return publicPath.equals(entry.publicPath) && accessPath.equals(entry.accessPath) && revision == entry.revision;
         }
         return false;
     }

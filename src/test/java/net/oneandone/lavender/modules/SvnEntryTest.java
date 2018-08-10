@@ -51,7 +51,7 @@ public class SvnEntryTest {
         SvnEntry entry;
         SvnEntry parsed;
 
-        entry = new SvnEntry("my path", "origPath", 1, 2);
+        entry = new SvnEntry("my path", "origPath", 1);
         parsed = SvnEntry.parse(entry.toString());
         assertEquals(entry, parsed);
     }
