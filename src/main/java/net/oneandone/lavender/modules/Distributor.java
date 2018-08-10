@@ -22,11 +22,12 @@ import net.oneandone.lavender.index.Label;
 import net.oneandone.lavender.index.Util;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
-import net.oneandone.sushi.fs.file.FileNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -80,12 +81,14 @@ public class Distributor {
     }
 
     /** left: index location; right: docroot */
+    private final DataOutputStream buffer;
     private final Map<Node, Node> targets;
     private final Index all;
     private final Index prev;
     private final Index next;
 
     public Distributor(Map<Node, Node> targets, Index all, Index prev) {
+        this.buffer = new DataOutputStream();
         this.targets = targets;
         this.all = all;
         this.prev = prev;
@@ -101,7 +104,7 @@ public class Distributor {
         String name;
         Md5Cache cache;
         byte[] md5;
-        byte[] data;
+        boolean dataBuffered;
         boolean cacheModified;
 
         count = 0;
@@ -113,15 +116,16 @@ public class Distributor {
             contentId = resource.getContentId();
             md5 = cache.lookup(path, contentId);
             if (md5 == null) {
-                data = resource.getData();
-                md5 = Util.md5(data);
+                resource.getData(buffer);
+                dataBuffered = true;
+                md5 = buffer.md5();
                 cache.add(path, contentId, md5);
                 cacheModified = true;
             } else {
-                data = null;
+                dataBuffered = false;
             }
             label = module.createLabel(resource, md5);
-            if (write(label, resource, data)) {
+            if (write(label, resource, dataBuffered)) {
                 count++;
             }
         }
@@ -131,7 +135,7 @@ public class Distributor {
         return count;
     }
 
-    public boolean write(Label label, Resource resource, byte[] data) throws IOException {
+    public boolean write(Label label, Resource resource, boolean dataBuffered) throws IOException {
         Node dest;
         String destPath;
         Label allLabel;
@@ -143,8 +147,8 @@ public class Distributor {
         if (allLabel != null && Arrays.equals(allLabel.md5(), label.md5())) {
             changed = false;
         } else {
-            if (data == null) {
-                data = resource.getData();
+            if (!dataBuffered) {
+                resource.getData(buffer);
             }
             if (LOG.isDebugEnabled()) {
                 if (allLabel == null) {
@@ -157,10 +161,14 @@ public class Distributor {
                 dest = destroot.join(destPath);
                 if (allLabel == null) {
                     dest.getParent().mkdirsOpt();
-                    dest.writeBytes(data);
+                    try (OutputStream out = dest.newOutputStream()) {
+                        buffer.writeTo(out);
+                    }
                 } else {
                     tmp = dest.getParent().join(".atomicUpdate");
-                    tmp.writeBytes(data);
+                    try (OutputStream out = tmp.newOutputStream()) {
+                        buffer.writeTo(out);
+                    }
                     tmp.move(dest, true);
                 }
             }
@@ -192,5 +200,33 @@ public class Distributor {
             all.save(directory.join(Index.ALL_IDX));
         }
         return next;
+    }
+
+    //--
+
+    public static class DataOutputStream extends ByteArrayOutputStream {
+        private final int initialBytes;
+
+        public DataOutputStream() {
+            this(512 * 1024);
+        }
+
+        public DataOutputStream(int initialBytes) {
+            super(initialBytes);
+
+            this.initialBytes = initialBytes;
+        }
+
+        @Override
+        public void reset() {
+            super.reset();
+            if (buf.length != initialBytes) {
+                buf = new byte[initialBytes];
+            }
+        }
+
+        public byte[] md5() {
+            return Util.md5(buf, count);
+        }
     }
 }

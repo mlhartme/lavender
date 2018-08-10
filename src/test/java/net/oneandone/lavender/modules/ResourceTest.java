@@ -22,6 +22,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
@@ -38,7 +39,12 @@ public class ResourceTest {
 
     @Test
     public void testData() throws IOException {
-        byte[] data = resource.getData();
+        ByteArrayOutputStream buffer;
+        byte[] data;
+
+        buffer = new ByteArrayOutputStream();
+        resource.getData(buffer);
+        data = buffer.toByteArray();
         assertNotNull(data);
         assertEquals(6, data.length);
         assertEquals(0x00, data[0]);
@@ -62,7 +68,14 @@ public class ResourceTest {
 
     @Test
     public void testMd5() throws IOException {
-        byte[] md5 = Util.md5(resource.getData());
+        ByteArrayOutputStream buffer;
+        byte[] data;
+        byte[] md5;
+
+        buffer = new ByteArrayOutputStream();
+        resource.getData(buffer);
+        data = buffer.toByteArray();
+        md5 = Util.md5(data);
         assertNotNull(md5);
         assertEquals(16, md5.length);
         Assert.assertEquals("852e7d76cdb8af7395cd039c0ecc293a", Hex.encodeString(md5));

@@ -33,7 +33,11 @@ public class Util {
     }
 
     public static synchronized byte[] md5(byte ... data) {
-        DIGEST.update(data, 0, data.length);
+        return md5(data, data.length);
+    }
+
+    public static synchronized byte[] md5(byte[] data, int count) {
+        DIGEST.update(data, 0, count);
         return DIGEST.digest();
     }
 

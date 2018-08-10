@@ -17,8 +17,10 @@ package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.index.Hex;
 import net.oneandone.lavender.index.Label;
+import net.oneandone.sushi.io.Buffer;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -30,7 +32,7 @@ public abstract class Resource {
     /** for logging purpose */
     public abstract String getOrigin();
 
-    public abstract byte[] getData() throws IOException;
+    public abstract void getData(OutputStream dest) throws IOException;
 
     public abstract boolean isOutdated();
     

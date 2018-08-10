@@ -36,6 +36,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -176,8 +177,8 @@ public class DevelopmentFilter implements Filter {
         String etag;
         String contentType;
         ServletOutputStream out;
-        byte[] data;
         String previousEtag;
+        ByteArrayOutputStream buffer;
 
         etag = etag(resource.getContentId());
         response.setHeader("ETag", etag);
@@ -191,16 +192,17 @@ public class DevelopmentFilter implements Filter {
             LOG.debug("ETag match: returning 304 Not Modified: " + resource.getPath());
             response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
         } else  { 		// first time through - set last modified time to now
-            data = resource.getData();
+            buffer = new ByteArrayOutputStream(1024 * 100);
+            resource.getData(buffer);
             if (withBody) {
-                response.setContentLength(data.length);
+                response.setContentLength(buffer.size());
                 out = response.getOutputStream();
                 try {
                     response.setBufferSize(4096);
                 } catch (IllegalStateException e) {
                     // Silent catch
                 }
-                out.write(data);
+                buffer.writeTo(out);
             }
         }
     }

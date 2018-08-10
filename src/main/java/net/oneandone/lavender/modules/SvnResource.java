@@ -15,9 +15,11 @@
  */
 package net.oneandone.lavender.modules;
 
+import net.oneandone.sushi.io.Buffer;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.io.SVNRepository;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -30,14 +32,11 @@ public class SvnResource extends Resource {
 
     private final long accessRevision;
 
-    private byte[] lazyData;
-
     public SvnResource(SvnModule module, String resourcePath, SvnEntry entry, long accessRevision) {
         this.module = module;
         this.resourcePath = resourcePath;
         this.entry = entry;
         this.accessRevision = accessRevision;
-        this.lazyData = null;
     }
 
     public String getPath() {
@@ -61,52 +60,18 @@ public class SvnResource extends Resource {
         return module.uri() + "/" + resourcePath;
     }
 
-    public byte[] getData() throws IOException {
+    public void getData(OutputStream dest) throws IOException {
         SVNRepository repository;
         long loaded;
 
-        if (lazyData == null) {
-            lazyData = new byte[entry.size];
-            try (OutputStream dest = new FillOutputStream(lazyData)) {
-                repository = module.getRoot().getRoot().getRepository();
-                try {
-                    loaded = repository.getFile(module.getRoot().join(entry.accessPath).getPath(), accessRevision, null, dest);
-                } catch (SVNException e) {
-                    throw new IOException("svn failure: " + e.getMessage(), e);
-                }
-                if (loaded != accessRevision) {
-                    throw new IllegalStateException(loaded + " " + accessRevision);
-                }
-            }
+        repository = module.getRoot().getRoot().getRepository();
+        try {
+            loaded = repository.getFile(module.getRoot().join(entry.accessPath).getPath(), accessRevision, null, dest);
+        } catch (SVNException e) {
+            throw new IOException("svn failure: " + e.getMessage(), e);
         }
-        return lazyData;
-    }
-
-    public static class FillOutputStream extends OutputStream {
-        private final byte[] dest;
-        private int pos;
-
-        public FillOutputStream(byte[] dest) {
-            this.dest = dest;
-            this.pos = 0;
-        }
-
-        @Override
-        public void write(int b) {
-            dest[pos++] = (byte) b;
-        }
-
-        @Override
-        public void write(byte[] bytes, int ofs, int len) {
-            System.arraycopy(bytes, ofs, dest, pos, len);
-            pos += len;
-        }
-
-        @Override
-        public void close() {
-            if (pos != dest.length) {
-                throw new IllegalStateException(pos + " vs " + dest.length);
-            }
+        if (loaded != accessRevision) {
+            throw new IllegalStateException(loaded + " " + accessRevision);
         }
     }
 }

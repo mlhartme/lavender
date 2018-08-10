@@ -21,6 +21,7 @@ import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 public class NodeResource extends Resource {
     public static NodeResource forBytes(World world, String path, byte... bytes) throws IOException {
@@ -39,14 +40,10 @@ public class NodeResource extends Resource {
     private final String path;
     private final long lastModified;
 
-    private byte[] lazyBytes;
-
     private NodeResource(Node node, String path, long lastModified) {
         this.node = node;
         this.path = path;
         this.lastModified = lastModified;
-
-        this.lazyBytes = null;
     }
 
     public String getPath() {
@@ -70,10 +67,7 @@ public class NodeResource extends Resource {
         return node.getUri().toString();
     }
 
-    public byte[] getData() throws IOException {
-        if (lazyBytes == null) {
-            lazyBytes = node.readBytes();
-        }
-        return lazyBytes;
+    public void getData(OutputStream dest) throws IOException {
+        node.copyFileTo(dest);
     }
 }
