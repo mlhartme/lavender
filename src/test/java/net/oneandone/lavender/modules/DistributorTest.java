@@ -15,30 +15,45 @@
  */
 package net.oneandone.lavender.modules;
 
+import net.oneandone.lavender.index.Index;
+import net.oneandone.sushi.fs.Node;
+import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.file.FileNode;
+import net.oneandone.sushi.fs.filter.Filter;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 public class DistributorTest {
     @Test
-    public void write() throws IOException {/*
+    public void write() throws IOException {
         World world;
+        FileNode dir;
+        Module<?> module;
         Index index;
-        Resource resource1;
-        Resource resource2;
         Distributor distributor;
 
         world = World.createMinimal();
-        resource1 = NodeResource.forBytes(world, "img/test.png", "abcd".getBytes());
-        resource2 = NodeResource.forBytes(world, "modules/stageassistent/img/test.gif", "abcd".getBytes());
-        distributor = new Distributor(new HashMap<>(), new Index(), new Index());
-        distributor.write(resource1.labelLavendelized("", "folder"), resource1);
-        distributor.write(resource2.labelLavendelized("", "stageassistent"), resource1);
-        index = distributor.close();
-        assertEquals("e2f/c714c4727ee9395f324cd2e7f331f/folder/test.png", index.lookup("img/test.png").getLavendelizedPath());
-        assertEquals("e2f/c714c4727ee9395f324cd2e7f331f/stageassistent/test.gif",
-                index.lookup("modules/stageassistent/img/test.gif").getLavendelizedPath());
-                */
-    }
+        dir = world.guessProjectHome(getClass()).join("src/test/module");
+        module = new NodeModule(Module.TYPE, "foo", true, "", "", world.filter().includeAll()) {
+            @Override
+            protected Map<String, Node> doScan(Filter filter) throws Exception {
+                Map<String, Node> result;
 
+                result = new HashMap<>();
+                for (Node node : dir.find(filter)) {
+                    result.put(node.getRelative(dir), node);
+                }
+                return result;
+            }
+        };
+        distributor = new Distributor(world.getTemp().createTempDirectory(), new HashMap<>(), new Index(), new Index());
+        distributor.publish(module);
+        index = distributor.close();
+        assertEquals("264/5cfe2cb0a569e7d3daa64ebb35e26/foo/vi_login_now.jpg", index.lookup("vi_login_now.jpg").getLavendelizedPath());
+    }
 }
