@@ -184,7 +184,7 @@ public class SystemProperties {
         return world.getHome().join(".lavender.network.xml");
     }
 
-    public FileNode lockedCache(int wait, String lockContent) throws IOException {
+    public FileNode lockedCacheroot(int wait, String lockContent) throws IOException {
         cache.mkdirsOpt();
         doLock(wait, lockContent);
         return cache;
@@ -223,7 +223,7 @@ public class SystemProperties {
         return cache.join(".lock");
     }
 
-    public void unlockCache() throws IOException {
+    public void unlockCacheroot() throws IOException {
         cacheLock().deleteFile();
     }
 }

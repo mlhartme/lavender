@@ -56,6 +56,7 @@ public class File extends Base {
         Distributor distributor;
         long changed;
         Index index;
+        FileNode cacheroot;
 
         if (archive.isFile()) {
             try {
@@ -84,9 +85,14 @@ public class File extends Base {
         };
 
         try (Pool pool = globals.pool()) {
-            distributor = Distributor.open(cluster.connect(pool), docroot, indexName);
-            changed = distributor.publish(world, module);
-            index = distributor.close();
+            cacheroot = globals.lockedCacheroot();
+            try {
+                distributor = Distributor.open(cacheroot, cluster.connect(pool), docroot, indexName);
+                changed = distributor.publish(module);
+                index = distributor.close();
+            } finally {
+                globals.properties().unlockCacheroot();
+            }
         }
         console.info.println("done: " + changed + "/" + index.size() + " files changed");
     }

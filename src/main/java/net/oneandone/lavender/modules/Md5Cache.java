@@ -2,7 +2,6 @@ package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.index.Hex;
 import net.oneandone.lavender.index.Util;
-import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 
 import java.io.IOException;
@@ -11,11 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Md5Cache {
-    public static Md5Cache loadOrCreate(World world, String module) throws IOException {
-        FileNode file;
+    public static Md5Cache loadOrCreate(FileNode file) throws IOException {
         Md5Cache result;
 
-        file = world.getTemp().join(module + ".cache");
         result = new Md5Cache(file);
         if (file.exists()) {
             for (String line : file.readLines()) {

@@ -22,6 +22,7 @@ import net.oneandone.lavender.index.Label;
 import net.oneandone.lavender.index.Util;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.file.FileNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +38,7 @@ import java.util.Map;
 public class Distributor {
     private static final Logger LOG = LoggerFactory.getLogger(Distributor.class);
 
-    public static Distributor open(List<Connection> connections, Docroot docroot, String indexName) throws IOException {
+    public static Distributor open(FileNode cache, List<Connection> connections, Docroot docroot, String indexName) throws IOException {
         Node destroot;
         Node file;
         Map<Node, Node> targets;
@@ -59,7 +60,7 @@ public class Distributor {
                 all = loadSame(docroot.index(connection, Index.ALL_IDX), all);
             }
         }
-        return new Distributor(targets, all, prev);
+        return new Distributor(cache, targets, all, prev);
     }
 
     private static Index loadSame(Node src, Index prev) throws IOException {
@@ -82,13 +83,15 @@ public class Distributor {
 
     /** left: index location; right: docroot */
     private final DataOutputStream buffer;
+    private final FileNode cacheroot;
     private final Map<Node, Node> targets;
     private final Index all;
     private final Index prev;
     private final Index next;
 
-    public Distributor(Map<Node, Node> targets, Index all, Index prev) {
+    public Distributor(FileNode cacheroot, Map<Node, Node> targets, Index all, Index prev) {
         this.buffer = new DataOutputStream();
+        this.cacheroot = cacheroot;
         this.targets = targets;
         this.all = all;
         this.prev = prev;
@@ -96,7 +99,7 @@ public class Distributor {
     }
 
     /** @return number of changed (updated or added) resources */
-    public long publish(World world, Module<?> module) throws IOException {
+    public long publish(Module<?> module) throws IOException {
         String path;
         String contentId;
         Label label;
@@ -109,7 +112,7 @@ public class Distributor {
 
         count = 0;
         name = module.getName();
-        cache = Md5Cache.loadOrCreate(world, name);
+        cache = Md5Cache.loadOrCreate(cacheroot.join("md5", name + ".cache"));
         cacheModified = false;
         for (Resource resource : module) {
             path = resource.getPath();

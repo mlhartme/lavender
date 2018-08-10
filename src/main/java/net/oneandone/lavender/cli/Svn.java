@@ -52,7 +52,7 @@ public class Svn extends Base {
         Distributor distributor;
         long changed;
         Index index;
-        FileNode cache;
+        FileNode cacheroot;
         SystemProperties properties;
 
         if (directory.isEmpty() || directory.contains("/")) {
@@ -65,16 +65,16 @@ public class Svn extends Base {
         filter.includeAll();
         svnurl = svn + "/data/" + directory;
         moduleConfig = new SvnProperties("svn", filter, svnurl, -1, svnurl, Module.TYPE, false, "", directory + "/", null);
-        cache = globals.lockedCache();
+        cacheroot = globals.lockedCacheroot();
         try {
-            module = moduleConfig.create(cache, true, properties.svnUsername, properties.svnPassword, null);
+            module = moduleConfig.create(cacheroot, true, properties.svnUsername, properties.svnPassword, null);
             try (Pool pool = globals.pool()) {
-                distributor = Distributor.open(cluster.connect(pool), docroot, directory + ".idx");
-                changed = distributor.publish(world, module);
+                distributor = Distributor.open(cacheroot, cluster.connect(pool), docroot, directory + ".idx");
+                changed = distributor.publish(module);
                 index = distributor.close();
             }
         } finally {
-            properties.unlockCache();
+            properties.unlockCacheroot();
         }
         console.info.println("done: " + changed + "/" + index.size() + " files changed");
     }

@@ -63,7 +63,7 @@ public class DevelopmentFilter implements Filter {
             world = World.create(false);
             webapp = world.file(filterConfig.getServletContext().getRealPath(""));
             properties = SystemProperties.load(SystemProperties.file(world), false);
-            FileNode cache = properties.lockedCache(5, "lavenderServlet");
+            FileNode cache = properties.lockedCacheroot(5, "lavenderServlet");
             modules = loadModulesFromWebapp(webapp, properties, cache);
         } catch (XmlException | IOException | SAXException e) {
             e.printStackTrace();
@@ -105,7 +105,7 @@ public class DevelopmentFilter implements Filter {
     private void unlockPropertiesCache(SystemProperties properties) {
         if (properties != null) {
             try {
-                properties.unlockCache();
+                properties.unlockCacheroot();
             } catch (IOException e) {
                 LOG.error("Could not unlock properties cache", e);
             }

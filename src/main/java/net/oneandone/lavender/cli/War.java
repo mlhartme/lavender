@@ -45,7 +45,7 @@ public class War extends Base {
 
     public void run() throws IOException, SAXException, XmlException {
         FileNode tmp;
-        FileNode cache;
+        FileNode cacheroot;
         FileNode outputNodesFile;
         WarEngine engine;
         SystemProperties properties;
@@ -54,12 +54,12 @@ public class War extends Base {
         outputNodesFile = tmp.createTempFile();
         properties = globals.properties();
         try (Pool pool = globals.pool()) {
-            cache = globals.lockedCache();
+            cacheroot = globals.lockedCacheroot();
             try {
-                engine = new WarEngine(cache, Distributor.open(cluster.connect(pool), docroot, indexName), properties.svnUsername, properties.svnPassword, war, outputNodesFile, nodes);
+                engine = new WarEngine(cacheroot, Distributor.open(cacheroot, cluster.connect(pool), docroot, indexName), properties.svnUsername, properties.svnPassword, war, outputNodesFile, nodes);
                 engine.run();
             } finally {
-                properties.unlockCache();
+                properties.unlockCacheroot();
             }
         }
         outputNodesFile.deleteFile();
