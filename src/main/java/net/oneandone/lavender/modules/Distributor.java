@@ -102,10 +102,12 @@ public class Distributor {
         Md5Cache cache;
         byte[] md5;
         byte[] data;
+        boolean cacheModified;
 
         count = 0;
         name = module.getName();
         cache = Md5Cache.loadOrCreate(world, name);
+        cacheModified = false;
         for (Resource resource : module) {
             path = resource.getPath();
             contentId = resource.getContentId();
@@ -114,6 +116,7 @@ public class Distributor {
                 data = resource.getData();
                 md5 = Util.md5(data);
                 cache.add(path, contentId, md5);
+                cacheModified = true;
             } else {
                 data = null;
             }
@@ -122,7 +125,9 @@ public class Distributor {
                 count++;
             }
         }
-        cache.save();
+        if (cacheModified) {
+            cache.save();
+        }
         return count;
     }
 

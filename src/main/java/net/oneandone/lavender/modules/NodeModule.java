@@ -296,9 +296,4 @@ public abstract class NodeModule extends Module<Node> {
     protected Resource createResource(String resourcePath, Node file) throws IOException {
         return NodeResource.forNode(file, resourcePath);
     }
-
-    @Override
-    public void saveCaches() {
-        // nothing to do
-    }
 }

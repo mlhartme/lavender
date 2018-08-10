@@ -1,6 +1,7 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.index.Hex;
+import net.oneandone.lavender.index.Util;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 
@@ -78,8 +79,16 @@ public class Md5Cache {
     }
 
     public void save() throws IOException {
+        FileNode parent;
+        FileNode tmp;
+
         file.getParent().mkdirsOpt();
-        try (Writer writer = file.newWriter()) {
+        // first write to a temp file, then move it (which is atomic) because
+        // * no corruption by crashed/killed processes
+        // * works for multiple users as long as the cache directory has the proper permissions
+        parent = file.getParent();
+        tmp = Util.newTmpFile(parent);
+        try (Writer writer = tmp.newWriter()) {
             for (Entry entry : entries) {
                 writer.write(entry.path);
                 writer.write(',');
@@ -89,5 +98,6 @@ public class Md5Cache {
                 writer.write('\n');
             }
         }
+        tmp.move(file, true);
     }
 }

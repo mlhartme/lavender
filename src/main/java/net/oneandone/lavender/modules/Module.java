@@ -183,8 +183,6 @@ public abstract class Module<T> implements Iterable<Resource> {
         };
     }
 
-    public abstract void saveCaches() throws IOException;
-
     public Label createLabel(Resource resource, byte[] md5) {
         return lavendelize ? resource.labelLavendelized(targetPathPrefix, name, md5) : resource.labelNormal(targetPathPrefix, md5);
     }

@@ -93,9 +93,6 @@ public class WarEngine {
         warStart = System.currentTimeMillis();
         updateWarFile(index, outputNodesFile);
         LOG.info("updated war " + (war.size() / 1024) + "k, " + (System.currentTimeMillis() - warStart) + " ms");
-        for (Module module : modules) {
-            module.saveCaches();
-        }
         return index;
     }
 

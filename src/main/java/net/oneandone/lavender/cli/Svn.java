@@ -72,7 +72,6 @@ public class Svn extends Base {
                 distributor = Distributor.open(cluster.connect(pool), docroot, directory + ".idx");
                 changed = distributor.publish(world, module);
                 index = distributor.close();
-                module.saveCaches();
             }
         } finally {
             properties.unlockCache();

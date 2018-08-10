@@ -89,15 +89,7 @@ public class DevelopmentFilter implements Filter {
 
     @Override
     public void destroy() {
-        if (modules != null) {
-            for (Module module : modules) {
-                try {
-                    module.saveCaches();
-                } catch (IOException e) {
-                    LOG.error("cannot save caches for " + module.getName() + ": " + e.getMessage(), e);
-                }
-            }
-        }
+        // nothing to do
     }
 
     public int getModulesCount() {

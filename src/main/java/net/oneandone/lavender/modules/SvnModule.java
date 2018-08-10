@@ -204,24 +204,4 @@ public class SvnModule extends Module<SvnEntry> {
     public String uri() {
         return root.getUri().toString();
     }
-
-    public void saveCaches() throws IOException {
-        FileNode parent;
-        FileNode tmp;
-
-        // first write to a temp file, then move it (which is atomic) because
-        // * no corruption by crashed/killed processes
-        // * works for multiple users as long as the cache directory has the proper permissions
-        parent = (FileNode) indexFile.getParent();
-        tmp = Util.newTmpFile(parent);
-        try (Writer dest = tmp.newWriter()) {
-            dest.write(Long.toString(lastModifiedModule));
-            dest.write('\n');
-            for (SvnEntry entry : entries.values()) {
-                dest.write(entry.toString());
-                dest.write('\n');
-            }
-        }
-        tmp.move(indexFile, true);
-    }
 }

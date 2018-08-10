@@ -87,7 +87,6 @@ public class File extends Base {
             distributor = Distributor.open(cluster.connect(pool), docroot, indexName);
             changed = distributor.publish(world, module);
             index = distributor.close();
-            module.saveCaches();
         }
         console.info.println("done: " + changed + "/" + index.size() + " files changed");
     }
