@@ -105,35 +105,29 @@ public class Distributor {
         Label label;
         long count;
         String name;
-        Md5Cache cache;
         byte[] md5;
         boolean dataBuffered;
-        boolean cacheModified;
 
         count = 0;
         name = module.getName();
-        cache = Md5Cache.loadOrCreate(cacheroot.join("md5", name + ".cache"));
-        cacheModified = false;
-        for (Resource resource : module) {
-            path = resource.getPath();
-            contentId = resource.getContentId();
-            md5 = cache.lookup(path, contentId);
-            if (md5 == null) {
-                resource.writeTo(buffer);
-                dataBuffered = true;
-                md5 = buffer.md5();
-                cache.add(path, contentId, md5);
-                cacheModified = true;
-            } else {
-                dataBuffered = false;
+        try (Md5Cache cache = Md5Cache.loadOrCreate(cacheroot.join("md5", name + ".cache"))) {
+            for (Resource resource : module) {
+                path = resource.getPath();
+                contentId = resource.getContentId();
+                md5 = cache.lookup(path, contentId);
+                if (md5 == null) {
+                    resource.writeTo(buffer);
+                    dataBuffered = true;
+                    md5 = buffer.md5();
+                    cache.add(path, contentId, md5);
+                } else {
+                    dataBuffered = false;
+                }
+                label = module.createLabel(resource, md5);
+                if (write(label, resource, dataBuffered)) {
+                    count++;
+                }
             }
-            label = module.createLabel(resource, md5);
-            if (write(label, resource, dataBuffered)) {
-                count++;
-            }
-        }
-        if (cacheModified) {
-            cache.save();
         }
         return count;
     }

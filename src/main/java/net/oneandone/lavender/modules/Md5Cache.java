@@ -9,7 +9,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Md5Cache {
+public class Md5Cache implements AutoCloseable {
     public static Md5Cache loadOrCreate(FileNode file) throws IOException {
         Md5Cache result;
 
@@ -57,10 +57,12 @@ public class Md5Cache {
 
     private final FileNode file;
     private final List<Entry> entries;
+    private boolean modified;
 
     public Md5Cache(FileNode file) {
         this.file = file;
         this.entries = new ArrayList<>();
+        this.modified = false;
     }
 
     public void add(String path, String contentId, byte[] md5) {
@@ -75,6 +77,7 @@ public class Md5Cache {
             entries.remove(idx);
         }
         entries.add(entry);
+        modified = true;
     }
 
     private int lookup(String path) {
@@ -112,5 +115,13 @@ public class Md5Cache {
             }
         }
         tmp.move(file, true);
+        modified = false;
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (modified) {
+            save();
+        }
     }
 }
