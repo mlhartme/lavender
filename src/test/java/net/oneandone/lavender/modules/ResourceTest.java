@@ -55,9 +55,9 @@ public class ResourceTest {
     }
 
     @Test
-    public void testGetLavendelizedPath() throws IOException {
+    public void testGetLavendelizedPath() {
         assertEquals("852/e7d76cdb8af7395cd039c0ecc293a/folder/close.gif",
-                resource.labelLavendelized("", "folder", null).getLavendelizedPath());
+                resource.labelLavendelized("", "folder", Hex.decode( "852e7d76cdb8af7395cd039c0ecc293a".toCharArray())).getLavendelizedPath());
     }
 
     @Test
