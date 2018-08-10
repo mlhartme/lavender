@@ -17,8 +17,6 @@ package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.index.Hex;
 
-import java.util.Arrays;
-
 public class SvnEntry {
     private static final char SEP = ' ';
     private static final char ESCAPE = '%';

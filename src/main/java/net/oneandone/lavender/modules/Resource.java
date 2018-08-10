@@ -17,12 +17,9 @@ package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.index.Hex;
 import net.oneandone.lavender.index.Label;
-import net.oneandone.sushi.io.Buffer;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public abstract class Resource {
     public abstract String getPath();

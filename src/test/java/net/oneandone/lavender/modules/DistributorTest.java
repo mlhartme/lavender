@@ -15,14 +15,9 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.lavender.index.Index;
-import net.oneandone.sushi.fs.World;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.HashMap;
-
-import static org.junit.Assert.assertEquals;
 
 public class DistributorTest {
     @Test

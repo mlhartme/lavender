@@ -16,8 +16,8 @@
 package net.oneandone.lavender.filter;
 
 import net.oneandone.lavender.config.SystemProperties;
-import net.oneandone.lavender.modules.NodeModule;
 import net.oneandone.lavender.modules.Module;
+import net.oneandone.lavender.modules.NodeModule;
 import net.oneandone.lavender.modules.Resource;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;

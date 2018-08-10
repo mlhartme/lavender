@@ -15,11 +15,9 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.sushi.io.Buffer;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.io.SVNRepository;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 

@@ -15,10 +15,7 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.lavender.index.Util;
-import net.oneandone.sushi.fs.MkfileException;
 import net.oneandone.sushi.fs.Node;
-import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.svn.SvnNode;
 import net.oneandone.sushi.io.LineFormat;
@@ -35,7 +32,6 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
