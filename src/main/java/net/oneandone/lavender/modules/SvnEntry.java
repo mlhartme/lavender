@@ -18,10 +18,10 @@ package net.oneandone.lavender.modules;
 import net.oneandone.lavender.index.Hex;
 
 public class SvnEntry {
-    private static final char SEP = ' ';
-    private static final char ESCAPE = '%';
-    private static final char LF = '\n';
-    private static final int LEN = 1;
+    public static final char SEP = ' ';
+    public static final char ESCAPE = '%';
+    public static final char LF = '\n';
+    public static final int LEN = 1;
 
     // path SEP accessPath SEP revision
     public static SvnEntry parse(String str) {
