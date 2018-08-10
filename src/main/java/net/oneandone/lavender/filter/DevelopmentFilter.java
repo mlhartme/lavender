@@ -193,7 +193,7 @@ public class DevelopmentFilter implements Filter {
             response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
         } else  { 		// first time through - set last modified time to now
             buffer = new ByteArrayOutputStream(1024 * 100);
-            resource.getData(buffer);
+            resource.writeTo(buffer);
             if (withBody) {
                 response.setContentLength(buffer.size());
                 out = response.getOutputStream();

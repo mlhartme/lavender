@@ -43,7 +43,7 @@ public class ResourceTest {
         byte[] data;
 
         buffer = new ByteArrayOutputStream();
-        resource.getData(buffer);
+        resource.writeTo(buffer);
         data = buffer.toByteArray();
         assertNotNull(data);
         assertEquals(6, data.length);
@@ -73,7 +73,7 @@ public class ResourceTest {
         byte[] md5;
 
         buffer = new ByteArrayOutputStream();
-        resource.getData(buffer);
+        resource.writeTo(buffer);
         data = buffer.toByteArray();
         md5 = Util.md5(data);
         assertNotNull(md5);

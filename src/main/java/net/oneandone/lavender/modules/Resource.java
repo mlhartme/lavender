@@ -32,7 +32,7 @@ public abstract class Resource {
     /** for logging purpose */
     public abstract String getOrigin();
 
-    public abstract void getData(OutputStream dest) throws IOException;
+    public abstract void writeTo(OutputStream dest) throws IOException;
 
     public abstract boolean isOutdated();
     

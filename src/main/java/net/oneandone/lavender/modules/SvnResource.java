@@ -60,7 +60,7 @@ public class SvnResource extends Resource {
         return module.uri() + "/" + resourcePath;
     }
 
-    public void getData(OutputStream dest) throws IOException {
+    public void writeTo(OutputStream dest) throws IOException {
         SVNRepository repository;
         long loaded;
 

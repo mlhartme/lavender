@@ -67,7 +67,7 @@ public class NodeResource extends Resource {
         return node.getUri().toString();
     }
 
-    public void getData(OutputStream dest) throws IOException {
+    public void writeTo(OutputStream dest) throws IOException {
         node.copyFileTo(dest);
     }
 }

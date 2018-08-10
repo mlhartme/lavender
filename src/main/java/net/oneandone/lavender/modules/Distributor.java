@@ -116,7 +116,7 @@ public class Distributor {
             contentId = resource.getContentId();
             md5 = cache.lookup(path, contentId);
             if (md5 == null) {
-                resource.getData(buffer);
+                resource.writeTo(buffer);
                 dataBuffered = true;
                 md5 = buffer.md5();
                 cache.add(path, contentId, md5);
@@ -148,7 +148,7 @@ public class Distributor {
             changed = false;
         } else {
             if (!dataBuffered) {
-                resource.getData(buffer);
+                resource.writeTo(buffer);
             }
             if (LOG.isDebugEnabled()) {
                 if (allLabel == null) {
