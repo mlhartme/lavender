@@ -15,9 +15,6 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.lavender.index.Hex;
-import net.oneandone.lavender.index.Label;
-
 import java.io.IOException;
 import java.io.OutputStream;
 
