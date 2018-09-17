@@ -75,54 +75,49 @@ public class SvnModule extends Module<SvnEntry> {
         long nextModifiedModule;
         Map<String, SvnEntry> entries;
 
-        cachedEntries = loadedEntries(); // != null implies that there is a cache file
-        if (cachedEntries == null) {
-            cachedEntries = loadCachedEntriesOpt();
-        }
-        nextModifiedRepository = getRepositoryLastModified();
-        if (nextModifiedRepository != lastModifiedRepository) {
-            nextModifiedModule = getModuleLastModified();
-        } else {
-            nextModifiedModule = lastModifiedModule;
-        }
-
-        if (lastModifiedModule == nextModifiedModule) {
-            if (cachedEntries == null) {
-                throw new IllegalStateException("" + lastModifiedModule);
-            }
-            LOG.info("no changes in repository: " + nextModifiedRepository + " " + nextModifiedModule + " -> using cached entries");
-            return cachedEntries;
-        }
-
-        LOG.info(root.getUri() + ": entries " + lastModifiedModule + " is out-dated, reloading entries for revision " + nextModifiedModule);
         try {
-            entries = loadServerEntries(nextModifiedRepository);
-        } catch (SVNException e) {
-            throw new IOException(e);
+            cachedEntries = loadedEntries(); // != null implies that there is a cache file
+            if (cachedEntries == null) {
+                cachedEntries = loadCachedEntriesOpt();
+            }
+            nextModifiedRepository = getRepositoryLastModified();
+            if (nextModifiedRepository != lastModifiedRepository) {
+                nextModifiedModule = getModuleLastModified();
+            } else {
+                nextModifiedModule = lastModifiedModule;
+            }
+
+            if (lastModifiedModule == nextModifiedModule) {
+                if (cachedEntries == null) {
+                    throw new IllegalStateException("" + lastModifiedModule);
+                }
+                LOG.info("no changes in repository: " + nextModifiedRepository + " " + nextModifiedModule + " -> using cached entries");
+                return cachedEntries;
+            }
+
+            LOG.info(root.getUri() + ": entries " + lastModifiedModule + " is out-dated, reloading entries for revision " + nextModifiedModule);
+                entries = loadServerEntries(nextModifiedRepository);
+            saveCache(entries);
+            lastModifiedRepository = nextModifiedRepository;
+            lastModifiedModule = nextModifiedModule;
+            return entries;
+        } catch (SVNException|IOException e) {
+            throw new IOException("failed to load entries for module '" + getName() + "': " + e.getMessage(), e);
         }
-        saveCache(entries);
-        lastModifiedRepository = nextModifiedRepository;
-        lastModifiedModule = nextModifiedModule;
-        return entries;
     }
 
-    private long getRepositoryLastModified() throws IOException {
-        try {
-            return pinnedRevision == -1 ? root.getRoot().getRepository().getLatestRevision() : pinnedRevision;
-        } catch (SVNException e) {
-            throw new IOException("cannot determine repository's last modified revision: " + e.getMessage(), e);
-        }
+    private long getRepositoryLastModified() throws SVNException {
+        return pinnedRevision == -1 ? root.getRoot().getRepository().getLatestRevision() : pinnedRevision;
     }
 
     /** last modified revision of the modules directory */
-    private long getModuleLastModified() throws IOException {
+    private long getModuleLastModified() throws SVNException {
         final List<SVNDirEntry> result;
 
         if (pinnedRevision != -1) {
             return pinnedRevision;
         }
         result = new ArrayList<>();
-        try {
         root.getRoot().getClientMananger().getLogClient().doList(root.getSvnurl(), null, SVNRevision.create(lastModifiedRepository),
                 false, SVNDepth.EMPTY, SVNDirEntry.DIRENT_ALL, new ISVNDirEntryHandler() {
                     @Override
@@ -130,9 +125,6 @@ public class SvnModule extends Module<SvnEntry> {
                         result.add(dirEntry);
                     }
                 });
-        } catch (SVNException e) {
-            throw new IOException("cannot determine module's last modified revision: " + e.getMessage(), e);
-        }
         if (result.size() != 1) {
             throw new IllegalStateException("" + result.size());
         }
