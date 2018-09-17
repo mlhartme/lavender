@@ -168,7 +168,7 @@ public class SystemProperties {
         FileNode tmp;
         Network result;
 
-        local = lastNetNode();
+        local = lastNetworkNode();
         tmp = Util.newTmpFile(local.getParent());
         world.node(svn).join("network.xml").copyFile(tmp);
         result = Network.load(tmp);
@@ -176,11 +176,11 @@ public class SystemProperties {
         return result;
     }
 
-    public Network loadLastNet() throws IOException {
-        return Network.load(lastNetNode());
+    public Network loadLastNetwork() throws IOException {
+        return Network.load(lastNetworkNode());
     }
 
-    private FileNode lastNetNode() {
+    private FileNode lastNetworkNode() {
         return world.getHome().join(".lavender.network.xml");
     }
 
