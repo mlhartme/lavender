@@ -79,7 +79,7 @@ public class SvnModule extends Module<SvnEntry> {
      * Contains only entries where the md5 sum is known.
      */
     private Map<String, SvnEntry> entries;
-    /** if pinnedRevision == 1: lastModified reported by repository, otherwise pinnedRevision */
+    /** -1 for unknown; otherwise: if pinnedRevision == -1: lastModified reported by repository, otherwise pinnedRevision */
     private long lastModifiedRepository;
     private long lastModifiedModule;
 
@@ -93,8 +93,8 @@ public class SvnModule extends Module<SvnEntry> {
         this.root = root;
         this.pinnedRevision = pinnedRevision;
         this.entries = entries;
+        this.lastModifiedRepository = -1;
         this.lastModifiedModule = lastModifiedModule;
-        this.lastModifiedRepository = 0;
         this.jarConfig = jarConfig;
     }
 
@@ -125,6 +125,7 @@ public class SvnModule extends Module<SvnEntry> {
         return entries;
     }
 
+    /** last modified revision of the modules directory */
     private long getLastModified() throws SVNException {
         final List<SVNDirEntry> result;
 
