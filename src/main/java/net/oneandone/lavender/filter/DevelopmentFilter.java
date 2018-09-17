@@ -195,13 +195,9 @@ public class DevelopmentFilter implements Filter {
             buffer = new ByteArrayOutputStream(1024 * 100);
             resource.writeTo(buffer);
             if (withBody) {
+                response.setBufferSize(4096);
                 response.setContentLength(buffer.size());
                 out = response.getOutputStream();
-                try {
-                    response.setBufferSize(4096);
-                } catch (IllegalStateException e) {
-                    // Silent catch
-                }
                 buffer.writeTo(out);
             }
         }
