@@ -95,7 +95,7 @@ public class SvnModule extends Module<SvnEntry> {
 
             LOG.info(root.getUri() + ": loading entries from server, revision " + lastModifiedModule + " -> " + nextModifiedModule);
                 entries = loadServerEntries(nextModifiedRepository);
-            saveCache(entries);
+            saveCache(entries, nextModifiedModule);
             lastModifiedRepository = nextModifiedRepository;
             lastModifiedModule = nextModifiedModule;
             return entries;
@@ -129,7 +129,7 @@ public class SvnModule extends Module<SvnEntry> {
         return result.get(0).getRevision();
     }
 
-    private void saveCache(Map<String, SvnEntry> entries) throws IOException {
+    private void saveCache(Map<String, SvnEntry> entries, long moduleRevision) throws IOException {
         FileNode parent;
         FileNode tmp;
 
@@ -139,7 +139,7 @@ public class SvnModule extends Module<SvnEntry> {
         parent = cacheFile.getParent();
         tmp = parent.createTempFile();
         try (Writer dest = tmp.newWriter()) {
-            dest.write(Long.toString(lastModifiedModule));
+            dest.write(Long.toString(moduleRevision));
             dest.write('\n');
             for (SvnEntry entry : entries.values()) {
                 dest.write(entry.toString());
