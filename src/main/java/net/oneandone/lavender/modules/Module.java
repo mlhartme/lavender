@@ -26,8 +26,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Contains resources. Can iterate all resources and probe for existing ones. Resources originate from "entries"; the set of
- * all enteries is called "scan"; scans are loaded lazily.
+ * Contains resources. Can iterate all resources and probe for existing ones. Resources originate from "entries", which are
+ * loaded lazily.
  */
 public abstract class Module<T> implements Iterable<Resource> {
     /** currently not used */
@@ -86,11 +86,11 @@ public abstract class Module<T> implements Iterable<Resource> {
 
     //-- scans
 
-    public boolean hasScan() {
+    public boolean hasEntries() {
         return lazyEntries != null;
     }
 
-    /** invalidate scan if it's older than 5 seconds */
+    /** invalidate entries if it's older than 5 seconds */
     public boolean softInvalidateScan() {
         if (System.currentTimeMillis() - lastScan < 5000) {
             return false;
@@ -100,7 +100,7 @@ public abstract class Module<T> implements Iterable<Resource> {
         }
     }
 
-    private Map<String, T> scan() throws IOException {
+    private Map<String, T> entries() throws IOException {
         long started;
 
         if (lazyEntries == null) {
@@ -110,7 +110,7 @@ public abstract class Module<T> implements Iterable<Resource> {
             } catch (RuntimeException e) {
                 throw e;
             } catch (Exception e) {
-                throw new IOException(name + " scan failed: " + e.getMessage(), e);
+                throw new IOException(name + " entries failed: " + e.getMessage(), e);
             }
             LOG.info(name + ": scanned " + lazyEntries.size() + " names in " + (System.currentTimeMillis() - started) + "ms");
             lastScan = System.currentTimeMillis();
@@ -118,7 +118,7 @@ public abstract class Module<T> implements Iterable<Resource> {
         return lazyEntries;
     }
 
-    /** do scan for resource names and possibly data to speedup resource creation */
+    /** do entries for resource names and possibly data to speedup resource creation */
     protected abstract Map<String, T> doScan(Filter filter) throws Exception;
 
     public String matches(String resourcePath) {
@@ -147,7 +147,7 @@ public abstract class Module<T> implements Iterable<Resource> {
         if (path == null) {
             return null;
         }
-        data = scan().get(path);
+        data = entries().get(path);
         return data == null ? null : createResource(resourcePath, data);
     }
 
@@ -155,7 +155,7 @@ public abstract class Module<T> implements Iterable<Resource> {
         final Iterator<Map.Entry<String, T>> base;
 
         try {
-            base = scan().entrySet().iterator();
+            base = entries().entrySet().iterator();
         } catch (IOException e) {
             throw new RuntimeException("TODO", e);
         }
