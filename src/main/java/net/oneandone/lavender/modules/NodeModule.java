@@ -113,7 +113,7 @@ public abstract class NodeModule extends Module<Node> {
             filter = lp == null ? ModuleProperties.defaultFilter() : lp.filter;
             jarModule = new NodeModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
                 @Override
-                protected Map<String, Node> loadEntries(Filter filter) throws IOException {
+                protected Map<String, Node> loadEntries() throws IOException {
                     return files(filter, config, jarLive);
                 }
             };
@@ -190,7 +190,7 @@ public abstract class NodeModule extends Module<Node> {
             name = selector.string(root, "project/name");
             return new NodeModule(Module.TYPE, name, true, "", "", filter) {
                 @Override
-                protected Map<String, Node> loadEntries(Filter filter) throws IOException {
+                protected Map<String, Node> loadEntries() throws IOException {
                     return scanExploded(config, filter, webapp);
                 }
             };
@@ -280,7 +280,7 @@ public abstract class NodeModule extends Module<Node> {
             }
         }
         return new Object[] { new NodeModule(type, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
-            public Map<String, Node> loadEntries(Filter filter) {
+            public Map<String, Node> loadEntries() {
                 // no need to re-loadEntries files from memory
                 return files;
             }

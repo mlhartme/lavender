@@ -88,7 +88,7 @@ public class SvnProperties {
 
                 return new NodeModule(type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter) {
                     @Override
-                    protected Map<String, Node> loadEntries(final Filter filter) throws Exception {
+                    protected Map<String, Node> loadEntries() throws Exception {
                         Filter f;
                         final Map<String, Node> result;
 

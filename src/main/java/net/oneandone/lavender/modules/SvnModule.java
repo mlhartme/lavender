@@ -102,7 +102,7 @@ public class SvnModule extends Module<SvnEntry> {
         return root;
     }
 
-    protected Map<String, SvnEntry> loadEntries(final Filter filter) throws SVNException {
+    protected Map<String, SvnEntry> loadEntries() throws SVNException {
         SVNRepository repository;
         long modifiedRepository;
         long modifiedModule;
@@ -120,7 +120,7 @@ public class SvnModule extends Module<SvnEntry> {
             return entries;
         }
         LOG.info(root.getUri() + ": entries " + lastModifiedModule + " is out-dated, reloading entries for revision " + modifiedModule);
-        entries = loadSvnEntries(filter);
+        entries = loadSvnEntries();
         lastModifiedModule = modifiedModule;
         return entries;
     }
@@ -145,9 +145,11 @@ public class SvnModule extends Module<SvnEntry> {
         return result.get(0).getRevision();
     }
 
-    protected Map<String, SvnEntry> loadSvnEntries(final Filter filter) throws SVNException {
+    protected Map<String, SvnEntry> loadSvnEntries() throws SVNException {
+        final Filter filter;
         final Map<String, SvnEntry> newEntries;
 
+        filter = getFilter();
         newEntries = new HashMap<>();
         root.getRoot().getClientMananger().getLogClient().doList(
                 root.getSvnurl(), null, SVNRevision.create(lastModifiedRepository), false, SVNDepth.INFINITY,

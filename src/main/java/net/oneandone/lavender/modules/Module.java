@@ -107,7 +107,7 @@ public abstract class Module<T> implements Iterable<Resource> {
         if (lazyEntries == null) {
             started = System.currentTimeMillis();
             try {
-                lazyEntries = loadEntries(filter);
+                lazyEntries = loadEntries();
             } catch (RuntimeException e) {
                 throw e;
             } catch (Exception e) {
@@ -119,7 +119,12 @@ public abstract class Module<T> implements Iterable<Resource> {
         return lazyEntries;
     }
 
-    protected abstract Map<String, T> loadEntries(Filter filter) throws Exception;
+    public Filter getFilter() {
+        return filter;
+    }
+
+    /** @return all entries that match the module's filter */
+    protected abstract Map<String, T> loadEntries() throws Exception;
 
     public String matches(String resourcePath) {
         String path;

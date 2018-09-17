@@ -73,7 +73,7 @@ public class File extends Base {
         filter.predicate(Predicate.FILE);
         module = new NodeModule(Module.TYPE, indexName, false, "", prefix, filter) {
             @Override
-            protected Map<String, Node> loadEntries(Filter filter) throws Exception {
+            protected Map<String, Node> loadEntries() throws Exception {
                 Map<String, Node> result;
 
                 result = new HashMap<>();

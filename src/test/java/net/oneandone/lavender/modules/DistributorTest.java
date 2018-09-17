@@ -41,11 +41,11 @@ public class DistributorTest {
         dir = world.guessProjectHome(getClass()).join("src/test/module");
         module = new NodeModule(Module.TYPE, "foo", true, "", "", world.filter().includeAll()) {
             @Override
-            protected Map<String, Node> loadEntries(Filter filter) throws Exception {
+            protected Map<String, Node> loadEntries() throws Exception {
                 Map<String, Node> result;
 
                 result = new HashMap<>();
-                for (Node node : dir.find(filter)) {
+                for (Node node : dir.find(getFilter())) {
                     result.put(node.getRelative(dir), node);
                 }
                 return result;
