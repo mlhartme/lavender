@@ -2,21 +2,24 @@
 
 ### 2.7.0 (pending)
 
-* api
-  * Resource class cleanup
-    * getContentId replaces getLastModified
-    * NodeResource replaces DefaultResource 
-  * moved Distributor class from `index` to `modules` module to  
-
-* changed svn entry cache: dumped md5, size and last modified fields; svn caches entries now reside under <cachdir>/svn
+* caching:
+  * introduced md5 cache maintained by Distributor for all modules
+  * changed svn entry cache: dumped md5, size and last modified fields; svn caches entries now reside under <cachdir>/svn
 
 * DevelopmentFilter
   * use etags only (based on Resource.getContentId), last-modified header is gone
-       
+
+* api
+  * Resource class cleanup
+    * getContentId replaces getLastModified
+    * NodeResource replaces DefaultResource
+  * moved Distributor class from `index` to `modules` module to
+
 * cli
-  * simplified 'war' command line, it's just "war cluster docroot index" now
-  * simplified 'svn' command: -type option is now a mandatory argument 'docroot', passed after the cluster
-  * simplified 'file' command
+  * simplified command line by aligning the arguments passed to the various publishing commands:
+    * 'war': it's just `war cluster docroot index` now
+    * 'svn': it's just `directory cluster docroot` now
+    * 'file': mandatory argument are now `archive cluster docroot index`
   * remove connection locks on ctrl-c (via shutdown hook)
   * remove cache lock on ctrl-c (via deleteAtExit)
  
@@ -26,11 +29,12 @@
 
 * configuration cleanup
   * renamed net.xml to network.xml
-  * renamed docroot type to docroot name
-  * renamed docroot docroot to docroot documents
-  * merge alises into docroot
+  * in network.xml
+    * renamed docroot type to docroot name
+    * renamed docroot docroot to docroot documents
+    * merge aliases into docroot
   
-* lock files now container user, machine and command being executed
+* lock files now contain user, machine and command being executed
 
 * dependency update: 
   * sushi 3.1.6 to 3.1.7

@@ -132,47 +132,45 @@ public class Distributor {
         return count;
     }
 
+    /** @return true if resource was written, false if it's already in the all index */
     public boolean write(Label label, Resource resource, boolean dataBuffered) throws IOException {
         Node dest;
         String destPath;
         Label allLabel;
-        boolean changed;
         Node tmp;
 
+        next.add(label);
         destPath = label.getLavendelizedPath();
         allLabel = all.lookup(destPath);
         if (allLabel != null && Arrays.equals(allLabel.md5(), label.md5())) {
-            changed = false;
-        } else {
-            if (!dataBuffered) {
-                resource.writeTo(buffer);
-            }
-            if (LOG.isDebugEnabled()) {
-                if (allLabel == null) {
-                    LOG.debug("A " + destPath);
-                } else {
-                    LOG.debug("U " + destPath);
-                }
-            }
-            for (Node destroot : targets.values()) {
-                dest = destroot.join(destPath);
-                if (allLabel == null) {
-                    dest.getParent().mkdirsOpt();
-                    try (OutputStream out = dest.newOutputStream()) {
-                        buffer.writeTo(out);
-                    }
-                } else {
-                    tmp = dest.getParent().join(".atomicUpdate");
-                    try (OutputStream out = tmp.newOutputStream()) {
-                        buffer.writeTo(out);
-                    }
-                    tmp.move(dest, true);
-                }
-            }
-            changed = true;
+            return false;
         }
-        next.add(label);
-        return changed;
+        if (!dataBuffered) {
+            resource.writeTo(buffer);
+        }
+        if (LOG.isDebugEnabled()) {
+            if (allLabel == null) {
+                LOG.debug("A " + destPath);
+            } else {
+                LOG.debug("U " + destPath);
+            }
+        }
+        for (Node destroot : targets.values()) {
+            dest = destroot.join(destPath);
+            if (allLabel == null) {
+                dest.getParent().mkdirsOpt();
+                try (OutputStream out = dest.newOutputStream()) {
+                    buffer.writeTo(out);
+                }
+            } else {
+                tmp = dest.getParent().join(".atomicUpdate");
+                try (OutputStream out = tmp.newOutputStream()) {
+                    buffer.writeTo(out);
+                }
+                tmp.move(dest, true);
+            }
+        }
+        return true;
     }
 
 
