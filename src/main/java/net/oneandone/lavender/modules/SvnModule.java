@@ -89,11 +89,11 @@ public class SvnModule extends Module<SvnEntry> {
                 if (cachedEntries == null) {
                     throw new IllegalStateException("" + lastModifiedModule);
                 }
-                LOG.info("no changes in repository: " + nextModifiedRepository + " " + nextModifiedModule + " -> using cached entries");
+                LOG.info("no changes in repository: " + lastModifiedRepository + " " + lastModifiedModule + " -> using cached entries");
                 return cachedEntries;
             }
 
-            LOG.info(root.getUri() + ": entries " + lastModifiedModule + " is out-dated, reloading entries for revision " + nextModifiedModule);
+            LOG.info(root.getUri() + ": loading entries from server, revision " + lastModifiedModule + " -> " + nextModifiedModule);
                 entries = loadServerEntries(nextModifiedRepository);
             saveCache(entries);
             lastModifiedRepository = nextModifiedRepository;
@@ -130,7 +130,15 @@ public class SvnModule extends Module<SvnEntry> {
     }
 
     private void saveCache(Map<String, SvnEntry> entries) throws IOException {
-        try (Writer dest = cacheFile.newWriter()) {
+        FileNode parent;
+        FileNode tmp;
+
+        // first write to a temp file, then move it (which is atomic) because
+        // * no corruption by crashed/killed processes
+        // * works for multiple users as long as the cache directory has the proper permissions
+        parent = cacheFile.getParent();
+        tmp = parent.createTempFile();
+        try (Writer dest = tmp.newWriter()) {
             dest.write(Long.toString(lastModifiedModule));
             dest.write('\n');
             for (SvnEntry entry : entries.values()) {
@@ -138,6 +146,7 @@ public class SvnModule extends Module<SvnEntry> {
                 dest.write('\n');
             }
         }
+        tmp.move(cacheFile, true);
     }
 
     /** null if no cache exists */
