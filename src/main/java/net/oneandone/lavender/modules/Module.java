@@ -26,8 +26,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Contains resources. Can iterate all resources and probe for existing ones. Resources orginate from "entries", that
- * are loaded lazyly.
+ * Contains resources. Can iterate all resources and probe for existing ones. Resources originate from "entries"; the set of
+ * all enteries is called "scan"; scans are loaded lazily.
  */
 public abstract class Module<T> implements Iterable<Resource> {
     /** currently not used */
@@ -35,20 +35,20 @@ public abstract class Module<T> implements Iterable<Resource> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Module.class);
 
-    /** currently not used; might be used again in the future if we want to publish different types do different clusters/docroots */
+    /** currently not used; might be used again in the future if we want to publish different types to different clusters/docroots */
     private final String type;
     private final String name;
     private final boolean lavendelize;
 
     private final String resourcePathPrefix;
 
-    /** Where to write resources when publishing. Used for flash publishing to add the application name. */
+    /** Where to write resources when publishing. */
     private final String targetPathPrefix;
 
     private final Filter filter;
 
     /** maps resource names for module specific data for this resource; this data is typically used to instantiated resources */
-    private Map<String, T> lazyScan;
+    private Map<String, T> lazyEntries;
 
     private long lastScan;
 
@@ -59,7 +59,7 @@ public abstract class Module<T> implements Iterable<Resource> {
         this.resourcePathPrefix = resourcePathPrefix;
         this.targetPathPrefix = targetPathPrefix;
         this.filter = filter;
-        this.lazyScan = null;
+        this.lazyEntries = null;
     }
 
     //--
@@ -87,7 +87,7 @@ public abstract class Module<T> implements Iterable<Resource> {
     //-- scans
 
     public boolean hasScan() {
-        return lazyScan != null;
+        return lazyEntries != null;
     }
 
     /** invalidate scan if it's older than 5 seconds */
@@ -95,7 +95,7 @@ public abstract class Module<T> implements Iterable<Resource> {
         if (System.currentTimeMillis() - lastScan < 5000) {
             return false;
         } else {
-            lazyScan = null;
+            lazyEntries = null;
             return true;
         }
     }
@@ -103,20 +103,23 @@ public abstract class Module<T> implements Iterable<Resource> {
     private Map<String, T> scan() throws IOException {
         long started;
 
-        if (lazyScan == null) {
+        if (lazyEntries == null) {
             started = System.currentTimeMillis();
             try {
-                lazyScan = doScan(filter);
+                lazyEntries = doScan(filter);
             } catch (RuntimeException e) {
                 throw e;
             } catch (Exception e) {
                 throw new IOException(name + " scan failed: " + e.getMessage(), e);
             }
-            LOG.info(name + ": scanned " + lazyScan.size() + " names in " + (System.currentTimeMillis() - started) + "ms");
+            LOG.info(name + ": scanned " + lazyEntries.size() + " names in " + (System.currentTimeMillis() - started) + "ms");
             lastScan = System.currentTimeMillis();
         }
-        return lazyScan;
+        return lazyEntries;
     }
+
+    /** do scan for resource names and possibly data to speedup resource creation */
+    protected abstract Map<String, T> doScan(Filter filter) throws Exception;
 
     public String matches(String resourcePath) {
         String path;
@@ -130,9 +133,6 @@ public abstract class Module<T> implements Iterable<Resource> {
         }
         return path;
     }
-
-    /** do scan for resource names and possibly data to speedup resource creation */
-    protected abstract Map<String, T> doScan(Filter filter) throws Exception;
 
     //-- resources
 

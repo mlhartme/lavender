@@ -54,11 +54,7 @@ public class SvnModule extends Module<SvnEntry> {
                 line = lines.next();
                 if (line != null) {
                     lastModifiedModule = Long.parseLong(line);
-                    while (true) {
-                        line = lines.next();
-                        if (line == null) {
-                            break;
-                        }
+                    while ((line = lines.next()) != null) {
                         try {
                             entry = SvnEntry.parse(line);
                         } catch (RuntimeException e) {
@@ -69,7 +65,7 @@ public class SvnModule extends Module<SvnEntry> {
                 }
             }
         }
-        return new SvnModule(type, name, cacheFile, entries, lastModifiedModule, root, pinnedRevision, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
+        return new SvnModule(type, name, entries, lastModifiedModule, root, pinnedRevision, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(SvnModule.class);
@@ -83,7 +79,6 @@ public class SvnModule extends Module<SvnEntry> {
      * Contains only entries where the md5 sum is known.
      */
     private Map<String, SvnEntry> entries;
-    private final Node indexFile;
     /** if pinnedRevision == 1: lastModified reported by repository, otherwise pinnedRevision */
     private long lastModifiedRepository;
     private long lastModifiedModule;
@@ -91,13 +86,12 @@ public class SvnModule extends Module<SvnEntry> {
     /** may be null */
     private final JarConfig jarConfig;
 
-    public SvnModule(String type, String name, Node indexFile, Map<String, SvnEntry> entries, long lastModifiedModule, SvnNode root,
+    public SvnModule(String type, String name, Map<String, SvnEntry> entries, long lastModifiedModule, SvnNode root,
                      long pinnedRevision, boolean lavendelize, String resourcePathPrefix,
                      String targetPathPrefix, Filter filter, JarConfig jarConfig) {
         super(type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
         this.root = root;
         this.pinnedRevision = pinnedRevision;
-        this.indexFile = indexFile;
         this.entries = entries;
         this.lastModifiedModule = lastModifiedModule;
         this.lastModifiedRepository = 0;
@@ -122,10 +116,10 @@ public class SvnModule extends Module<SvnEntry> {
         lastModifiedRepository = modifiedRepository;
         modifiedModule = getLastModified();
         if (modifiedModule == lastModifiedModule) {
-            LOG.info(root.getUri() + ": re-using doScan for revision " + modifiedModule);
+            LOG.info(root.getUri() + ": re-using entries for revision " + modifiedModule);
             return entries;
         }
-        LOG.info(root.getUri() + ": doScan " + lastModifiedModule + " is out-dated, rescanning revision " + modifiedModule);
+        LOG.info(root.getUri() + ": entries " + lastModifiedModule + " is out-dated, rescanning revision " + modifiedModule);
         entries = doSvnScan(filter);
         lastModifiedModule = modifiedModule;
         return entries;
