@@ -103,13 +103,11 @@ public class Distributor {
         String contentId;
         Label label;
         long count;
-        String name;
         byte[] md5;
         boolean dataBuffered;
 
         count = 0;
-        name = module.getName();
-        try (Md5Cache cache = Md5Cache.loadOrCreate(cacheroot.join("md5", name + ".cache"))) {
+        try (Md5Cache cache = Md5Cache.loadOrCreate(cacheroot.join("md5", module.getName() + ".cache"))) {
             for (Resource resource : module) {
                 buffer.reset();
                 path = resource.getPath();

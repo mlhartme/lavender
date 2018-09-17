@@ -37,6 +37,7 @@ public abstract class Module<T> implements Iterable<Resource> {
 
     /** currently not used; might be used again in the future if we want to publish different types to different clusters/docroots */
     private final String type;
+    /** usually Maven coordinates without version; used to name md5 cache files */
     private final String name;
     private final boolean lavendelize;
 
@@ -118,7 +119,6 @@ public abstract class Module<T> implements Iterable<Resource> {
         return lazyEntries;
     }
 
-    /** do entries for resource names and possibly data to speedup resource creation */
     protected abstract Map<String, T> loadEntries(Filter filter) throws Exception;
 
     public String matches(String resourcePath) {
