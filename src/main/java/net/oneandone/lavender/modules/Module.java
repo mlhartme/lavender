@@ -86,12 +86,12 @@ public abstract class Module<T> implements Iterable<Resource> {
 
     //-- scans
 
-    public boolean hasEntries() {
+    public boolean entriesLoaded() {
         return lazyEntries != null;
     }
 
     /** invalidate entries if it's older than 5 seconds */
-    public boolean softInvalidateScan() {
+    public boolean softInvalidateEntries() {
         if (System.currentTimeMillis() - lastScan < 5000) {
             return false;
         } else {
@@ -106,7 +106,7 @@ public abstract class Module<T> implements Iterable<Resource> {
         if (lazyEntries == null) {
             started = System.currentTimeMillis();
             try {
-                lazyEntries = doScan(filter);
+                lazyEntries = loadEntries(filter);
             } catch (RuntimeException e) {
                 throw e;
             } catch (Exception e) {
@@ -119,7 +119,7 @@ public abstract class Module<T> implements Iterable<Resource> {
     }
 
     /** do entries for resource names and possibly data to speedup resource creation */
-    protected abstract Map<String, T> doScan(Filter filter) throws Exception;
+    protected abstract Map<String, T> loadEntries(Filter filter) throws Exception;
 
     public String matches(String resourcePath) {
         String path;

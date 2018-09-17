@@ -149,7 +149,7 @@ public class DevelopmentFilter implements Filter {
 
         // lookup cached stuff first
         for (Module module : modules) {
-            if (module.hasEntries()) {
+            if (module.entriesLoaded()) {
                 resource = module.probe(resourcePath);
                 if (resource != null) {
                     if (resource.isOutdated()) {
@@ -162,7 +162,7 @@ public class DevelopmentFilter implements Filter {
         }
         for (Module module : modules) {
             if (module.matches(resourcePath) != null) {
-                module.softInvalidateScan();
+                module.softInvalidateEntries();
                 resource = module.probe(resourcePath);
                 if (resource != null) {
                     return resource;

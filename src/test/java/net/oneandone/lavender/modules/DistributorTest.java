@@ -41,7 +41,7 @@ public class DistributorTest {
         dir = world.guessProjectHome(getClass()).join("src/test/module");
         module = new NodeModule(Module.TYPE, "foo", true, "", "", world.filter().includeAll()) {
             @Override
-            protected Map<String, Node> doScan(Filter filter) throws Exception {
+            protected Map<String, Node> loadEntries(Filter filter) throws Exception {
                 Map<String, Node> result;
 
                 result = new HashMap<>();
