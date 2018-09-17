@@ -8,7 +8,7 @@
     * NodeResource replaces DefaultResource 
   * moved Distributor class from `index` to `modules` module to  
 
-* cached svn entry cache: dumped md5, size and last modified fields; svn caches entries now reside under <cachdir>/svn
+* changed svn entry cache: dumped md5, size and last modified fields; svn caches entries now reside under <cachdir>/svn
 
 * DevelopmentFilter
   * use etags only (based on Resource.getContentId), last-modified header is gone
