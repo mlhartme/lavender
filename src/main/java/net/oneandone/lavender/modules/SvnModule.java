@@ -15,7 +15,6 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.svn.SvnNode;
@@ -28,7 +27,6 @@ import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
-import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 import java.io.IOException;
@@ -36,7 +34,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.*;
 
-/** Extracts resources from svn */
+/** Extracts resources from svn. TODO: module cache is not invalidated if the filter configuration is changed. */
 public class SvnModule extends Module<SvnEntry> {
     private static final Logger LOG = LoggerFactory.getLogger(SvnModule.class);
 
