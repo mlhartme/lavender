@@ -16,6 +16,7 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.sushi.fs.Node;
+import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.svn.SvnNode;
 import net.oneandone.sushi.io.LineFormat;
@@ -32,53 +33,19 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.Writer;
+import java.util.*;
 
 /** Extracts resources from svn */
 public class SvnModule extends Module<SvnEntry> {
-    public static SvnModule create(String type, String name, Node cacheFile, SvnNode root, long pinnedRevision, boolean lavendelize, String resourcePathPrefix,
-                     String targetPathPrefix, Filter filter, JarConfig jarConfig) throws IOException {
-        Map<String, SvnEntry> entries;
-        long lastModifiedModule;
-        String line;
-        SvnEntry entry;
-
-        entries = new HashMap<>();
-        lastModifiedModule = 0;
-        if (cacheFile.exists()) {
-            try (Reader reader = cacheFile.newReader();
-                 LineReader lines = new LineReader(reader, new LineFormat(LineFormat.LF_SEPARATOR, LineFormat.Trim.ALL))) {
-                line = lines.next();
-                if (line != null) {
-                    lastModifiedModule = Long.parseLong(line);
-                    while ((line = lines.next()) != null) {
-                        try {
-                            entry = SvnEntry.parse(line);
-                        } catch (RuntimeException e) {
-                            throw new RuntimeException(cacheFile + ": failed to parse cache line '" + line + "': " + e.getMessage(), e);
-                        }
-                        entries.put(entry.publicPath, entry);
-                    }
-                }
-            }
-        }
-        return new SvnModule(type, name, entries, lastModifiedModule, root, pinnedRevision, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
-    }
-
     private static final Logger LOG = LoggerFactory.getLogger(SvnModule.class);
+
+    private final FileNode cacheFile;
 
     private final SvnNode root;
     /** Revision you want to pin this module to, -1 for no pinning */
     private final long pinnedRevision;
 
-    /**
-     * Maps svn paths (relative to root (i.e. without modulePrefix), with jarConfig applied) to revision numbers and md5 hashes.
-     * Contains only entries where the md5 sum is known.
-     */
-    private Map<String, SvnEntry> entries;
     /** -1 for unknown; otherwise: if pinnedRevision == -1: lastModified reported by repository, otherwise pinnedRevision */
     private long lastModifiedRepository;
     private long lastModifiedModule;
@@ -86,15 +53,15 @@ public class SvnModule extends Module<SvnEntry> {
     /** may be null */
     private final JarConfig jarConfig;
 
-    public SvnModule(String type, String name, Map<String, SvnEntry> entries, long lastModifiedModule, SvnNode root,
+    public SvnModule(String type, String name, FileNode cacheFile, SvnNode root,
                      long pinnedRevision, boolean lavendelize, String resourcePathPrefix,
                      String targetPathPrefix, Filter filter, JarConfig jarConfig) {
         super(type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
+        this.cacheFile = cacheFile;
         this.root = root;
         this.pinnedRevision = pinnedRevision;
-        this.entries = entries;
         this.lastModifiedRepository = -1;
-        this.lastModifiedModule = lastModifiedModule;
+        this.lastModifiedModule = -1;
         this.jarConfig = jarConfig;
     }
 
@@ -102,37 +69,60 @@ public class SvnModule extends Module<SvnEntry> {
         return root;
     }
 
-    protected Map<String, SvnEntry> loadEntries() throws SVNException {
-        SVNRepository repository;
-        long modifiedRepository;
-        long modifiedModule;
+    protected Map<String, SvnEntry> loadEntries() throws IOException {
+        Map<String, SvnEntry> cachedEntries;
+        long nextModifiedRepository;
+        long nextModifiedModule;
+        Map<String, SvnEntry> entries;
 
-        repository = root.getRoot().getRepository();
-        modifiedRepository = pinnedRevision == -1 ? repository.getLatestRevision() : pinnedRevision;
-        if (modifiedRepository == lastModifiedRepository) {
-            LOG.info("no changes in repository: " + modifiedRepository);
-            return entries;
+        cachedEntries = loadedEntries(); // != null implies that there is a cache file
+        if (cachedEntries == null) {
+            cachedEntries = loadCachedEntriesOpt();
         }
-        lastModifiedRepository = modifiedRepository;
-        modifiedModule = getLastModified();
-        if (modifiedModule == lastModifiedModule) {
-            LOG.info(root.getUri() + ": re-using entries for revision " + modifiedModule);
-            return entries;
+        nextModifiedRepository = getRepositoryLastModified();
+        if (nextModifiedRepository != lastModifiedRepository) {
+            nextModifiedModule = getModuleLastModified();
+        } else {
+            nextModifiedModule = lastModifiedModule;
         }
-        LOG.info(root.getUri() + ": entries " + lastModifiedModule + " is out-dated, reloading entries for revision " + modifiedModule);
-        entries = loadSvnEntries();
-        lastModifiedModule = modifiedModule;
+
+        if (lastModifiedModule == nextModifiedModule) {
+            if (cachedEntries == null) {
+                throw new IllegalStateException("" + lastModifiedModule);
+            }
+            LOG.info("no changes in repository: " + nextModifiedRepository + " " + nextModifiedModule + " -> using cached entries");
+            return cachedEntries;
+        }
+
+        LOG.info(root.getUri() + ": entries " + lastModifiedModule + " is out-dated, reloading entries for revision " + nextModifiedModule);
+        try {
+            entries = loadServerEntries(nextModifiedRepository);
+        } catch (SVNException e) {
+            throw new IOException(e);
+        }
+        saveCache(entries);
+        lastModifiedRepository = nextModifiedRepository;
+        lastModifiedModule = nextModifiedModule;
         return entries;
     }
 
+    private long getRepositoryLastModified() throws IOException {
+        try {
+            return pinnedRevision == -1 ? root.getRoot().getRepository().getLatestRevision() : pinnedRevision;
+        } catch (SVNException e) {
+            throw new IOException("cannot determine repository's last modified revision: " + e.getMessage(), e);
+        }
+    }
+
     /** last modified revision of the modules directory */
-    private long getLastModified() throws SVNException {
+    private long getModuleLastModified() throws IOException {
         final List<SVNDirEntry> result;
 
         if (pinnedRevision != -1) {
             return pinnedRevision;
         }
         result = new ArrayList<>();
+        try {
         root.getRoot().getClientMananger().getLogClient().doList(root.getSvnurl(), null, SVNRevision.create(lastModifiedRepository),
                 false, SVNDepth.EMPTY, SVNDirEntry.DIRENT_ALL, new ISVNDirEntryHandler() {
                     @Override
@@ -140,27 +130,68 @@ public class SvnModule extends Module<SvnEntry> {
                         result.add(dirEntry);
                     }
                 });
+        } catch (SVNException e) {
+            throw new IOException("cannot determine module's last modified revision: " + e.getMessage(), e);
+        }
         if (result.size() != 1) {
             throw new IllegalStateException("" + result.size());
         }
         return result.get(0).getRevision();
     }
 
-    protected Map<String, SvnEntry> loadSvnEntries() throws SVNException {
+    private void saveCache(Map<String, SvnEntry> entries) throws IOException {
+        try (Writer dest = cacheFile.newWriter()) {
+            dest.write(Long.toString(lastModifiedModule));
+            dest.write('\n');
+            for (SvnEntry entry : entries.values()) {
+                dest.write(entry.toString());
+                dest.write('\n');
+            }
+        }
+    }
+
+    /** null if no cache exists */
+    private Map<String, SvnEntry> loadCachedEntriesOpt() throws IOException {
+        Map<String, SvnEntry> entries;
+        String line;
+        SvnEntry entry;
+
+        if (!cacheFile.exists()) {
+            return null;
+        }
+        entries = new TreeMap<>();
+        try (Reader reader = cacheFile.newReader();
+             LineReader lines = new LineReader(reader, new LineFormat(LineFormat.LF_SEPARATOR, LineFormat.Trim.ALL))) {
+            line = lines.next();
+            if (line != null) {
+                lastModifiedModule = Long.parseLong(line);
+                while ((line = lines.next()) != null) {
+                    try {
+                        entry = SvnEntry.parse(line);
+                    } catch (RuntimeException e) {
+                        throw new RuntimeException(cacheFile + ": failed to parse cache line '" + line + "': " + e.getMessage(), e);
+                    }
+                    entries.put(entry.publicPath, entry);
+                }
+            }
+        }
+        return entries;
+    }
+
+    private Map<String, SvnEntry> loadServerEntries(long revision) throws SVNException {
         final Filter filter;
-        final Map<String, SvnEntry> newEntries;
+        final Map<String, SvnEntry> entries;
 
         filter = getFilter();
-        newEntries = new HashMap<>();
+        entries = new TreeMap<>();
         root.getRoot().getClientMananger().getLogClient().doList(
-                root.getSvnurl(), null, SVNRevision.create(lastModifiedRepository), false, SVNDepth.INFINITY,
+                root.getSvnurl(), null, SVNRevision.create(revision), false, SVNDepth.INFINITY,
                 SVNDirEntry.DIRENT_KIND + SVNDirEntry.DIRENT_SIZE + SVNDirEntry.DIRENT_TIME + SVNDirEntry.DIRENT_CREATED_REVISION,
                 new ISVNDirEntryHandler() {
             @Override
             public void handleDirEntry(SVNDirEntry entry) {
                 String accessPath;
                 String publicPath;
-                SvnEntry old;
 
                 if (entry.getKind() == SVNNodeKind.FILE) {
                     accessPath = entry.getRelativePath();
@@ -174,18 +205,13 @@ public class SvnModule extends Module<SvnEntry> {
                             if (entry.getSize() > Integer.MAX_VALUE) {
                                 throw new UnsupportedOperationException("file too big: " + publicPath + " " + entry.getSize());
                             }
-                            old = entries.get(publicPath);
-                            if (old != null && entry.getRevision() == old.revision) {
-                                newEntries.put(publicPath, old);
-                            } else {
-                                newEntries.put(publicPath, new SvnEntry(publicPath, accessPath, entry.getRevision()));
-                            }
+                            entries.put(publicPath, new SvnEntry(publicPath, accessPath, entry.getRevision()));
                         }
                     }
                 }
             }
         });
-        return newEntries;
+        return entries;
     }
 
     @Override

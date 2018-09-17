@@ -87,7 +87,7 @@ public abstract class Module<T> implements Iterable<Resource> {
 
     //-- scans
 
-    public Map<String, ?> loadedEntries() {
+    public Map<String, T> loadedEntries() {
         return lazyEntries;
     }
 

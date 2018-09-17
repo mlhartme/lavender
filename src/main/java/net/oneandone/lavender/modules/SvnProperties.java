@@ -141,7 +141,7 @@ public class SvnProperties {
             idxName = Strings.removeLeftOpt(idxName, ".");
             // CAUTION: place all files directly in the configured cache directory - sub directories would cause permission problems
             cache = cacheDir.join("svn", root.getRoot().getRepository().getRepositoryRoot(false).getHost() + "_" + idxName);
-            return SvnModule.create(type, name, cache, root, pinnedRevision, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
+            return new SvnModule(type, name, cache, root, pinnedRevision, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
         } catch (RuntimeException | IOException e) {
             throw e;
         } catch (Exception e) {
