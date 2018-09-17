@@ -24,6 +24,7 @@ import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.filter.Predicate;
+import net.oneandone.sushi.util.Separator;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -40,13 +41,18 @@ public class LavenderIT {
      */
     @Test
     public void war() throws Exception {
-        String warFile = ClassLoader.getSystemResource("app-example-1.0.0.war").getFile();
-        check("warFile", warFile, "39c34e3d6170d1cbc49eb625f18f4825");
+        String war;
+
+        war = ClassLoader.getSystemResource("app-example-1.0.0.war").getFile();
+        check("warFile", war,
+                "000/9b558886168ec46264166244d9971/app-example/vi-ui.png:0009b558886168ec46264166244d9971\n" +
+                "fa5/4e8a567edb3216a6d4133712a2c00/jar-module/vi-oneandone-presenter.png:fa54e8a567edb3216a6d4133712a2c00");
     }
 
     private static final String INDEX_NAME = "indexfilefortests.idx";
 
     public void check(String name, String warFile, String expected) throws Exception {
+        boolean withSsh = false;
         Globals globals;
         SystemProperties properties;
         World world;
@@ -57,25 +63,22 @@ public class LavenderIT {
         long started;
         Network net;
 
-        boolean withSsh = false;
         world = World.create(withSsh);
+        target = world.guessProjectHome(getClass()).join("target");
         properties = SystemProperties.load(world.file("test.properties.sample"), withSsh);
+        properties.initTemp(target.join("ittemp"));
         System.out.println(name + " started: ");
         src = world.file(warFile);
         war = world.getTemp().createTempFile();
         src.copyFile(war);
-        target = world.guessProjectHome(getClass()).join("target");
-        testhosts = target.join("it", name);
-        testhosts.deleteTreeOpt();
-        testhosts.mkdirs();
-        started = System.currentTimeMillis();
+        testhosts = target.join("it", name).deleteTreeOpt().mkdirs();
         net = net(testhosts);
-        properties.initTemp(target.join("ittemp"));
+        started = System.currentTimeMillis();
         globals = new Globals(world, Console.create(), new Main.Commandline("lavenderit"), false, "nouser", false, 600, properties, net);
         assertEquals(0, Main.doMain(globals, "-e", "war", war.getAbsolute(), "test", "web", INDEX_NAME));
         System.out.println(name + " done: " + (System.currentTimeMillis() - started) + " ms");
         for (FileNode host : testhosts.list()) {
-            assertEquals(expected, md5(host.join("htdocs")));
+            assertEquals(expected, entries(host.join("htdocs")));
         }
         // tmp space on pearls is very restricted
         war.deleteFile();
@@ -95,11 +98,10 @@ public class LavenderIT {
         return net;
     }
 
-    private String md5(Node<?> directory) throws IOException {
+    private String entries(Node<?> directory) throws IOException {
         World world;
         Filter filter;
         List<String> entries;
-        Node tmp;
         String md5;
 
         world = directory.getWorld();
@@ -114,10 +116,9 @@ public class LavenderIT {
             } else {
                 md5 = file.md5();
             }
-            entries.add(file.getRelative(directory) + ':' + md5 + '\n');
+            entries.add(file.getRelative(directory) + ':' + md5);
         }
         Collections.sort(entries); // because it runs on different filesystems
-        tmp = world.memoryNode();
-        return tmp.writeLines(entries).md5();
+        return Separator.RAW_LINE.join(entries);
     }
 }
