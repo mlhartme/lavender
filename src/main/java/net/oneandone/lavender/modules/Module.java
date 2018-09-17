@@ -87,8 +87,8 @@ public abstract class Module<T> implements Iterable<Resource> {
 
     //-- scans
 
-    public boolean entriesLoaded() {
-        return lazyEntries != null;
+    public Map<String, ?> loadedEntries() {
+        return lazyEntries;
     }
 
     /** invalidate entries if it's older than 5 seconds */
