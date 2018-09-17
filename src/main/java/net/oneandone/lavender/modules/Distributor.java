@@ -81,7 +81,7 @@ public class Distributor {
     }
 
     /** left: index location; right: docroot */
-    private final DataOutputStream buffer;
+    private final Buffer buffer;
     private final FileNode cacheroot;
     private final Map<Node, Node> targets;
     private final Index all;
@@ -89,7 +89,7 @@ public class Distributor {
     private final Index next;
 
     public Distributor(FileNode cacheroot, Map<Node, Node> targets, Index all, Index prev) {
-        this.buffer = new DataOutputStream();
+        this.buffer = new Buffer();
         this.cacheroot = cacheroot;
         this.targets = targets;
         this.all = all;
@@ -111,6 +111,7 @@ public class Distributor {
         name = module.getName();
         try (Md5Cache cache = Md5Cache.loadOrCreate(cacheroot.join("md5", name + ".cache"))) {
             for (Resource resource : module) {
+                buffer.reset();
                 path = resource.getPath();
                 contentId = resource.getContentId();
                 md5 = cache.lookup(path, contentId);
@@ -200,14 +201,14 @@ public class Distributor {
 
     //--
 
-    public static class DataOutputStream extends ByteArrayOutputStream {
+    public static class Buffer extends ByteArrayOutputStream {
         private final int initialBytes;
 
-        public DataOutputStream() {
+        public Buffer() {
             this(512 * 1024);
         }
 
-        public DataOutputStream(int initialBytes) {
+        public Buffer(int initialBytes) {
             super(initialBytes);
 
             this.initialBytes = initialBytes;

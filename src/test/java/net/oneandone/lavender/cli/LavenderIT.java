@@ -45,7 +45,7 @@ public class LavenderIT {
 
         war = ClassLoader.getSystemResource("app-example-1.0.0.war").getFile();
         check("warFile", war,
-                "000/9b558886168ec46264166244d9971/app-example/vi-ui.png:0009b558886168ec46264166244d9971\n" +
+                "32a/c032a1c5047a1cc42e19ee58c0c47/app-example/vi-ui.png:32ac032a1c5047a1cc42e19ee58c0c47\n" +
                 "fa5/4e8a567edb3216a6d4133712a2c00/jar-module/vi-oneandone-presenter.png:fa54e8a567edb3216a6d4133712a2c00");
     }
 
