@@ -23,7 +23,9 @@ import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.http.HttpNode;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +34,7 @@ import java.util.Map;
 
 /**
  * As of 2018-09-18, we have bitbucket server 5.13.1.
- * <a href="https://docs.atlassian.com/bitbucket-server/rest/5.13.0/bitbucket-rest.html?utm_source=%2Fstatic%2Frest%2Fbitbucket-server%2Flatest%2Fbitbucket-rest.html&utm_medium=301">Rest API documentation</a>
+ * <a href="https://docs.atlassian.com/bitbucket-server/rest/5.13.0/bitbucket-rest.html">Rest API documentation</a>
  */
 // CLI example: curl 'http://bitbucket.1and1.org:7990/rest/api/1.0/projects/CISOOPS/repos/puc/compare/changes?from=ea01f95dafd&to=cd309b8a877'  | python -m json.tool
 public class Bitbucket {
@@ -81,6 +83,9 @@ public class Bitbucket {
             System.out.println("files: " + files);
             System.out.println("changes: " + bitbucket.changes("CISOOPS", "lavender-test-module", latestCommit, NULL_COMMIT));
         }
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        bitbucket.writeTo("CISOOPS", "lavender-test-module", "README", latestCommit, buffer);
+        System.out.println("file: " + buffer.toString());
     }
 
     private final HttpNode root;
@@ -149,6 +154,14 @@ public class Bitbucket {
         result = new ArrayList<>();
         getPaged(element -> result.add(element.getAsString()), root.join("projects", project, "repos", repository, "files"), "at", at);
         return result;
+    }
+
+    public void writeTo(String project, String repository, String path, String at, OutputStream dest) throws IOException {
+        HttpNode node;
+
+        node = root.join("projects", project, "repos", repository, "raw", path);
+        node = node.getRoot().node(node.getPath(), "at=" + at);
+        node.copyFileTo(dest);
     }
 
     private interface Collector {
