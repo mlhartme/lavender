@@ -15,7 +15,9 @@
  */
 package net.oneandone.lavender.modules;
 
+import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.xml.Xml;
 import org.junit.Ignore;
@@ -26,10 +28,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class NodeModuleTest {
@@ -44,7 +48,34 @@ public class NodeModuleTest {
     }
 
     @Test
-    public void oldModule() throws Exception {
+    public void directory() throws Exception {
+        FileNode dir;
+        Module module;
+        Iterator<Resource> iter;
+        Resource resource;
+
+        dir = WORLD.guessProjectHome(getClass()).join("src/test/module");
+        module = new NodeModule(Module.TYPE, "foo", false, "", "", WORLD.filter().includeAll()) {
+            @Override
+            protected Map<String, Node> loadEntries() throws Exception {
+                Map<String, Node> result;
+
+                result = new HashMap<>();
+                for (Node node : dir.find(getFilter())) {
+                    result.put(node.getRelative(dir), node);
+                }
+                return result;
+            }
+        };
+        iter = module.iterator();
+        assertTrue(iter.hasNext());
+        resource = iter.next();
+        assertFalse(iter.hasNext());
+        assertEquals("vi_login_now.jpg", resource.getPath());
+    }
+
+    @Test
+    public void oldConfig() throws Exception {
         JarConfig c;
 
         c = JarConfig.load(new Xml(), null, getClass().getResourceAsStream("/old-module.xml"));
@@ -53,7 +84,7 @@ public class NodeModuleTest {
     }
 
     @Test
-    public void newModule() throws Exception {
+    public void newConfig() throws Exception {
         JarConfig c;
 
         c = JarConfig.load(new Xml(), null, getClass().getResourceAsStream("/new-module.xml"));
@@ -61,7 +92,7 @@ public class NodeModuleTest {
     }
 
     @Test
-    public void testExtract() throws Exception {
+    public void war() throws Exception {
         Map<String, Resource> resources;
         URL url;
         NodeModule module;
@@ -84,31 +115,4 @@ public class NodeModuleTest {
         assertTrue(resources.containsKey("modules/frontend-tools/img/accept.png"));
         assertTrue(resources.containsKey("modules/frontend-tools/img/cross.png"));
     }
-
-    @Ignore
-    @Test
-    public void testPerformance() throws IOException {
-
-        URL url = getClass().getClassLoader().getResource("dummy.war");
-
-        int num = 10000;
-        long t0 = System.currentTimeMillis();
-        for (int i = 0; i < num; i++) {
-            ZipInputStream zipIn = new ZipInputStream(url.openStream());
-            countEntries(zipIn);
-        }
-        long t1 = System.currentTimeMillis();
-        long t = t1 - t0;
-        System.out.println(num + " in " + t + "ms");
-
-    }
-
-    private void countEntries(ZipInputStream zipIn) throws IOException {
-        int count = 0;
-        while (zipIn.getNextEntry() != null) {
-            count++;
-        }
-        assertEquals(32, count);
-    }
-
 }
