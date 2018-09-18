@@ -19,6 +19,7 @@ import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
+import net.oneandone.sushi.fs.filter.Predicate;
 import net.oneandone.sushi.xml.Xml;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -61,17 +62,18 @@ public class NodeModuleTest {
                 Map<String, Node> result;
 
                 result = new HashMap<>();
-                for (Node node : dir.find(getFilter())) {
+                for (Node node : dir.find(getFilter().predicate(Predicate.FILE))) {
                     result.put(node.getRelative(dir), node);
                 }
                 return result;
             }
         };
         iter = module.iterator();
-        assertTrue(iter.hasNext());
         resource = iter.next();
-        assertFalse(iter.hasNext());
+        assertEquals("sub/main.css", resource.getPath());
+        resource = iter.next();
         assertEquals("vi_login_now.jpg", resource.getPath());
+        assertFalse(iter.hasNext());
     }
 
     @Test
