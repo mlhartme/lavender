@@ -32,7 +32,10 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /** Extracts resources from svn. TODO: module cache is not invalidated if the filter configuration is changed. */
 public class SvnModule extends Module<SvnEntry> {
