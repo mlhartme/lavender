@@ -31,8 +31,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * As of 8-2018, we have bitbucket server 5.9.1.
- * <a href="https://docs.atlassian.com/bitbucket-server/rest/5.12.0/bitbucket-rest.html?utm_source=%2Fstatic%2Frest%2Fbitbucket-server%2Flatest%2Fbitbucket-rest.html&utm_medium=301">Rest API documentation</a>
+ * As of 2018-09-18, we have bitbucket server 5.13.1.
+ * <a href="https://docs.atlassian.com/bitbucket-server/rest/5.13.0/bitbucket-rest.html?utm_source=%2Fstatic%2Frest%2Fbitbucket-server%2Flatest%2Fbitbucket-rest.html&utm_medium=301">Rest API documentation</a>
  */
 // CLI example: curl 'http://bitbucket.1and1.org:7990/rest/api/1.0/projects/CISOOPS/repos/puc/compare/changes?from=ea01f95dafd&to=cd309b8a877'  | python -m json.tool
 public class Bitbucket {
@@ -40,6 +40,11 @@ public class Bitbucket {
     private static final String NULL_COMMIT = "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
 
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
+        digests();
+        run();
+    }
+
+    public static void digests() throws IOException, NoSuchAlgorithmException {
         World world;
         FileNode file;
 
@@ -51,7 +56,7 @@ public class Bitbucket {
         }
     }
 
-    public static void main2(String[] args) throws IOException {
+    public static void run() throws IOException {
         World world;
         Bitbucket bitbucket;
         FileNode cache;
@@ -109,7 +114,7 @@ public class Bitbucket {
      * Does not return removals!
      *
      * @param from commit that contains the requested changes
-     * @param to   what to compare to, in my case the last revision I've seen
+     * @param to   what to compare to, in my case the last revision I've seen - or the null revision
      * @return path- to contentId mapping
      */
     public Map<String, String> changes(String project, String repository, String from, String to) throws IOException {
@@ -133,6 +138,8 @@ public class Bitbucket {
     }
 
     /**
+     * List files in the specified project + revision
+     *
      * @param at revision
      */
     // curl 'http://bitbucket.1and1.org:7990/rest/api/1.0/projects/CISOOPS/repos/puc/files'  | python -m json.tool
