@@ -65,8 +65,8 @@ public class Globals {
         return lazyProperties;
     }
 
-    public FileNode lockedCacheroot() throws IOException {
-        return properties().lockedCacheroot(await, user);
+    public FileNode cacheroot() throws IOException {
+        return properties().cacheroot();
     }
 
     public Network net() throws IOException {

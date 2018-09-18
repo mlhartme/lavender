@@ -54,22 +54,19 @@ public class DevelopmentFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         long started = System.currentTimeMillis();
-        SystemProperties properties = null;
+        SystemProperties properties;
         Node webapp;
 
         this.filterConfig = filterConfig;
-
         try {
             world = World.create(false);
             webapp = world.file(filterConfig.getServletContext().getRealPath(""));
             properties = SystemProperties.load(SystemProperties.file(world), false);
-            FileNode cache = properties.lockedCacheroot(5, "lavenderServlet");
+            FileNode cache = properties.cacheroot();
             modules = loadModulesFromWebapp(webapp, properties, cache);
         } catch (XmlException | IOException | SAXException e) {
             e.printStackTrace();
             throw new ServletException("Could not initialize Lavender development filter", e);
-        } finally {
-            unlockPropertiesCache(properties);
         }
         LOG.info("Lavender development filter for " + webapp + ", " + modules.size()
                 + " resources. Init in " + (System.currentTimeMillis() - started + " ms"));
@@ -100,16 +97,6 @@ public class DevelopmentFilter implements Filter {
     List<Module> loadModulesFromWebapp(Node webapp, SystemProperties properties, FileNode cache)
             throws IOException, SAXException, XmlException {
         return NodeModule.fromWebapp(cache, false, webapp, properties.svnUsername, properties.svnPassword);
-    }
-
-    private void unlockPropertiesCache(SystemProperties properties) {
-        if (properties != null) {
-            try {
-                properties.unlockCacheroot();
-            } catch (IOException e) {
-                LOG.error("Could not unlock properties cache", e);
-            }
-        }
     }
 
     public boolean intercept(HttpServletRequest request, HttpServletResponse response) throws IOException {

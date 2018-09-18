@@ -3,6 +3,7 @@
 ### 2.7.0 (pending)
 
 * caching:
+  * dumped cache lock - use atomic reads and writes instead
   * introduced md5 cache maintained by Distributor for all modules
   * changed svn entry cache: dumped md5, size and last modified fields; svn caches entries now reside under <cachdir>/svn
 

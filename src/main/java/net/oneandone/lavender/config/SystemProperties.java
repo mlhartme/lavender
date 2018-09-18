@@ -31,8 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SystemProperties {
-    private static final Logger LOG = LoggerFactory.getLogger(SystemProperties.class);
-
     public static SystemProperties load(World world) throws IOException {
         return load(file(world), true);
     }
@@ -184,46 +182,8 @@ public class SystemProperties {
         return world.getHome().join(".lavender.network.xml");
     }
 
-    public FileNode lockedCacheroot(int wait, String lockContent) throws IOException {
+    public FileNode cacheroot() throws IOException {
         cache.mkdirsOpt();
-        doLock(wait, lockContent);
         return cache;
-    }
-
-    private void doLock(int wait, String lockContent) throws IOException {
-        FileNode lock;
-        int seconds;
-
-        lock = cacheLock();
-        seconds = 0;
-        while (true) {
-            try {
-                lock.mkfile();
-                break;
-            } catch (IOException e) {
-                seconds++;
-                if (seconds >= wait) {
-                    throw new IOException("cannot create " + lock);
-                }
-                if (seconds % 10 == 0) {
-                    LOG.info("waiting for cache-lock " + lock + ", seconds=" + seconds);
-                }
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e1) {
-                    // fall-through
-                }
-            }
-        }
-        lock.writeString(lockContent);
-        world.onShutdown().deleteAtExit(lock);
-    }
-
-    private FileNode cacheLock() {
-        return cache.join(".lock");
-    }
-
-    public void unlockCacheroot() throws IOException {
-        cacheLock().deleteFile();
     }
 }

@@ -85,14 +85,10 @@ public class File extends Base {
         };
 
         try (Pool pool = globals.pool()) {
-            cacheroot = globals.lockedCacheroot();
-            try {
-                distributor = Distributor.open(cacheroot, cluster.connect(pool), docroot, indexName);
-                changed = distributor.publish(module);
-                index = distributor.close();
-            } finally {
-                globals.properties().unlockCacheroot();
-            }
+            cacheroot = globals.cacheroot();
+            distributor = Distributor.open(cacheroot, cluster.connect(pool), docroot, indexName);
+            changed = distributor.publish(module);
+            index = distributor.close();
         }
         console.info.println("done: " + changed + "/" + index.size() + " files changed");
     }

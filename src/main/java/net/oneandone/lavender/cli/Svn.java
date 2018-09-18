@@ -65,16 +65,12 @@ public class Svn extends Base {
         filter.includeAll();
         svnurl = svn + "/data/" + directory;
         moduleConfig = new SvnProperties("svn", filter, svnurl, -1, svnurl, Module.TYPE, false, "", directory + "/", null);
-        cacheroot = globals.lockedCacheroot();
-        try {
-            module = moduleConfig.create(cacheroot, true, properties.svnUsername, properties.svnPassword, null);
-            try (Pool pool = globals.pool()) {
-                distributor = Distributor.open(cacheroot, cluster.connect(pool), docroot, directory + ".idx");
-                changed = distributor.publish(module);
-                index = distributor.close();
-            }
-        } finally {
-            properties.unlockCacheroot();
+        cacheroot = globals.cacheroot();
+        module = moduleConfig.create(cacheroot, true, properties.svnUsername, properties.svnPassword, null);
+        try (Pool pool = globals.pool()) {
+            distributor = Distributor.open(cacheroot, cluster.connect(pool), docroot, directory + ".idx");
+            changed = distributor.publish(module);
+            index = distributor.close();
         }
         console.info.println("done: " + changed + "/" + index.size() + " files changed");
     }

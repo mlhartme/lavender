@@ -37,7 +37,7 @@ import java.util.Map;
 public class Distributor {
     private static final Logger LOG = LoggerFactory.getLogger(Distributor.class);
 
-    public static Distributor open(FileNode cache, List<Connection> connections, Docroot docroot, String indexName) throws IOException {
+    public static Distributor open(FileNode cacheroot, List<Connection> connections, Docroot docroot, String indexName) throws IOException {
         Node destroot;
         Node file;
         Map<Node, Node> targets;
@@ -59,7 +59,7 @@ public class Distributor {
                 all = loadSame(docroot.index(connection, Index.ALL_IDX), all);
             }
         }
-        return new Distributor(cache, targets, all, prev);
+        return new Distributor(cacheroot, targets, all, prev);
     }
 
     private static Index loadSame(Node src, Index prev) throws IOException {
