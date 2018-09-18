@@ -35,6 +35,8 @@ import java.util.zip.ZipInputStream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class NodeModuleTest {
@@ -62,12 +64,18 @@ public class NodeModuleTest {
                 Map<String, Node> result;
 
                 result = new HashMap<>();
-                for (Node node : dir.find(getFilter().predicate(Predicate.FILE))) {
-                    result.put(node.getRelative(dir), node);
+                for (Node node : dir.find(getFilter())) {
+                    if (node.isFile()) {
+                        result.put(node.getRelative(dir), node);
+                    }
                 }
                 return result;
             }
         };
+
+        assertNull(module.probe("no/such.file"));
+        assertNotNull(module.probe("sub/main.css"));
+
         iter = module.iterator();
         resource = iter.next();
         assertEquals("sub/main.css", resource.getPath());

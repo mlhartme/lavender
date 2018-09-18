@@ -19,6 +19,7 @@ import net.oneandone.lavender.index.Index;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
+import net.oneandone.sushi.fs.filter.Predicate;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -44,7 +45,7 @@ public class DistributorTest {
                 Map<String, Node> result;
 
                 result = new HashMap<>();
-                for (Node node : dir.find(getFilter())) {
+                for (Node node : dir.find(getFilter().predicate(Predicate.FILE))) {
                     result.put(node.getRelative(dir), node);
                 }
                 return result;

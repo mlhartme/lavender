@@ -73,19 +73,23 @@ public abstract class Module<T> implements Iterable<Resource> {
         return name;
     }
 
-    public String getResourcePathPrefix() {
-        return resourcePathPrefix;
-    }
-
     public boolean getLavendeize() {
         return lavendelize;
+    }
+
+    public String getResourcePathPrefix() {
+        return resourcePathPrefix;
     }
 
     public String getTargetPathPrefix() {
         return targetPathPrefix;
     }
 
-    //-- scans
+    public Filter getFilter() {
+        return filter;
+    }
+
+    //-- entry handling
 
     public Map<String, T> loadedEntries() {
         return lazyEntries;
@@ -117,10 +121,6 @@ public abstract class Module<T> implements Iterable<Resource> {
             lastScan = System.currentTimeMillis();
         }
         return lazyEntries;
-    }
-
-    public Filter getFilter() {
-        return filter;
     }
 
     /** @return all entries that match the module's filter */

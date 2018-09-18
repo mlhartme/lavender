@@ -70,7 +70,6 @@ public class File extends Base {
         docroot = cluster.docroot(docrootName);
         filter = new Filter();
         filter.includeAll();
-        filter.predicate(Predicate.FILE);
         module = new NodeModule(Module.TYPE, indexName, false, "", prefix, filter) {
             @Override
             protected Map<String, Node> loadEntries() throws Exception {
@@ -78,7 +77,9 @@ public class File extends Base {
 
                 result = new HashMap<>();
                 for (Node node : exploded.find(filter)) {
-                    result.put(node.getPath(), node);
+                    if (node.isFile()) {
+                        result.put(node.getPath(), node);
+                    }
                 }
                 return result;
             }
