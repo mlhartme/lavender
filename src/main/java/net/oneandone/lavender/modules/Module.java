@@ -141,6 +141,12 @@ public abstract class Module<T> implements Iterable<Resource> {
 
     //-- resources
 
+    /**
+     * Instantiates a resource from an entry
+     *
+     * @param path of the entry
+     * @param data of the entry
+     */
     protected abstract Resource createResource(String path, T data) throws IOException;
 
     /** @return null if not found */

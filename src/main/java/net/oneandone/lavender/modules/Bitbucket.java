@@ -142,6 +142,10 @@ public class Bitbucket {
         return result;
     }
 
+    public Map<String, String> changes(String project, String repository, String from) throws IOException {
+        return changes(project, repository, from, NULL_COMMIT);
+    }
+
     /**
      * List files in the specified project + revision
      *
