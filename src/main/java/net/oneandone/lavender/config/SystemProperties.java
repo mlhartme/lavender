@@ -168,7 +168,7 @@ public class SystemProperties {
         tmp = Util.newTmpFile(local.getParent());
         world.node(svn).join("network.xml").copyFile(tmp);
         result = Network.load(tmp);
-        tmp.move(local.deleteFileOpt());
+        tmp.move(local, true);
         return result;
     }
 

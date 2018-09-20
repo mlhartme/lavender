@@ -93,6 +93,8 @@ public class SvnModule extends Module<SvnEntry> {
                     throw new IllegalStateException("" + lastModifiedModule);
                 }
                 LOG.info("no changes in repository: " + lastModifiedRepository + " " + lastModifiedModule + " -> using cached entries");
+                lastModifiedRepository = nextModifiedRepository;
+                lastModifiedModule = nextModifiedModule;
                 return cachedEntries;
             }
 
@@ -218,6 +220,9 @@ public class SvnModule extends Module<SvnEntry> {
 
     @Override
     protected SvnResource createResource(String resourcePath, SvnEntry entry) {
+        if (lastModifiedRepository == -1) {
+            throw new IllegalStateException();
+        }
         return new SvnResource(this, resourcePath, entry, lastModifiedRepository /* not module, because paths might already be out-dated */);
     }
 

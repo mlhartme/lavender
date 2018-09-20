@@ -117,7 +117,7 @@ public abstract class Module<T> implements Iterable<Resource> {
             } catch (Exception e) {
                 throw new IOException(name + " entries failed: " + e.getMessage(), e);
             }
-            LOG.info(name + ": scanned " + lazyEntries.size() + " names in " + (System.currentTimeMillis() - started) + "ms");
+            LOG.info(name + ": scanned " + lazyEntries.size() + " entries in " + (System.currentTimeMillis() - started) + "ms");
             lastScan = System.currentTimeMillis();
         }
         return lazyEntries;
