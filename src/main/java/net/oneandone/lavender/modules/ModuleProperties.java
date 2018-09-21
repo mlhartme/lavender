@@ -115,9 +115,9 @@ public class ModuleProperties {
         }
         result = new ModuleProperties(eatFilter(properties, "pustefix", DEFAULT_INCLUDES), source);
         for (String prefix : svnPrefixes(properties)) {
-            svnurl = strip((String) properties.remove(prefix));
+            svnurl = stripSvn((String) properties.remove(prefix));
             svnurlRevision = Long.parseLong(eatOpt(properties, prefix + ".revision", "-1"));
-            svnurlDevel = strip(eatOpt(properties, prefix + ".devel", svnurl));
+            svnurlDevel = stripSvn(eatOpt(properties, prefix + ".devel", svnurl));
             svnsrc = eatSvnSource(properties, prefix, source);
             svnsrc = fallback(svnurl, svnsrc);
             result.configs.add(
@@ -137,7 +137,7 @@ public class ModuleProperties {
         return result;
     }
 
-    private static String strip(String url) {
+    private static String stripSvn(String url) {
         if (url.startsWith("scm:")) {
             return Strings.removeLeft(url, "scm:svn:");
         } else {

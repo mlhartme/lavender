@@ -20,6 +20,7 @@ import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.http.HttpNode;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Map;
 
 public class BitbucketModule extends Module<String> {
@@ -50,9 +51,22 @@ public class BitbucketModule extends Module<String> {
 
     @Override
     protected Map<String, String> loadEntries() throws IOException {
+        Map<String, String> result;
+        Iterator<Map.Entry<String, String>> iter;
+        Map.Entry<String, String> entry;
+        Filter filter;
+
         revision = bitbucket.latestCommit(project, repository, branch);
-        System.out.println("from: " + revision);
-        return bitbucket.changes(project, repository, revision);
+        result = bitbucket.changes(project, repository, revision);
+        iter = result.entrySet().iterator();
+        filter = getFilter();
+        while (iter.hasNext()) {
+            entry = iter.next();
+            if (!filter.matches(entry.getKey())) {
+                iter.remove();
+            }
+        }
+        return result;
     }
 
     @Override

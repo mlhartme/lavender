@@ -44,14 +44,14 @@ public class BitbucketModuleTest {
         Resource resource;
 
         module = BitbucketModule.create(WORLD, "CISOOPS", "lavender-test-module", "master", "myname", false,
-                "", "", WORLD.filter().includeAll());
+                "", "", WORLD.filter().include("**/*.jpg", "**/*.css"));
 
         assertNull(module.probe("no/such.file"));
-        assertNotNull(module.probe("README"));
+        assertNotNull(module.probe("Penny_test.jpg"));
 
         iter = module.iterator();
         resource = iter.next();
-        assertEquals("README", resource.getPath());
+        assertEquals("empty.css", resource.getPath());
         resource = iter.next();
         assertEquals("Penny_test.jpg", resource.getPath());
         assertFalse(iter.hasNext());
