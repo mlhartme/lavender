@@ -43,10 +43,9 @@ public class Svn extends Base {
     }
 
     public void run() throws IOException {
-        String svn;
         Docroot docroot;
         Filter filter;
-        String svnurl;
+        String scmurl;
         ScmProperties moduleConfig;
         Module module;
         Distributor distributor;
@@ -59,12 +58,11 @@ public class Svn extends Base {
             throw new ArgumentException("invalid directory: " + directory);
         }
         properties = globals.properties();
-        svn = Strings.removeLeft(properties.svn.toString(), "svn:");
         docroot = cluster.docroot(docrootName);
         filter = new Filter();
         filter.includeAll();
-        svnurl = svn + "/data/" + directory;
-        moduleConfig = new ScmProperties("svn", filter, svnurl, svnurl, "-1", Module.TYPE, false, "", directory + "/", null);
+        scmurl = "scm:" + properties.svn.toString() + "/data/" + directory;
+        moduleConfig = new ScmProperties("svn", filter, scmurl, scmurl, "-1", Module.TYPE, false, "", directory + "/", null);
         cacheroot = globals.cacheroot();
         module = moduleConfig.create(cacheroot, true, properties.svnUsername, properties.svnPassword, null);
         try (Pool pool = globals.pool()) {

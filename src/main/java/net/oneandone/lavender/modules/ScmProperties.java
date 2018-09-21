@@ -55,8 +55,8 @@ public class ScmProperties {
         }
         this.name = name;
         this.filter = filter;
-        this.connectionProd = connectionProd;
-        this.connectionDevel = connectionDevel;
+        this.connectionProd = stripSvn(connectionProd);
+        this.connectionDevel = stripSvn(connectionDevel);
         this.tag = tag;
         this.type = type;
         this.lavendelize = lavendelize;
@@ -64,6 +64,15 @@ public class ScmProperties {
         this.targetPathPrefix = targetPathPrefix;
         this.source = source;
     }
+
+    private static String stripSvn(String url) {
+        if (url.startsWith("scm:")) {
+            return Strings.removeLeft(url, "scm:svn:");
+        } else {
+            return url;
+        }
+    }
+
 
     public Module create(FileNode cacheDir, boolean prod, String svnUsername, String svnPassword, final JarConfig jarConfig) throws IOException {
         World world;
