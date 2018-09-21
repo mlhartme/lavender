@@ -102,8 +102,8 @@ public class ModuleProperties {
         String relative;
         String source;
         String svnurl;
-        long svnurlRevision;
         String svnurlDevel;
+        String tag;
         String svnsrc;
 
         relative = eat(properties, "pustefix.relative");
@@ -116,15 +116,15 @@ public class ModuleProperties {
         result = new ModuleProperties(eatFilter(properties, "pustefix", DEFAULT_INCLUDES), source);
         for (String prefix : prefixes(properties, ScmProperties.SVN_PREFIX)) {
             svnurl = stripSvn((String) properties.remove(prefix));
-            svnurlRevision = Long.parseLong(eatOpt(properties, prefix + ".revision", "-1"));
             svnurlDevel = stripSvn(eatOpt(properties, prefix + ".devel", svnurl));
+            tag = eatOpt(properties, prefix + ".revision", "-1");
             svnsrc = eatSvnSource(properties, prefix, source);
             svnsrc = fallback(svnurl, svnsrc);
             result.configs.add(
                     new ScmProperties(
                             prefix.substring(ScmProperties.SVN_PREFIX.length()),
                             eatFilter(properties, prefix, DEFAULT_INCLUDES),
-                            svnurl, svnurlRevision, svnurlDevel,
+                            svnurl, svnurlDevel, tag,
                             eatOpt(properties, prefix + ".type", Module.TYPE),
                             eatBoolean(properties, prefix + ".lavendelize", true),
                             eatOpt(properties, prefix + ".resourcePathPrefix", ""),
@@ -133,8 +133,8 @@ public class ModuleProperties {
         }
         for (String prefix : prefixes(properties, ScmProperties.SCM_PREFIX)) {
             svnurl = stripSvn((String) properties.remove(prefix));
-            svnurlRevision = Long.parseLong(eatOpt(properties, prefix + ".revision", "-1"));
             svnurlDevel = stripSvn(eatOpt(properties, prefix + ".devel", svnurl));
+            tag = eatOpt(properties, prefix + ".tag", "");
             String path = eatOpt(properties, prefix + ".path", "");
             if (!path.isEmpty() && !path.startsWith("/")) {
                 path = "/" + path;
@@ -147,7 +147,7 @@ public class ModuleProperties {
                     new ScmProperties(
                             prefix.substring(ScmProperties.SVN_PREFIX.length()),
                             eatFilter(properties, prefix, DEFAULT_INCLUDES),
-                            svnurl, svnurlRevision, svnurlDevel,
+                            svnurl, svnurlDevel, tag,
                             eatOpt(properties, prefix + ".type", Module.TYPE),
                             eatBoolean(properties, prefix + ".lavendelize", true),
                             eatOpt(properties, prefix + ".resourcePathPrefix", ""),

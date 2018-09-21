@@ -9,6 +9,8 @@
   to generate the new properties)
   * svn prefix changed to scm
   * added `path` property that get's the path formerly appended to the url or devel url
+  * replaced `revision` by `tag`
+
 * caching:
   * dumped cache lock - use atomic reads and writes instead
   * introduced md5 cache maintained by Distributor for all modules

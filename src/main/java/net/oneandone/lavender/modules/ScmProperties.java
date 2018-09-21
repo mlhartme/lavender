@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/** Factory for Scm modules. Stores scm info from the respective pom plus filter configuration */
 public class ScmProperties {
     public static final String SVN_PREFIX = "svn.";
     public static final String SCM_PREFIX = "scm.";
@@ -37,8 +38,8 @@ public class ScmProperties {
     public final Filter filter;
     public final String connectionProd;
     public final String connectionDevel;
-    /** to pin svnurl -- not for svnurlDevel */
-    public final long svnurlRevision;
+    /** for svn: revision number */
+    public final String tag;
     public final String type;
     public final boolean lavendelize;
     public final String resourcePathPrefix;
@@ -47,7 +48,7 @@ public class ScmProperties {
     /** Absolute path relative to local sources for this module, null if not available */
     public final String source;
 
-    public ScmProperties(String name, Filter filter, String connectionProd, long svnurlRevision, String connectionDevel, String type, boolean lavendelize, String resourcePathPrefix,
+    public ScmProperties(String name, Filter filter, String connectionProd, String connectionDevel, String tag, String type, boolean lavendelize, String resourcePathPrefix,
                          String targetPathPrefix, String source) {
         if (name.startsWith("/") || name.endsWith("/")) {
             throw new IllegalArgumentException(name);
@@ -56,7 +57,7 @@ public class ScmProperties {
         this.filter = filter;
         this.connectionProd = connectionProd;
         this.connectionDevel = connectionDevel;
-        this.svnurlRevision = svnurlRevision;
+        this.tag = tag;
         this.type = type;
         this.lavendelize = lavendelize;
         this.resourcePathPrefix = resourcePathPrefix;
@@ -128,7 +129,7 @@ public class ScmProperties {
         }
         if (prod) {
             url = connectionProd;
-            pinnedRevision = svnurlRevision;
+            pinnedRevision = tag.isEmpty() ? -1 : Long.parseLong(tag);
         } else {
             url = connectionDevel;
             // devel url is never pinned:
