@@ -2,6 +2,13 @@
 
 ### 2.7.0 (pending)
 
+* added support for bitbucket modules
+  * caution: repositories have to be pushed
+
+* svn properties generalized to scm properties (old svn properties still work, but applications should switch to the latest frontend-parent
+  to generate the new properties)
+  * svn prefix changed to scm
+  * added `path` property that get's the path formerly appended to the url or devel url
 * caching:
   * dumped cache lock - use atomic reads and writes instead
   * introduced md5 cache maintained by Distributor for all modules

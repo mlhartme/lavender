@@ -29,15 +29,15 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SvnProperties {
+public class ScmProperties {
     public static final String SVN_PREFIX = "svn.";
 
     public final String name;
     public final Filter filter;
-    public final String svnurl;
+    public final String connectionProd;
+    public final String connectionDevel;
     /** to pin svnurl -- not for svnurlDevel */
     public final long svnurlRevision;
-    public final String svnurlDevel;
     public final String type;
     public final boolean lavendelize;
     public final String resourcePathPrefix;
@@ -46,16 +46,16 @@ public class SvnProperties {
     /** Absolute path relative to local sources for this module, null if not available */
     public final String source;
 
-    public SvnProperties(String name, Filter filter, String svnurl, long svnurlRevision, String svnurlDevel, String type, boolean lavendelize, String resourcePathPrefix,
+    public ScmProperties(String name, Filter filter, String connectionProd, long svnurlRevision, String connectionDevel, String type, boolean lavendelize, String resourcePathPrefix,
                          String targetPathPrefix, String source) {
         if (name.startsWith("/") || name.endsWith("/")) {
             throw new IllegalArgumentException(name);
         }
         this.name = name;
         this.filter = filter;
-        this.svnurl = svnurl;
+        this.connectionProd = connectionProd;
+        this.connectionDevel = connectionDevel;
         this.svnurlRevision = svnurlRevision;
-        this.svnurlDevel = svnurlDevel;
         this.type = type;
         this.lavendelize = lavendelize;
         this.resourcePathPrefix = resourcePathPrefix;
@@ -73,8 +73,8 @@ public class SvnProperties {
         long pinnedRevision;
 
         world = cacheDir.getWorld();
-        if (svnurl == null) {
-            throw new IllegalArgumentException("missing svn url");
+        if (connectionProd == null) {
+            throw new IllegalArgumentException("missing connection");
         }
 
         // TODO: ugly side-effect
@@ -126,10 +126,10 @@ public class SvnProperties {
             }
         }
         if (prod) {
-            url = svnurl;
+            url = connectionProd;
             pinnedRevision = svnurlRevision;
         } else {
-            url = svnurlDevel;
+            url = connectionDevel;
             // devel url is never pinned:
             pinnedRevision = -1;
         }

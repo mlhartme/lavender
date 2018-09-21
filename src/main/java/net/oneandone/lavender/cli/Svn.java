@@ -23,7 +23,7 @@ import net.oneandone.lavender.config.SystemProperties;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.Distributor;
 import net.oneandone.lavender.modules.Module;
-import net.oneandone.lavender.modules.SvnProperties;
+import net.oneandone.lavender.modules.ScmProperties;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.util.Strings;
@@ -47,7 +47,7 @@ public class Svn extends Base {
         Docroot docroot;
         Filter filter;
         String svnurl;
-        SvnProperties moduleConfig;
+        ScmProperties moduleConfig;
         Module module;
         Distributor distributor;
         long changed;
@@ -64,7 +64,7 @@ public class Svn extends Base {
         filter = new Filter();
         filter.includeAll();
         svnurl = svn + "/data/" + directory;
-        moduleConfig = new SvnProperties("svn", filter, svnurl, -1, svnurl, Module.TYPE, false, "", directory + "/", null);
+        moduleConfig = new ScmProperties("svn", filter, svnurl, -1, svnurl, Module.TYPE, false, "", directory + "/", null);
         cacheroot = globals.cacheroot();
         module = moduleConfig.create(cacheroot, true, properties.svnUsername, properties.svnPassword, null);
         try (Pool pool = globals.pool()) {

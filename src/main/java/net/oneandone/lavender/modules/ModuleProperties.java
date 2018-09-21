@@ -121,8 +121,8 @@ public class ModuleProperties {
             svnsrc = eatSvnSource(properties, prefix, source);
             svnsrc = fallback(svnurl, svnsrc);
             result.configs.add(
-                    new SvnProperties(
-                            prefix.substring(SvnProperties.SVN_PREFIX.length()),
+                    new ScmProperties(
+                            prefix.substring(ScmProperties.SVN_PREFIX.length()),
                             eatFilter(properties, prefix, DEFAULT_INCLUDES),
                             svnurl, svnurlRevision, svnurlDevel,
                             eatOpt(properties, prefix + ".type", Module.TYPE),
@@ -218,7 +218,7 @@ public class ModuleProperties {
 
         result = new ArrayList<>();
         for (String name : properties.stringPropertyNames()) {
-            if (name.startsWith(SvnProperties.SVN_PREFIX)) {
+            if (name.startsWith(ScmProperties.SVN_PREFIX)) {
                 if (Strings.count(name, ".") == 1) {
                     result.add(name);
                 }
@@ -231,7 +231,7 @@ public class ModuleProperties {
 
     public final Filter filter;
     public final String source;
-    public final Collection<SvnProperties> configs;
+    public final Collection<ScmProperties> configs;
 
     public ModuleProperties(Filter filter, String source) {
         if (filter == null) {
@@ -244,7 +244,7 @@ public class ModuleProperties {
 
     public void addModules(FileNode cache, boolean prod, String svnUsername, String svnPassword, List<Module> result, JarConfig jarConfig)
             throws IOException {
-        for (SvnProperties config : configs) {
+        for (ScmProperties config : configs) {
             result.add(config.create(cache, prod, svnUsername, svnPassword, jarConfig));
         }
     }

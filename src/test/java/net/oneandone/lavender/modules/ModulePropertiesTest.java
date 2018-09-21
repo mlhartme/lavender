@@ -48,7 +48,7 @@ public class ModulePropertiesTest {
     public void one() throws IOException {
         Properties props;
         ModuleProperties result;
-        SvnProperties config;
+        ScmProperties config;
 
         props = new Properties();
         props.put("pustefix.relative", "relative");
@@ -63,8 +63,8 @@ public class ModulePropertiesTest {
         assertEquals("foo", config.name);
         assertFalse(config.lavendelize);
         assertEquals("prefix", config.targetPathPrefix);
-        assertEquals("svn", config.svnurl);
-        assertEquals("svn", config.svnurlDevel);
+        assertEquals("svn", config.connectionProd);
+        assertEquals("svn", config.connectionDevel);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -88,7 +88,7 @@ public class ModulePropertiesTest {
     @Test
     public void more() throws IOException {
         Properties props;
-        Collection<SvnProperties> result;
+        Collection<ScmProperties> result;
 
         props = new Properties();
         props.put("pustefix.relative", "foo");
