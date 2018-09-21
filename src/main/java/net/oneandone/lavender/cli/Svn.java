@@ -62,7 +62,7 @@ public class Svn extends Base {
         filter = new Filter();
         filter.includeAll();
         scmurl = "scm:" + properties.svn.toString() + "/data/" + directory;
-        moduleConfig = new ScmProperties("svn", filter, scmurl, scmurl, "-1", Module.TYPE, false, "", directory + "/", null);
+        moduleConfig = new ScmProperties("svn", filter, scmurl, scmurl, "-1", "", Module.TYPE, false, "", directory + "/", null);
         cacheroot = globals.cacheroot();
         module = moduleConfig.create(cacheroot, true, properties.svnUsername, properties.svnPassword, null);
         try (Pool pool = globals.pool()) {

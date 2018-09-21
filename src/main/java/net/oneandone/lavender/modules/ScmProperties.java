@@ -26,6 +26,7 @@ import net.oneandone.sushi.fs.svn.SvnNode;
 import net.oneandone.sushi.util.Strings;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +41,7 @@ public class ScmProperties {
     public final String connectionDevel;
     /** for svn: revision number */
     public final String tag;
+    public final String path;
     public final String type;
     public final boolean lavendelize;
     public final String resourcePathPrefix;
@@ -48,7 +50,7 @@ public class ScmProperties {
     /** Absolute path relative to local sources for this module, null if not available */
     public final String source;
 
-    public ScmProperties(String name, Filter filter, String connectionProd, String connectionDevel, String tag, String type, boolean lavendelize, String resourcePathPrefix,
+    public ScmProperties(String name, Filter filter, String connectionProd, String connectionDevel, String tag, String path, String type, boolean lavendelize, String resourcePathPrefix,
                          String targetPathPrefix, String source) {
         if (connectionProd == null) {
             throw new NullPointerException();
@@ -61,6 +63,7 @@ public class ScmProperties {
         this.connectionProd = connectionProd;
         this.connectionDevel = connectionDevel;
         this.tag = tag;
+        this.path = path;
         this.type = type;
         this.lavendelize = lavendelize;
         this.resourcePathPrefix = resourcePathPrefix;
@@ -133,10 +136,11 @@ public class ScmProperties {
             pinnedRevision = -1;
         }
         scm = Strings.removeLeft(scm, "scm:");
-        if (scm.startsWith("svn")) {
-            return createSvnModule(cacheDir, jarConfig, world, scm, pinnedRevision);
-        } else if (scm.startsWith("git")) {
-            throw new IllegalStateException("scm url not supported: " + scm);
+        if (scm.startsWith("svn:")) {
+            return createSvnModule(cacheDir, jarConfig, world, scm + path, pinnedRevision);
+        } else if (scm.startsWith("git:")) {
+            // TODO: path currently unused
+            return createBitbucketModule(cacheDir.getWorld(), Strings.removeLeft(scm,  "git:"));
         } else {
             throw new IllegalStateException("scm url not supported: " + scm);
         }
@@ -162,5 +166,24 @@ public class ScmProperties {
         } catch (Exception e) {
             throw new IOException("error scanning svn module " + scm + ": " + e.getMessage(), e);
         }
+    }
+
+    private BitbucketModule createBitbucketModule(World world, String urlstr) throws IOException {
+        URI uri;
+        String path;
+        String project;
+        String repository;
+        int idx;
+
+        uri = URI.create(urlstr);
+        if (uri.isOpaque()) {
+            throw new IllegalArgumentException("uri format not supported: " + uri);
+        }
+        path = uri.getPath();
+        System.out.println("path: " + path);
+        idx = path.indexOf('/');
+        project = path.substring(0, idx);
+        repository = Strings.removeRight(path.substring(idx + 1), ".git");
+        return BitbucketModule.create(world, project, repository, tag.isEmpty() ? "master" : tag, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
     }
 }

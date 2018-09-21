@@ -122,9 +122,9 @@ public class ModuleProperties {
             svnsrc = fallback(scmurlProd, svnsrc);
             result.configs.add(
                     new ScmProperties(
-                            prefix.substring(ScmProperties.SVN_PREFIX.length()),
+                            prefix.substring(prefix.indexOf('.') + 1),
                             eatFilter(properties, prefix, DEFAULT_INCLUDES),
-                            scmurlProd, scmurlDevel, tag,
+                            scmurlProd, scmurlDevel, tag, "",
                             eatOpt(properties, prefix + ".type", Module.TYPE),
                             eatBoolean(properties, prefix + ".lavendelize", true),
                             eatOpt(properties, prefix + ".resourcePathPrefix", ""),
@@ -139,15 +139,13 @@ public class ModuleProperties {
             if (!path.isEmpty() && !path.startsWith("/")) {
                 path = "/" + path;
             }
-            scmurlProd = scmurlProd + path;
-            scmurlDevel = scmurlDevel + path;
             svnsrc = eatSvnSource(properties, prefix, source);
             svnsrc = fallback(scmurlProd, svnsrc);
             result.configs.add(
                     new ScmProperties(
-                            prefix.substring(ScmProperties.SVN_PREFIX.length()),
+                            prefix.substring(prefix.indexOf('.') + 1),
                             eatFilter(properties, prefix, DEFAULT_INCLUDES),
-                            scmurlProd, scmurlDevel, tag,
+                            scmurlProd, scmurlDevel, tag, path,
                             eatOpt(properties, prefix + ".type", Module.TYPE),
                             eatBoolean(properties, prefix + ".lavendelize", true),
                             eatOpt(properties, prefix + ".resourcePathPrefix", ""),
