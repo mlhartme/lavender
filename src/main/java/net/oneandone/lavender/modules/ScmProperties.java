@@ -50,13 +50,16 @@ public class ScmProperties {
 
     public ScmProperties(String name, Filter filter, String connectionProd, String connectionDevel, String tag, String type, boolean lavendelize, String resourcePathPrefix,
                          String targetPathPrefix, String source) {
+        if (connectionProd == null) {
+            throw new NullPointerException();
+        }
         if (name.startsWith("/") || name.endsWith("/")) {
             throw new IllegalArgumentException(name);
         }
         this.name = name;
         this.filter = filter;
-        this.connectionProd = stripSvn(connectionProd);
-        this.connectionDevel = stripSvn(connectionDevel);
+        this.connectionProd = connectionProd;
+        this.connectionDevel = connectionDevel;
         this.tag = tag;
         this.type = type;
         this.lavendelize = lavendelize;
@@ -65,28 +68,13 @@ public class ScmProperties {
         this.source = source;
     }
 
-    private static String stripSvn(String url) {
-        if (url.startsWith("scm:")) {
-            return Strings.removeLeft(url, "scm:svn:");
-        } else {
-            return url;
-        }
-    }
-
-
     public Module create(FileNode cacheDir, boolean prod, String svnUsername, String svnPassword, final JarConfig jarConfig) throws IOException {
         World world;
-        FileNode cache;
-        final SvnNode root;
-        String idxName;
         final FileNode checkout;
-        String url;
+        String scm;
         long pinnedRevision;
 
         world = cacheDir.getWorld();
-        if (connectionProd == null) {
-            throw new IllegalArgumentException("missing connection");
-        }
 
         // TODO: ugly side-effect
         world.getFilesystem("svn", SvnFilesystem.class).setDefaultCredentials(svnUsername, svnPassword);
@@ -137,16 +125,31 @@ public class ScmProperties {
             }
         }
         if (prod) {
-            url = connectionProd;
+            scm = connectionProd;
             pinnedRevision = tag.isEmpty() ? -1 : Long.parseLong(tag);
         } else {
-            url = connectionDevel;
+            scm = connectionDevel;
             // devel url is never pinned:
             pinnedRevision = -1;
         }
+        scm = Strings.removeLeft(scm, "scm:");
+        if (scm.startsWith("svn")) {
+            return createSvnModule(cacheDir, jarConfig, world, scm, pinnedRevision);
+        } else if (scm.startsWith("git")) {
+            throw new IllegalStateException("scm url not supported: " + scm);
+        } else {
+            throw new IllegalStateException("scm url not supported: " + scm);
+        }
+    }
+
+    private SvnModule createSvnModule(FileNode cacheDir, JarConfig jarConfig, World world, String scm, long pinnedRevision) throws IOException {
+        SvnNode root;
+        String idxName;
+        FileNode cache;
+
         try {
-            root = (SvnNode) world.node("svn:" + url);
-            // make sure to get a propery error message, and to get it early
+            root = (SvnNode) world.node(scm);
+            // make sure to get a proper error message - and to get it early
             root.checkDirectory();
             idxName = root.getSvnurl().getPath().replace('/', '.') + ".idx";
             idxName = Strings.removeLeftOpt(idxName, ".");
@@ -157,7 +160,7 @@ public class ScmProperties {
         } catch (RuntimeException | IOException e) {
             throw e;
         } catch (Exception e) {
-            throw new IOException("error scanning svn module " + url + ": " + e.getMessage(), e);
+            throw new IOException("error scanning svn module " + scm + ": " + e.getMessage(), e);
         }
     }
 }
