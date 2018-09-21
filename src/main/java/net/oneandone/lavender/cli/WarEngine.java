@@ -87,12 +87,12 @@ public class WarEngine {
         index =  distributor.close();
         absolute += index.size();
 
-        LOG.info("lavender servers updated: "
-                + changed + "/" + absolute + " files changed in " + modules.size() + " modules, " + (System.currentTimeMillis() - started) + " ms");
         outputNodesFile.writeString(nodes);
         warStart = System.currentTimeMillis();
         updateWarFile(index, outputNodesFile);
         LOG.info("updated war " + (war.size() / 1024) + "k, " + (System.currentTimeMillis() - warStart) + " ms");
+        LOG.info("done: "
+                + changed + "/" + absolute + " files changed in " + modules.size() + " modules, " + (System.currentTimeMillis() - started) + " ms");
         return index;
     }
 
