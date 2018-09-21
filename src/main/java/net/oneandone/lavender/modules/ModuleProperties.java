@@ -114,10 +114,33 @@ public class ModuleProperties {
             source = null;
         }
         result = new ModuleProperties(eatFilter(properties, "pustefix", DEFAULT_INCLUDES), source);
-        for (String prefix : svnPrefixes(properties)) {
+        for (String prefix : prefixes(properties, ScmProperties.SVN_PREFIX)) {
             svnurl = stripSvn((String) properties.remove(prefix));
             svnurlRevision = Long.parseLong(eatOpt(properties, prefix + ".revision", "-1"));
             svnurlDevel = stripSvn(eatOpt(properties, prefix + ".devel", svnurl));
+            svnsrc = eatSvnSource(properties, prefix, source);
+            svnsrc = fallback(svnurl, svnsrc);
+            result.configs.add(
+                    new ScmProperties(
+                            prefix.substring(ScmProperties.SVN_PREFIX.length()),
+                            eatFilter(properties, prefix, DEFAULT_INCLUDES),
+                            svnurl, svnurlRevision, svnurlDevel,
+                            eatOpt(properties, prefix + ".type", Module.TYPE),
+                            eatBoolean(properties, prefix + ".lavendelize", true),
+                            eatOpt(properties, prefix + ".resourcePathPrefix", ""),
+                            eatOpt(properties, prefix + ".targetPathPrefix", ""),
+                            svnsrc));
+        }
+        for (String prefix : prefixes(properties, ScmProperties.SCM_PREFIX)) {
+            svnurl = stripSvn((String) properties.remove(prefix));
+            svnurlRevision = Long.parseLong(eatOpt(properties, prefix + ".revision", "-1"));
+            svnurlDevel = stripSvn(eatOpt(properties, prefix + ".devel", svnurl));
+            String path = eatOpt(properties, prefix + ".path", "");
+            if (!path.isEmpty() && !path.startsWith("/")) {
+                path = "/" + path;
+            }
+            svnurl = svnurl + path;
+            svnurlDevel = svnurlDevel + path;
             svnsrc = eatSvnSource(properties, prefix, source);
             svnsrc = fallback(svnurl, svnsrc);
             result.configs.add(
@@ -213,12 +236,12 @@ public class ModuleProperties {
         return result == null ? dflt : result;
     }
 
-    private static List<String> svnPrefixes(Properties properties) {
+    private static List<String> prefixes(Properties properties, String prefix) {
         List<String> result;
 
         result = new ArrayList<>();
         for (String name : properties.stringPropertyNames()) {
-            if (name.startsWith(ScmProperties.SVN_PREFIX)) {
+            if (name.startsWith(prefix)) {
                 if (Strings.count(name, ".") == 1) {
                     result.add(name);
                 }

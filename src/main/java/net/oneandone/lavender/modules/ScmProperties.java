@@ -31,6 +31,7 @@ import java.util.Map;
 
 public class ScmProperties {
     public static final String SVN_PREFIX = "svn.";
+    public static final String SCM_PREFIX = "scm.";
 
     public final String name;
     public final Filter filter;
