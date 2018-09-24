@@ -71,15 +71,15 @@ public class SvnModule extends Module<SvnEntry> {
     }
 
     protected Map<String, SvnEntry> loadEntries() throws IOException {
-        Map<String, SvnEntry> cachedEntries;
+        Map<String, SvnEntry> loadedEntries;
         long nextModifiedRepository;
         long nextModifiedModule;
         Map<String, SvnEntry> entries;
 
         try {
-            cachedEntries = loadedEntries(); // != null implies that there is a cache file
-            if (cachedEntries == null) {
-                cachedEntries = loadCachedEntriesOpt();
+            loadedEntries = loadedEntries(); // != null implies that there is a cache file
+            if (loadedEntries == null) {
+                loadedEntries = loadCachedEntriesOpt();
             }
             nextModifiedRepository = getRepositoryLastModified();
             if (nextModifiedRepository != lastModifiedRepository) {
@@ -89,13 +89,13 @@ public class SvnModule extends Module<SvnEntry> {
             }
 
             if (lastModifiedModule == nextModifiedModule) {
-                if (cachedEntries == null) {
+                if (loadedEntries == null) {
                     throw new IllegalStateException("" + lastModifiedModule);
                 }
                 LOG.info("no changes in repository: " + lastModifiedRepository + " " + lastModifiedModule + " -> using cached entries");
                 lastModifiedRepository = nextModifiedRepository;
                 lastModifiedModule = nextModifiedModule;
-                return cachedEntries;
+                return loadedEntries;
             }
 
             LOG.info(root.getUri() + ": loading entries from server, revision " + lastModifiedModule + " -> " + nextModifiedModule);

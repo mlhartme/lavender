@@ -25,9 +25,9 @@ import java.util.Map;
 
 public class BitbucketModule extends Module<String> {
     public static BitbucketModule create(World world, String project, String repository, String branch,
-                                         String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) throws IOException {
+                                         String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter, JarConfig config) throws IOException {
         return new BitbucketModule((HttpNode) world.validNode("http://bitbucket.1and1.org:7990/rest/api/1.0"), project, repository, branch,
-                name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
+                name, lavendelize, resourcePathPrefix, targetPathPrefix, filter, config);
     }
 
     private final Bitbucket bitbucket;
@@ -35,18 +35,22 @@ public class BitbucketModule extends Module<String> {
     private final String repository;
     private final String branch;
 
-    private String revision;
+    /** may be null */
+    private final JarConfig config;
+
+    private String loadedRevision;
 
     public BitbucketModule(HttpNode root, String project, String repository, String branch,
-                           String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
+                           String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter, JarConfig config) {
         super(Module.TYPE, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
 
         this.bitbucket = new Bitbucket(root);
         this.project = project;
         this.repository = repository;
         this.branch = branch;
+        this.config = config;
 
-        this.revision = null;
+        this.loadedRevision = null;
     }
 
     @Override
@@ -56,8 +60,8 @@ public class BitbucketModule extends Module<String> {
         Map.Entry<String, String> entry;
         Filter filter;
 
-        revision = bitbucket.latestCommit(project, repository, branch);
-        result = bitbucket.changes(project, repository, revision);
+        loadedRevision = bitbucket.latestCommit(project, repository, branch);
+        result = bitbucket.changes(project, repository, loadedRevision);
         iter = result.entrySet().iterator();
         filter = getFilter();
         while (iter.hasNext()) {
@@ -70,7 +74,10 @@ public class BitbucketModule extends Module<String> {
     }
 
     @Override
-    protected Resource createResource(String path, String contentId) {
-        return new BitbucketResource(bitbucket, project, repository, path, revision, contentId);
+    protected Resource createResource(String resourcePath, String contentId) {
+        String accessPath;
+
+        accessPath = config == null ? resourcePath : config.getPath(resourcePath);
+        return new BitbucketResource(bitbucket, project, repository, resourcePath, accessPath, loadedRevision, contentId);
     }
 }

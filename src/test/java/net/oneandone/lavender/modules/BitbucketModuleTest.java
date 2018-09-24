@@ -44,7 +44,7 @@ public class BitbucketModuleTest {
         Resource resource;
 
         module = BitbucketModule.create(WORLD, "CISOOPS", "lavender-test-module", "master", "myname", false,
-                "", "", WORLD.filter().include("**/*.jpg", "**/*.css"));
+                "", "", WORLD.filter().include("**/*.jpg", "**/*.css"), null);
 
         assertNull(module.probe("no/such.file"));
         assertNotNull(module.probe("Penny_test.jpg"));
