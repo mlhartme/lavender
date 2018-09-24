@@ -8,18 +8,16 @@ public class BitbucketResource extends Resource {
     private final String project;
     private final String repository;
     private final String resourcePath;
-    private final String accessPath;
+    private final BitbucketEntry entry;
     private final String at;
-    private final String contentId;
 
-    public BitbucketResource(Bitbucket bitbucket, String project, String repository, String resourcePath, String accessPath, String at, String contentId) {
+    public BitbucketResource(Bitbucket bitbucket, String project, String repository, String resourcePath, BitbucketEntry entry, String at) {
         this.bitbucket = bitbucket;
         this.project = project;
         this.repository = repository;
         this.resourcePath = resourcePath;
-        this.accessPath = accessPath;
+        this.entry = entry;
         this.at = at;
-        this.contentId = contentId;
     }
 
     @Override
@@ -29,17 +27,17 @@ public class BitbucketResource extends Resource {
 
     @Override
     public String getContentId() {
-        return contentId;
+        return entry.contentId;
     }
 
     @Override
     public String getOrigin() {
-        return "bitbucket:" + project + ":" + repository + ":" + accessPath + ":" + at;
+        return "bitbucket:" + project + ":" + repository + ":" + entry + ":" + at;
     }
 
     @Override
     public void writeTo(OutputStream dest) throws IOException {
-        bitbucket.writeTo(project, repository, accessPath, at, dest);
+        bitbucket.writeTo(project, repository, entry.accessPath, at, dest);
     }
 
     @Override

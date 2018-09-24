@@ -20,10 +20,11 @@ import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.http.HttpNode;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class BitbucketModule extends Module<String> {
+public class BitbucketModule extends Module<BitbucketEntry> {
     public static BitbucketModule create(World world, String project, String repository, String branch,
                                          String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter, JarConfig config) throws IOException {
         return new BitbucketModule((HttpNode) world.validNode("http://bitbucket.1and1.org:7990/rest/api/1.0"), project, repository, branch,
@@ -54,30 +55,37 @@ public class BitbucketModule extends Module<String> {
     }
 
     @Override
-    protected Map<String, String> loadEntries() throws IOException {
-        Map<String, String> result;
-        Iterator<Map.Entry<String, String>> iter;
-        Map.Entry<String, String> entry;
+    protected Map<String, BitbucketEntry> loadEntries() throws IOException {
+        Map<String, String> raw;
+        Map<String, BitbucketEntry> result;
         Filter filter;
+        String publicPath;
+        String accessPath;
 
         loadedRevision = bitbucket.latestCommit(project, repository, branch);
-        result = bitbucket.changes(project, repository, loadedRevision);
-        iter = result.entrySet().iterator();
+        raw = bitbucket.changes(project, repository, loadedRevision);
         filter = getFilter();
-        while (iter.hasNext()) {
-            entry = iter.next();
-            if (!filter.matches(entry.getKey())) {
-                iter.remove();
+        result = new HashMap<>();
+        for (Map.Entry<String, String> entry : raw.entrySet()) {
+            if (filter.matches(entry.getKey())) {
+                accessPath = entry.getKey();
+                if (config != null) {
+                    publicPath = config.getPath(accessPath);
+                } else {
+                    publicPath = accessPath;
+                }
+                if (publicPath != null) {
+                    result.put(publicPath, new BitbucketEntry(publicPath, accessPath, entry.getValue()));
+                } else {
+                    System.out.println("invisible: " + accessPath);
+                }
             }
         }
         return result;
     }
 
     @Override
-    protected Resource createResource(String resourcePath, String contentId) {
-        String accessPath;
-
-        accessPath = config == null ? resourcePath : config.getPath(resourcePath);
-        return new BitbucketResource(bitbucket, project, repository, resourcePath, accessPath, loadedRevision, contentId);
+    protected Resource createResource(String resourcePath, BitbucketEntry entry) {
+        return new BitbucketResource(bitbucket, project, repository, resourcePath, entry, loadedRevision);
     }
 }
