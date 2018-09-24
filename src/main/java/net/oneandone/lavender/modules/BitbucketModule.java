@@ -25,9 +25,9 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class BitbucketModule extends Module<BitbucketEntry> {
-    public static BitbucketModule create(World world, String project, String repository, String branch, String accessPathPrefix,
+    public static BitbucketModule create(World world, String server, String project, String repository, String branch, String accessPathPrefix,
                                          String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter, JarConfig config) throws IOException {
-        return new BitbucketModule((HttpNode) world.validNode("http://bitbucket.1and1.org:7990/rest/api/1.0"), project, repository, branch, accessPathPrefix,
+        return new BitbucketModule((HttpNode) world.validNode("http://" + server + ":7990/rest/api/1.0"), project, repository, branch, accessPathPrefix,
                 name, lavendelize, resourcePathPrefix, targetPathPrefix, filter, config);
     }
 
@@ -66,6 +66,7 @@ public class BitbucketModule extends Module<BitbucketEntry> {
         Filter filter;
         String publicPath;
         String accessPath;
+        String relativeAccessPath;
 
         loadedRevision = bitbucket.latestCommit(project, repository, branch);
         raw = bitbucket.changes(project, repository, loadedRevision);
@@ -74,9 +75,10 @@ public class BitbucketModule extends Module<BitbucketEntry> {
         for (Map.Entry<String, String> entry : raw.entrySet()) {
             accessPath = entry.getKey();
             if (accessPath.startsWith(accessPathPrefix)) {
-                if (filter.matches(accessPath)) {
+                relativeAccessPath = accessPath.substring(accessPathPrefix.length());
+                if (filter.matches(relativeAccessPath)) {
                     if (config != null) {
-                        publicPath = config.getPath(accessPath.substring(accessPathPrefix.length()));
+                        publicPath = config.getPath(relativeAccessPath);
                     } else {
                         publicPath = accessPath;
                     }
