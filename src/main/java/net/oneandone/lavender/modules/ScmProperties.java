@@ -139,10 +139,17 @@ public class ScmProperties {
         if (scm.startsWith("svn:")) {
             return createSvnModule(cacheDir, jarConfig, world, scm + path, pinnedRevision);
         } else if (scm.startsWith("git:")) {
-            // TODO: path currently unused
-            return createBitbucketModule(cacheDir.getWorld(), Strings.removeLeft(scm,  "git:"), jarConfig);
+            return createBitbucketModule(cacheDir.getWorld(), Strings.removeLeft(scm,  "git:"), accessPathPrefix(path), jarConfig);
         } else {
             throw new IllegalStateException("scm url not supported: " + scm);
+        }
+    }
+
+    private static String accessPathPrefix(String path) {
+        if (path.isEmpty()) {
+            return path;
+        } else {
+            return Strings.removeLeft(path, "/") + "/";
         }
     }
 
@@ -168,7 +175,7 @@ public class ScmProperties {
         }
     }
 
-    private BitbucketModule createBitbucketModule(World world, String urlstr, JarConfig config) throws IOException {
+    private BitbucketModule createBitbucketModule(World world, String urlstr, String accessPathPrefix, JarConfig config) throws IOException {
         URI uri;
         String path;
         String project;
@@ -183,7 +190,7 @@ public class ScmProperties {
         idx = path.indexOf('/');
         project = path.substring(0, idx);
         repository = Strings.removeRight(path.substring(idx + 1), ".git");
-        return BitbucketModule.create(world, project, repository, tag.isEmpty() ? "master" : tag, name, lavendelize, resourcePathPrefix,
+        return BitbucketModule.create(world, project, repository, tag.isEmpty() ? "master" : tag, accessPathPrefix, name, lavendelize, resourcePathPrefix,
                 targetPathPrefix, filter, config);
     }
 }

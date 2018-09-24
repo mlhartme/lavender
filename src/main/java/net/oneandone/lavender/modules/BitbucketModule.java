@@ -25,9 +25,9 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class BitbucketModule extends Module<BitbucketEntry> {
-    public static BitbucketModule create(World world, String project, String repository, String branch,
+    public static BitbucketModule create(World world, String project, String repository, String branch, String accessPathPrefix,
                                          String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter, JarConfig config) throws IOException {
-        return new BitbucketModule((HttpNode) world.validNode("http://bitbucket.1and1.org:7990/rest/api/1.0"), project, repository, branch,
+        return new BitbucketModule((HttpNode) world.validNode("http://bitbucket.1and1.org:7990/rest/api/1.0"), project, repository, branch, accessPathPrefix,
                 name, lavendelize, resourcePathPrefix, targetPathPrefix, filter, config);
     }
 
@@ -35,20 +35,25 @@ public class BitbucketModule extends Module<BitbucketEntry> {
     private final String project;
     private final String repository;
     private final String branch;
+    private final String accessPathPrefix;
 
     /** may be null */
     private final JarConfig config;
 
     private String loadedRevision;
 
-    public BitbucketModule(HttpNode root, String project, String repository, String branch,
+    public BitbucketModule(HttpNode root, String project, String repository, String branch, String accessPathPrefix,
                            String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter, JarConfig config) {
         super(Module.TYPE, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
 
+        if (!accessPathPrefix.isEmpty() && !accessPathPrefix.endsWith("/")) {
+            throw new IllegalArgumentException(accessPathPrefix);
+        }
         this.bitbucket = new Bitbucket(root);
         this.project = project;
         this.repository = repository;
         this.branch = branch;
+        this.accessPathPrefix = accessPathPrefix;
         this.config = config;
 
         this.loadedRevision = null;
@@ -67,17 +72,17 @@ public class BitbucketModule extends Module<BitbucketEntry> {
         filter = getFilter();
         result = new HashMap<>();
         for (Map.Entry<String, String> entry : raw.entrySet()) {
-            if (filter.matches(entry.getKey())) {
-                accessPath = entry.getKey();
-                if (config != null) {
-                    publicPath = config.getPath(accessPath);
-                } else {
-                    publicPath = accessPath;
-                }
-                if (publicPath != null) {
-                    result.put(publicPath, new BitbucketEntry(publicPath, accessPath, entry.getValue()));
-                } else {
-                    System.out.println("invisible: " + accessPath);
+            accessPath = entry.getKey();
+            if (accessPath.startsWith(accessPathPrefix)) {
+                if (filter.matches(accessPath)) {
+                    if (config != null) {
+                        publicPath = config.getPath(accessPath.substring(accessPathPrefix.length()));
+                    } else {
+                        publicPath = accessPath;
+                    }
+                    if (publicPath != null) {
+                        result.put(publicPath, new BitbucketEntry(publicPath, accessPath, entry.getValue()));
+                    }
                 }
             }
         }
