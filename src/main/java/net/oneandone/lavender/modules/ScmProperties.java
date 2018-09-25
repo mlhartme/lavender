@@ -186,7 +186,6 @@ public class ScmProperties {
         if (uri.isOpaque()) {
             throw new IllegalArgumentException("uri format not supported: " + uri);
         }
-        System.out.println("host: " + uri.getHost());
         path = Strings.removeLeft(uri.getPath(), "/");
         idx = path.indexOf('/');
         project = path.substring(0, idx);

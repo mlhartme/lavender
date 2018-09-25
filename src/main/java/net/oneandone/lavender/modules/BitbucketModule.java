@@ -27,7 +27,7 @@ import java.util.Map;
 public class BitbucketModule extends Module<BitbucketEntry> {
     public static BitbucketModule create(World world, String server, String project, String repository, String branch, String accessPathPrefix,
                                          String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter, JarConfig config) throws IOException {
-        return new BitbucketModule((HttpNode) world.validNode("http://" + server + ":7990/rest/api/1.0"), project, repository, branch, accessPathPrefix,
+        return new BitbucketModule((HttpNode) world.validNode("https://" + server + "/rest/api/1.0"), project, repository, branch, accessPathPrefix,
                 name, lavendelize, resourcePathPrefix, targetPathPrefix, filter, config);
     }
 
