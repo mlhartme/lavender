@@ -15,13 +15,11 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.lavender.config.SystemProperties;
 import net.oneandone.sushi.fs.World;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -41,14 +39,13 @@ public class BitbucketModuleIT {
 
     @Test
     public void directory() throws Exception {
-        Properties properties;
+        Secrets secrets;
         Module module;
         Iterator<Resource> iter;
         Resource resource;
 
-        properties = WORLD.file("git.properties").readProperties();
-        module = new BitbucketModule(Bitbucket.create(WORLD, "bitbucket.1and1.org",
-                get(properties, "git.username"), get(properties, "git.password")),
+        secrets = Secrets.load(WORLD.file("it.secrets"));
+        module = new BitbucketModule(Bitbucket.create(WORLD, "bitbucket.1and1.org", secrets.get("git")),
                 "CISOOPS", "lavender-test-module", "master", "", "myname", false,
                 "", "", WORLD.filter().include("**/*.jpg", "**/*.css"), null);
 
@@ -61,15 +58,5 @@ public class BitbucketModuleIT {
         resource = iter.next();
         assertEquals("Penny_test.jpg", resource.getPath());
         assertFalse(iter.hasNext());
-    }
-
-    private static String get(Properties properties, String key) {
-        String result;
-
-        result = properties.getProperty(key);
-        if (result == null) {
-            throw new IllegalArgumentException("key not found: " + key);
-        }
-        return result;
     }
 }

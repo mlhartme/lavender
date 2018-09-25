@@ -38,11 +38,11 @@ import java.util.Map;
  * <a href="https://docs.atlassian.com/bitbucket-server/rest/5.13.0/bitbucket-rest.html">Rest API documentation</a>
  */
 public class Bitbucket {
-    public static Bitbucket create(World world, String hostname, String username, String password) throws NodeInstantiationException {
+    public static Bitbucket create(World world, String hostname, Secrets.UsernamePassword up) throws NodeInstantiationException {
         String credentials;
 
-        if (username != null) {
-            credentials = username + ":" + password + "@";
+        if (up != null) {
+            credentials = up.username + ":" + up.password + "@";
         } else {
             credentials = "";
         }
