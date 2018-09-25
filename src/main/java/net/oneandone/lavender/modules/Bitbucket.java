@@ -19,6 +19,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.oneandone.sushi.fs.NodeInstantiationException;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.http.HttpNode;
@@ -33,10 +34,22 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * As of 2018-09-18, we have bitbucket server 5.13.1.
+ * Bitbucket rest api. As of 2018-09-18, we have bitbucket server 5.13.1.
  * <a href="https://docs.atlassian.com/bitbucket-server/rest/5.13.0/bitbucket-rest.html">Rest API documentation</a>
  */
 public class Bitbucket {
+    public static Bitbucket create(World world, String hostname, String username, String password) throws NodeInstantiationException {
+        String credentials;
+
+        if (username != null) {
+            credentials = username + ":" + password + "@";
+        } else {
+            credentials = "";
+        }
+        return new Bitbucket((HttpNode) world.validNode("https://" + credentials + hostname + "/rest/api/1.0"));
+    }
+
+
     // https://stackoverflow.com/questions/9765453/is-gits-semi-secret-empty-tree-object-reliable-and-why-is-there-not-a-symbolic
     private static final String NULL_COMMIT = "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
 
@@ -87,11 +100,11 @@ public class Bitbucket {
         System.out.println("file: " + buffer.toString());
     }
 
-    private final HttpNode root;
+    private final HttpNode api;
     private final JsonParser parser;
 
     public Bitbucket(HttpNode root) {
-        this.root = root;
+        this.api = root;
         this.parser = new JsonParser();
     }
 
@@ -106,7 +119,7 @@ public class Bitbucket {
             if (branch.equals(obj.get("displayId").getAsString())) {
                 result.add(obj.get("latestCommit").getAsString());
             }
-        }, root.join("projects", project, "repos", repository, "branches"));
+        }, api.join("projects", project, "repos", repository, "branches"));
         switch (result.size()) {
             case 0: return null;
             case 1: return result.get(0);
@@ -137,7 +150,7 @@ public class Bitbucket {
                 parent = parent + "/";
             }
             result.put(parent + path.get("name").getAsString(), obj.get("contentId").getAsString());
-        }, root.join("projects", project, "repos", repository, "compare/changes"), "from", from, "to", to);
+        }, api.join("projects", project, "repos", repository, "compare/changes"), "from", from, "to", to);
         return result;
     }
 
@@ -155,14 +168,14 @@ public class Bitbucket {
         List<String> result;
 
         result = new ArrayList<>();
-        getPaged(element -> result.add(element.getAsString()), root.join("projects", project, "repos", repository, "files"), "at", at);
+        getPaged(element -> result.add(element.getAsString()), api.join("projects", project, "repos", repository, "files"), "at", at);
         return result;
     }
 
     public void writeTo(String project, String repository, String path, String at, OutputStream dest) throws IOException {
         HttpNode node;
 
-        node = root.join("projects", project, "repos", repository, "raw", path);
+        node = api.join("projects", project, "repos", repository, "raw", path);
         node = node.getRoot().node(node.getPath(), "at=" + at);
         node.copyFileTo(dest);
     }

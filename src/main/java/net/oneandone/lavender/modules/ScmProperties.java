@@ -190,7 +190,8 @@ public class ScmProperties {
         idx = path.indexOf('/');
         project = path.substring(0, idx);
         repository = Strings.removeRight(path.substring(idx + 1), ".git");
-        return BitbucketModule.create(world, uri.getHost(), project, repository, tag.isEmpty() ? "master" : tag, accessPathPrefix, name, lavendelize, resourcePathPrefix,
+        return new BitbucketModule(Bitbucket.create(world, uri.getHost(), null, null),
+                project, repository, tag.isEmpty() ? "master" : tag, accessPathPrefix, name, lavendelize, resourcePathPrefix,
                 targetPathPrefix, filter, config);
     }
 }

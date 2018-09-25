@@ -15,22 +15,13 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.filter.Filter;
-import net.oneandone.sushi.fs.http.HttpNode;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class BitbucketModule extends Module<BitbucketEntry> {
-    public static BitbucketModule create(World world, String server, String project, String repository, String branch, String accessPathPrefix,
-                                         String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter, JarConfig config) throws IOException {
-        return new BitbucketModule((HttpNode) world.validNode("https://" + server + "/rest/api/1.0"), project, repository, branch, accessPathPrefix,
-                name, lavendelize, resourcePathPrefix, targetPathPrefix, filter, config);
-    }
-
     private final Bitbucket bitbucket;
     private final String project;
     private final String repository;
@@ -42,14 +33,14 @@ public class BitbucketModule extends Module<BitbucketEntry> {
 
     private String loadedRevision;
 
-    public BitbucketModule(HttpNode root, String project, String repository, String branch, String accessPathPrefix,
+    public BitbucketModule(Bitbucket bitbucket, String project, String repository, String branch, String accessPathPrefix,
                            String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter, JarConfig config) {
         super(Module.TYPE, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
 
         if (!accessPathPrefix.isEmpty() && !accessPathPrefix.endsWith("/")) {
             throw new IllegalArgumentException(accessPathPrefix);
         }
-        this.bitbucket = new Bitbucket(root);
+        this.bitbucket = bitbucket;
         this.project = project;
         this.repository = repository;
         this.branch = branch;

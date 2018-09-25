@@ -43,7 +43,8 @@ public class BitbucketModuleIT {
         Iterator<Resource> iter;
         Resource resource;
 
-        module = BitbucketModule.create(WORLD, "bitbucket.1and1.org","CISOOPS", "lavender-test-module", "master", "", "myname", false,
+        module = new BitbucketModule(Bitbucket.create(WORLD, "bitbucket.1and1.org", null, null),
+                "CISOOPS", "lavender-test-module", "master", "", "myname", false,
                 "", "", WORLD.filter().include("**/*.jpg", "**/*.css"), null);
 
         assertNull(module.probe("no/such.file"));
