@@ -36,7 +36,6 @@ import java.util.Map;
  * As of 2018-09-18, we have bitbucket server 5.13.1.
  * <a href="https://docs.atlassian.com/bitbucket-server/rest/5.13.0/bitbucket-rest.html">Rest API documentation</a>
  */
-// CLI example: curl 'http://bitbucket.1and1.org:7990/rest/api/1.0/projects/CISOOPS/repos/puc/compare/changes?from=ea01f95dafd&to=cd309b8a877'  | python -m json.tool
 public class Bitbucket {
     // https://stackoverflow.com/questions/9765453/is-gits-semi-secret-empty-tree-object-reliable-and-why-is-there-not-a-symbolic
     private static final String NULL_COMMIT = "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
@@ -151,7 +150,7 @@ public class Bitbucket {
      *
      * @param at revision
      */
-    // curl 'http://bitbucket.1and1.org:7990/rest/api/1.0/projects/CISOOPS/repos/puc/files'  | python -m json.tool
+    // curl 'https://bitbucket.1and1.org/rest/api/1.0/projects/CISOOPS/repos/lavender-test-module/files'  | python -m json.tool
     public List<String> files(String project, String repository, String at) throws IOException {
         List<String> result;
 
