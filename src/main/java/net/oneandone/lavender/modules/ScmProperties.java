@@ -27,6 +27,7 @@ import net.oneandone.sushi.util.Strings;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,17 +72,13 @@ public class ScmProperties {
         this.source = source;
     }
 
-    public Module create(FileNode cacheDir, boolean prod, String svnUsername, String svnPassword, final JarConfig jarConfig) throws IOException {
+    public Module create(FileNode cacheDir, boolean prod, Secrets.UsernamePassword up, JarConfig jarConfig) throws IOException {
         World world;
         final FileNode checkout;
         String scm;
         long pinnedRevision;
 
         world = cacheDir.getWorld();
-
-        // TODO: ugly side-effect
-        world.getFilesystem("svn", SvnFilesystem.class).setDefaultCredentials(svnUsername, svnPassword);
-
         if (source != null) {
             checkout = world.file(source);
             if (checkout.isDirectory()) {
@@ -137,9 +134,9 @@ public class ScmProperties {
         }
         scm = Strings.removeLeft(scm, "scm:");
         if (scm.startsWith("svn:")) {
-            return createSvnModule(cacheDir, jarConfig, world, scm + path, pinnedRevision);
+            return createSvnModule(cacheDir, jarConfig, world, scm + path, up, pinnedRevision);
         } else if (scm.startsWith("git:")) {
-            return createBitbucketModule(cacheDir.getWorld(), Strings.removeLeft(scm,  "git:"), accessPathPrefix(path), jarConfig);
+            return createBitbucketModule(cacheDir.getWorld(), Strings.removeLeft(scm,  "git:"), up, accessPathPrefix(path), jarConfig);
         } else {
             throw new IllegalStateException("scm url not supported: " + scm);
         }
@@ -153,12 +150,24 @@ public class ScmProperties {
         }
     }
 
-    private SvnModule createSvnModule(FileNode cacheDir, JarConfig jarConfig, World world, String scm, long pinnedRevision) throws IOException {
+    private SvnModule createSvnModule(FileNode cacheDir, JarConfig jarConfig, World world, String scm, Secrets.UsernamePassword up, long pinnedRevision) throws IOException {
         SvnNode root;
         String idxName;
         FileNode cache;
+        URL orig;
 
         try {
+            if (up != null) {
+                orig = new URL(scm);
+                if (orig.getPort() != -1) {
+                    throw new IllegalStateException("TODO: " + scm);
+                }
+                if (orig.getQuery() != null) {
+                    throw new IllegalStateException("TODO: " + scm);
+                }
+                scm = orig.getPath() + "://" + up.username + ":" + up.password + "@" + orig.getHost() + "/" + orig.getPath();
+                System.out.println("scm: " + scm);
+            }
             root = (SvnNode) world.node(scm);
             // make sure to get a proper error message - and to get it early
             root.checkDirectory();
@@ -175,7 +184,8 @@ public class ScmProperties {
         }
     }
 
-    private BitbucketModule createBitbucketModule(World world, String urlstr, String accessPathPrefix, JarConfig config) throws IOException {
+    private BitbucketModule createBitbucketModule(World world, String urlstr, Secrets.UsernamePassword up,
+                                                  String accessPathPrefix, JarConfig config) throws IOException {
         URI uri;
         String path;
         String project;
@@ -190,7 +200,7 @@ public class ScmProperties {
         idx = path.indexOf('/');
         project = path.substring(0, idx);
         repository = Strings.removeRight(path.substring(idx + 1), ".git");
-        return new BitbucketModule(Bitbucket.create(world, uri.getHost(), null),
+        return new BitbucketModule(Bitbucket.create(world, uri.getHost(), up),
                 project, repository, tag.isEmpty() ? "master" : tag, accessPathPrefix, name, lavendelize, resourcePathPrefix,
                 targetPathPrefix, filter, config);
     }

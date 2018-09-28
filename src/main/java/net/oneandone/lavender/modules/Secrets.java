@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.modules;
 
+import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
 
 import java.io.IOException;
@@ -26,7 +27,7 @@ import java.util.Map;
 import java.util.Properties;
 
 public class Secrets {
-    public static Secrets load(FileNode source) throws IOException {
+    public static Secrets load(Node source) throws IOException {
         Properties p;
         Secrets result;
 
@@ -84,7 +85,11 @@ public class Secrets {
         map.put(name, up);
     }
 
-    public UsernamePassword get(String url) {
+    /**
+     * @return credentials or null for anonymous
+     * @throws IllegalStateException if credentials are missing
+     */
+    public UsernamePassword get(String url) throws NotFoundException {
         String best;
 
         best = null;
@@ -96,7 +101,7 @@ public class Secrets {
             }
         }
         if (best == null) {
-            throw new IllegalStateException("TODO: " + url);
+            throw new NotFoundException(url);
         }
         return map.get(best);
     }
@@ -108,6 +113,12 @@ public class Secrets {
         public UsernamePassword(String username, String password) {
             this.username = username;
             this.password = password;
+        }
+    }
+
+    public static class NotFoundException extends IOException {
+        public NotFoundException(String url) {
+            super(url);
         }
     }
 }

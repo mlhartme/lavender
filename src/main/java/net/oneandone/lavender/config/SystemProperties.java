@@ -16,6 +16,7 @@
 package net.oneandone.lavender.config;
 
 import net.oneandone.lavender.index.Util;
+import net.oneandone.lavender.modules.Secrets;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -75,7 +76,11 @@ public class SystemProperties {
         List<Node> sshKeys;
         String cache;
         FileNode cacheNode;
+        Secrets secrets;
+        World world;
+        Node source;
 
+        world = file.getWorld();
         properties = file.readProperties();
         sshKeys = new ArrayList<>();
         for (String key : properties.stringPropertyNames()) {
@@ -85,13 +90,26 @@ public class SystemProperties {
         }
         cache = properties.getProperty("cache");
         if (cache == null) {
-            cacheNode = file.getWorld().getHome().join(".cache/lavender");
+            cacheNode = world.getHome().join(".cache/lavender");
         } else {
-            cacheNode = file.getWorld().file(cache);
+            cacheNode = world.file(cache);
+        }
+        if (properties.containsKey("svn.username")) {
+            if (properties.containsKey("secrets")) {
+                throw new IOException("invalid system properties: you cannot mix svn credential with secrets configuration");
+            }
+            secrets = new Secrets();
+            secrets.add("svn", new Secrets.UsernamePassword(properties.getProperty("svn.username"), properties.getProperty("svn.password")));
+        } else {
+            if (properties.containsKey("secrets")) {
+                source = world.file(properties.getProperty("secrets"));
+            } else {
+                source = file.getParent().join("lavender.secrets");
+            }
+            secrets = Secrets.load(source);
         }
         try {
-            return new SystemProperties(file.getWorld(), cacheNode,
-                    new URI(properties.getProperty("svn")), properties.getProperty("svn.username"), properties.getProperty("svn.password"), sshKeys);
+            return new SystemProperties(world, cacheNode, new URI(properties.getProperty("svn")), secrets, sshKeys);
         } catch (URISyntaxException e) {
             throw new IOException("invalid properties file " + file + ": " + e.getMessage(), e);
         }
@@ -103,16 +121,14 @@ public class SystemProperties {
     private final FileNode cache;
     /** don't store the node, so I can create properties without accessing svn (and thus without svn credentials) */
     public final URI svn;
-    public final String svnUsername;
-    public final String svnPassword;
+    public final Secrets secrets;
     private final List<Node> sshKeys;
 
-    public SystemProperties(World world, FileNode cache, URI svn, String svnUsername, String svnPassword, List<Node> sshKeys) {
+    public SystemProperties(World world, FileNode cache, URI svn, Secrets secrets, List<Node> sshKeys) {
         this.world = world;
         this.cache = cache;
         this.svn = svn;
-        this.svnUsername = svnUsername;
-        this.svnPassword = svnPassword;
+        this.secrets = secrets;
         this.sshKeys = sshKeys;
     }
 
@@ -145,7 +161,6 @@ public class SystemProperties {
 
         initTemp(temp());
         world.getMemoryFilesystem().setMaxInMemorySize(Integer.MAX_VALUE);
-        world.getFilesystem("svn", SvnFilesystem.class).setDefaultCredentials(svnUsername, svnPassword);
         if (withSsh) {
             ssh = world.getFilesystem("ssh", SshFilesystem.class);
             for (Node node : sshKeys) {

@@ -20,6 +20,7 @@ import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.Distributor;
 import net.oneandone.lavender.modules.Module;
 import net.oneandone.lavender.modules.NodeModule;
+import net.oneandone.lavender.modules.Secrets;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.xml.XmlException;
@@ -49,18 +50,15 @@ public class WarEngine {
 
     private final FileNode cache;
     private final Distributor distributor;
-    private final String svnUsername;
-    private final String svnPassword;
+    private final Secrets.UsernamePassword up;
     private final FileNode war;
     private final FileNode outputNodesFile;
     private final String nodes;
 
-    public WarEngine(FileNode cache, Distributor distributor, String svnUsername, String svnPassword,
-                     FileNode war, FileNode outputNodesFile, String nodes) {
+    public WarEngine(FileNode cache, Distributor distributor, Secrets.UsernamePassword up, FileNode war, FileNode outputNodesFile, String nodes) {
         this.cache = cache;
         this.distributor = distributor;
-        this.svnUsername = svnUsername;
-        this.svnPassword = svnPassword;
+        this.up = up;
         this.war = war;
         this.outputNodesFile = outputNodesFile;
         this.nodes = nodes;
@@ -80,7 +78,7 @@ public class WarEngine {
         long warStart;
 
         started = System.currentTimeMillis();
-        modules = NodeModule.fromWebapp(cache, true, war.openZip(), svnUsername, svnPassword);
+        modules = NodeModule.fromWebapp(cache, true, war.openZip(), up);
         absolute = 0;
         changed = extract(modules);
 

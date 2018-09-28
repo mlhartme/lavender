@@ -255,10 +255,10 @@ public class ModuleProperties {
         this.configs = new ArrayList<>();
     }
 
-    public void addModules(FileNode cache, boolean prod, String svnUsername, String svnPassword, List<Module> result, JarConfig jarConfig)
+    public void addModules(FileNode cache, boolean prod, Secrets.UsernamePassword up, List<Module> result, JarConfig jarConfig)
             throws IOException {
         for (ScmProperties config : configs) {
-            result.add(config.create(cache, prod, svnUsername, svnPassword, jarConfig));
+            result.add(config.create(cache, prod, up, jarConfig));
         }
     }
 

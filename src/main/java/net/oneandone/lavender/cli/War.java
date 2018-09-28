@@ -55,7 +55,7 @@ public class War extends Base {
         properties = globals.properties();
         try (Pool pool = globals.pool()) {
             cacheroot = globals.cacheroot();
-            engine = new WarEngine(cacheroot, Distributor.open(cacheroot, cluster.connect(pool), docroot, indexName), properties.svnUsername, properties.svnPassword, war, outputNodesFile, nodes);
+            engine = new WarEngine(cacheroot, Distributor.open(cacheroot, cluster.connect(pool), docroot, indexName), properties.secrets.get("svn"), war, outputNodesFile, nodes);
             engine.run();
         }
         outputNodesFile.deleteFile();

@@ -96,7 +96,7 @@ public class DevelopmentFilter implements Filter {
 
     List<Module> loadModulesFromWebapp(Node webapp, SystemProperties properties, FileNode cache)
             throws IOException, SAXException, XmlException {
-        return NodeModule.fromWebapp(cache, false, webapp, properties.svnUsername, properties.svnPassword);
+        return NodeModule.fromWebapp(cache, false, webapp, properties.secrets.get("svn") /* TODO */);
     }
 
     public boolean intercept(HttpServletRequest request, HttpServletResponse response) throws IOException {
