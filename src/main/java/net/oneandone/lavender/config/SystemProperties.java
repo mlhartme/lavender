@@ -79,6 +79,7 @@ public class SystemProperties extends PropertiesBase {
         World world;
         Node source;
         Node network;
+        URI svn;
 
         world = file.getWorld();
         properties = file.readProperties();
@@ -108,10 +109,14 @@ public class SystemProperties extends PropertiesBase {
             network = world.node(str);
         }
         try {
-            return new SystemProperties(world, cache, new URI(eat(properties, "svn")), network, secrets, sshKeys);
+            svn = new URI(eat(properties, "svn"));
         } catch (URISyntaxException e) {
             throw new IOException("invalid properties file " + file + ": " + e.getMessage(), e);
         }
+        if (!properties.isEmpty()) {
+            throw new IOException("unknown properties: " + properties.keySet());
+        }
+        return new SystemProperties(world, cache, svn, network, secrets, sshKeys);
     }
 
     //--
