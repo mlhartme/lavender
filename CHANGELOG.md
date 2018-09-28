@@ -32,6 +32,7 @@
     * renamed `lavender.properties` to `lavender/host.properties`; also renamed the corresponding system property `lavender.properties` to `lavender.hostproperties`
       and the environment variable `LAVENDER_PROPERTIES` to `LAVENDER_HOSTPROPERTIES`
     * location of network.xml is configurable now
+    * instead of a single svn url, you can now configure a map of urls (including git urls)
   * renamed net.xml to network.xml
   * in network.xml
     * renamed docroot type to docroot name

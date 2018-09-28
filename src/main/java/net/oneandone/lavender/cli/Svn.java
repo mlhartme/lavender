@@ -63,7 +63,7 @@ public class Svn extends Base {
         docroot = cluster.docroot(docrootName);
         filter = new Filter();
         filter.includeAll();
-        scmurl = "scm:" + properties.svn.toString() + "/data/" + directory;
+        scmurl = "scm:" + properties.getScm("svn") + "/data/" + directory;
         moduleConfig = new ScmProperties("svn", filter, scmurl, scmurl, "-1", "", Module.TYPE, false, "", directory + "/", null);
         cacheroot = globals.cacheroot();
         up = properties.secrets.get(scmurl);

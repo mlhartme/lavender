@@ -26,8 +26,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+/** configuration comming from the host that runs lavender */
 public class HostProperties extends PropertiesBase {
     public static HostProperties load(World world) throws IOException, URISyntaxException {
         return load(file(world), true);
@@ -72,23 +75,16 @@ public class HostProperties extends PropertiesBase {
 
     private static HostProperties properties(Node file) throws IOException, URISyntaxException {
         java.util.Properties properties;
-        List<Node> sshKeys;
         String str;
         FileNode cache;
         Secrets secrets;
         World world;
         Node source;
         Node network;
-        URI svn;
+        HostProperties result;
 
         world = file.getWorld();
         properties = file.readProperties();
-        sshKeys = new ArrayList<>();
-        for (String key : properties.stringPropertyNames()) {
-            if (key.startsWith("ssh.")) {
-                sshKeys.add(file.getWorld().file(eat(properties, key)));
-            }
-        }
         str = eatOpt(properties,"cache", null);
         if (str == null) {
             cache = world.getHome().join(".cache/lavender");
@@ -108,15 +104,19 @@ public class HostProperties extends PropertiesBase {
         } else {
             network = world.node(str);
         }
-        try {
-            svn = new URI(eat(properties, "svn"));
-        } catch (URISyntaxException e) {
-            throw new IOException("invalid properties file " + file + ": " + e.getMessage(), e);
+        result = new HostProperties(world, cache, network, secrets);
+        for (String key : properties.stringPropertyNames()) {
+            if (key.startsWith("scm.")) {
+                result.addScm(key.substring(4), new URI(eat(properties, key)));
+            } else if (key.startsWith("ssh.")) {
+                result.addSsh(file.getWorld().file(eat(properties, key)));
+            }
+
         }
         if (!properties.isEmpty()) {
             throw new IOException("unknown properties: " + properties.keySet());
         }
-        return new HostProperties(world, cache, svn, network, secrets, sshKeys);
+        return result;
     }
 
     //--
@@ -124,18 +124,27 @@ public class HostProperties extends PropertiesBase {
     public final World world;
     private final FileNode cache;
     /** don't store the node, so I can create properties without accessing svn (and thus without svn credentials) */
-    public final URI svn;
+    private final Map<String, URI> scms;
     public final Node network;
     public final Secrets secrets;
     private final List<Node> sshKeys;
 
-    public HostProperties(World world, FileNode cache, URI svn, Node network, Secrets secrets, List<Node> sshKeys) {
+    public HostProperties(World world, FileNode cache, Node network, Secrets secrets) {
         this.world = world;
         this.cache = cache;
-        this.svn = svn;
+        this.scms = new HashMap<>();
         this.network = network;
         this.secrets = secrets;
-        this.sshKeys = sshKeys;
+        this.sshKeys = new ArrayList<>();
+    }
+
+    public void addScm(String name, URI uri) throws IOException {
+        if (scms.put(name, uri) != null) {
+            throw new IOException("duplicate scm: " + uri);
+        }
+    }
+    public void addSsh(FileNode key) {
+        sshKeys.add(key);
     }
 
     public void initTemp(FileNode temp) throws IOException {
@@ -178,6 +187,10 @@ public class HostProperties extends PropertiesBase {
             }
         }
         // disable them for integration tests, because I don't have .ssh on pearl/gems
+    }
+
+    public URI getScm(String name) {
+        return scms.get(name);
     }
 
     public FileNode cacheroot() throws IOException {
