@@ -15,12 +15,12 @@
  */
 package net.oneandone.lavender.cli;
 
+import net.oneandone.lavender.config.UsernamePassword;
 import net.oneandone.lavender.filter.Lavender;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.Distributor;
 import net.oneandone.lavender.modules.Module;
 import net.oneandone.lavender.modules.NodeModule;
-import net.oneandone.lavender.config.Secrets;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.xml.XmlException;
@@ -50,12 +50,12 @@ public class WarEngine {
 
     private final FileNode cache;
     private final Distributor distributor;
-    private final Secrets.UsernamePassword up;
+    private final UsernamePassword up;
     private final FileNode war;
     private final FileNode outputNodesFile;
     private final String nodes;
 
-    public WarEngine(FileNode cache, Distributor distributor, Secrets.UsernamePassword up, FileNode war, FileNode outputNodesFile, String nodes) {
+    public WarEngine(FileNode cache, Distributor distributor, UsernamePassword up, FileNode war, FileNode outputNodesFile, String nodes) {
         this.cache = cache;
         this.distributor = distributor;
         this.up = up;

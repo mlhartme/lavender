@@ -19,7 +19,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.oneandone.lavender.config.Secrets;
+import net.oneandone.lavender.config.UsernamePassword;
 import net.oneandone.sushi.fs.NodeInstantiationException;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -39,7 +39,7 @@ import java.util.Map;
  * <a href="https://docs.atlassian.com/bitbucket-server/rest/5.13.0/bitbucket-rest.html">Rest API documentation</a>
  */
 public class Bitbucket {
-    public static Bitbucket create(World world, String hostname, Secrets.UsernamePassword up) throws NodeInstantiationException {
+    public static Bitbucket create(World world, String hostname, UsernamePassword up) throws NodeInstantiationException {
         String credentials;
 
         if (up != null) {

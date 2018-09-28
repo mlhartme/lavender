@@ -16,7 +16,7 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.config.PropertiesBase;
-import net.oneandone.lavender.config.Secrets;
+import net.oneandone.lavender.config.UsernamePassword;
 import net.oneandone.sushi.fs.FileNotFoundException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
@@ -226,7 +226,7 @@ public class ModuleProperties extends PropertiesBase {
         this.configs = new ArrayList<>();
     }
 
-    public void addModules(FileNode cache, boolean prod, Secrets.UsernamePassword up, List<Module> result, JarConfig jarConfig)
+    public void addModules(FileNode cache, boolean prod, UsernamePassword up, List<Module> result, JarConfig jarConfig)
             throws IOException {
         for (ScmProperties config : configs) {
             result.add(config.create(cache, prod, up, jarConfig));

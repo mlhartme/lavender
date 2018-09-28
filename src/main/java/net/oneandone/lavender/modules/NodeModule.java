@@ -15,7 +15,7 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.lavender.config.Secrets;
+import net.oneandone.lavender.config.UsernamePassword;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -45,7 +45,7 @@ public abstract class NodeModule extends Module<Node> {
     private static final String RESOURCE_INDEX = "META-INF/pustefix-resource.index";
 
 
-    public static List<Module> fromWebapp(FileNode cache, boolean prod, Node<?> webapp, Secrets.UsernamePassword up)
+    public static List<Module> fromWebapp(FileNode cache, boolean prod, Node<?> webapp, UsernamePassword up)
             throws IOException, SAXException, XmlException {
         Node<?> webappSource;
         List<Module> result;
@@ -68,7 +68,7 @@ public abstract class NodeModule extends Module<Node> {
         return result;
     }
 
-    public static List<Module> jarModuleOpt(FileNode cache, WarConfig rootConfig, boolean prod, Node jarOrig, Secrets.UsernamePassword up)
+    public static List<Module> jarModuleOpt(FileNode cache, WarConfig rootConfig, boolean prod, Node jarOrig, UsernamePassword up)
             throws IOException, XmlException, SAXException {
         Node configFile;
         final JarConfig config;

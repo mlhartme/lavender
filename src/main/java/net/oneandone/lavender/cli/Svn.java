@@ -20,11 +20,11 @@ import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.HostProperties;
 import net.oneandone.lavender.config.Pool;
+import net.oneandone.lavender.config.UsernamePassword;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.Distributor;
 import net.oneandone.lavender.modules.Module;
 import net.oneandone.lavender.modules.ScmProperties;
-import net.oneandone.lavender.config.Secrets;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
 
@@ -54,7 +54,7 @@ public class Svn extends Base {
         Index index;
         FileNode cacheroot;
         HostProperties properties;
-        Secrets.UsernamePassword up;
+        UsernamePassword up;
 
         if (directory.isEmpty() || directory.contains("/")) {
             throw new ArgumentException("invalid directory: " + directory);

@@ -15,7 +15,7 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.lavender.config.Secrets;
+import net.oneandone.lavender.config.UsernamePassword;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -72,7 +72,7 @@ public class ScmProperties {
         this.source = source;
     }
 
-    public Module create(FileNode cacheDir, boolean prod, Secrets.UsernamePassword up, JarConfig jarConfig) throws IOException {
+    public Module create(FileNode cacheDir, boolean prod, UsernamePassword up, JarConfig jarConfig) throws IOException {
         World world;
         final FileNode checkout;
         String scm;
@@ -150,7 +150,7 @@ public class ScmProperties {
         }
     }
 
-    private SvnModule createSvnModule(FileNode cacheDir, JarConfig jarConfig, World world, String scm, Secrets.UsernamePassword up, long pinnedRevision) throws IOException {
+    private SvnModule createSvnModule(FileNode cacheDir, JarConfig jarConfig, World world, String scm, UsernamePassword up, long pinnedRevision) throws IOException {
         SvnNode root;
         String idxName;
         FileNode cache;
@@ -185,7 +185,7 @@ public class ScmProperties {
         }
     }
 
-    private BitbucketModule createBitbucketModule(World world, String urlstr, Secrets.UsernamePassword up,
+    private BitbucketModule createBitbucketModule(World world, String urlstr, UsernamePassword up,
                                                   String accessPathPrefix, JarConfig config) throws IOException {
         URI uri;
         String path;

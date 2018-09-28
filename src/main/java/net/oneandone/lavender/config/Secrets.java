@@ -16,11 +16,9 @@
 package net.oneandone.lavender.config;
 
 import net.oneandone.sushi.fs.Node;
-import net.oneandone.sushi.fs.NodeInstantiationException;
 import net.oneandone.sushi.fs.svn.SvnNode;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -104,29 +102,6 @@ public class Secrets extends PropertiesBase {
             throw new NotFoundException(url);
         }
         return map.get(best);
-    }
-
-    public static class UsernamePassword {
-        public final String username;
-        public final String password;
-
-        public UsernamePassword(String username, String password) {
-            this.username = username;
-            this.password = password;
-        }
-
-        public SvnNode add(SvnNode node) throws NodeInstantiationException {
-            URI uri;
-
-            uri = node.getUri();
-            if (uri.getPort() != -1) {
-                throw new IllegalStateException("TODO: " + uri);
-            }
-            if (uri.getQuery() != null) {
-                throw new IllegalStateException("TODO: " + uri);
-            }
-            return (SvnNode) node.getWorld().validNode("svn:" + uri.getScheme() + "://" + username + ":" + password + "@" + uri.getHost() + "/" + uri.getPath());
-        }
     }
 
     public static class NotFoundException extends IOException {
