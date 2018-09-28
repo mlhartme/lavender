@@ -40,7 +40,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /** represents module (or application module) properties */
-public class ModuleProperties {
+public class ModuleProperties extends PropertiesBase {
     private static final Logger LOG = LoggerFactory.getLogger(ModuleProperties.class);
 
     public static final String MODULE_PROPERTIES = "META-INF/lavender.properties";
@@ -193,37 +193,6 @@ public class ModuleProperties {
 
         result = eatOpt(p, key, null);
         return result == null ? dflt : Separator.COMMA.split(result);
-    }
-
-    private static boolean eatBoolean(Properties p, String key, boolean dflt) {
-        String result;
-
-        result = eatOpt(p, key, null);
-        if (result == null) {
-            return dflt;
-        }
-        switch (result) {
-            case "true": return true;
-            case "false": return false;
-            default: throw new IllegalArgumentException("true or false expected, got " + result);
-        }
-    }
-
-    private static String eat(Properties p, String key) {
-        String result;
-
-        result = eatOpt(p, key, null);
-        if (result == null) {
-            throw new IllegalArgumentException("key not found: " + key);
-        }
-        return result;
-    }
-
-    private static String eatOpt(Properties p, String key, String dflt) {
-        String result;
-
-        result = (String) p.remove(key);
-        return result == null ? dflt : result;
     }
 
     private static List<String> prefixes(Properties properties, String prefix) {

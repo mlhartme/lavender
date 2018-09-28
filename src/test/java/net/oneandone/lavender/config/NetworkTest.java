@@ -33,11 +33,11 @@ public class NetworkTest {
         Cluster cluster;
 
         world = World.create(false);
-        properties = SystemProperties.load(world.guessProjectHome(Network.class).join("src/test/resources/lavender.properties"), false);
+        properties = SystemProperties.load(world.guessProjectHome(Network.class).join("src/test/config/lavender.properties"), false);
         network = Network.load(properties.network);
-        cluster = network.lookup("localhost");
+        cluster = network.lookup("local");
         assertNotNull(cluster);
-        assertEquals("localhost", cluster.getName());
+        assertEquals("local", cluster.getName());
         assertNotNull(cluster.docroot("web"));
     }
 }

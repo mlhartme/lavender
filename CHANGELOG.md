@@ -27,8 +27,16 @@
     * NodeResource replaces DefaultResource
   * moved Distributor class from `index` to `modules` module to
 
+* configuration cleanup
+  * system properties
+    * location of network.xml is configurable now
+  * renamed net.xml to network.xml
+  * in network.xml
+    * renamed docroot type to docroot name
+    * renamed docroot docroot to docroot documents
+    * merge aliases into docroot
+
 * cli
-  * configurable location of the network file
   * dumped `-lastconfig` switch, it was not used by puc, and you can now reconfigure the location of the network file
   * simplified command line by aligning the arguments passed to the various publishing commands:
     * 'war': it's just `war cluster docroot index` now
@@ -41,13 +49,6 @@
   * fixed hardcoded references to com.sun.zipfs 
   * added explicit javax.xml.bind dependencies
 
-* configuration cleanup
-  * renamed net.xml to network.xml
-  * in network.xml
-    * renamed docroot type to docroot name
-    * renamed docroot docroot to docroot documents
-    * merge aliases into docroot
-  
 * lock files now contain user, machine and command being executed
 
 * dependency update: 

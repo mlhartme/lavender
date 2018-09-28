@@ -1,0 +1,15 @@
+<nwetwork>
+    <cluster>
+        <name>local</name>
+        <host>
+            <name>localhost</name>
+            <login>mhm</login>
+        </host>
+        <docroot>
+            <name>web</name>
+            <domain>fix.lavender.walter.websales.united.domain</domain>
+            <documents>Users/mhm/Projects/lavender/walter/web/htdocs</documents>
+            <indexes>Users/mhm/Projects/lavender/walter/web/indexes</indexes>
+        </docroot>
+    </cluster>
+</nwetwork>

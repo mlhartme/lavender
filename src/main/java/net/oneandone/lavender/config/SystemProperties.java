@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.config;
 
+import net.oneandone.lavender.modules.PropertiesBase;
 import net.oneandone.lavender.modules.Secrets;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
@@ -27,7 +28,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SystemProperties {
+public class SystemProperties extends PropertiesBase {
     public static SystemProperties load(World world) throws IOException, URISyntaxException {
         return load(file(world), true);
     }
@@ -72,52 +73,42 @@ public class SystemProperties {
     private static SystemProperties properties(Node file) throws IOException, URISyntaxException {
         java.util.Properties properties;
         List<Node> sshKeys;
-        String cache;
-        FileNode cacheNode;
+        String str;
+        FileNode cache;
         Secrets secrets;
         World world;
         Node source;
-        String network;
-        String svn;
-        Node networkNode;
+        Node network;
 
         world = file.getWorld();
         properties = file.readProperties();
         sshKeys = new ArrayList<>();
         for (String key : properties.stringPropertyNames()) {
             if (key.startsWith("ssh.")) {
-                sshKeys.add(file.getWorld().file(properties.getProperty(key)));
+                sshKeys.add(file.getWorld().file(eat(properties, key)));
             }
         }
-        cache = properties.getProperty("cache");
-        if (cache == null) {
-            cacheNode = world.getHome().join(".cache/lavender");
+        str = eatOpt(properties,"cache", null);
+        if (str == null) {
+            cache = world.getHome().join(".cache/lavender");
         } else {
-            cacheNode = world.file(cache);
+            cache = world.file(str);
         }
-        if (properties.containsKey("svn.username")) {
-            if (properties.containsKey("secrets")) {
-                throw new IOException("invalid system properties: you cannot mix svn credential with secrets configuration");
-            }
-            secrets = new Secrets();
-            secrets.add("svn", new Secrets.UsernamePassword(properties.getProperty("svn.username"), properties.getProperty("svn.password")));
+        str = eatOpt(properties, "secrets", null);
+        if (str == null) {
+            source = file.getParent().join("lavender.secrets");
         } else {
-            if (properties.containsKey("secrets")) {
-                source = world.file(properties.getProperty("secrets"));
-            } else {
-                source = file.getParent().join("lavender.secrets");
-            }
-            secrets = Secrets.load(source);
+            source = world.file(str);
         }
-        svn = properties.getProperty("svn");
-        network = properties.getProperty("network");
-        if (network == null) {
-            networkNode = world.node(svn).join("network.xml");
+        secrets = Secrets.load(source);
+        str = eatOpt(properties, "network", null);
+        if (str == null) {
+            network = file.getParent().join("network.xml");
         } else {
-            networkNode = world.node(network);
+            network = world.node(str);
         }
         try {
-            return new SystemProperties(world, cacheNode, new URI(svn), networkNode, secrets, sshKeys);
+            return new SystemProperties(world, cache, new URI(eat(properties, "svn")), network, secrets, sshKeys);
         } catch (URISyntaxException e) {
             throw new IOException("invalid properties file " + file + ": " + e.getMessage(), e);
         }
