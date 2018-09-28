@@ -15,13 +15,11 @@
  */
 package net.oneandone.lavender.config;
 
-import net.oneandone.lavender.index.Util;
 import net.oneandone.lavender.modules.Secrets;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.ssh.SshFilesystem;
-import net.oneandone.sushi.fs.svn.SvnFilesystem;
 
 import java.io.IOException;
 import java.net.URI;
@@ -30,11 +28,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SystemProperties {
-    public static SystemProperties load(World world) throws IOException {
+    public static SystemProperties load(World world) throws IOException, URISyntaxException {
         return load(file(world), true);
     }
 
-    public static SystemProperties load(Node file, boolean withSsh) throws IOException {
+    public static SystemProperties load(Node file, boolean withSsh) throws IOException, URISyntaxException {
         SystemProperties properties;
 
         properties = properties(file);
@@ -71,7 +69,7 @@ public class SystemProperties {
         throw new IOException("cannot locate lavender properties");
     }
 
-    private static SystemProperties properties(Node file) throws IOException {
+    private static SystemProperties properties(Node file) throws IOException, URISyntaxException {
         java.util.Properties properties;
         List<Node> sshKeys;
         String cache;
@@ -79,6 +77,9 @@ public class SystemProperties {
         Secrets secrets;
         World world;
         Node source;
+        String network;
+        String svn;
+        Node networkNode;
 
         world = file.getWorld();
         properties = file.readProperties();
@@ -108,8 +109,15 @@ public class SystemProperties {
             }
             secrets = Secrets.load(source);
         }
+        svn = properties.getProperty("svn");
+        network = properties.getProperty("network");
+        if (network == null) {
+            networkNode = world.node(svn).join("network.xml");
+        } else {
+            networkNode = world.node(network);
+        }
         try {
-            return new SystemProperties(world, cacheNode, new URI(properties.getProperty("svn")), secrets, sshKeys);
+            return new SystemProperties(world, cacheNode, new URI(svn), networkNode, secrets, sshKeys);
         } catch (URISyntaxException e) {
             throw new IOException("invalid properties file " + file + ": " + e.getMessage(), e);
         }
@@ -121,13 +129,15 @@ public class SystemProperties {
     private final FileNode cache;
     /** don't store the node, so I can create properties without accessing svn (and thus without svn credentials) */
     public final URI svn;
+    public final Node network;
     public final Secrets secrets;
     private final List<Node> sshKeys;
 
-    public SystemProperties(World world, FileNode cache, URI svn, Secrets secrets, List<Node> sshKeys) {
+    public SystemProperties(World world, FileNode cache, URI svn, Node network, Secrets secrets, List<Node> sshKeys) {
         this.world = world;
         this.cache = cache;
         this.svn = svn;
+        this.network = network;
         this.secrets = secrets;
         this.sshKeys = sshKeys;
     }
@@ -172,27 +182,6 @@ public class SystemProperties {
             }
         }
         // disable them for integration tests, because I don't have .ssh on pearl/gems
-    }
-
-    public Network loadNetwork() throws IOException {
-        FileNode local;
-        FileNode tmp;
-        Network result;
-
-        local = lastNetworkNode();
-        tmp = Util.newTmpFile(local.getParent());
-        world.node(svn).join("network.xml").copyFile(tmp);
-        result = Network.load(tmp);
-        tmp.move(local, true);
-        return result;
-    }
-
-    public Network loadLastNetwork() throws IOException {
-        return Network.load(lastNetworkNode());
-    }
-
-    private FileNode lastNetworkNode() {
-        return world.getHome().join(".lavender.network.xml");
     }
 
     public FileNode cacheroot() throws IOException {

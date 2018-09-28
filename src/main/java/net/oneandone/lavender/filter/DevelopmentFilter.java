@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 /**
@@ -64,7 +65,7 @@ public class DevelopmentFilter implements Filter {
             properties = SystemProperties.load(SystemProperties.file(world), false);
             FileNode cache = properties.cacheroot();
             modules = loadModulesFromWebapp(webapp, properties, cache);
-        } catch (XmlException | IOException | SAXException e) {
+        } catch (XmlException | IOException | SAXException | URISyntaxException e) {
             e.printStackTrace();
             throw new ServletException("Could not initialize Lavender development filter", e);
         }

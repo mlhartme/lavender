@@ -25,58 +25,54 @@ import net.oneandone.sushi.util.Separator;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 
 public class Globals {
     public final World world;
     public final Console console;
     public final Main.Commandline commandline;
-    public final boolean lastConfig;
 
     private final String user;
     private final boolean noLock;
     private final int await;
 
-    private Network lazyNet;
+    private Network lazyNetwork;
     private SystemProperties lazyProperties;
 
-    public Globals(World world, Console console, Main.Commandline commandline, boolean lastConfig, String user, boolean noLock, int await) {
-        this(world, console, commandline, lastConfig, user, noLock, await, null, null);
+    public Globals(World world, Console console, Main.Commandline commandline, String user, boolean noLock, int await) {
+        this(world, console, commandline, user, noLock, await, null, null);
     }
 
-    public Globals(World world, Console console, Main.Commandline commandline, boolean lastConfig, String user, boolean noLock, int await,
+    public Globals(World world, Console console, Main.Commandline commandline, String user, boolean noLock, int await,
                    SystemProperties properties, Network net) {
         this.world = world;
         this.console = console;
         this.commandline = commandline;
-        this.lastConfig = lastConfig;
         this.noLock = noLock;
         this.user = user;
         this.await = await;
 
         this.lazyProperties = properties;
-        this.lazyNet = net;
+        this.lazyNetwork = net;
     }
 
-    public SystemProperties properties() throws IOException {
+    public SystemProperties properties() throws IOException, URISyntaxException {
         if (lazyProperties == null) {
             lazyProperties = SystemProperties.load(world);
         }
         return lazyProperties;
     }
 
-    public FileNode cacheroot() throws IOException {
+    public FileNode cacheroot() throws IOException, URISyntaxException {
         return properties().cacheroot();
     }
 
-    public Network net() throws IOException {
-        SystemProperties p;
-
-        if (lazyNet == null) {
-            p = properties();
-            lazyNet = lastConfig ? p.loadLastNetwork() : p.loadNetwork();
+    public Network network() throws IOException, URISyntaxException {
+        if (lazyNetwork == null) {
+            lazyNetwork = Network.load(properties().network);
         }
-        return lazyNet;
+        return lazyNetwork;
     }
 
     public Pool pool() {

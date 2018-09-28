@@ -28,6 +28,8 @@
   * moved Distributor class from `index` to `modules` module to
 
 * cli
+  * configurable location of the network file
+  * dumped `-lastconfig` switch, it was not used by puc, and you can now reconfigure the location of the network file
   * simplified command line by aligning the arguments passed to the various publishing commands:
     * 'war': it's just `war cluster docroot index` now
     * 'svn': it's just `directory cluster docroot` now

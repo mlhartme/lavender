@@ -24,6 +24,7 @@ import net.oneandone.lavender.index.Label;
 import net.oneandone.sushi.fs.Node;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 public class RemoveEntry extends Base {
@@ -31,9 +32,9 @@ public class RemoveEntry extends Base {
     private final List<String> originalPaths;
 
 
-    public RemoveEntry(Globals globals, String clusterName, List<String> originalPaths) throws IOException {
+    public RemoveEntry(Globals globals, String clusterName, List<String> originalPaths) throws IOException, URISyntaxException {
         super(globals);
-        this.cluster = globals.net().get(clusterName);
+        this.cluster = globals.network().get(clusterName);
         this.originalPaths = originalPaths;
     }
 

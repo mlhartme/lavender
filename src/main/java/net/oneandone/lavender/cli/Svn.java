@@ -30,20 +30,21 @@ import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.util.Strings;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 public class Svn extends Base {
     private final String directory;
     private final Cluster cluster;
     private final String docrootName;
 
-    public Svn(Globals globals, String directory, String clusterName, String docrootName) throws IOException {
+    public Svn(Globals globals, String directory, String clusterName, String docrootName) throws IOException, URISyntaxException {
         super(globals);
         this.directory = directory;
-        this.cluster = globals.net().get(clusterName);
+        this.cluster = globals.network().get(clusterName);
         this.docrootName = docrootName;
     }
 
-    public void run() throws IOException {
+    public void run() throws IOException, URISyntaxException {
         Docroot docroot;
         Filter filter;
         String scmurl;

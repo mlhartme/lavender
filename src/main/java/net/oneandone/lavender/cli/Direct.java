@@ -25,18 +25,19 @@ import net.oneandone.sushi.launcher.ExitCode;
 import net.oneandone.sushi.util.Strings;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 public class Direct extends Base {
     private final List<String> command;
     private final Cluster cluster;
 
-    public Direct(Globals globals, String clusterName, List<String> command) throws IOException {
+    public Direct(Globals globals, String clusterName, List<String> command) throws IOException, URISyntaxException {
         super(globals);
         if (command.isEmpty()) {
             throw new ArgumentException("missing command");
         }
-        this.cluster = globals.net().get(clusterName);
+        this.cluster = globals.network().get(clusterName);
         this.command = command;
     }
 

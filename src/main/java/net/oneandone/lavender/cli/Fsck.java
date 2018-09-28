@@ -31,6 +31,7 @@ import net.oneandone.sushi.util.Separator;
 import net.oneandone.sushi.util.Strings;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,13 +46,13 @@ public class Fsck extends Base {
     private final boolean repairAllIdx;
     private final Cluster cluster;
 
-    public Fsck(Globals globals, boolean md5check, boolean gc, boolean mac, boolean repairAllIdx, String clusterName) throws IOException {
+    public Fsck(Globals globals, boolean md5check, boolean gc, boolean mac, boolean repairAllIdx, String clusterName) throws IOException, URISyntaxException {
         super(globals);
         this.md5check = md5check;
         this.mac = mac;
         this.gc = gc;
         this.repairAllIdx = repairAllIdx;
-        this.cluster = globals.net().get(clusterName);
+        this.cluster = globals.network().get(clusterName);
     }
 
     public void run() throws IOException {

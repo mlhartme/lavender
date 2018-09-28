@@ -19,13 +19,14 @@ import net.oneandone.sushi.fs.World;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class NetworkTest {
     @Test
-    public void load() throws IOException {
+    public void load() throws IOException, URISyntaxException {
         World world;
         SystemProperties properties;
         Network network;
@@ -33,7 +34,7 @@ public class NetworkTest {
 
         world = World.create(false);
         properties = SystemProperties.load(world.guessProjectHome(Network.class).join("src/test/resources/lavender.properties"), false);
-        network = properties.loadNetwork();
+        network = Network.load(properties.network);
         cluster = network.lookup("localhost");
         assertNotNull(cluster);
         assertEquals("localhost", cluster.getName());

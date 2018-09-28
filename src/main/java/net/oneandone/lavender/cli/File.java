@@ -29,6 +29,7 @@ import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.filter.Predicate;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,16 +40,16 @@ public class File extends Base {
     private final String docrootName;
     private final Cluster cluster;
 
-    public File(Globals globals, String prefix, FileNode archive, String clusterName, String docrootName, String indexName) throws IOException {
+    public File(Globals globals, String prefix, FileNode archive, String clusterName, String docrootName, String indexName) throws IOException, URISyntaxException {
         super(globals);
         this.prefix = prefix;
         this.archive = archive.checkExists();
         this.indexName = indexName;
         this.docrootName = docrootName;
-        this.cluster = globals.net().get(clusterName);
+        this.cluster = globals.network().get(clusterName);
     }
 
-    public void run() throws IOException {
+    public void run() throws IOException, URISyntaxException {
         final Node<?> exploded;
         Docroot docroot;
         Filter filter;

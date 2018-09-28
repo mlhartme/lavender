@@ -25,6 +25,7 @@ import net.oneandone.sushi.xml.XmlException;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 public class War extends Base {
     private final FileNode war;
@@ -33,17 +34,17 @@ public class War extends Base {
     private final Docroot docroot;
     private String nodes;
 
-    public War(Globals globals, FileNode war, String clusterName, String docrootName, String indexName) throws IOException {
+    public War(Globals globals, FileNode war, String clusterName, String docrootName, String indexName) throws IOException, URISyntaxException {
         super(globals);
 
         this.war = war.checkFile();
         this.indexName = indexName;
-        this.cluster = globals.net().get(clusterName);
+        this.cluster = globals.network().get(clusterName);
         this.docroot = cluster.docroot(docrootName);
         this.nodes = docroot.nodesFile();
     }
 
-    public void run() throws IOException, SAXException, XmlException {
+    public void run() throws IOException, SAXException, XmlException, URISyntaxException {
         FileNode tmp;
         FileNode cacheroot;
         FileNode outputNodesFile;

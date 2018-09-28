@@ -51,7 +51,7 @@ public class Main {
             cli.add(PackageVersion.class, "version");
             cli.addDefault(new Help(console, help()), "help");
             if (globals == null) {
-                cli.begin(Globals.class, "-lastconfig -user=unknown@all -no-lock=false -await=600");
+                cli.begin(Globals.class, "-user=unknown@all -no-lock=false -await=600");
             } else {
                 cli.begin(globals);
             }
