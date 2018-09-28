@@ -28,12 +28,12 @@ public class NetworkTest {
     @Test
     public void load() throws IOException, URISyntaxException {
         World world;
-        SystemProperties properties;
+        HostProperties properties;
         Network network;
         Cluster cluster;
 
         world = World.create(false);
-        properties = SystemProperties.load(world.guessProjectHome(Network.class).join("src/test/config/system.properties"), false);
+        properties = HostProperties.load(world.guessProjectHome(Network.class).join("src/test/config/system.properties"), false);
         network = Network.load(properties.network);
         cluster = network.lookup("local");
         assertNotNull(cluster);

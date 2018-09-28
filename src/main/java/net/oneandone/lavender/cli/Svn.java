@@ -19,7 +19,7 @@ import net.oneandone.inline.ArgumentException;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.Pool;
-import net.oneandone.lavender.config.SystemProperties;
+import net.oneandone.lavender.config.HostProperties;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.Distributor;
 import net.oneandone.lavender.modules.Module;
@@ -27,7 +27,6 @@ import net.oneandone.lavender.modules.ScmProperties;
 import net.oneandone.lavender.modules.Secrets;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
-import net.oneandone.sushi.util.Strings;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -54,7 +53,7 @@ public class Svn extends Base {
         long changed;
         Index index;
         FileNode cacheroot;
-        SystemProperties properties;
+        HostProperties properties;
         Secrets.UsernamePassword up;
 
         if (directory.isEmpty() || directory.contains("/")) {

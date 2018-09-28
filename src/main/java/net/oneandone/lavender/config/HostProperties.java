@@ -28,13 +28,13 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SystemProperties extends PropertiesBase {
-    public static SystemProperties load(World world) throws IOException, URISyntaxException {
+public class HostProperties extends PropertiesBase {
+    public static HostProperties load(World world) throws IOException, URISyntaxException {
         return load(file(world), true);
     }
 
-    public static SystemProperties load(Node file, boolean withSsh) throws IOException, URISyntaxException {
-        SystemProperties properties;
+    public static HostProperties load(Node file, boolean withSsh) throws IOException, URISyntaxException {
+        HostProperties properties;
 
         properties = properties(file);
         properties.initWorld(withSsh);
@@ -54,7 +54,7 @@ public class SystemProperties extends PropertiesBase {
         if (path != null) {
             return world.file(path);
         }
-        parent = world.locateClasspathItem(SystemProperties.class).getParent();
+        parent = world.locateClasspathItem(HostProperties.class).getParent();
         file = parent.join("system.properties");
         if (file.exists()) {
             return file;
@@ -70,7 +70,7 @@ public class SystemProperties extends PropertiesBase {
         throw new IOException("cannot locate lavender properties");
     }
 
-    private static SystemProperties properties(Node file) throws IOException, URISyntaxException {
+    private static HostProperties properties(Node file) throws IOException, URISyntaxException {
         java.util.Properties properties;
         List<Node> sshKeys;
         String str;
@@ -116,7 +116,7 @@ public class SystemProperties extends PropertiesBase {
         if (!properties.isEmpty()) {
             throw new IOException("unknown properties: " + properties.keySet());
         }
-        return new SystemProperties(world, cache, svn, network, secrets, sshKeys);
+        return new HostProperties(world, cache, svn, network, secrets, sshKeys);
     }
 
     //--
@@ -129,7 +129,7 @@ public class SystemProperties extends PropertiesBase {
     public final Secrets secrets;
     private final List<Node> sshKeys;
 
-    public SystemProperties(World world, FileNode cache, URI svn, Node network, Secrets secrets, List<Node> sshKeys) {
+    public HostProperties(World world, FileNode cache, URI svn, Node network, Secrets secrets, List<Node> sshKeys) {
         this.world = world;
         this.cache = cache;
         this.svn = svn;

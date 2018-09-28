@@ -15,7 +15,7 @@
  */
 package net.oneandone.lavender.filter;
 
-import net.oneandone.lavender.config.SystemProperties;
+import net.oneandone.lavender.config.HostProperties;
 import net.oneandone.lavender.modules.Module;
 import net.oneandone.lavender.modules.NodeModule;
 import net.oneandone.lavender.modules.Resource;
@@ -55,14 +55,14 @@ public class DevelopmentFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         long started = System.currentTimeMillis();
-        SystemProperties properties;
+        HostProperties properties;
         Node webapp;
 
         this.filterConfig = filterConfig;
         try {
             world = World.create(false);
             webapp = world.file(filterConfig.getServletContext().getRealPath(""));
-            properties = SystemProperties.load(SystemProperties.file(world), false);
+            properties = HostProperties.load(HostProperties.file(world), false);
             FileNode cache = properties.cacheroot();
             modules = loadModulesFromWebapp(webapp, properties, cache);
         } catch (XmlException | IOException | SAXException | URISyntaxException e) {
@@ -95,7 +95,7 @@ public class DevelopmentFilter implements Filter {
         return modules.size();
     }
 
-    List<Module> loadModulesFromWebapp(Node webapp, SystemProperties properties, FileNode cache)
+    List<Module> loadModulesFromWebapp(Node webapp, HostProperties properties, FileNode cache)
             throws IOException, SAXException, XmlException {
         return NodeModule.fromWebapp(cache, false, webapp, properties.secrets.get("svn") /* TODO */);
     }
