@@ -29,8 +29,8 @@
 
 * configuration cleanup
   * system properties
-    * renamed `lavender.properties` to `system.properties`; also renamed the corresponding system property `lavender.properties` to `lavender.systemproperties`
-      and the environment variable `LAVENDER_PROPERTIES` to `LAVENDER_SYSTEM_PROPERTIES`
+    * renamed `lavender.properties` to `lavender/host.properties`; also renamed the corresponding system property `lavender.properties` to `lavender.hostproperties`
+      and the environment variable `LAVENDER_PROPERTIES` to `LAVENDER_HOSTPROPERTIES`
     * location of network.xml is configurable now
   * renamed net.xml to network.xml
   * in network.xml

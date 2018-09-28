@@ -80,7 +80,7 @@ public class Main {
         help.append("                            index is a file name with suffix\n");
         help.append("  'svn' directory cluster docroot\n");
         help.append("                            publish resources from <svn>/data/<directory> to <docroot>/<directory> on the specified cluster\n");
-        help.append("                            <svn> is picked from system.properties; index will be the directory name with '.idx' appended\n");
+        help.append("                            <svn> is picked from host.properties; index will be the directory name with '.idx' appended\n");
         help.append("  'file' ['-prefix' prefix] archive cluster docroot index\n");
         help.append("                            publish resources from archive to docroot on the specified cluster;\n");
         help.append("                            index is a file name with suffix\n");

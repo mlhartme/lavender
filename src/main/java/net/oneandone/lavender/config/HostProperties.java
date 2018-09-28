@@ -55,15 +55,15 @@ public class HostProperties extends PropertiesBase {
             return world.file(path);
         }
         parent = world.locateClasspathItem(HostProperties.class).getParent();
-        file = parent.join("system.properties");
+        file = parent.join("host.properties");
         if (file.exists()) {
             return file;
         }
-        file = world.getHome().join(".lavender/system.properties");
+        file = world.getHome().join(".lavender/host.properties");
         if (file.exists()) {
             return file;
         }
-        file = world.file("/etc/lavender/system.properties");
+        file = world.file("/etc/lavender/host.properties");
         if (file.exists()) {
             return file;
         }

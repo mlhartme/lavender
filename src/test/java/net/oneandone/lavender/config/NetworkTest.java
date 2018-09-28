@@ -33,7 +33,7 @@ public class NetworkTest {
         Cluster cluster;
 
         world = World.create(false);
-        properties = HostProperties.load(world.guessProjectHome(Network.class).join("src/test/config/system.properties"), false);
+        properties = HostProperties.load(world.guessProjectHome(Network.class).join("src/test/config/host.properties"), false);
         network = Network.load(properties.network);
         cluster = network.lookup("local");
         assertNotNull(cluster);
