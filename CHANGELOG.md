@@ -28,7 +28,7 @@
   * moved Distributor class from `index` to `modules` module to
 
 * configuration cleanup
-  * system properties
+  * system properties -> host properties
     * renamed `lavender.properties` to `lavender/host.properties`; also renamed the corresponding system property `lavender.properties` to `lavender.hostproperties`
       and the environment variable `LAVENDER_PROPERTIES` to `LAVENDER_HOSTPROPERTIES`
     * location of network.xml is configurable now

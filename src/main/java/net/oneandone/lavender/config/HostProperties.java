@@ -46,11 +46,11 @@ public class HostProperties extends PropertiesBase {
         Node file;
         FileNode parent;
 
-        path = System.getProperty("lavender.systemproperties");
+        path = System.getProperty("lavender.hostproperties");
         if (path != null) {
             return world.file(path);
         }
-        path = System.getenv("LAVENDER_SYSTEMPROPERTIES");
+        path = System.getenv("LAVENDER_HOSTPROPERTIES");
         if (path != null) {
             return world.file(path);
         }
