@@ -20,7 +20,7 @@ import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.Distributor;
 import net.oneandone.lavender.modules.Module;
 import net.oneandone.lavender.modules.NodeModule;
-import net.oneandone.lavender.modules.Secrets;
+import net.oneandone.lavender.config.Secrets;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.xml.XmlException;

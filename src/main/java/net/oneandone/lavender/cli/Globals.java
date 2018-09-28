@@ -70,7 +70,7 @@ public class Globals {
 
     public Network network() throws IOException, URISyntaxException {
         if (lazyNetwork == null) {
-            lazyNetwork = Network.load(properties().network);
+            lazyNetwork = Network.load(properties().secrets.withSecrets(properties().network));
         }
         return lazyNetwork;
     }

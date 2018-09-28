@@ -15,7 +15,6 @@
  */
 package net.oneandone.lavender.config;
 
-import net.oneandone.lavender.modules.Secrets;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;

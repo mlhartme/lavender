@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.oneandone.lavender.modules;
+package net.oneandone.lavender.config;
 
-import net.oneandone.lavender.config.PropertiesBase;
 import net.oneandone.sushi.fs.Node;
+import net.oneandone.sushi.fs.NodeInstantiationException;
+import net.oneandone.sushi.fs.svn.SvnNode;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -63,6 +65,14 @@ public class Secrets extends PropertiesBase {
         return names;
     }
 
+    public Node withSecrets(Node orig) {
+        if (orig instanceof SvnNode) {
+            return orig;
+        } else {
+            return orig;
+        }
+    }
+
     //--
 
     private final Map<String, UsernamePassword> map;
@@ -103,6 +113,19 @@ public class Secrets extends PropertiesBase {
         public UsernamePassword(String username, String password) {
             this.username = username;
             this.password = password;
+        }
+
+        public SvnNode add(SvnNode node) throws NodeInstantiationException {
+            URI uri;
+
+            uri = node.getUri();
+            if (uri.getPort() != -1) {
+                throw new IllegalStateException("TODO: " + uri);
+            }
+            if (uri.getQuery() != null) {
+                throw new IllegalStateException("TODO: " + uri);
+            }
+            return (SvnNode) node.getWorld().validNode("svn:" + uri.getScheme() + "://" + username + ":" + password + "@" + uri.getHost() + "/" + uri.getPath());
         }
     }
 

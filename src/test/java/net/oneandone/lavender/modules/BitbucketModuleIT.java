@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.modules;
 
+import net.oneandone.lavender.config.Secrets;
 import net.oneandone.sushi.fs.World;
 import org.junit.Test;
 

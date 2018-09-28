@@ -16,6 +16,7 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.config.PropertiesBase;
+import net.oneandone.lavender.config.Secrets;
 import net.oneandone.sushi.fs.FileNotFoundException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;

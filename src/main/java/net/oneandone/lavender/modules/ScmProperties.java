@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.modules;
 
+import net.oneandone.lavender.config.Secrets;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -157,6 +158,7 @@ public class ScmProperties {
 
         try {
             if (up != null) {
+                root = up.add((SvnNode) world.node(scm));
                 orig = new URL(scm);
                 if (orig.getPort() != -1) {
                     throw new IllegalStateException("TODO: " + scm);
