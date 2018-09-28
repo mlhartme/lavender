@@ -69,7 +69,7 @@ public class LavenderTest {
         when(filterConfig.getServletContext()).thenReturn(servletContext);
         when(servletContext.getRealPath("")).thenReturn(lavenderRoot.getAbsolute());
 
-        System.setProperty("src/test/config/lavender.properties", WORLD.guessProjectHome(getClass()).join("src/test/config/lavender.properties").getAbsolute());
+        System.setProperty("src/test/config/system.properties", WORLD.guessProjectHome(getClass()).join("src/test/config/system.properties").getAbsolute());
     }
 
     @After

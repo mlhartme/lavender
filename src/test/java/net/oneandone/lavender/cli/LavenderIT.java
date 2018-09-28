@@ -65,7 +65,7 @@ public class LavenderIT {
 
         world = World.create(withSsh);
         target = world.guessProjectHome(getClass()).join("target");
-        properties = SystemProperties.load(world.guessProjectHome(getClass()).join("src/test/config/lavender.properties"), withSsh);
+        properties = SystemProperties.load(world.guessProjectHome(getClass()).join("src/test/config/system.properties"), withSsh);
         properties.initTemp(target.join("ittemp"));
         System.out.println(name + " started: ");
         src = world.file(warFile);

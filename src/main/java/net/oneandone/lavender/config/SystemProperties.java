@@ -46,24 +46,24 @@ public class SystemProperties extends PropertiesBase {
         Node file;
         FileNode parent;
 
-        path = System.getProperty("lavender.properties");
+        path = System.getProperty("lavender.systemproperties");
         if (path != null) {
             return world.file(path);
         }
-        path = System.getenv("LAVENDER_PROPERTIES");
+        path = System.getenv("LAVENDER_SYSTEMPROPERTIES");
         if (path != null) {
             return world.file(path);
         }
         parent = world.locateClasspathItem(SystemProperties.class).getParent();
-        file = parent.join("lavender.properties");
+        file = parent.join("system.properties");
         if (file.exists()) {
             return file;
         }
-        file = world.getHome().join(".lavender.properties");
+        file = world.getHome().join(".lavender/system.properties");
         if (file.exists()) {
             return file;
         }
-        file = world.file("/etc/lavender.properties");
+        file = world.file("/etc/lavender/system.properties");
         if (file.exists()) {
             return file;
         }
