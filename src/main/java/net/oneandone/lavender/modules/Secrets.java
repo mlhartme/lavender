@@ -15,8 +15,8 @@
  */
 package net.oneandone.lavender.modules;
 
+import net.oneandone.lavender.config.PropertiesBase;
 import net.oneandone.sushi.fs.Node;
-import net.oneandone.sushi.fs.file.FileNode;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public class Secrets {
+public class Secrets extends PropertiesBase {
     public static Secrets load(Node source) throws IOException {
         Properties p;
         Secrets result;
@@ -61,16 +61,6 @@ public class Secrets {
             }
         }
         return  names;
-    }
-
-    private static String eat(Properties p, String key) throws IOException {
-        String result;
-
-        result = (String) p.remove(key);
-        if (result == null) {
-            throw new IOException("key not found: " + key);
-        }
-        return result;
     }
 
     //--
