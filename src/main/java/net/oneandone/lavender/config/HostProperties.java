@@ -92,7 +92,7 @@ public class HostProperties extends PropertiesBase {
         }
         str = eatOpt(properties, "secrets", null);
         if (str == null) {
-            source = file.getParent().join("lavender.secrets");
+            source = file.getParent().join("secrets.properties");
         } else {
             source = world.file(str);
         }

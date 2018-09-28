@@ -24,7 +24,8 @@ import java.net.URISyntaxException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class NetworkTest {
+/** Host properties, secrets, and network. */
+public class HostPropertiesTest {
     @Test
     public void load() throws IOException, URISyntaxException {
         World world;
