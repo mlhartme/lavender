@@ -26,7 +26,6 @@ import net.oneandone.lavender.modules.NodeModule;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
-import net.oneandone.sushi.fs.filter.Predicate;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

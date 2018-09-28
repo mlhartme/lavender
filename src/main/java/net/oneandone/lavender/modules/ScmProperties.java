@@ -21,7 +21,6 @@ import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Action;
 import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.filter.Predicate;
-import net.oneandone.sushi.fs.svn.SvnFilesystem;
 import net.oneandone.sushi.fs.svn.SvnNode;
 import net.oneandone.sushi.util.Strings;
 

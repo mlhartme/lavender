@@ -19,9 +19,7 @@ import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
-import net.oneandone.sushi.fs.filter.Predicate;
 import net.oneandone.sushi.xml.Xml;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -31,7 +29,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.zip.ZipInputStream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

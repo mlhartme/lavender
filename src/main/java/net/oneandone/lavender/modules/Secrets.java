@@ -60,7 +60,7 @@ public class Secrets extends PropertiesBase {
                 names.add(name);
             }
         }
-        return  names;
+        return names;
     }
 
     //--

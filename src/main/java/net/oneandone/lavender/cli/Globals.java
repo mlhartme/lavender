@@ -16,9 +16,9 @@
 package net.oneandone.lavender.cli;
 
 import net.oneandone.inline.Console;
+import net.oneandone.lavender.config.HostProperties;
 import net.oneandone.lavender.config.Network;
 import net.oneandone.lavender.config.Pool;
-import net.oneandone.lavender.config.HostProperties;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.util.Separator;
