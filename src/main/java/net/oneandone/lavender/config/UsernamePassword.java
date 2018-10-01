@@ -28,17 +28,20 @@ public class UsernamePassword {
         this.password = password;
     }
 
-    public URI add(URI uri) {
+    public URI add(URI fullUri) {
+        URI uri;
+        String port;
+
         if (this == ANONYMOUS) {
-            return uri;
+            return fullUri;
         }
 
-        if (uri.getPort() != -1) {
-            throw new IllegalStateException("TODO: " + uri);
+        uri = URI.create(fullUri.getSchemeSpecificPart());
+        if (uri.getPort() == -1) {
+            port = "";
+        } else {
+            port = ":" + Integer.toString(uri.getPort());
         }
-        if (uri.getQuery() != null) {
-            throw new IllegalStateException("TODO: " + uri);
-        }
-        return URI.create(uri.getScheme() + "://" + username + ":" + password + "@" + uri.getHost() + "/" + uri.getPath());
+        return URI.create(fullUri.getScheme() + ":" + uri.getScheme() + "://" + username + ":" + password + "@" + uri.getHost() + port + uri.getPath());
     }
 }

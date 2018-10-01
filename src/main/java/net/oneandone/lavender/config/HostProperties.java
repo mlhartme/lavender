@@ -82,7 +82,7 @@ public class HostProperties extends PropertiesBase {
         World world;
         Node network;
         HostProperties result;
-        FileNode root;
+        Node<?> root;
 
         world = file.getWorld();
         properties = file.readProperties();
@@ -101,10 +101,13 @@ public class HostProperties extends PropertiesBase {
                 if (item.startsWith("/")) {
                     root = world.file("/");
                     item = item.substring(1);
-                } else {
+                } else if (item.startsWith("~/")) {
                     root = world.getHome();
+                    item = item.substring(2);
+                } else {
+                    root = file.getParent();
                 }
-                for (FileNode match : root.find(item)) {
+                for (Node<?> match : root.find(item)) {
                     secrets.addAll(match);
                 }
             }
@@ -113,7 +116,7 @@ public class HostProperties extends PropertiesBase {
         if (str == null) {
             network = file.getParent().join("network.xml");
         } else {
-            network = world.node(str);
+            network = world.node(secrets.withSecrets(new URI(str)));
         }
         result = new HostProperties(world, cache, network, secrets);
         for (String key : properties.stringPropertyNames()) {

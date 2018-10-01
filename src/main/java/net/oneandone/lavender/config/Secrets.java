@@ -15,12 +15,15 @@
  */
 package net.oneandone.lavender.config;
 
+import com.sun.jna.platform.win32.Netapi32Util;
 import net.oneandone.sushi.fs.Node;
+import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.svn.SvnNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -97,11 +100,17 @@ public class Secrets extends PropertiesBase {
         return best == null ? null : map.get(best);
     }
 
-    public Node withSecrets(Node orig) {
-        if (orig instanceof SvnNode) {
-            return orig;
+    public URI withSecrets(URI uri) throws IOException {
+        UsernamePassword up;
+
+        if (uri.getScheme().equals("svn")) {
+            up = lookup(uri.toString());
+            if (up == null) {
+                throw new IOException("missing username/password for uri:" + uri);
+            }
+            return up.add(uri);
         } else {
-            return orig;
+            return uri;
         }
     }
 

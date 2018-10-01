@@ -25,6 +25,7 @@ import net.oneandone.sushi.util.Separator;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 
@@ -70,7 +71,7 @@ public class Globals {
 
     public Network network() throws IOException, URISyntaxException {
         if (lazyNetwork == null) {
-            lazyNetwork = Network.load(properties().secrets.withSecrets(properties().network));
+            lazyNetwork = Network.load(properties().network);
         }
         return lazyNetwork;
     }
