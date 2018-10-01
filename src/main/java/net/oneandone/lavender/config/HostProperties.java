@@ -19,6 +19,7 @@ import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.ssh.SshFilesystem;
+import net.oneandone.sushi.util.Separator;
 
 import java.io.IOException;
 import java.net.URI;
@@ -71,15 +72,17 @@ public class HostProperties extends PropertiesBase {
         throw new IOException("cannot locate lavender properties");
     }
 
+    private static final Separator SECRETS_PATH_SEPRATOR = Separator.on(':').trim();
+
     private static HostProperties properties(Node file) throws IOException, URISyntaxException {
         java.util.Properties properties;
         String str;
         FileNode cache;
         Secrets secrets;
         World world;
-        Node source;
         Node network;
         HostProperties result;
+        FileNode root;
 
         world = file.getWorld();
         properties = file.readProperties();
@@ -89,14 +92,23 @@ public class HostProperties extends PropertiesBase {
         } else {
             cache = world.file(str);
         }
+        secrets = new Secrets();
         str = eatOpt(properties, "secrets", null);
         if (str == null) {
-            source = file.getParent().join("secrets.properties");
+            secrets.addAll(file.getParent().join("secrets.properties"));
         } else {
-            source = world.file(str);
+            for (String item : SECRETS_PATH_SEPRATOR.split(str)) {
+                if (item.startsWith("/")) {
+                    root = world.file("/");
+                    item = item.substring(1);
+                } else {
+                    root = world.getHome();
+                }
+                for (FileNode match : root.find(item)) {
+                    secrets.addAll(match);
+                }
+            }
         }
-        secrets = new Secrets();
-        secrets.addAll(source);
         str = eatOpt(properties, "network", null);
         if (str == null) {
             network = file.getParent().join("network.xml");

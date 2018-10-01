@@ -17,6 +17,8 @@ package net.oneandone.lavender.config;
 
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.svn.SvnNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,17 +29,23 @@ import java.util.Map;
 import java.util.Properties;
 
 public class Secrets extends PropertiesBase {
+    private static final Logger LOG = LoggerFactory.getLogger(Secrets.class);
+
     private final Map<String, UsernamePassword> map;
 
     public Secrets() {
         this.map = new HashMap<>();
     }
 
-    public void add(String name, UsernamePassword up) {
-        map.put(name, up);
+    public void add(String name, UsernamePassword up) throws IOException {
+        if (map.put(name, up) != null) {
+            throw new IOException("duplicate secrets: " + name);
+        }
     }
 
     public void addAll(Node source) throws IOException {
+        LOG.debug("addAll secrets: " + source);
+
         Properties p;
 
         p = source.readProperties();
