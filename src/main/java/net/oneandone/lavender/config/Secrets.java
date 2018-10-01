@@ -27,7 +27,17 @@ import java.util.Map;
 import java.util.Properties;
 
 public class Secrets extends PropertiesBase {
-    public static Secrets load(Node source) throws IOException {
+    private final Map<String, UsernamePassword> map;
+
+    public Secrets() {
+        this.map = new HashMap<>();
+    }
+
+    public void add(String name, UsernamePassword up) {
+        map.put(name, up);
+    }
+
+    public void addAll(Node source) throws IOException {
         Properties p;
         Secrets result;
 
@@ -44,7 +54,6 @@ public class Secrets extends PropertiesBase {
         if (!p.isEmpty()) {
             throw new IOException("unknown keys: " + p.keySet());
         }
-        return result;
     }
 
     private static List<String> names(Properties p) {
@@ -61,26 +70,6 @@ public class Secrets extends PropertiesBase {
             }
         }
         return names;
-    }
-
-    public Node withSecrets(Node orig) {
-        if (orig instanceof SvnNode) {
-            return orig;
-        } else {
-            return orig;
-        }
-    }
-
-    //--
-
-    private final Map<String, UsernamePassword> map;
-
-    public Secrets() {
-        this.map = new HashMap<>();
-    }
-
-    public void add(String name, UsernamePassword up) {
-        map.put(name, up);
     }
 
     /**
@@ -101,6 +90,16 @@ public class Secrets extends PropertiesBase {
         }
         return best == null ? null : map.get(best);
     }
+
+    public Node withSecrets(Node orig) {
+        if (orig instanceof SvnNode) {
+            return orig;
+        } else {
+            return orig;
+        }
+    }
+
+    //--
 
     public static class AmbiguousException extends IOException {
         public AmbiguousException(String str) {

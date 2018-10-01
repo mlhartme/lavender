@@ -95,7 +95,8 @@ public class HostProperties extends PropertiesBase {
         } else {
             source = world.file(str);
         }
-        secrets = Secrets.load(source);
+        secrets = new Secrets();
+        secrets.addAll(source);
         str = eatOpt(properties, "network", null);
         if (str == null) {
             network = file.getParent().join("network.xml");
