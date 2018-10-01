@@ -154,22 +154,9 @@ public class ScmProperties {
         SvnNode root;
         String idxName;
         FileNode cache;
-        URL orig;
 
         try {
-            if (up != null) {
-                root = up.add((SvnNode) world.node(scm));
-                orig = new URL(scm);
-                if (orig.getPort() != -1) {
-                    throw new IllegalStateException("TODO: " + scm);
-                }
-                if (orig.getQuery() != null) {
-                    throw new IllegalStateException("TODO: " + scm);
-                }
-                scm = orig.getPath() + "://" + up.username + ":" + up.password + "@" + orig.getHost() + "/" + orig.getPath();
-                System.out.println("scm: " + scm);
-            }
-            root = (SvnNode) world.node(scm);
+            root = (SvnNode) world.node(up.add(URI.create(scm)));
             // make sure to get a proper error message - and to get it early
             root.checkDirectory();
             idxName = root.getSvnurl().getPath().replace('/', '.') + ".idx";

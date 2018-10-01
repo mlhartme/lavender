@@ -15,12 +15,11 @@
  */
 package net.oneandone.lavender.config;
 
-import net.oneandone.sushi.fs.NodeInstantiationException;
-import net.oneandone.sushi.fs.svn.SvnNode;
-
 import java.net.URI;
 
 public class UsernamePassword {
+    public static final UsernamePassword ANONYMOUS = new UsernamePassword("", "");
+
     public final String username;
     public final String password;
 
@@ -29,16 +28,17 @@ public class UsernamePassword {
         this.password = password;
     }
 
-    public SvnNode add(SvnNode node) throws NodeInstantiationException {
-        URI uri;
+    public URI add(URI uri) {
+        if (this == ANONYMOUS) {
+            return uri;
+        }
 
-        uri = node.getUri();
         if (uri.getPort() != -1) {
             throw new IllegalStateException("TODO: " + uri);
         }
         if (uri.getQuery() != null) {
             throw new IllegalStateException("TODO: " + uri);
         }
-        return (SvnNode) node.getWorld().validNode("svn:" + uri.getScheme() + "://" + username + ":" + password + "@" + uri.getHost() + "/" + uri.getPath());
+        return URI.create(uri.getScheme() + "://" + username + ":" + password + "@" + uri.getHost() + "/" + uri.getPath());
     }
 }

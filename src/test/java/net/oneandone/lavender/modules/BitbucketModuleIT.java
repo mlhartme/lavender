@@ -46,7 +46,7 @@ public class BitbucketModuleIT {
         Resource resource;
 
         secrets = Secrets.load(WORLD.file("it.secrets"));
-        module = new BitbucketModule(Bitbucket.create(WORLD, "bitbucket.1and1.org", secrets.get("git")),
+        module = new BitbucketModule(Bitbucket.create(WORLD, "bitbucket.1and1.org", secrets.lookup("git")),
                 "CISOOPS", "lavender-test-module", "master", "", "myname", false,
                 "", "", WORLD.filter().include("**/*.jpg", "**/*.css"), null);
 

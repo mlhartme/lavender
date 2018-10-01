@@ -35,7 +35,7 @@ public class Secrets extends PropertiesBase {
         result = new Secrets();
         for (String name : names(p)) {
             if (p.remove(name + ".anonymous") != null) {
-                result.add(name, null);
+                result.add(name, UsernamePassword.ANONYMOUS);
             } else {
                 p.remove(name);
                 result.add(name, new UsernamePassword(eat(p, name + ".username"), eat(p, name + ".password")));
@@ -84,10 +84,9 @@ public class Secrets extends PropertiesBase {
     }
 
     /**
-     * @return credentials or null for anonymous
-     * @throws IllegalStateException if credentials are missing
+     * @return null for not found
      */
-    public UsernamePassword get(String url) throws NotFoundException {
+    public UsernamePassword lookup(String url) throws AmbiguousException {
         String best;
 
         best = null;
@@ -95,18 +94,17 @@ public class Secrets extends PropertiesBase {
             if (url.contains(key)) {
                 if (best == null || (best.length() < key.length())) {
                     best = key;
+                } else if (best.length() == key.length()) {
+                    throw new AmbiguousException(best + " vs " + key);
                 }
             }
         }
-        if (best == null) {
-            throw new NotFoundException(url);
-        }
-        return map.get(best);
+        return best == null ? null : map.get(best);
     }
 
-    public static class NotFoundException extends IOException {
-        public NotFoundException(String url) {
-            super(url);
+    public static class AmbiguousException extends IOException {
+        public AmbiguousException(String str) {
+            super(str);
         }
     }
 }

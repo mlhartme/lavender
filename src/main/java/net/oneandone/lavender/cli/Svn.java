@@ -66,7 +66,7 @@ public class Svn extends Base {
         scmurl = "scm:" + properties.getScm("svn") + "/data/" + directory;
         moduleConfig = new ScmProperties("svn", filter, scmurl, scmurl, "-1", "", Module.TYPE, false, "", directory + "/", null);
         cacheroot = globals.cacheroot();
-        up = properties.secrets.get(scmurl);
+        up = properties.secrets.lookup(scmurl);
         module = moduleConfig.create(cacheroot, true, up, null);
         try (Pool pool = globals.pool()) {
             distributor = Distributor.open(cacheroot, cluster.connect(pool), docroot, directory + ".idx");
