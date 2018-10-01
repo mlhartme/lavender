@@ -39,16 +39,14 @@ public class Secrets extends PropertiesBase {
 
     public void addAll(Node source) throws IOException {
         Properties p;
-        Secrets result;
 
         p = source.readProperties();
-        result = new Secrets();
         for (String name : names(p)) {
             if (p.remove(name + ".anonymous") != null) {
-                result.add(name, UsernamePassword.ANONYMOUS);
+                add(name, UsernamePassword.ANONYMOUS);
             } else {
                 p.remove(name);
-                result.add(name, new UsernamePassword(eat(p, name + ".username"), eat(p, name + ".password")));
+                add(name, new UsernamePassword(eat(p, name + ".username"), eat(p, name + ".password")));
             }
         }
         if (!p.isEmpty()) {
