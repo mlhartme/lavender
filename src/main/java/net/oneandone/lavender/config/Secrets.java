@@ -111,14 +111,9 @@ public class Secrets extends PropertiesBase {
     }
 
     public URI withSecrets(URI uri) throws IOException {
-        UsernamePassword up;
-
-        if (uri.getScheme().equals("svn")) {
-            up = lookup(uri.toString());
-            if (up == null) {
-                throw new IOException("missing username/password for uri:" + uri);
-            }
-            return up.add(uri);
+        if (uri.isOpaque()) {
+            // e.g. svn, git, ...
+            return get(uri.toString()).add(uri);
         } else {
             return uri;
         }
@@ -133,7 +128,7 @@ public class Secrets extends PropertiesBase {
     }
     public static class NotFoundException extends IOException {
         public NotFoundException(String str) {
-            super(str);
+            super("username/password not found in secrets: " + str);
         }
     }
 }
