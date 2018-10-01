@@ -7,6 +7,8 @@
   * caution: Bitbucket passwords do not equal intranet passwords; it's usually not defined because ssh is used for cloning a repository,
     you can set it with
 
+* different credentials for different scm repositories
+
 * svn properties generalized to scm properties (old svn properties still work, but applications should switch to the latest frontend-parent
   to generate the new properties)
   * svn prefix changed to scm

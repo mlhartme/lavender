@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.modules;
 
+import net.oneandone.lavender.config.Secrets;
 import net.oneandone.lavender.config.UsernamePassword;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
@@ -72,7 +73,7 @@ public class ScmProperties {
         this.source = source;
     }
 
-    public Module create(FileNode cacheDir, boolean prod, UsernamePassword up, JarConfig jarConfig) throws IOException {
+    public Module create(FileNode cacheDir, boolean prod, Secrets secrets, JarConfig jarConfig) throws IOException {
         World world;
         final FileNode checkout;
         String scm;
@@ -134,9 +135,9 @@ public class ScmProperties {
         }
         scm = Strings.removeLeft(scm, "scm:");
         if (scm.startsWith("svn:")) {
-            return createSvnModule(cacheDir, jarConfig, world, scm + path, up, pinnedRevision);
+            return createSvnModule(cacheDir, jarConfig, world, scm + path, secrets, pinnedRevision);
         } else if (scm.startsWith("git:")) {
-            return createBitbucketModule(cacheDir.getWorld(), Strings.removeLeft(scm,  "git:"), up, accessPathPrefix(path), jarConfig);
+            return createBitbucketModule(cacheDir.getWorld(), scm, secrets, accessPathPrefix(path), jarConfig);
         } else {
             throw new IllegalStateException("scm url not supported: " + scm);
         }
@@ -150,13 +151,13 @@ public class ScmProperties {
         }
     }
 
-    private SvnModule createSvnModule(FileNode cacheDir, JarConfig jarConfig, World world, String scm, UsernamePassword up, long pinnedRevision) throws IOException {
+    private SvnModule createSvnModule(FileNode cacheDir, JarConfig jarConfig, World world, String scm, Secrets secrets, long pinnedRevision) throws IOException {
         SvnNode root;
         String idxName;
         FileNode cache;
 
         try {
-            root = (SvnNode) world.node(up.add(URI.create(scm)));
+            root = (SvnNode) world.node(secrets.withSecrets(URI.create(scm)));
             // make sure to get a proper error message - and to get it early
             root.checkDirectory();
             idxName = root.getSvnurl().getPath().replace('/', '.') + ".idx";
@@ -172,18 +173,21 @@ public class ScmProperties {
         }
     }
 
-    private BitbucketModule createBitbucketModule(World world, String urlstr, UsernamePassword up,
+    private BitbucketModule createBitbucketModule(World world, String urlstr, Secrets secrets,
                                                   String accessPathPrefix, JarConfig config) throws IOException {
         URI uri;
+        UsernamePassword up;
         String path;
         String project;
         String repository;
         int idx;
 
+        up = secrets.get(urlstr);
         uri = URI.create(urlstr);
-        if (uri.isOpaque()) {
-            throw new IllegalArgumentException("uri format not supported: " + uri);
+        if (!uri.getScheme().equals("git")) {
+            throw new IllegalArgumentException("git uri expected, got " + urlstr);
         }
+        uri = URI.create(uri.getSchemeSpecificPart());
         path = Strings.removeLeft(uri.getPath(), "/");
         idx = path.indexOf('/');
         project = path.substring(0, idx);

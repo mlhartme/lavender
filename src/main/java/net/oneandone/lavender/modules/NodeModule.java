@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.modules;
 
+import net.oneandone.lavender.config.Secrets;
 import net.oneandone.lavender.config.UsernamePassword;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
@@ -45,7 +46,7 @@ public abstract class NodeModule extends Module<Node> {
     private static final String RESOURCE_INDEX = "META-INF/pustefix-resource.index";
 
 
-    public static List<Module> fromWebapp(FileNode cache, boolean prod, Node<?> webapp, UsernamePassword up)
+    public static List<Module> fromWebapp(FileNode cache, boolean prod, Node<?> webapp, Secrets secrets)
             throws IOException, SAXException, XmlException {
         Node<?> webappSource;
         List<Module> result;
@@ -59,16 +60,16 @@ public abstract class NodeModule extends Module<Node> {
         rootConfig = WarConfig.fromXml(webapp);
         // add modules before webapp, because they have a prefix
         for (Node<?> jar : webapp.find("WEB-INF/lib/*.jar")) {
-            result.addAll(jarModuleOpt(cache, rootConfig, prod, jar, up));
+            result.addAll(jarModuleOpt(cache, rootConfig, prod, jar, secrets));
         }
         webappSource = lp.live(webapp);
         root = warModule(rootConfig, lp.filter, webappSource);
         result.add(root);
-        lp.addModules(cache, prod, up, result, null);
+        lp.addModules(cache, prod, secrets, result, null);
         return result;
     }
 
-    public static List<Module> jarModuleOpt(FileNode cache, WarConfig rootConfig, boolean prod, Node jarOrig, UsernamePassword up)
+    public static List<Module> jarModuleOpt(FileNode cache, WarConfig rootConfig, boolean prod, Node jarOrig, Secrets secrets)
             throws IOException, XmlException, SAXException {
         Node configFile;
         final JarConfig config;
@@ -140,7 +141,7 @@ public abstract class NodeModule extends Module<Node> {
         // continue without lavender.properties -- we have to support this mode for a some time ... :(
         result.add(jarModule);
         if (lp != null) {
-            lp.addModules(cache, prod, up, result, config);
+            lp.addModules(cache, prod, secrets, result, config);
         }
         return result;
     }

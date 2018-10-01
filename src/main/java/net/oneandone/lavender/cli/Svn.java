@@ -54,7 +54,6 @@ public class Svn extends Base {
         Index index;
         FileNode cacheroot;
         HostProperties properties;
-        UsernamePassword up;
 
         if (directory.isEmpty() || directory.contains("/")) {
             throw new ArgumentException("invalid directory: " + directory);
@@ -66,8 +65,7 @@ public class Svn extends Base {
         scmurl = "scm:" + properties.getScm("svn") + "/data/" + directory;
         moduleConfig = new ScmProperties("svn", filter, scmurl, scmurl, "-1", "", Module.TYPE, false, "", directory + "/", null);
         cacheroot = globals.cacheroot();
-        up = properties.secrets.lookup(scmurl);
-        module = moduleConfig.create(cacheroot, true, up, null);
+        module = moduleConfig.create(cacheroot, true, properties.secrets, null);
         try (Pool pool = globals.pool()) {
             distributor = Distributor.open(cacheroot, cluster.connect(pool), docroot, directory + ".idx");
             changed = distributor.publish(module);

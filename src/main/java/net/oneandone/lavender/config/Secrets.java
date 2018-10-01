@@ -81,6 +81,16 @@ public class Secrets extends PropertiesBase {
         return names;
     }
 
+    public UsernamePassword get(String url) throws NotFoundException, AmbiguousException {
+        UsernamePassword result;
+
+        result = lookup(url);
+        if (result == null) {
+            throw new NotFoundException(url);
+        }
+        return result;
+    }
+
     /**
      * @return null for not found
      */
@@ -118,6 +128,11 @@ public class Secrets extends PropertiesBase {
 
     public static class AmbiguousException extends IOException {
         public AmbiguousException(String str) {
+            super(str);
+        }
+    }
+    public static class NotFoundException extends IOException {
+        public NotFoundException(String str) {
             super(str);
         }
     }

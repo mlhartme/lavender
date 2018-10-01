@@ -15,7 +15,7 @@
  */
 package net.oneandone.lavender.cli;
 
-import net.oneandone.lavender.config.UsernamePassword;
+import net.oneandone.lavender.config.Secrets;
 import net.oneandone.lavender.filter.Lavender;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.Distributor;
@@ -50,15 +50,15 @@ public class WarEngine {
 
     private final FileNode cache;
     private final Distributor distributor;
-    private final UsernamePassword up;
+    private final Secrets secrets;
     private final FileNode war;
     private final FileNode outputNodesFile;
     private final String nodes;
 
-    public WarEngine(FileNode cache, Distributor distributor, UsernamePassword up, FileNode war, FileNode outputNodesFile, String nodes) {
+    public WarEngine(FileNode cache, Distributor distributor, Secrets secrets, FileNode war, FileNode outputNodesFile, String nodes) {
         this.cache = cache;
         this.distributor = distributor;
-        this.up = up;
+        this.secrets = secrets;
         this.war = war;
         this.outputNodesFile = outputNodesFile;
         this.nodes = nodes;
@@ -78,7 +78,7 @@ public class WarEngine {
         long warStart;
 
         started = System.currentTimeMillis();
-        modules = NodeModule.fromWebapp(cache, true, war.openZip(), up);
+        modules = NodeModule.fromWebapp(cache, true, war.openZip(), secrets);
         absolute = 0;
         changed = extract(modules);
 
