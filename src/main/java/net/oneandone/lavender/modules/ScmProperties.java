@@ -124,6 +124,7 @@ public class ScmProperties {
                     }
                 };
             }
+            // fall-through
         }
         if (prod) {
             scm = connectionProd;
