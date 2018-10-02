@@ -14,8 +14,8 @@
 * svn properties generalized to scm properties (old svn properties still work, but applications should switch to the latest frontend-parent
   to generate the new properties)
   * svn prefix changed to scm
-  * added `path` property that get's the path formerly appended to the url or devel url;
-    this also replaces the previous `pustefix.relative` propertly
+  * dumped `scm.foo.relative`, it was alway empty
+  * added `scm.foo.path` property that get's the path formerly appended to the url or devel url
   * replaced `revision` by `tag`
 
 * caching:

@@ -46,7 +46,6 @@ public class ModulePropertiesTest {
         props.put("scm.foo", "svn");
         props.put("scm.foo.targetPathPrefix", "prefix");
         props.put("scm.foo.lavendelize", "false");
-        props.put("scm.foo.relative", "sub");
         result = ModuleProperties.parse(false, props, pomInfo());
         assertEquals("someDirectory/relative", result.source);
         assertEquals(1, result.configs.size());

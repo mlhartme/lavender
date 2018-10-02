@@ -107,7 +107,7 @@ public class ModuleProperties extends PropertiesBase {
         String scmurlProd;
         String scmurlDevel;
         String tag;
-        String svnsrc;
+        String scmsrc;
 
         if (pominfo == null) {
             throw new IOException("pominfo.properties for module not found: " + properties);
@@ -123,8 +123,8 @@ public class ModuleProperties extends PropertiesBase {
             scmurlProd = (String) properties.remove(prefix);
             scmurlDevel = eatOpt(properties, prefix + ".devel", scmurlProd);
             tag = eatOpt(properties, prefix + ".revision", "-1");
-            svnsrc = eatSvnSource(properties, prefix, source);
-            svnsrc = fallback(scmurlProd, svnsrc);
+            scmsrc = eatLegacySvnSource(properties, prefix, source);
+            scmsrc = fallback(scmurlProd, scmsrc);
             result.configs.add(
                     new ScmProperties(
                             prefix.substring(prefix.indexOf('.') + 1),
@@ -134,7 +134,7 @@ public class ModuleProperties extends PropertiesBase {
                             eatBoolean(properties, prefix + ".lavendelize", true),
                             eatOpt(properties, prefix + ".resourcePathPrefix", ""),
                             eatOpt(properties, prefix + ".targetPathPrefix", ""),
-                            svnsrc));
+                            scmsrc));
         }
         for (String prefix : prefixes(properties, ScmProperties.SCM_PREFIX)) {
             scmurlProd = (String) properties.remove(prefix);
@@ -144,8 +144,7 @@ public class ModuleProperties extends PropertiesBase {
             if (!path.isEmpty() && !path.startsWith("/")) {
                 path = "/" + path;
             }
-            svnsrc = eatSvnSource(properties, prefix, source);
-            svnsrc = fallback(scmurlProd, svnsrc);
+            scmsrc = fallback(scmurlProd, source);
             result.configs.add(
                     new ScmProperties(
                             prefix.substring(prefix.indexOf('.') + 1),
@@ -155,7 +154,7 @@ public class ModuleProperties extends PropertiesBase {
                             eatBoolean(properties, prefix + ".lavendelize", true),
                             eatOpt(properties, prefix + ".resourcePathPrefix", ""),
                             eatOpt(properties, prefix + ".targetPathPrefix", ""),
-                            svnsrc));
+                            scmsrc));
         }
         if (properties.size() > 0) {
             throw new IllegalArgumentException("unknown properties: " + properties);
@@ -163,7 +162,7 @@ public class ModuleProperties extends PropertiesBase {
         return result;
     }
 
-    private static String eatSvnSource(Properties properties, String prefix, String source) {
+    private static String eatLegacySvnSource(Properties properties, String prefix, String source) {
         String relative;
 
         relative = eatOpt(properties, prefix + ".relative", null);
