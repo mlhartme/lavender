@@ -47,10 +47,9 @@ import java.util.List;
 public class DevelopmentFilter implements Filter {
     private static final Logger LOG = LoggerFactory.getLogger(ProductionFilter.class);
 
-    FilterConfig filterConfig;
-
-    World world;
-    protected List<Module> modules;
+    private FilterConfig filterConfig;
+    private World world;
+    private List<Module> modules;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
