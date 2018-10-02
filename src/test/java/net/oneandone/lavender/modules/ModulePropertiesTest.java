@@ -36,6 +36,31 @@ public class ModulePropertiesTest {
     }
 
     @Test
+    public void one() throws IOException {
+        Properties props;
+        ModuleProperties result;
+        ScmProperties config;
+
+        props = new Properties();
+        props.put("pustefix.relative", "relative");
+        props.put("scm.foo", "svn");
+        props.put("scm.foo.targetPathPrefix", "prefix");
+        props.put("scm.foo.lavendelize", "false");
+        props.put("scm.foo.relative", "sub");
+        result = ModuleProperties.parse(false, props, pomInfo());
+        assertEquals("someDirectory/relative", result.source);
+        assertEquals(1, result.configs.size());
+        config = result.configs.iterator().next();
+        assertEquals("foo", config.name);
+        assertFalse(config.lavendelize);
+        assertEquals("prefix", config.targetPathPrefix);
+        assertEquals("svn", config.connectionProd);
+        assertEquals("svn", config.connectionDevel);
+    }
+
+    //--
+
+    @Test
     public void legacyOne() throws IOException {
         Properties props;
         ModuleProperties result;
