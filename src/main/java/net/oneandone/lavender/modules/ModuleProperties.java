@@ -120,8 +120,14 @@ public class ModuleProperties extends PropertiesBase {
         }
         result = new ModuleProperties(eatFilter(properties, "pustefix", DEFAULT_INCLUDES), source);
         for (String prefix : prefixes(properties, ScmProperties.SVN_PREFIX)) {
+            String scmSvn = "scm:svn:";
+
             scmurlProd = (String) properties.remove(prefix);
             scmurlDevel = eatOpt(properties, prefix + ".devel", scmurlProd);
+            if (scmurlProd.startsWith(scmSvn) && !scmurlDevel.startsWith(scmSvn)) { // TODO
+                scmurlDevel = scmSvn + scmurlDevel;
+                LOG.warn("fixed devel url: " + scmurlDevel + ". Please update this module to the latest parent pom to fix this warning.");
+            }
             tag = eatOpt(properties, prefix + ".revision", "-1");
             scmsrc = eatLegacySvnSource(properties, prefix, source);
             scmsrc = fallback(scmurlProd, scmsrc);

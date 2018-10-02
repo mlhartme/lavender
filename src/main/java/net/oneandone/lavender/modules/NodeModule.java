@@ -52,20 +52,20 @@ public abstract class NodeModule extends Module<Node> {
         List<Module> result;
         WarConfig rootConfig;
         NodeModule root;
-        ModuleProperties lp;
+        ModuleProperties application;
 
         LOG.trace("scanning " + webapp);
-        lp = ModuleProperties.loadApp(prod, webapp);
+        application = ModuleProperties.loadApp(prod, webapp);
         result = new ArrayList<>();
         rootConfig = WarConfig.fromXml(webapp);
         // add modules before webapp, because they have a prefix
         for (Node<?> jar : webapp.find("WEB-INF/lib/*.jar")) {
             result.addAll(jarModuleOpt(cache, rootConfig, prod, jar, secrets));
         }
-        webappSource = lp.live(webapp);
-        root = warModule(rootConfig, lp.filter, webappSource);
+        webappSource = application.live(webapp);
+        root = warModule(rootConfig, application.filter, webappSource);
         result.add(root);
-        lp.addModules(cache, prod, secrets, result, null);
+        application.addModules(cache, prod, secrets, result, null);
         return result;
     }
 
@@ -97,7 +97,7 @@ public abstract class NodeModule extends Module<Node> {
             lp = ModuleProperties.loadModuleOpt(prod, exploded);
             if (!prod && lp == null) {
                 // This module has no lavender.properties, and thus pominfo.properties is outdated and thus lavender's live mechanism won't work.
-                // So we ignore this module in devel mode to get requests passed through to pustefix, which can do his old live handling
+                // So we ignore this module in devel mode to get requests passed through to pustefix, which can do its old live handling
                 // TODO: report "missing lavender.properties" error when all modules have been updated ...
                 return result;
             }
