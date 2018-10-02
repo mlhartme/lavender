@@ -48,15 +48,16 @@ public class DevelopmentFilter implements Filter {
     private static final Logger LOG = LoggerFactory.getLogger(ProductionFilter.class);
 
     private FilterConfig filterConfig;
-    private World world;
     private List<Module> modules;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        long started = System.currentTimeMillis();
+        long started;
+        World world;
         HostProperties properties;
         Node webapp;
 
+        started = System.currentTimeMillis();
         this.filterConfig = filterConfig;
         try {
             world = World.create(false);
