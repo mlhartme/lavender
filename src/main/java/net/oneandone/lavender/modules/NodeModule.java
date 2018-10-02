@@ -263,6 +263,9 @@ public abstract class NodeModule extends Module<Node> {
             filter = ModuleProperties.defaultFilter();
             lp = null;
         } else {
+            if (loaded[2] == null) {
+                throw new IOException("missing pominfo.properties in jar " + jar);
+            }
             lp = ModuleProperties.loadNode(prod, propertyNode, loaded[2]);
             filter = lp.filter;
         }

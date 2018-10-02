@@ -56,7 +56,7 @@ public class ModuleProperties extends PropertiesBase {
     }
 
     public static ModuleProperties loadNode(boolean prod, Node root, Node pominfo) throws IOException {
-        return ModuleProperties.parse(prod, root.readProperties(), pominfoOpt(pominfo));
+        return ModuleProperties.parse(prod, root.readProperties(), pominfo.readProperties());
     }
 
     public static ModuleProperties loadModuleOpt(boolean prod, Node root) throws IOException {
@@ -109,9 +109,11 @@ public class ModuleProperties extends PropertiesBase {
         String tag;
         String svnsrc;
 
+        if (pominfo == null) {
+            throw new IOException("pominfo.properties for module not found: " + properties);
+        }
         relative = eat(properties, "pustefix.relative");
-        // TODO: enforce pominfo != null when enough modules have switched
-        if (!prod && pominfo != null && thisMachine(pominfo.getProperty("ethernet"))) {
+        if (!prod && thisMachine(pominfo.getProperty("ethernet"))) {
             source = join(pominfo.getProperty("basedir"), relative);
         } else {
             source = null;
@@ -361,7 +363,7 @@ public class ModuleProperties extends PropertiesBase {
                     result[idx] = dest;
                     world.getBuffer().copy(src, dest);
                     if (count == names.length) {
-                        return result;
+                        break;
                     }
                 }
             }

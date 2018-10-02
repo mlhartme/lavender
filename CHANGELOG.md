@@ -2,6 +2,8 @@
 
 ### 2.7.0 (pending)
 
+* pominfo.properties are now required for lavender modules
+
 * added support for bitbucket modules
   * caution: repositories have to be pushed
   * caution: Bitbucket passwords do not equal intranet passwords; it's usually not defined because ssh is used for cloning a repository,
@@ -12,7 +14,8 @@
 * svn properties generalized to scm properties (old svn properties still work, but applications should switch to the latest frontend-parent
   to generate the new properties)
   * svn prefix changed to scm
-  * added `path` property that get's the path formerly appended to the url or devel url
+  * added `path` property that get's the path formerly appended to the url or devel url;
+    this also replaces the previous `pustefix.relative` propertly
   * replaced `revision` by `tag`
 
 * caching:
