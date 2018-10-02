@@ -26,26 +26,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 public class ModulePropertiesTest {
-    private static Properties testPomInfo() throws IOException {
-        Properties p;
-
-        p = new Properties();
-        p.put("ethernet", Separator.COMMA.join(ModuleProperties.ethernet()));
-        p.put("basedir", "someDirectory");
-        return p;
-    }
-
     @Test
-    public void empty() throws IOException {
+    public void legacyEmpty() throws IOException {
         Properties p;
 
         p = new Properties();
         p.put("pustefix.relative", "base");
-        assertEquals(0, ModuleProperties.parse(true, p, testPomInfo()).configs.size());
+        assertEquals(0, ModuleProperties.parse(true, p, pomInfo()).configs.size());
     }
 
     @Test
-    public void one() throws IOException {
+    public void legacyOne() throws IOException {
         Properties props;
         ModuleProperties result;
         ScmProperties config;
@@ -56,7 +47,7 @@ public class ModulePropertiesTest {
         props.put("svn.foo.targetPathPrefix", "prefix");
         props.put("svn.foo.lavendelize", "false");
         props.put("svn.foo.relative", "sub");
-        result = ModuleProperties.parse(false, props, testPomInfo());
+        result = ModuleProperties.parse(false, props, pomInfo());
         assertEquals("someDirectory/relative", result.source);
         assertEquals(1, result.configs.size());
         config = result.configs.iterator().next();
@@ -68,25 +59,25 @@ public class ModulePropertiesTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void undefinedNormal() throws IOException {
+    public void legacyUndefinedNormal() throws IOException {
         Properties props;
 
         props = new Properties();
-        ModuleProperties.parse(true, props, testPomInfo());
+        ModuleProperties.parse(true, props, pomInfo());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void undefinedSvn() throws IOException {
+    public void legacyUndefinedSvn() throws IOException {
         Properties props;
 
         props = new Properties();
         props.put("pustefix.relative", "foo");
         props.put("svn.module.nosuchkey", "bla");
-        ModuleProperties.parse(true, props, testPomInfo());
+        ModuleProperties.parse(true, props, pomInfo());
     }
 
     @Test
-    public void more() throws IOException {
+    public void legacyMore() throws IOException {
         Properties props;
         Collection<ScmProperties> result;
 
@@ -95,7 +86,17 @@ public class ModulePropertiesTest {
         props.put("svn.foo", "1");
         props.put("svn.bar", "2");
         props.put("svn.baz", "3");
-        result = ModuleProperties.parse(true, props, testPomInfo()).configs;
+        result = ModuleProperties.parse(true, props, pomInfo()).configs;
         assertEquals(3, result.size());
     }
+
+    private static Properties pomInfo() throws IOException {
+        Properties p;
+
+        p = new Properties();
+        p.put("ethernet", Separator.COMMA.join(ModuleProperties.ethernet()));
+        p.put("basedir", "someDirectory");
+        return p;
+    }
+
 }
