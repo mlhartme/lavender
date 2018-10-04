@@ -23,14 +23,20 @@ public class Embedded {
 
     /** @return null if not a pustefix module */
     public static Embedded forNodeOpt(boolean prod, Node jar, WarConfig rootConfig) throws IOException, SAXException, XmlException {
+        Embedded result;
+
         if (jar instanceof FileNode) {
-            return forFileNodeOpt(prod, (FileNode) jar, rootConfig);
+            result = forFileNodeOpt(prod, (FileNode) jar, rootConfig);
         } else {
             if (!prod) {
                 throw new UnsupportedOperationException("live mechanism not supported for jar streams");
             }
-            return forOtherNodeOpt(jar, rootConfig);
+            result = forOtherNodeOpt(jar, rootConfig);
         }
+        if (result != null && result.jarModule == null) {
+            throw new IllegalStateException();
+        }
+        return result;
     }
 
     /** To properly make jars available as a module, I have to load them into memory when the jar is itself contained in a war. */

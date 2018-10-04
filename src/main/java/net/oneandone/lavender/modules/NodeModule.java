@@ -111,7 +111,7 @@ public abstract class NodeModule extends Module<Node> {
         // add modules before webapp, because they have a prefix
         for (Node<?> jar : webapp.find("WEB-INF/lib/*.jar")) {
             embedded = Embedded.forNodeOpt(true, jar, rootConfig);
-            if (embedded != null && embedded.jarModule != null && embedded.lp == null && !embedded.hasResourceIndex) {
+            if (embedded != null && embedded.lp == null) {
                 if (!embedded.jarModule.loadEntries().isEmpty()) {
                     result.add(embedded.jarModule.getName());
                 }
