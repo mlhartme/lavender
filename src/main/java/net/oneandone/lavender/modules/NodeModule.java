@@ -99,11 +99,7 @@ public abstract class NodeModule extends Module<Node> {
                 return result;
             }
             hasResourceIndex = exploded.join(RESOURCE_INDEX).exists();
-            if (prod || lp == null) {
-                jarTmp = jarOrig;
-            } else {
-                jarTmp = lp.live(jarOrig);
-            }
+            jarTmp = prod ? jarOrig : lp.live(jarOrig);
             if (jarTmp.isFile()) {
                 jarLive = ((FileNode) jarTmp).openJar();
             } else {
@@ -129,11 +125,11 @@ public abstract class NodeModule extends Module<Node> {
             lp = (ModuleProperties) tmp[1];
             config = (JarConfig) tmp[2];
             hasResourceIndex = (Boolean) tmp[3];
-        }
-        if (lp == null && hasResourceIndex) {
-            // ok - we have a recent parent pom without lavender properties
-            // -> the has not enabled lavender for this module
-            return result;
+            if (lp == null && hasResourceIndex) {
+                // ok - we have a recent parent pom without lavender properties
+                // -> the has not enabled lavender for this module
+                return result;
+            }
         }
         if (lp != null && !hasResourceIndex) {
             throw new IOException("missing resource index: " + jarOrig.getUri().toString());
