@@ -79,7 +79,7 @@ public class WarEngine {
         long warStart;
 
         started = System.currentTimeMillis();
-        modules = NodeModule.fromWebapp(cache, true, war.openZip(), secrets, false, new ArrayList<>());
+        modules = NodeModule.fromWebapp(cache, true, war.openZip(), secrets);
         absolute = 0;
         changed = extract(modules);
 

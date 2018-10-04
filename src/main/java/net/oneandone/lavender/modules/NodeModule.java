@@ -38,22 +38,24 @@ public abstract class NodeModule extends Module<Node> {
     private static final Logger LOG = LoggerFactory.getLogger(Module.class);
     // used to detect a recent parent pom
 
-    /** @param legacy returns the legacy modules configured or scanned */
-    public static List<Module> fromWebapp(FileNode cache, boolean prod, Node<?> webapp, Secrets secrets, boolean scanLegacy, List<String> legacy)
+    public static List<Module> fromWebapp(FileNode cache, boolean prod, Node<?> webapp, Secrets secrets)
             throws IOException, SAXException, XmlException {
         Node<?> webappSource;
         List<Module> result;
         WarConfig rootConfig;
         NodeModule root;
         ModuleProperties application;
+        List<String> legacy;
 
         LOG.trace("scanning " + webapp);
-        application = ModuleProperties.loadApp(prod, webapp, scanLegacy ? null : legacy);
+        legacy = new ArrayList<>();
+        application = ModuleProperties.loadApp(prod, webapp, legacy);
+        LOG.info("legacy modules: " + legacy);
         result = new ArrayList<>();
         rootConfig = WarConfig.fromXml(webapp);
         // add modules before webapp, because they have a prefix
         for (Node<?> jar : webapp.find("WEB-INF/lib/*.jar")) {
-            result.addAll(jarModuleOpt(cache, rootConfig, prod, jar, secrets, scanLegacy, legacy));
+            result.addAll(jarModuleOpt(cache, rootConfig, prod, jar, secrets, legacy));
         }
         webappSource = application.live(webapp);
         root = warModule(rootConfig, application.filter, webappSource);
@@ -63,7 +65,7 @@ public abstract class NodeModule extends Module<Node> {
     }
 
     /** @param legacy null to detect legcy modules; in this case, result != indicates a legacy module */
-    public static List<Module> jarModuleOpt(FileNode cache, WarConfig rootConfig, boolean prod, Node jarOrig, Secrets secrets, boolean checkLegacy, List<String> legacy)
+    public static List<Module> jarModuleOpt(FileNode cache, WarConfig rootConfig, boolean prod, Node jarOrig, Secrets secrets, List<String> legacy)
             throws IOException, XmlException, SAXException {
         Embedded embedded;
         List<Module> result;
@@ -79,28 +81,41 @@ public abstract class NodeModule extends Module<Node> {
         if (embedded.lp == null && embedded.hasResourceIndex) {
             throw new IOException("missing lavender.properties: " + jarOrig.getUri().toString());
         }
-
-        if (checkLegacy) {
+        if (!legacy.contains(embedded.jarModule.getName())) {
             if (embedded.lp == null && !embedded.hasResourceIndex) {
                 if (embedded.jarModule.iterator().hasNext()) {
-                    legacy.add(embedded.jarModule.getName());
-                }
-            }
-        } else {
-            if (!legacy.contains(embedded.jarModule.getName())) {
-                if (embedded.lp == null && !embedded.hasResourceIndex) {
-                    if (embedded.jarModule.iterator().hasNext()) {
-                        throw new IOException("missing lavender.properties: " + embedded.jarModule.getName());
-                    } else {
-                        // no entries
-                    }
+                    throw new IOException("missing lavender.properties: " + embedded.jarModule.getName());
+                } else {
+                    // no entries
                 }
             }
         }
+
         // continue without lavender.properties -- we have to support this mode for a some time ... :(
         result.add(embedded.jarModule);
         if (embedded.lp != null) {
             embedded.lp.addModules(cache, prod, secrets, result, embedded.config);
+        }
+        return result;
+    }
+
+    //--
+
+    public static List<String> scanLegacy(Node<?> webapp) throws Exception {
+        List<String> result;
+        WarConfig rootConfig;
+        Embedded embedded;
+
+        result = new ArrayList<>();
+        rootConfig = WarConfig.fromXml(webapp);
+        // add modules before webapp, because they have a prefix
+        for (Node<?> jar : webapp.find("WEB-INF/lib/*.jar")) {
+            embedded = Embedded.forNodeOpt(true, jar, rootConfig);
+            if (embedded != null && embedded.jarModule != null && embedded.lp == null && !embedded.hasResourceIndex) {
+                if (!embedded.jarModule.loadEntries().isEmpty()) {
+                    result.add(embedded.jarModule.getName());
+                }
+            }
         }
         return result;
     }

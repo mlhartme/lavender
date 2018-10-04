@@ -15,33 +15,21 @@
  */
 package net.oneandone.lavender.cli;
 
-import net.oneandone.lavender.config.HostProperties;
 import net.oneandone.lavender.modules.NodeModule;
 import net.oneandone.sushi.fs.file.FileNode;
-import net.oneandone.sushi.xml.XmlException;
-import org.xml.sax.SAXException;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ScanLegacy extends Base {
     private final FileNode war;
 
-    public ScanLegacy(Globals globals, FileNode war) throws IOException, URISyntaxException {
+    public ScanLegacy(Globals globals, FileNode war) throws IOException {
         super(globals);
 
         this.war = war.checkFile();
     }
 
-    public void run() throws IOException, SAXException, XmlException, URISyntaxException {
-        HostProperties properties;
-        List<String> legacy;
-
-        properties = globals.properties();
-        legacy = new ArrayList<>();
-        NodeModule.fromWebapp(globals.cacheroot(), true, war.openZip(), properties.secrets, true, legacy);
-        System.out.println("legacy modules: " + legacy);
+    public void run() throws Exception {
+        System.out.println("legacy modules: " + NodeModule.scanLegacy(war.openZip()));
     }
 }

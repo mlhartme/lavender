@@ -21,6 +21,7 @@ import java.util.zip.ZipInputStream;
 public class Embedded {
     private static final String RESOURCE_INDEX = "META-INF/pustefix-resource.index";
 
+    /** @return null if not a pustefix module */
     public static Embedded forNodeOpt(boolean prod, Node jar, WarConfig rootConfig) throws IOException, SAXException, XmlException {
         if (jar instanceof FileNode) {
             return forFileNodeOpt(prod, (FileNode) jar, rootConfig);
