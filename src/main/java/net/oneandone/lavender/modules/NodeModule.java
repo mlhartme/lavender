@@ -69,14 +69,7 @@ public abstract class NodeModule extends Module<Node> {
         List<Module> result;
 
         result = new ArrayList<>();
-        if (jarOrig instanceof FileNode) {
-            embedded = Embedded.forFileNode(prod, (FileNode) jarOrig, rootConfig);
-        } else {
-            if (!prod) {
-                throw new UnsupportedOperationException("live mechanism not supported for jar streams");
-            }
-            embedded = Embedded.forOtherNode(jarOrig, rootConfig);
-        }
+        embedded = Embedded.forNodeOpt(prod, jarOrig, rootConfig);
         if (embedded == null) {
             return result;
         }

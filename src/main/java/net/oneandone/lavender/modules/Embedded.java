@@ -17,13 +17,23 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-/** To load resources from jars. */
+/** To create modules that load resources from jars. */
 public class Embedded {
     private static final String RESOURCE_INDEX = "META-INF/pustefix-resource.index";
 
+    public static Embedded forNodeOpt(boolean prod, Node jar, WarConfig rootConfig) throws IOException, SAXException, XmlException {
+        if (jar instanceof FileNode) {
+            return forFileNodeOpt(prod, (FileNode) jar, rootConfig);
+        } else {
+            if (!prod) {
+                throw new UnsupportedOperationException("live mechanism not supported for jar streams");
+            }
+            return forOtherNodeOpt(jar, rootConfig);
+        }
+    }
 
     /** To properly make jars available as a module, I have to load them into memory when the jar is itself contained in a war. */
-    public static Embedded forOtherNode(Node jar, WarConfig rootConfig) throws IOException {
+    public static Embedded forOtherNodeOpt(Node jar, WarConfig rootConfig) throws IOException {
         Embedded embedded;
 
         Node[] loaded;
@@ -90,7 +100,7 @@ public class Embedded {
         return embedded;
     }
 
-    public static Embedded forFileNode(boolean prod, FileNode jarOrig, WarConfig rootConfig) throws IOException, XmlException, SAXException {
+    public static Embedded forFileNodeOpt(boolean prod, FileNode jarOrig, WarConfig rootConfig) throws IOException, XmlException, SAXException {
         Embedded embedded;
         Node exploded;
         Node configFile;
