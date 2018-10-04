@@ -71,39 +71,39 @@ public abstract class NodeModule extends Module<Node> {
     /** @param legacy null to detect legcy modules; in this case, result != indicates a legacy module */
     public static List<Module> jarModuleOpt(FileNode cache, WarConfig rootConfig, boolean prod, Node jarOrig, Secrets secrets, boolean checkLegacy, List<String> legacy)
             throws IOException, XmlException, SAXException {
-        Info info;
+        Embedded embedded;
         List<Module> result;
 
         result = new ArrayList<>();
         if (jarOrig instanceof FileNode) {
-            info = Info.forFileNode(prod, (FileNode) jarOrig, rootConfig);
+            embedded = Embedded.forFileNode(prod, (FileNode) jarOrig, rootConfig);
         } else {
             if (!prod) {
                 throw new UnsupportedOperationException("live mechanism not supported for jar streams");
             }
-            info = Info.forOtherNode(jarOrig, rootConfig);
+            embedded = Embedded.forOtherNode(jarOrig, rootConfig);
         }
-        if (info == null) {
+        if (embedded == null) {
             return result;
         }
-        if (info.lp != null && !info.hasResourceIndex) {
+        if (embedded.lp != null && !embedded.hasResourceIndex) {
             throw new IOException("missing resource index: " + jarOrig.getUri().toString());
         }
-        if (info.lp == null && info.hasResourceIndex) {
+        if (embedded.lp == null && embedded.hasResourceIndex) {
             throw new IOException("missing lavender.properties: " + jarOrig.getUri().toString());
         }
 
         if (checkLegacy) {
-            if (info.lp == null && !info.hasResourceIndex) {
-                if (info.jarModule.iterator().hasNext()) {
-                    legacy.add(info.jarModule.getName());
+            if (embedded.lp == null && !embedded.hasResourceIndex) {
+                if (embedded.jarModule.iterator().hasNext()) {
+                    legacy.add(embedded.jarModule.getName());
                 }
             }
         } else {
-            if (!legacy.contains(info.jarModule.getName())) {
-                if (info.lp == null && !info.hasResourceIndex) {
-                    if (info.jarModule.iterator().hasNext()) {
-                        throw new IOException("missing lavender.properties: " + info.jarModule.getName());
+            if (!legacy.contains(embedded.jarModule.getName())) {
+                if (embedded.lp == null && !embedded.hasResourceIndex) {
+                    if (embedded.jarModule.iterator().hasNext()) {
+                        throw new IOException("missing lavender.properties: " + embedded.jarModule.getName());
                     } else {
                         // no entries
                     }
@@ -111,17 +111,17 @@ public abstract class NodeModule extends Module<Node> {
             }
         }
         // continue without lavender.properties -- we have to support this mode for a some time ... :(
-        result.add(info.jarModule);
-        if (info.lp != null) {
-            info.lp.addModules(cache, prod, secrets, result, info.config);
+        result.add(embedded.jarModule);
+        if (embedded.lp != null) {
+            embedded.lp.addModules(cache, prod, secrets, result, embedded.config);
         }
         return result;
     }
 
-    public static class Info {
+    public static class Embedded {
         /** To properly make jars available as a module, I have to load them into memory when the jar is itself contained in a war. */
-        public static Info forOtherNode(Node jar, WarConfig rootConfig) throws IOException {
-            Info info;
+        public static Embedded forOtherNode(Node jar, WarConfig rootConfig) throws IOException {
+            Embedded embedded;
 
             Node[] loaded;
             Filter filter;
@@ -135,27 +135,27 @@ public abstract class NodeModule extends Module<Node> {
             final Map<String, Node> files;
             String resourcePath;
 
-            info = new Info();
+            embedded = new Embedded();
             loaded = ModuleProperties.loadStreamNodes(jar, "META-INF/pustefix-module.xml",
                     ModuleProperties.MODULE_PROPERTIES, "META-INF/pominfo.properties", RESOURCE_INDEX);
             if (loaded[0] == null) {
                 return null;
             }
             try (InputStream configSrc = loaded[0].newInputStream()) {
-                info.config = JarConfig.load(jar.getWorld().getXml(), rootConfig, configSrc);
+                embedded.config = JarConfig.load(jar.getWorld().getXml(), rootConfig, configSrc);
             } catch (SAXException | XmlException e) {
                 throw new IOException(jar + ": cannot load module descriptor:" + e.getMessage(), e);
             }
             propertyNode = loaded[1];
             if (propertyNode == null) {
                 filter = ModuleProperties.defaultFilter();
-                info.lp = null;
+                embedded.lp = null;
             } else {
                 if (loaded[2] == null) {
                     throw new IOException("missing pominfo.properties in jar " + jar);
                 }
-                info.lp = ModuleProperties.loadNode(true, propertyNode, loaded[2]);
-                filter = info.lp.filter;
+                embedded.lp = ModuleProperties.loadNode(true, propertyNode, loaded[2]);
+                filter = embedded.lp.filter;
             }
             world = jar.getWorld();
             root = world.getMemoryFilesystem().root().node(UUID.randomUUID().toString(), null).mkdir();
@@ -164,7 +164,7 @@ public abstract class NodeModule extends Module<Node> {
             while ((entry = src.getNextEntry()) != null) {
                 path = entry.getName();
                 if (!entry.isDirectory()) {
-                    if ((resourcePath = info.config.getPath(path)) != null && filter.matches(path)) {
+                    if ((resourcePath = embedded.config.getPath(path)) != null && filter.matches(path)) {
                         child = root.join(path);
                         child.getParent().mkdirsOpt();
                         world.getBuffer().copy(src, child);
@@ -172,57 +172,57 @@ public abstract class NodeModule extends Module<Node> {
                     }
                 }
             }
-            info.jarModule = new NodeModule(Module.TYPE, info.config.getModuleName(), true, info.config.getResourcePathPrefix(), "", filter) {
+            embedded.jarModule = new NodeModule(Module.TYPE, embedded.config.getModuleName(), true, embedded.config.getResourcePathPrefix(), "", filter) {
                 public Map<String, Node> loadEntries() {
                     // no need to re-loadEntries files from memory
                     return files;
                 }
             };
-            info.hasResourceIndex = loaded[3] != null;
-            if (info.lp == null && info.hasResourceIndex) {
+            embedded.hasResourceIndex = loaded[3] != null;
+            if (embedded.lp == null && embedded.hasResourceIndex) {
                 // ok - we have a recent parent pom without lavender properties
                 // -> the has not enabled lavender for this module
                 return null;
             }
-            return info;
+            return embedded;
         }
 
-        public static Info forFileNode(boolean prod, FileNode jarOrig, WarConfig rootConfig) throws IOException, XmlException, SAXException {
-            Info info;
+        public static Embedded forFileNode(boolean prod, FileNode jarOrig, WarConfig rootConfig) throws IOException, XmlException, SAXException {
+            Embedded embedded;
             Node exploded;
             Node configFile;
             Node jarTmp;
             Node jarLive;
             Filter filter;
 
-            info = new Info();
+            embedded = new Embedded();
             exploded = jarOrig.openJar();
             configFile = exploded.join("META-INF/pustefix-module.xml");
             if (!configFile.exists()) {
                 return null;
             }
             try (InputStream src = configFile.newInputStream()) {
-                info.config = JarConfig.load(jarOrig.getWorld().getXml(), rootConfig, src);
+                embedded.config = JarConfig.load(jarOrig.getWorld().getXml(), rootConfig, src);
             }
-            info.lp = ModuleProperties.loadModuleOpt(prod, exploded);
-            if (info.lp == null) {
+            embedded.lp = ModuleProperties.loadModuleOpt(prod, exploded);
+            if (embedded.lp == null) {
                 return null;
             }
-            info.hasResourceIndex = exploded.join(RESOURCE_INDEX).exists();
-            jarTmp = prod ? jarOrig : info.lp.live(jarOrig);
+            embedded.hasResourceIndex = exploded.join(RESOURCE_INDEX).exists();
+            jarTmp = prod ? jarOrig : embedded.lp.live(jarOrig);
             if (jarTmp.isFile()) {
                 jarLive = ((FileNode) jarTmp).openJar();
             } else {
                 jarLive = jarTmp;
             }
-            filter = info.lp.filter;
-            info.jarModule = new NodeModule(Module.TYPE, info.config.getModuleName(), true, info.config.getResourcePathPrefix(), "", filter) {
+            filter = embedded.lp.filter;
+            embedded.jarModule = new NodeModule(Module.TYPE, embedded.config.getModuleName(), true, embedded.config.getResourcePathPrefix(), "", filter) {
                 @Override
                 protected Map<String, Node> loadEntries() throws IOException {
-                    return files(filter, info.config, jarLive);
+                    return files(filter, embedded.config, jarLive);
                 }
             };
-            return info;
+            return embedded;
         }
 
         public JarConfig config;
