@@ -95,10 +95,7 @@ public abstract class NodeModule extends Module<Node> {
                 config = JarConfig.load(jarOrig.getWorld().getXml(), rootConfig, src);
             }
             lp = ModuleProperties.loadModuleOpt(prod, exploded);
-            if (!prod && lp == null) {
-                // This module has no lavender.properties, and thus pominfo.properties is outdated and thus lavender's live mechanism won't work.
-                // So we ignore this module in devel mode to get requests passed through to pustefix, which can do its old live handling
-                // TODO: report "missing lavender.properties" error when all modules have been updated ...
+            if (lp == null) {
                 return result;
             }
             hasResourceIndex = exploded.join(RESOURCE_INDEX).exists();
@@ -112,7 +109,7 @@ public abstract class NodeModule extends Module<Node> {
             } else {
                 jarLive = jarTmp;
             }
-            filter = lp == null ? ModuleProperties.defaultFilter() : lp.filter;
+            filter = lp.filter;
             jarModule = new NodeModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
                 @Override
                 protected Map<String, Node> loadEntries() throws IOException {
@@ -137,6 +134,9 @@ public abstract class NodeModule extends Module<Node> {
             // ok - we have a recent parent pom without lavender properties
             // -> the has not enabled lavender for this module
             return result;
+        }
+        if (lp != null && !hasResourceIndex) {
+            throw new IOException("missing resource index: " + jarOrig.getUri().toString());
         }
         // continue without lavender.properties -- we have to support this mode for a some time ... :(
         result.add(jarModule);
