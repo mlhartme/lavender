@@ -37,6 +37,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +79,7 @@ public class WarEngine {
         long warStart;
 
         started = System.currentTimeMillis();
-        modules = NodeModule.fromWebapp(cache, true, war.openZip(), secrets);
+        modules = NodeModule.fromWebapp(cache, true, war.openZip(), secrets, false, new ArrayList<>());
         absolute = 0;
         changed = extract(modules);
 

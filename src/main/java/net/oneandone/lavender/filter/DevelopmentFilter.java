@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -97,7 +98,7 @@ public class DevelopmentFilter implements Filter {
 
     List<Module> loadModulesFromWebapp(Node webapp, HostProperties properties, FileNode cache)
             throws IOException, SAXException, XmlException {
-        return NodeModule.fromWebapp(cache, false, webapp, properties.secrets);
+        return NodeModule.fromWebapp(cache, false, webapp, properties.secrets, false, new ArrayList<>());
     }
 
     public boolean intercept(HttpServletRequest request, HttpServletResponse response) throws IOException {

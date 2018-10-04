@@ -2,7 +2,8 @@
 
 ### 2.7.0 (pending)
 
-* pominfo.properties are now required for lavender modules
+* pominfo.properties, lavender.properties and resource index are now required for lavender modules; madues that don't have that
+  have to be declared as legacy modules in the application; added `scan-legacy` to detect them
 
 * added support for bitbucket modules
   * caution: repositories have to be pushed

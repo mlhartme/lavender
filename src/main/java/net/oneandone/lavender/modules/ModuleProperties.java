@@ -90,7 +90,11 @@ public class ModuleProperties extends PropertiesBase {
             throw new IOException("pominfo.properties for application not found");
         }
         properties = src.readProperties();
-        legacy.addAll(Separator.COMMA.split(PropertiesBase.eatOpt(properties, "legacy", "")));
+        if (legacy == null) {
+            PropertiesBase.eatOpt(properties, "legacy", null);
+        } else {
+            legacy.addAll(Separator.COMMA.split(PropertiesBase.eatOpt(properties, "legacy", "")));
+        }
         return parse(prod, properties, pominfo);
     }
 

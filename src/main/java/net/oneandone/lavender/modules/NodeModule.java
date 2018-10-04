@@ -44,24 +44,22 @@ public abstract class NodeModule extends Module<Node> {
     // used to detect a recent parent pom
     private static final String RESOURCE_INDEX = "META-INF/pustefix-resource.index";
 
-
-    public static List<Module> fromWebapp(FileNode cache, boolean prod, Node<?> webapp, Secrets secrets)
+    /** @param legacy returns the legacy modules configured or scanned */
+    public static List<Module> fromWebapp(FileNode cache, boolean prod, Node<?> webapp, Secrets secrets, boolean scanLegacy, List<String> legacy)
             throws IOException, SAXException, XmlException {
         Node<?> webappSource;
-        List<String> legacy;
         List<Module> result;
         WarConfig rootConfig;
         NodeModule root;
         ModuleProperties application;
 
         LOG.trace("scanning " + webapp);
-        legacy = new ArrayList<>();
-        application = ModuleProperties.loadApp(prod, webapp, legacy);
+        application = ModuleProperties.loadApp(prod, webapp, scanLegacy ? null : legacy);
         result = new ArrayList<>();
         rootConfig = WarConfig.fromXml(webapp);
         // add modules before webapp, because they have a prefix
         for (Node<?> jar : webapp.find("WEB-INF/lib/*.jar")) {
-            result.addAll(jarModuleOpt(cache, rootConfig, prod, jar, secrets, legacy));
+            result.addAll(jarModuleOpt(cache, rootConfig, prod, jar, secrets, scanLegacy, legacy));
         }
         webappSource = application.live(webapp);
         root = warModule(rootConfig, application.filter, webappSource);
@@ -70,7 +68,8 @@ public abstract class NodeModule extends Module<Node> {
         return result;
     }
 
-    public static List<Module> jarModuleOpt(FileNode cache, WarConfig rootConfig, boolean prod, Node jarOrig, Secrets secrets, List<String> legacy)
+    /** @param legacy null to detect legcy modules; in this case, result != indicates a legacy module */
+    public static List<Module> jarModuleOpt(FileNode cache, WarConfig rootConfig, boolean prod, Node jarOrig, Secrets secrets, boolean checkLegacy, List<String> legacy)
             throws IOException, XmlException, SAXException {
         Node configFile;
         final JarConfig config;
@@ -138,12 +137,21 @@ public abstract class NodeModule extends Module<Node> {
         if (lp == null && hasResourceIndex) {
             throw new IOException("missing lavender.properties: " + jarOrig.getUri().toString());
         }
-        if (!legacy.contains(jarModule.getName())) {
+
+        if (checkLegacy) {
             if (lp == null && !hasResourceIndex) {
                 if (jarModule.iterator().hasNext()) {
-                    throw new IOException("missing lavender.properties: " + jarModule.getName());
-                } else {
-                    // no entries
+                    legacy.add(jarModule.getName());
+                }
+            }
+        } else {
+            if (!legacy.contains(jarModule.getName())) {
+                if (lp == null && !hasResourceIndex) {
+                    if (jarModule.iterator().hasNext()) {
+                        throw new IOException("missing lavender.properties: " + jarModule.getName());
+                    } else {
+                        // no entries
+                    }
                 }
             }
         }

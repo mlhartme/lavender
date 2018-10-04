@@ -57,6 +57,7 @@ public class Main {
             }
 
             cli.add(War.class, "war war cluster docroot index");
+            cli.add(ScanLegacy.class, "scan-legacy war");
             cli.add(Svn.class, "svn directory cluster docroot");
             cli.add(File.class, "file -prefix archive cluster docroot index");
             cli.add(Direct.class, "direct cluster arg+");
@@ -78,6 +79,9 @@ public class Main {
         help.append("  'war' war cluster docroot index\n");
         help.append("                            publish resources from the specified war, adds nodes- and index file to the war\n");
         help.append("                            index is a file name with suffix\n");
+        help.append("  'scan-legacy' war\n");
+        help.append("                            list all legacy modules in the specified war;\n");
+        help.append("                            legacy is a pustefix module with embedded resources but not lavender.properties file\n");
         help.append("  'svn' directory cluster docroot\n");
         help.append("                            publish resources from <svn>/data/<directory> to <docroot>/<directory> on the specified cluster\n");
         help.append("                            <svn> is picked from host.properties; index will be the directory name with '.idx' appended\n");
