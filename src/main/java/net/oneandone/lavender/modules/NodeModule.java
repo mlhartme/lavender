@@ -116,7 +116,7 @@ public abstract class NodeModule extends Module<Node> {
             if (!prod) {
                 throw new UnsupportedOperationException("live mechanism not supported for jar streams");
             }
-            tmp = NodeModule.fromJarStream(prod, Module.TYPE, rootConfig, jarOrig);
+            tmp = NodeModule.fromJarStream(prod, rootConfig, jarOrig);
             if (tmp == null) {
                 // no pustefix module config
                 return result;
@@ -250,7 +250,7 @@ public abstract class NodeModule extends Module<Node> {
     //--
 
     /** To properly make jars available as a module, I have to load them into memory when the jar is itself contained in a war. */
-    public static Object[] fromJarStream(boolean prod, String type, WarConfig parent, Node jar) throws IOException {
+    public static Object[] fromJarStream(boolean prod, WarConfig parent, Node jar) throws IOException {
         JarConfig config;
         Node[] loaded;
         Filter filter;
@@ -301,7 +301,7 @@ public abstract class NodeModule extends Module<Node> {
                 }
             }
         }
-        return new Object[] { new NodeModule(type, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
+        return new Object[] { new NodeModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
             public Map<String, Node> loadEntries() {
                 // no need to re-loadEntries files from memory
                 return files;
