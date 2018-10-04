@@ -71,19 +71,17 @@ public abstract class NodeModule extends Module<Node> {
     /** @param legacy null to detect legcy modules; in this case, result != indicates a legacy module */
     public static List<Module> jarModuleOpt(FileNode cache, WarConfig rootConfig, boolean prod, Node jarOrig, Secrets secrets, boolean checkLegacy, List<String> legacy)
             throws IOException, XmlException, SAXException {
+        Info info;
         Node configFile;
-        final JarConfig config;
         List<Module> result;
         Node jarTmp;
-        final Node jarLive;
-        Module jarModule;
+        Node jarLive;
         Object[] tmp;
-        ModuleProperties lp;
         Node exploded;
-        final Filter filter;
-        boolean hasResourceIndex;
+        Filter filter;
 
         result = new ArrayList<>();
+        info = new Info();
         if (jarOrig instanceof FileNode) {
             // TODO: expensive
             exploded = ((FileNode) jarOrig).openJar();
@@ -92,24 +90,24 @@ public abstract class NodeModule extends Module<Node> {
                 return result;
             }
             try (InputStream src = configFile.newInputStream()) {
-                config = JarConfig.load(jarOrig.getWorld().getXml(), rootConfig, src);
+                info.config = JarConfig.load(jarOrig.getWorld().getXml(), rootConfig, src);
             }
-            lp = ModuleProperties.loadModuleOpt(prod, exploded);
-            if (lp == null) {
+            info.lp = ModuleProperties.loadModuleOpt(prod, exploded);
+            if (info.lp == null) {
                 return result;
             }
-            hasResourceIndex = exploded.join(RESOURCE_INDEX).exists();
-            jarTmp = prod ? jarOrig : lp.live(jarOrig);
+            info.hasResourceIndex = exploded.join(RESOURCE_INDEX).exists();
+            jarTmp = prod ? jarOrig : info.lp.live(jarOrig);
             if (jarTmp.isFile()) {
                 jarLive = ((FileNode) jarTmp).openJar();
             } else {
                 jarLive = jarTmp;
             }
-            filter = lp.filter;
-            jarModule = new NodeModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
+            filter = info.lp.filter;
+            info.jarModule = new NodeModule(Module.TYPE, info.config.getModuleName(), true, info.config.getResourcePathPrefix(), "", filter) {
                 @Override
                 protected Map<String, Node> loadEntries() throws IOException {
-                    return files(filter, config, jarLive);
+                    return files(filter, info.config, jarLive);
                 }
             };
         } else {
@@ -121,34 +119,34 @@ public abstract class NodeModule extends Module<Node> {
                 // no pustefix module config
                 return result;
             }
-            jarModule = (Module) tmp[0];
-            lp = (ModuleProperties) tmp[1];
-            config = (JarConfig) tmp[2];
-            hasResourceIndex = (Boolean) tmp[3];
-            if (lp == null && hasResourceIndex) {
+            info.jarModule = (Module) tmp[0];
+            info.lp = (ModuleProperties) tmp[1];
+            info.config = (JarConfig) tmp[2];
+            info.hasResourceIndex = (Boolean) tmp[3];
+            if (info.lp == null && info.hasResourceIndex) {
                 // ok - we have a recent parent pom without lavender properties
                 // -> the has not enabled lavender for this module
                 return result;
             }
         }
-        if (lp != null && !hasResourceIndex) {
+        if (info.lp != null && !info.hasResourceIndex) {
             throw new IOException("missing resource index: " + jarOrig.getUri().toString());
         }
-        if (lp == null && hasResourceIndex) {
+        if (info.lp == null && info.hasResourceIndex) {
             throw new IOException("missing lavender.properties: " + jarOrig.getUri().toString());
         }
 
         if (checkLegacy) {
-            if (lp == null && !hasResourceIndex) {
-                if (jarModule.iterator().hasNext()) {
-                    legacy.add(jarModule.getName());
+            if (info.lp == null && !info.hasResourceIndex) {
+                if (info.jarModule.iterator().hasNext()) {
+                    legacy.add(info.jarModule.getName());
                 }
             }
         } else {
-            if (!legacy.contains(jarModule.getName())) {
-                if (lp == null && !hasResourceIndex) {
-                    if (jarModule.iterator().hasNext()) {
-                        throw new IOException("missing lavender.properties: " + jarModule.getName());
+            if (!legacy.contains(info.jarModule.getName())) {
+                if (info.lp == null && !info.hasResourceIndex) {
+                    if (info.jarModule.iterator().hasNext()) {
+                        throw new IOException("missing lavender.properties: " + info.jarModule.getName());
                     } else {
                         // no entries
                     }
@@ -156,11 +154,18 @@ public abstract class NodeModule extends Module<Node> {
             }
         }
         // continue without lavender.properties -- we have to support this mode for a some time ... :(
-        result.add(jarModule);
-        if (lp != null) {
-            lp.addModules(cache, prod, secrets, result, config);
+        result.add(info.jarModule);
+        if (info.lp != null) {
+            info.lp.addModules(cache, prod, secrets, result, info.config);
         }
         return result;
+    }
+
+    public static class Info {
+        public JarConfig config;
+        public ModuleProperties lp;
+        public boolean hasResourceIndex;
+        public Module jarModule;
     }
 
     private static Map<String, Node> files(final Filter filter, final JarConfig config, final Node exploded) throws IOException {
