@@ -72,62 +72,20 @@ public abstract class NodeModule extends Module<Node> {
     public static List<Module> jarModuleOpt(FileNode cache, WarConfig rootConfig, boolean prod, Node jarOrig, Secrets secrets, boolean checkLegacy, List<String> legacy)
             throws IOException, XmlException, SAXException {
         Info info;
-        Node configFile;
         List<Module> result;
-        Node jarTmp;
-        Node jarLive;
         Object[] tmp;
-        Node exploded;
-        Filter filter;
 
         result = new ArrayList<>();
-        info = new Info();
         if (jarOrig instanceof FileNode) {
-            // TODO: expensive
-            exploded = ((FileNode) jarOrig).openJar();
-            configFile = exploded.join("META-INF/pustefix-module.xml");
-            if (!configFile.exists()) {
-                return result;
-            }
-            try (InputStream src = configFile.newInputStream()) {
-                info.config = JarConfig.load(jarOrig.getWorld().getXml(), rootConfig, src);
-            }
-            info.lp = ModuleProperties.loadModuleOpt(prod, exploded);
-            if (info.lp == null) {
-                return result;
-            }
-            info.hasResourceIndex = exploded.join(RESOURCE_INDEX).exists();
-            jarTmp = prod ? jarOrig : info.lp.live(jarOrig);
-            if (jarTmp.isFile()) {
-                jarLive = ((FileNode) jarTmp).openJar();
-            } else {
-                jarLive = jarTmp;
-            }
-            filter = info.lp.filter;
-            info.jarModule = new NodeModule(Module.TYPE, info.config.getModuleName(), true, info.config.getResourcePathPrefix(), "", filter) {
-                @Override
-                protected Map<String, Node> loadEntries() throws IOException {
-                    return files(filter, info.config, jarLive);
-                }
-            };
+            info = Info.forFileNode(prod, (FileNode) jarOrig, rootConfig);
         } else {
             if (!prod) {
                 throw new UnsupportedOperationException("live mechanism not supported for jar streams");
             }
-            tmp = NodeModule.fromJarStream(prod, rootConfig, jarOrig);
-            if (tmp == null) {
-                // no pustefix module config
-                return result;
-            }
-            info.jarModule = (Module) tmp[0];
-            info.lp = (ModuleProperties) tmp[1];
-            info.config = (JarConfig) tmp[2];
-            info.hasResourceIndex = (Boolean) tmp[3];
-            if (info.lp == null && info.hasResourceIndex) {
-                // ok - we have a recent parent pom without lavender properties
-                // -> the has not enabled lavender for this module
-                return result;
-            }
+            info = Info.forOtherNode(jarOrig, rootConfig);
+        }
+        if (info == null) {
+            return result;
         }
         if (info.lp != null && !info.hasResourceIndex) {
             throw new IOException("missing resource index: " + jarOrig.getUri().toString());
@@ -162,6 +120,68 @@ public abstract class NodeModule extends Module<Node> {
     }
 
     public static class Info {
+        public static Info forOtherNode(Node jarOrig, WarConfig rootConfig) throws IOException {
+            Info info;
+            Object[] tmp;
+
+            info = new Info();
+            tmp = NodeModule.fromJarStream(true, rootConfig, jarOrig);
+            if (tmp == null) {
+                // no pustefix module config
+                return null;
+            }
+            info.jarModule = (Module) tmp[0];
+            info.lp = (ModuleProperties) tmp[1];
+            info.config = (JarConfig) tmp[2];
+            info.hasResourceIndex = (Boolean) tmp[3];
+            if (info.lp == null && info.hasResourceIndex) {
+                // ok - we have a recent parent pom without lavender properties
+                // -> the has not enabled lavender for this module
+                return null;
+            }
+            return info;
+        }
+
+        public static Info forFileNode(boolean prod, FileNode jarOrig, WarConfig rootConfig) throws IOException, XmlException, SAXException {
+            Info info;
+            Node exploded;
+            Node configFile;
+            Node jarTmp;
+            Node jarLive;
+            Object[] tmp;
+            Filter filter;
+
+            info = new Info();
+            // TODO: expensive
+            exploded = jarOrig.openJar();
+            configFile = exploded.join("META-INF/pustefix-module.xml");
+            if (!configFile.exists()) {
+                return null;
+            }
+            try (InputStream src = configFile.newInputStream()) {
+                info.config = JarConfig.load(jarOrig.getWorld().getXml(), rootConfig, src);
+            }
+            info.lp = ModuleProperties.loadModuleOpt(prod, exploded);
+            if (info.lp == null) {
+                return null;
+            }
+            info.hasResourceIndex = exploded.join(RESOURCE_INDEX).exists();
+            jarTmp = prod ? jarOrig : info.lp.live(jarOrig);
+            if (jarTmp.isFile()) {
+                jarLive = ((FileNode) jarTmp).openJar();
+            } else {
+                jarLive = jarTmp;
+            }
+            filter = info.lp.filter;
+            info.jarModule = new NodeModule(Module.TYPE, info.config.getModuleName(), true, info.config.getResourcePathPrefix(), "", filter) {
+                @Override
+                protected Map<String, Node> loadEntries() throws IOException {
+                    return files(filter, info.config, jarLive);
+                }
+            };
+            return info;
+        }
+
         public JarConfig config;
         public ModuleProperties lp;
         public boolean hasResourceIndex;
