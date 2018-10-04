@@ -73,7 +73,6 @@ public abstract class NodeModule extends Module<Node> {
             throws IOException, XmlException, SAXException {
         Info info;
         List<Module> result;
-        Object[] tmp;
 
         result = new ArrayList<>();
         if (jarOrig instanceof FileNode) {
@@ -120,12 +119,12 @@ public abstract class NodeModule extends Module<Node> {
     }
 
     public static class Info {
-        public static Info forOtherNode(Node jarOrig, WarConfig rootConfig) throws IOException {
+        public static Info forOtherNode(Node jar, WarConfig rootConfig) throws IOException {
             Info info;
             Object[] tmp;
 
             info = new Info();
-            tmp = NodeModule.fromJarStream(true, rootConfig, jarOrig);
+            tmp = NodeModule.fromJarStream(rootConfig, jar);
             if (tmp == null) {
                 // no pustefix module config
                 return null;
@@ -148,7 +147,6 @@ public abstract class NodeModule extends Module<Node> {
             Node configFile;
             Node jarTmp;
             Node jarLive;
-            Object[] tmp;
             Filter filter;
 
             info = new Info();
@@ -275,7 +273,7 @@ public abstract class NodeModule extends Module<Node> {
     //--
 
     /** To properly make jars available as a module, I have to load them into memory when the jar is itself contained in a war. */
-    public static Object[] fromJarStream(boolean prod, WarConfig parent, Node jar) throws IOException {
+    public static Object[] fromJarStream(WarConfig rootConfig, Node jar) throws IOException {
         JarConfig config;
         Node[] loaded;
         Filter filter;
@@ -296,7 +294,7 @@ public abstract class NodeModule extends Module<Node> {
             return null;
         }
         try (InputStream configSrc = loaded[0].newInputStream()) {
-            config = JarConfig.load(jar.getWorld().getXml(), parent, configSrc);
+            config = JarConfig.load(jar.getWorld().getXml(), rootConfig, configSrc);
         } catch (SAXException | XmlException e) {
             throw new IOException(jar + ": cannot load module descriptor:" + e.getMessage(), e);
         }
@@ -308,7 +306,7 @@ public abstract class NodeModule extends Module<Node> {
             if (loaded[2] == null) {
                 throw new IOException("missing pominfo.properties in jar " + jar);
             }
-            lp = ModuleProperties.loadNode(prod, propertyNode, loaded[2]);
+            lp = ModuleProperties.loadNode(true, propertyNode, loaded[2]);
             filter = lp.filter;
         }
         world = jar.getWorld();
