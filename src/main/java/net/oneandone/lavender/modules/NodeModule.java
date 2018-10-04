@@ -16,7 +16,6 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.config.Secrets;
-import net.oneandone.lavender.config.UsernamePassword;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -49,18 +48,20 @@ public abstract class NodeModule extends Module<Node> {
     public static List<Module> fromWebapp(FileNode cache, boolean prod, Node<?> webapp, Secrets secrets)
             throws IOException, SAXException, XmlException {
         Node<?> webappSource;
+        List<String> legacy;
         List<Module> result;
         WarConfig rootConfig;
         NodeModule root;
         ModuleProperties application;
 
         LOG.trace("scanning " + webapp);
-        application = ModuleProperties.loadApp(prod, webapp);
+        legacy = new ArrayList<>();
+        application = ModuleProperties.loadApp(prod, webapp, legacy);
         result = new ArrayList<>();
         rootConfig = WarConfig.fromXml(webapp);
         // add modules before webapp, because they have a prefix
         for (Node<?> jar : webapp.find("WEB-INF/lib/*.jar")) {
-            result.addAll(jarModuleOpt(cache, rootConfig, prod, jar, secrets));
+            result.addAll(jarModuleOpt(cache, rootConfig, prod, jar, secrets, legacy));
         }
         webappSource = application.live(webapp);
         root = warModule(rootConfig, application.filter, webappSource);
@@ -69,7 +70,7 @@ public abstract class NodeModule extends Module<Node> {
         return result;
     }
 
-    public static List<Module> jarModuleOpt(FileNode cache, WarConfig rootConfig, boolean prod, Node jarOrig, Secrets secrets)
+    public static List<Module> jarModuleOpt(FileNode cache, WarConfig rootConfig, boolean prod, Node jarOrig, Secrets secrets, List<String> legacy)
             throws IOException, XmlException, SAXException {
         Node configFile;
         final JarConfig config;
@@ -133,6 +134,18 @@ public abstract class NodeModule extends Module<Node> {
         }
         if (lp != null && !hasResourceIndex) {
             throw new IOException("missing resource index: " + jarOrig.getUri().toString());
+        }
+        if (lp == null && hasResourceIndex) {
+            throw new IOException("missing lavender.properties: " + jarOrig.getUri().toString());
+        }
+        if (!legacy.contains(jarModule.getName())) {
+            if (lp == null && !hasResourceIndex) {
+                if (jarModule.iterator().hasNext()) {
+                    throw new IOException("missing lavender.properties: " + jarModule.getName());
+                } else {
+                    // no entries
+                }
+            }
         }
         // continue without lavender.properties -- we have to support this mode for a some time ... :(
         result.add(jarModule);

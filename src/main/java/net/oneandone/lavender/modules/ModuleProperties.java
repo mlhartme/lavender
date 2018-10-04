@@ -74,9 +74,10 @@ public class ModuleProperties extends PropertiesBase {
         return ModuleProperties.parse(prod, properties, pominfoOpt(root));
     }
 
-    public static ModuleProperties loadApp(boolean prod, Node webapp) throws IOException {
+    public static ModuleProperties loadApp(boolean prod, Node webapp, List<String> legacy) throws IOException {
         Node src;
         Properties pominfo;
+        Properties properties;
 
         src = webapp.join(ModuleProperties.APP_PROPERTIES);
         src.checkFile();
@@ -88,7 +89,9 @@ public class ModuleProperties extends PropertiesBase {
         if (pominfo == null) {
             throw new IOException("pominfo.properties for application not found");
         }
-        return parse(prod, src.readProperties(), pominfo);
+        properties = src.readProperties();
+        legacy.addAll(Separator.COMMA.split(PropertiesBase.eatOpt(properties, "legacy", "")));
+        return parse(prod, properties, pominfo);
     }
 
     private static Properties pominfoOpt(Node root) throws IOException {
