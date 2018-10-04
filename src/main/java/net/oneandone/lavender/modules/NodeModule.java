@@ -119,20 +119,66 @@ public abstract class NodeModule extends Module<Node> {
     }
 
     public static class Info {
+        /** To properly make jars available as a module, I have to load them into memory when the jar is itself contained in a war. */
         public static Info forOtherNode(Node jar, WarConfig rootConfig) throws IOException {
             Info info;
-            Object[] tmp;
+
+            Node[] loaded;
+            Filter filter;
+            World world;
+            ZipEntry entry;
+            String path;
+            ZipInputStream src;
+            Node root;
+            Node child;
+            Node propertyNode;
+            final Map<String, Node> files;
+            String resourcePath;
 
             info = new Info();
-            tmp = NodeModule.fromJarStream(rootConfig, jar);
-            if (tmp == null) {
-                // no pustefix module config
+            loaded = ModuleProperties.loadStreamNodes(jar, "META-INF/pustefix-module.xml",
+                    ModuleProperties.MODULE_PROPERTIES, "META-INF/pominfo.properties", RESOURCE_INDEX);
+            if (loaded[0] == null) {
                 return null;
             }
-            info.jarModule = (Module) tmp[0];
-            info.lp = (ModuleProperties) tmp[1];
-            info.config = (JarConfig) tmp[2];
-            info.hasResourceIndex = (Boolean) tmp[3];
+            try (InputStream configSrc = loaded[0].newInputStream()) {
+                info.config = JarConfig.load(jar.getWorld().getXml(), rootConfig, configSrc);
+            } catch (SAXException | XmlException e) {
+                throw new IOException(jar + ": cannot load module descriptor:" + e.getMessage(), e);
+            }
+            propertyNode = loaded[1];
+            if (propertyNode == null) {
+                filter = ModuleProperties.defaultFilter();
+                info.lp = null;
+            } else {
+                if (loaded[2] == null) {
+                    throw new IOException("missing pominfo.properties in jar " + jar);
+                }
+                info.lp = ModuleProperties.loadNode(true, propertyNode, loaded[2]);
+                filter = info.lp.filter;
+            }
+            world = jar.getWorld();
+            root = world.getMemoryFilesystem().root().node(UUID.randomUUID().toString(), null).mkdir();
+            src = new ZipInputStream(jar.newInputStream());
+            files = new HashMap<>();
+            while ((entry = src.getNextEntry()) != null) {
+                path = entry.getName();
+                if (!entry.isDirectory()) {
+                    if ((resourcePath = info.config.getPath(path)) != null && filter.matches(path)) {
+                        child = root.join(path);
+                        child.getParent().mkdirsOpt();
+                        world.getBuffer().copy(src, child);
+                        files.put(resourcePath, child);
+                    }
+                }
+            }
+            info.jarModule = new NodeModule(Module.TYPE, info.config.getModuleName(), true, info.config.getResourcePathPrefix(), "", filter) {
+                public Map<String, Node> loadEntries() {
+                    // no need to re-loadEntries files from memory
+                    return files;
+                }
+            };
+            info.hasResourceIndex = loaded[3] != null;
             if (info.lp == null && info.hasResourceIndex) {
                 // ok - we have a recent parent pom without lavender properties
                 // -> the has not enabled lavender for this module
@@ -150,7 +196,6 @@ public abstract class NodeModule extends Module<Node> {
             Filter filter;
 
             info = new Info();
-            // TODO: expensive
             exploded = jarOrig.openJar();
             configFile = exploded.join("META-INF/pustefix-module.xml");
             if (!configFile.exists()) {
@@ -268,68 +313,6 @@ public abstract class NodeModule extends Module<Node> {
             }
         });
         return result;
-    }
-
-    //--
-
-    /** To properly make jars available as a module, I have to load them into memory when the jar is itself contained in a war. */
-    public static Object[] fromJarStream(WarConfig rootConfig, Node jar) throws IOException {
-        JarConfig config;
-        Node[] loaded;
-        Filter filter;
-        World world;
-        ZipEntry entry;
-        String path;
-        ZipInputStream src;
-        Node root;
-        Node child;
-        Node propertyNode;
-        final Map<String, Node> files;
-        String resourcePath;
-        ModuleProperties lp;
-
-        loaded = ModuleProperties.loadStreamNodes(jar, "META-INF/pustefix-module.xml",
-                ModuleProperties.MODULE_PROPERTIES, "META-INF/pominfo.properties", RESOURCE_INDEX);
-        if (loaded[0] == null) {
-            return null;
-        }
-        try (InputStream configSrc = loaded[0].newInputStream()) {
-            config = JarConfig.load(jar.getWorld().getXml(), rootConfig, configSrc);
-        } catch (SAXException | XmlException e) {
-            throw new IOException(jar + ": cannot load module descriptor:" + e.getMessage(), e);
-        }
-        propertyNode = loaded[1];
-        if (propertyNode == null) {
-            filter = ModuleProperties.defaultFilter();
-            lp = null;
-        } else {
-            if (loaded[2] == null) {
-                throw new IOException("missing pominfo.properties in jar " + jar);
-            }
-            lp = ModuleProperties.loadNode(true, propertyNode, loaded[2]);
-            filter = lp.filter;
-        }
-        world = jar.getWorld();
-        root = world.getMemoryFilesystem().root().node(UUID.randomUUID().toString(), null).mkdir();
-        src = new ZipInputStream(jar.newInputStream());
-        files = new HashMap<>();
-        while ((entry = src.getNextEntry()) != null) {
-            path = entry.getName();
-            if (!entry.isDirectory()) {
-                if ((resourcePath = config.getPath(path)) != null && filter.matches(path)) {
-                    child = root.join(path);
-                    child.getParent().mkdirsOpt();
-                    world.getBuffer().copy(src, child);
-                    files.put(resourcePath, child);
-                }
-            }
-        }
-        return new Object[] { new NodeModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
-            public Map<String, Node> loadEntries() {
-                // no need to re-loadEntries files from memory
-                return files;
-            }
-        }, lp, config, loaded[3] != null};
     }
 
     //--
