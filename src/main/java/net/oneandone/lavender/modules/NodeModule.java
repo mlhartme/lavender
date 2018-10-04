@@ -75,27 +75,14 @@ public abstract class NodeModule extends Module<Node> {
         if (embedded == null) {
             return result;
         }
-        if (embedded.lp != null && !embedded.hasResourceIndex) {
-            throw new IOException("missing resource index: " + jarOrig.getUri().toString());
+        if (legacy.contains(embedded.config.getModuleName())) {
+            result.add(embedded.jarModule);
+            return result;
         }
-        if (embedded.lp == null && embedded.hasResourceIndex) {
-            throw new IOException("missing lavender.properties: " + jarOrig.getUri().toString());
+        if (embedded.lp == null) {
+            return result;
         }
-        if (!legacy.contains(embedded.jarModule.getName())) {
-            if (embedded.lp == null && !embedded.hasResourceIndex) {
-                if (embedded.jarModule.iterator().hasNext()) {
-                    throw new IOException("missing lavender.properties: " + embedded.jarModule.getName());
-                } else {
-                    // no entries
-                }
-            }
-        }
-
-        // continue without lavender.properties -- we have to support this mode for a some time ... :(
-        result.add(embedded.jarModule);
-        if (embedded.lp != null) {
-            embedded.lp.addModules(cache, prod, secrets, result, embedded.config);
-        }
+        embedded.lp.addModules(cache, prod, secrets, result, embedded.config);
         return result;
     }
 

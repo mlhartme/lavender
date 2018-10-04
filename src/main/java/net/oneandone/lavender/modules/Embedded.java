@@ -33,8 +33,13 @@ public class Embedded {
             }
             result = forOtherNodeOpt(jar, rootConfig);
         }
-        if (result != null && result.jarModule == null) {
-            throw new IllegalStateException();
+        if (result != null) {
+            if (result.jarModule == null) {
+                throw new IllegalStateException();
+            }
+            if (result.lp != null && !result.hasResourceIndex) {
+                throw new IOException("missing resource index: " + result.config.getModuleName());
+            }
         }
         return result;
     }
@@ -52,7 +57,7 @@ public class Embedded {
         Node root;
         Node child;
         Node propertyNode;
-        final Map<String, Node> files;
+        Map<String, Node> files;
         String resourcePath;
 
         embedded = new Embedded();
