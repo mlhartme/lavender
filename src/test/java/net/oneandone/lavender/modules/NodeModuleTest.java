@@ -97,29 +97,4 @@ public class NodeModuleTest {
         c = PustefixJarConfig.load(new Xml(), null, getClass().getResourceAsStream("/new-module.xml"));
         assertEquals("access-java", c.getModuleName());
     }
-
-    @Test
-    public void war() throws Exception {
-        Map<String, Resource> resources;
-        URL url;
-        NodeModule module;
-
-        resources = new HashMap<>();
-        url = getClass().getClassLoader().getResource("dummy.war");
-        module = NodeModule.warModule(new WarConfig(Arrays.asList("img", "modules")), new Filter().includeAll(),
-                WORLD.file(new File(url.toURI())).openZip());
-        for (Resource resource : module) {
-            resources.put(resource.getPath(), resource);
-        }
-
-        assertTrue(resources.containsKey("img/sub/check_grey.gif"));
-        assertTrue(resources.containsKey("img/sub/check_green.gif"));
-        assertTrue(resources.containsKey("img/btn_weiter.gif"));
-        assertTrue(resources.containsKey("modules/stageassistent/img/open.gif"));
-        assertTrue(resources.containsKey("modules/stageassistent/img/minimize.gif"));
-        assertTrue(resources.containsKey("modules/stageassistent/img/close.gif"));
-        assertTrue(resources.containsKey("modules/frontend-tools/img/delete.png"));
-        assertTrue(resources.containsKey("modules/frontend-tools/img/accept.png"));
-        assertTrue(resources.containsKey("modules/frontend-tools/img/cross.png"));
-    }
 }

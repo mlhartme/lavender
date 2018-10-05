@@ -18,21 +18,13 @@ package net.oneandone.lavender.modules;
 import net.oneandone.lavender.config.Secrets;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
-import net.oneandone.sushi.fs.filter.Action;
 import net.oneandone.sushi.fs.filter.Filter;
-import net.oneandone.sushi.fs.filter.Predicate;
-import net.oneandone.sushi.xml.Selector;
-import net.oneandone.sushi.xml.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public abstract class NodeModule extends Module<Node> {
     private static final Logger LOG = LoggerFactory.getLogger(Module.class);
@@ -95,58 +87,6 @@ public abstract class NodeModule extends Module<Node> {
                 }
             }
         }
-        return result;
-    }
-
-    //--
-
-    // TODO: currently unused
-    public static NodeModule warModule(WarConfig config, Filter filter, Node webapp) throws IOException {
-        Element root;
-        Selector selector;
-        String name;
-
-        try {
-            root = webapp.join("WEB-INF/project.xml").readXml().getDocumentElement();
-            selector = webapp.getWorld().getXml().getSelector();
-            name = selector.string(root, "project/name");
-            return new NodeModule(Module.TYPE, name, true, "", "", filter) {
-                @Override
-                protected Map<String, Node> loadEntries() throws IOException {
-                    return scanExploded(config, filter, webapp);
-                }
-            };
-        } catch (SAXException | XmlException e) {
-            throw new IOException("cannot load project descriptor: " + e);
-        }
-    }
-
-    private static Map<String, Node> scanExploded(WarConfig global, Filter filter, Node exploded) throws IOException {
-        Filter f;
-        final Map<String, Node> result;
-
-        result = new HashMap<>();
-        f = exploded.getWorld().filter().predicate(Predicate.FILE).includeAll();
-        f.invoke(exploded, new Action() {
-            public void enter(Node node, boolean isLink) {
-            }
-
-            public void enterFailed(Node node, boolean isLink, IOException e) throws IOException {
-                throw e;
-            }
-
-            public void leave(Node node, boolean isLink) {
-            }
-
-            public void select(Node node, boolean isLink) {
-                String path;
-
-                path = node.getRelative(exploded);
-                if (filter.matches(path) && global.isPublicResource(path)) {
-                    result.put(path, node);
-                }
-            }
-        });
         return result;
     }
 
