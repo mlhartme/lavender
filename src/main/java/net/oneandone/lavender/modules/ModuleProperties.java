@@ -61,7 +61,6 @@ public class ModuleProperties extends PropertiesBase {
 
     public static ModuleProperties loadModuleOpt(boolean prod, Node root) throws IOException {
         Node src;
-        Properties properties;
 
         if (root == null) {
             return null;
@@ -70,8 +69,7 @@ public class ModuleProperties extends PropertiesBase {
         if (!src.exists()) {
             return null;
         }
-        properties = src.readProperties();
-        return ModuleProperties.parse(prod, properties, pominfoOpt(root));
+        return ModuleProperties.parse(prod, src.readProperties(), pominfoOpt(root));
     }
 
     public static ModuleProperties loadApp(boolean prod, Node webapp, List<String> legacy) throws IOException {
@@ -100,7 +98,7 @@ public class ModuleProperties extends PropertiesBase {
 
     private static Properties pominfoOpt(Node root) throws IOException {
         try {
-            return root.join("META-INF/pominfo.properties").readProperties();
+            return root.join(PustefixJar.POMINFO_PROPERTIEs).readProperties();
         } catch (FileNotFoundException e) {
             return null;
         }
