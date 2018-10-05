@@ -46,19 +46,10 @@ public abstract class Embedded {
         JarConfig config;
         ModuleProperties lp;
         boolean hasResourceIndex;
-        Module jarModule;
 
         Node[] loaded;
         Filter filter;
-        World world;
-        ZipEntry entry;
-        String path;
-        ZipInputStream src;
-        Node root;
-        Node child;
         Node propertyNode;
-        Map<String, Node> files;
-        String resourcePath;
 
         loaded = ModuleProperties.loadStreamNodes(jar, "META-INF/pustefix-module.xml",
                 ModuleProperties.MODULE_PROPERTIES, "META-INF/pominfo.properties", RESOURCE_INDEX);
@@ -81,27 +72,6 @@ public abstract class Embedded {
             lp = ModuleProperties.loadNode(true, propertyNode, loaded[2]);
             filter = lp.filter;
         }
-        world = jar.getWorld();
-        root = world.getMemoryFilesystem().root().node(UUID.randomUUID().toString(), null).mkdir();
-        src = new ZipInputStream(jar.newInputStream());
-        files = new HashMap<>();
-        while ((entry = src.getNextEntry()) != null) {
-            path = entry.getName();
-            if (!entry.isDirectory()) {
-                if ((resourcePath = config.getPath(path)) != null && filter.matches(path)) {
-                    child = root.join(path);
-                    child.getParent().mkdirsOpt();
-                    world.getBuffer().copy(src, child);
-                    files.put(resourcePath, child);
-                }
-            }
-        }
-        jarModule = new NodeModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
-            public Map<String, Node> loadEntries() {
-                // no need to re-loadEntries files from memory
-                return files;
-            }
-        };
         hasResourceIndex = loaded[3] != null;
         if (lp == null && hasResourceIndex) {
             // ok - we have a recent parent pom without lavender properties
@@ -110,8 +80,38 @@ public abstract class Embedded {
         }
         return new Embedded(config, lp, hasResourceIndex) {
             @Override
-            public Module createModule() {
-                return jarModule;
+            public Module createModule() throws IOException {
+                World world;
+                ZipEntry entry;
+                String path;
+                ZipInputStream src;
+                Node root;
+                Node child;
+                Map<String, Node> files;
+                String resourcePath;
+
+                world = jar.getWorld();
+                root = world.getMemoryFilesystem().root().node(UUID.randomUUID().toString(), null).mkdir();
+                src = new ZipInputStream(jar.newInputStream());
+                files = new HashMap<>();
+                while ((entry = src.getNextEntry()) != null) {
+                    path = entry.getName();
+                    if (!entry.isDirectory()) {
+                        if ((resourcePath = config.getPath(path)) != null && filter.matches(path)) {
+                            child = root.join(path);
+                            child.getParent().mkdirsOpt();
+                            world.getBuffer().copy(src, child);
+                            files.put(resourcePath, child);
+                        }
+                    }
+                }
+
+                return new NodeModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
+                    public Map<String, Node> loadEntries() {
+                        // no need to re-loadEntries files from memory
+                        return files;
+                    }
+                };
             }
         };
     }
@@ -120,13 +120,11 @@ public abstract class Embedded {
         JarConfig config;
         ModuleProperties lp;
         boolean hasResourceIndex;
-        Module jarModule;
 
         Node exploded;
         Node configFile;
         Node jarTmp;
         Node jarLive;
-        Filter filter;
 
         exploded = jarOrig.openJar();
         configFile = exploded.join("META-INF/pustefix-module.xml");
@@ -147,17 +145,15 @@ public abstract class Embedded {
         } else {
             jarLive = jarTmp;
         }
-        filter = lp.filter;
-        jarModule = new NodeModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
-            @Override
-            protected Map<String, Node> loadEntries() throws IOException {
-                return files(filter, config, jarLive);
-            }
-        };
         return new Embedded(config, lp, hasResourceIndex) {
             @Override
             public Module createModule() {
-                return jarModule;
+                return new NodeModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", lp.filter) {
+                    @Override
+                    protected Map<String, Node> loadEntries() throws IOException {
+                        return files(lp.filter, config, jarLive);
+                    }
+                };
             }
         };
     }
@@ -207,5 +203,5 @@ public abstract class Embedded {
         this.hasResourceIndex = hasResourceIndex;
     }
 
-    public abstract Module createModule();
+    public abstract Module createModule() throws IOException;
 }
