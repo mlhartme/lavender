@@ -73,8 +73,8 @@ public abstract class NodeModule extends Module<Node> {
             if (legacy.contains(pustefixJar.config.getModuleName())) {
                 result.add(pustefixJar.createModule());
             } else {
-                if (pustefixJar.lp != null) {
-                    pustefixJar.lp.addModules(cache, prod, secrets, result, pustefixJar.config);
+                if (pustefixJar.moduleProperties != null) {
+                    pustefixJar.moduleProperties.addModules(cache, prod, secrets, result, pustefixJar.config);
                 }
             }
         }
@@ -93,7 +93,7 @@ public abstract class NodeModule extends Module<Node> {
         // add modules before webapp, because they have a prefix
         for (Node<?> jar : webapp.find("WEB-INF/lib/*.jar")) {
             pustefixJar = PustefixJar.forNodeOpt(true, jar, rootConfig);
-            if (pustefixJar != null && pustefixJar.lp == null) {
+            if (pustefixJar != null && pustefixJar.moduleProperties == null) {
                 module = pustefixJar.createModule();
                 if (!module.loadEntries().isEmpty()) {
                     result.add(module.getName());

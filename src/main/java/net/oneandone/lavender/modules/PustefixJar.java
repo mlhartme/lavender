@@ -24,7 +24,7 @@ import java.util.zip.ZipInputStream;
 public abstract class PustefixJar {
     private static final String PUSTEFIX_MODULE_XML = "META-INF/pustefix-module.xml";
     private static final String RESOURCE_INDEX = "META-INF/pustefix-resource.index";
-    public static final String POMINFO_PROPERTIEs = "META-INF/pominfo.properties";
+    public static final String POMINFO_PROPERTIES = "META-INF/pominfo.properties";
 
     /** @return null if not a pustefix module */
     public static PustefixJar forNodeOpt(boolean prod, Node jar, WarConfig rootConfig) throws IOException, SAXException, XmlException {
@@ -39,7 +39,7 @@ public abstract class PustefixJar {
             result = forOtherNodeOpt(jar, rootConfig);
         }
         if (result != null) {
-            if (result.lp != null && !result.hasResourceIndex) {
+            if (result.moduleProperties != null && !result.hasResourceIndex) {
                 throw new IOException("missing resource index: " + result.config.getModuleName());
             }
         }
@@ -57,7 +57,7 @@ public abstract class PustefixJar {
         Node propertyNode;
 
         loaded = ModuleProperties.loadStreamNodes(jar, PUSTEFIX_MODULE_XML,
-                ModuleProperties.MODULE_PROPERTIES, POMINFO_PROPERTIEs, RESOURCE_INDEX);
+                ModuleProperties.MODULE_PROPERTIES, POMINFO_PROPERTIES, RESOURCE_INDEX);
         if (loaded[0] == null) {
             return null;
         }
@@ -153,10 +153,10 @@ public abstract class PustefixJar {
         return new PustefixJar(config, lp, hasResourceIndex) {
             @Override
             public Module createModule() {
-                return new NodeModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", lp.filter) {
+                return new NodeModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", moduleProperties.filter) {
                     @Override
                     protected Map<String, Node> loadEntries() throws IOException {
-                        return files(lp.filter, config, jarLive);
+                        return files(moduleProperties.filter, config, jarLive);
                     }
                 };
             }
@@ -199,12 +199,12 @@ public abstract class PustefixJar {
     //--
 
     public final JarConfig config;
-    public final ModuleProperties lp;
+    public final ModuleProperties moduleProperties;
     public final boolean hasResourceIndex;
 
-    public PustefixJar(JarConfig config, ModuleProperties lp, boolean hasResourceIndex) {
+    public PustefixJar(JarConfig config, ModuleProperties moduleProperties, boolean hasResourceIndex) {
         this.config = config;
-        this.lp = lp;
+        this.moduleProperties = moduleProperties;
         this.hasResourceIndex = hasResourceIndex;
     }
 

@@ -98,7 +98,7 @@ public class ModuleProperties extends PropertiesBase {
 
     private static Properties pominfoOpt(Node root) throws IOException {
         try {
-            return root.join(PustefixJar.POMINFO_PROPERTIEs).readProperties();
+            return root.join(PustefixJar.POMINFO_PROPERTIES).readProperties();
         } catch (FileNotFoundException e) {
             return null;
         }
