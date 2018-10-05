@@ -28,9 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * META-INF/pustefix-module.xml.
+ * Represents META-INF/pustefix-module.xml. It's not called pustefix module because it must not be confused with Lavender modules.
  */
-public class JarConfig {
+public class PustefixJarConfig {
     private static final String MODULES = "modules/";
     private static final String PUSTEFIX_INF = "PUSTEFIX-INF/";
 
@@ -40,7 +40,7 @@ public class JarConfig {
     /** trimmed, without heading slash, with tailing slash */
     private final List<String> statics;
 
-    public static JarConfig load(Xml xml, WarConfig parent, InputStream src) throws IOException, SAXException, XmlException {
+    public static PustefixJarConfig load(Xml xml, WarConfig parent, InputStream src) throws IOException, SAXException, XmlException {
         String path;
         Element root;
         Selector selector;
@@ -62,10 +62,10 @@ public class JarConfig {
             }
             statics.add(path);
         }
-        return new JarConfig(parent, name, statics);
+        return new PustefixJarConfig(parent, name, statics);
     }
 
-    public JarConfig(WarConfig global, String name, List<String> statics) {
+    public PustefixJarConfig(WarConfig global, String name, List<String> statics) {
         this.global = global;
         this.name = name;
         this.statics = statics;

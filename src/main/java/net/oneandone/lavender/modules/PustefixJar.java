@@ -18,8 +18,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * A pustefix jar is a jar with pustefix module descriptor. It can be used to create embedded modules, i.e. modules that load resources
- * from jars.
+ * A pustefix jar is a jar with pustefix module descriptor. It's not called pustefix module because it must not be confused with Lavender
+ * modules; it can be possible to instantiate a Lavender module (more precisely: an embedded module, i.e. a module that loads all resources
+ * from the underlying jar) from a pustefix jar. 
  */
 public abstract class PustefixJar {
     private static final String PUSTEFIX_MODULE_XML = "META-INF/pustefix-module.xml";
@@ -48,7 +49,7 @@ public abstract class PustefixJar {
 
     /** Loads resources from the jar into memory. */
     private static PustefixJar forOtherNodeOpt(Node jar, WarConfig rootConfig) throws IOException {
-        JarConfig config;
+        PustefixJarConfig config;
         ModuleProperties lp;
         boolean hasResourceIndex;
 
@@ -62,7 +63,7 @@ public abstract class PustefixJar {
             return null;
         }
         try (InputStream configSrc = loaded[0].newInputStream()) {
-            config = JarConfig.load(jar.getWorld().getXml(), rootConfig, configSrc);
+            config = PustefixJarConfig.load(jar.getWorld().getXml(), rootConfig, configSrc);
         } catch (SAXException | XmlException e) {
             throw new IOException(jar + ": cannot load module descriptor:" + e.getMessage(), e);
         }
@@ -122,7 +123,7 @@ public abstract class PustefixJar {
     }
 
     private static PustefixJar forFileNodeOpt(boolean prod, FileNode jarOrig, WarConfig rootConfig) throws IOException, XmlException, SAXException {
-        JarConfig config;
+        PustefixJarConfig config;
         ModuleProperties lp;
         boolean hasResourceIndex;
 
@@ -137,7 +138,7 @@ public abstract class PustefixJar {
             return null;
         }
         try (InputStream src = configFile.newInputStream()) {
-            config = JarConfig.load(jarOrig.getWorld().getXml(), rootConfig, src);
+            config = PustefixJarConfig.load(jarOrig.getWorld().getXml(), rootConfig, src);
         }
         lp = ModuleProperties.loadModuleOpt(prod, exploded);
         if (lp == null) {
@@ -163,7 +164,7 @@ public abstract class PustefixJar {
         };
     }
 
-    private static Map<String, Node> files(final Filter filter, final JarConfig config, final Node exploded) throws IOException {
+    private static Map<String, Node> files(final Filter filter, final PustefixJarConfig config, final Node exploded) throws IOException {
         Filter f;
         final Map<String, Node> result;
 
@@ -198,11 +199,11 @@ public abstract class PustefixJar {
 
     //--
 
-    public final JarConfig config;
+    public final PustefixJarConfig config;
     public final ModuleProperties moduleProperties;
     public final boolean hasResourceIndex;
 
-    public PustefixJar(JarConfig config, ModuleProperties moduleProperties, boolean hasResourceIndex) {
+    public PustefixJar(PustefixJarConfig config, ModuleProperties moduleProperties, boolean hasResourceIndex) {
         this.config = config;
         this.moduleProperties = moduleProperties;
         this.hasResourceIndex = hasResourceIndex;

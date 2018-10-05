@@ -83,18 +83,18 @@ public class NodeModuleTest {
 
     @Test
     public void oldConfig() throws Exception {
-        JarConfig c;
+        PustefixJarConfig c;
 
-        c = JarConfig.load(new Xml(), null, getClass().getResourceAsStream("/old-module.xml"));
+        c = PustefixJarConfig.load(new Xml(), null, getClass().getResourceAsStream("/old-module.xml"));
         assertEquals("ajax-addresscheck", c.getModuleName());
         assertEquals(Arrays.asList("abc/", "xyz/"), c.getStatics());
     }
 
     @Test
     public void newConfig() throws Exception {
-        JarConfig c;
+        PustefixJarConfig c;
 
-        c = JarConfig.load(new Xml(), null, getClass().getResourceAsStream("/new-module.xml"));
+        c = PustefixJarConfig.load(new Xml(), null, getClass().getResourceAsStream("/new-module.xml"));
         assertEquals("access-java", c.getModuleName());
     }
 

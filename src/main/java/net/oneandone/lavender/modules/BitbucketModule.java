@@ -29,12 +29,12 @@ public class BitbucketModule extends Module<BitbucketEntry> {
     private final String accessPathPrefix;
 
     /** may be null */
-    private final JarConfig config;
+    private final PustefixJarConfig config;
 
     private String loadedRevision;
 
     public BitbucketModule(Bitbucket bitbucket, String project, String repository, String branch, String accessPathPrefix,
-                           String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter, JarConfig config) {
+                           String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter, PustefixJarConfig config) {
         super(Module.TYPE, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
 
         if (!accessPathPrefix.isEmpty() && !accessPathPrefix.endsWith("/")) {

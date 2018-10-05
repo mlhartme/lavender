@@ -28,7 +28,6 @@ import net.oneandone.sushi.util.Strings;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,7 +72,7 @@ public class ScmProperties {
         this.source = source;
     }
 
-    public Module create(FileNode cacheDir, boolean prod, Secrets secrets, JarConfig jarConfig) throws IOException {
+    public Module create(FileNode cacheDir, boolean prod, Secrets secrets, PustefixJarConfig jarConfig) throws IOException {
         World world;
         final FileNode checkout;
         String scm;
@@ -152,7 +151,7 @@ public class ScmProperties {
         }
     }
 
-    private SvnModule createSvnModule(FileNode cacheDir, JarConfig jarConfig, World world, String scm, Secrets secrets, long pinnedRevision) throws IOException {
+    private SvnModule createSvnModule(FileNode cacheDir, PustefixJarConfig jarConfig, World world, String scm, Secrets secrets, long pinnedRevision) throws IOException {
         SvnNode root;
         String idxName;
         FileNode cache;
@@ -175,7 +174,7 @@ public class ScmProperties {
     }
 
     private BitbucketModule createBitbucketModule(World world, String urlstr, Secrets secrets,
-                                                  String accessPathPrefix, JarConfig config) throws IOException {
+                                                  String accessPathPrefix, PustefixJarConfig config) throws IOException {
         URI uri;
         UsernamePassword up;
         String path;
