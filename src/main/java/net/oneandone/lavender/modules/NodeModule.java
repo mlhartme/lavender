@@ -55,7 +55,7 @@ public abstract class NodeModule extends Module<Node> {
         rootConfig = WarConfig.fromXml(webapp);
         // add modules before webapp, because they have a prefix
         for (Node<?> jar : webapp.find("WEB-INF/lib/*.jar")) {
-            result.addAll(jarModuleOpt(cache, rootConfig, prod, jar, secrets, legacy));
+            addJarModules(cache, rootConfig, prod, jar, secrets, legacy, result);
         }
         webappSource = application.live(webapp);
         root = warModule(rootConfig, application.filter, webappSource);
@@ -64,26 +64,20 @@ public abstract class NodeModule extends Module<Node> {
         return result;
     }
 
-    /** @param legacy null to detect legcy modules; in this case, result != indicates a legacy module */
-    public static List<Module> jarModuleOpt(FileNode cache, WarConfig rootConfig, boolean prod, Node jarOrig, Secrets secrets, List<String> legacy)
+    private static void addJarModules(FileNode cache, WarConfig rootConfig, boolean prod, Node jarOrig, Secrets secrets, List<String> legacy, List<Module> result)
             throws IOException, XmlException, SAXException {
         PustefixJar pustefixJar;
-        List<Module> result;
 
-        result = new ArrayList<>();
         pustefixJar = PustefixJar.forNodeOpt(prod, jarOrig, rootConfig);
-        if (pustefixJar == null) {
-            return result;
+        if (pustefixJar != null) {
+            if (legacy.contains(pustefixJar.config.getModuleName())) {
+                result.add(pustefixJar.createModule());
+            } else {
+                if (pustefixJar.lp != null) {
+                    pustefixJar.lp.addModules(cache, prod, secrets, result, pustefixJar.config);
+                }
+            }
         }
-        if (legacy.contains(pustefixJar.config.getModuleName())) {
-            result.add(pustefixJar.createModule());
-            return result;
-        }
-        if (pustefixJar.lp == null) {
-            return result;
-        }
-        pustefixJar.lp.addModules(cache, prod, secrets, result, pustefixJar.config);
-        return result;
     }
 
     //--

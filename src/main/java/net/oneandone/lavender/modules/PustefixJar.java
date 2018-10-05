@@ -17,8 +17,12 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-/** To create modules that load resources from jars. */
+/**
+ * A pustefix jar is a jar with pustefix module descriptor. It can be used to create embedded modules, i.e. modules that load resources
+ * from jars.
+ */
 public abstract class PustefixJar {
+    private static final String PUSTEFIX_MODULE_XML = "META-INF/pustefix-module.xml";
     private static final String RESOURCE_INDEX = "META-INF/pustefix-resource.index";
 
     /** @return null if not a pustefix module */
@@ -41,8 +45,8 @@ public abstract class PustefixJar {
         return result;
     }
 
-    /** To properly make jars available as a module, I have to load them into memory when the jar is itself contained in a war. */
-    public static PustefixJar forOtherNodeOpt(Node jar, WarConfig rootConfig) throws IOException {
+    /** Loads resources from the jar into memory. */
+    private static PustefixJar forOtherNodeOpt(Node jar, WarConfig rootConfig) throws IOException {
         JarConfig config;
         ModuleProperties lp;
         boolean hasResourceIndex;
@@ -51,7 +55,7 @@ public abstract class PustefixJar {
         Filter filter;
         Node propertyNode;
 
-        loaded = ModuleProperties.loadStreamNodes(jar, "META-INF/pustefix-module.xml",
+        loaded = ModuleProperties.loadStreamNodes(jar, PUSTEFIX_MODULE_XML,
                 ModuleProperties.MODULE_PROPERTIES, "META-INF/pominfo.properties", RESOURCE_INDEX);
         if (loaded[0] == null) {
             return null;
@@ -116,7 +120,7 @@ public abstract class PustefixJar {
         };
     }
 
-    public static PustefixJar forFileNodeOpt(boolean prod, FileNode jarOrig, WarConfig rootConfig) throws IOException, XmlException, SAXException {
+    private static PustefixJar forFileNodeOpt(boolean prod, FileNode jarOrig, WarConfig rootConfig) throws IOException, XmlException, SAXException {
         JarConfig config;
         ModuleProperties lp;
         boolean hasResourceIndex;
@@ -127,7 +131,7 @@ public abstract class PustefixJar {
         Node jarLive;
 
         exploded = jarOrig.openJar();
-        configFile = exploded.join("META-INF/pustefix-module.xml");
+        configFile = exploded.join(PUSTEFIX_MODULE_XML);
         if (!configFile.exists()) {
             return null;
         }
