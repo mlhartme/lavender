@@ -46,7 +46,10 @@ public class Embedded {
 
     /** To properly make jars available as a module, I have to load them into memory when the jar is itself contained in a war. */
     public static Embedded forOtherNodeOpt(Node jar, WarConfig rootConfig) throws IOException {
-        Embedded embedded;
+        JarConfig config;
+        ModuleProperties lp;
+        boolean hasResourceIndex;
+        Module jarModule;
 
         Node[] loaded;
         Filter filter;
@@ -60,27 +63,26 @@ public class Embedded {
         Map<String, Node> files;
         String resourcePath;
 
-        embedded = new Embedded();
         loaded = ModuleProperties.loadStreamNodes(jar, "META-INF/pustefix-module.xml",
                 ModuleProperties.MODULE_PROPERTIES, "META-INF/pominfo.properties", RESOURCE_INDEX);
         if (loaded[0] == null) {
             return null;
         }
         try (InputStream configSrc = loaded[0].newInputStream()) {
-            embedded.config = JarConfig.load(jar.getWorld().getXml(), rootConfig, configSrc);
+            config = JarConfig.load(jar.getWorld().getXml(), rootConfig, configSrc);
         } catch (SAXException | XmlException e) {
             throw new IOException(jar + ": cannot load module descriptor:" + e.getMessage(), e);
         }
         propertyNode = loaded[1];
         if (propertyNode == null) {
             filter = ModuleProperties.defaultFilter();
-            embedded.lp = null;
+            lp = null;
         } else {
             if (loaded[2] == null) {
                 throw new IOException("missing pominfo.properties in jar " + jar);
             }
-            embedded.lp = ModuleProperties.loadNode(true, propertyNode, loaded[2]);
-            filter = embedded.lp.filter;
+            lp = ModuleProperties.loadNode(true, propertyNode, loaded[2]);
+            filter = lp.filter;
         }
         world = jar.getWorld();
         root = world.getMemoryFilesystem().root().node(UUID.randomUUID().toString(), null).mkdir();
@@ -89,7 +91,7 @@ public class Embedded {
         while ((entry = src.getNextEntry()) != null) {
             path = entry.getName();
             if (!entry.isDirectory()) {
-                if ((resourcePath = embedded.config.getPath(path)) != null && filter.matches(path)) {
+                if ((resourcePath = config.getPath(path)) != null && filter.matches(path)) {
                     child = root.join(path);
                     child.getParent().mkdirsOpt();
                     world.getBuffer().copy(src, child);
@@ -97,57 +99,60 @@ public class Embedded {
                 }
             }
         }
-        embedded.jarModule = new NodeModule(Module.TYPE, embedded.config.getModuleName(), true, embedded.config.getResourcePathPrefix(), "", filter) {
+        jarModule = new NodeModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
             public Map<String, Node> loadEntries() {
                 // no need to re-loadEntries files from memory
                 return files;
             }
         };
-        embedded.hasResourceIndex = loaded[3] != null;
-        if (embedded.lp == null && embedded.hasResourceIndex) {
+        hasResourceIndex = loaded[3] != null;
+        if (lp == null && hasResourceIndex) {
             // ok - we have a recent parent pom without lavender properties
             // -> the has not enabled lavender for this module
             return null;
         }
-        return embedded;
+        return new Embedded(config, lp, hasResourceIndex, jarModule);
     }
 
     public static Embedded forFileNodeOpt(boolean prod, FileNode jarOrig, WarConfig rootConfig) throws IOException, XmlException, SAXException {
-        Embedded embedded;
+        JarConfig config;
+        ModuleProperties lp;
+        boolean hasResourceIndex;
+        Module jarModule;
+
         Node exploded;
         Node configFile;
         Node jarTmp;
         Node jarLive;
         Filter filter;
 
-        embedded = new Embedded();
         exploded = jarOrig.openJar();
         configFile = exploded.join("META-INF/pustefix-module.xml");
         if (!configFile.exists()) {
             return null;
         }
         try (InputStream src = configFile.newInputStream()) {
-            embedded.config = JarConfig.load(jarOrig.getWorld().getXml(), rootConfig, src);
+            config = JarConfig.load(jarOrig.getWorld().getXml(), rootConfig, src);
         }
-        embedded.lp = ModuleProperties.loadModuleOpt(prod, exploded);
-        if (embedded.lp == null) {
+        lp = ModuleProperties.loadModuleOpt(prod, exploded);
+        if (lp == null) {
             return null;
         }
-        embedded.hasResourceIndex = exploded.join(RESOURCE_INDEX).exists();
-        jarTmp = prod ? jarOrig : embedded.lp.live(jarOrig);
+        hasResourceIndex = exploded.join(RESOURCE_INDEX).exists();
+        jarTmp = prod ? jarOrig : lp.live(jarOrig);
         if (jarTmp.isFile()) {
             jarLive = ((FileNode) jarTmp).openJar();
         } else {
             jarLive = jarTmp;
         }
-        filter = embedded.lp.filter;
-        embedded.jarModule = new NodeModule(Module.TYPE, embedded.config.getModuleName(), true, embedded.config.getResourcePathPrefix(), "", filter) {
+        filter = lp.filter;
+        jarModule = new NodeModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
             @Override
             protected Map<String, Node> loadEntries() throws IOException {
-                return files(filter, embedded.config, jarLive);
+                return files(filter, config, jarLive);
             }
         };
-        return embedded;
+        return new Embedded(config, lp, hasResourceIndex, jarModule);
     }
 
     private static Map<String, Node> files(final Filter filter, final JarConfig config, final Node exploded) throws IOException {
@@ -185,8 +190,15 @@ public class Embedded {
 
     //--
 
-    public JarConfig config;
-    public ModuleProperties lp;
-    public boolean hasResourceIndex;
-    public Module jarModule;
+    public final JarConfig config;
+    public final ModuleProperties lp;
+    public final boolean hasResourceIndex;
+    public final Module jarModule;
+
+    public Embedded(JarConfig config, ModuleProperties lp, boolean hasResourceIndex, Module jarModule) {
+        this.config = config;
+        this.lp = lp;
+        this.hasResourceIndex = hasResourceIndex;
+        this.jarModule = jarModule;
+    }
 }
