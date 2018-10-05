@@ -18,7 +18,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /** To create modules that load resources from jars. */
-public class Embedded {
+public abstract class Embedded {
     private static final String RESOURCE_INDEX = "META-INF/pustefix-resource.index";
 
     /** @return null if not a pustefix module */
@@ -34,9 +34,6 @@ public class Embedded {
             result = forOtherNodeOpt(jar, rootConfig);
         }
         if (result != null) {
-            if (result.jarModule == null) {
-                throw new IllegalStateException();
-            }
             if (result.lp != null && !result.hasResourceIndex) {
                 throw new IOException("missing resource index: " + result.config.getModuleName());
             }
@@ -111,7 +108,12 @@ public class Embedded {
             // -> the has not enabled lavender for this module
             return null;
         }
-        return new Embedded(config, lp, hasResourceIndex, jarModule);
+        return new Embedded(config, lp, hasResourceIndex) {
+            @Override
+            public Module createModule() {
+                return jarModule;
+            }
+        };
     }
 
     public static Embedded forFileNodeOpt(boolean prod, FileNode jarOrig, WarConfig rootConfig) throws IOException, XmlException, SAXException {
@@ -152,7 +154,12 @@ public class Embedded {
                 return files(filter, config, jarLive);
             }
         };
-        return new Embedded(config, lp, hasResourceIndex, jarModule);
+        return new Embedded(config, lp, hasResourceIndex) {
+            @Override
+            public Module createModule() {
+                return jarModule;
+            }
+        };
     }
 
     private static Map<String, Node> files(final Filter filter, final JarConfig config, final Node exploded) throws IOException {
@@ -193,12 +200,12 @@ public class Embedded {
     public final JarConfig config;
     public final ModuleProperties lp;
     public final boolean hasResourceIndex;
-    public final Module jarModule;
 
-    public Embedded(JarConfig config, ModuleProperties lp, boolean hasResourceIndex, Module jarModule) {
+    public Embedded(JarConfig config, ModuleProperties lp, boolean hasResourceIndex) {
         this.config = config;
         this.lp = lp;
         this.hasResourceIndex = hasResourceIndex;
-        this.jarModule = jarModule;
     }
+
+    public abstract Module createModule();
 }

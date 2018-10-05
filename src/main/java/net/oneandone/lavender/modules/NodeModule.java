@@ -76,7 +76,7 @@ public abstract class NodeModule extends Module<Node> {
             return result;
         }
         if (legacy.contains(embedded.config.getModuleName())) {
-            result.add(embedded.jarModule);
+            result.add(embedded.createModule());
             return result;
         }
         if (embedded.lp == null) {
@@ -92,6 +92,7 @@ public abstract class NodeModule extends Module<Node> {
         List<String> result;
         WarConfig rootConfig;
         Embedded embedded;
+        Module module;
 
         result = new ArrayList<>();
         rootConfig = WarConfig.fromXml(webapp);
@@ -99,8 +100,9 @@ public abstract class NodeModule extends Module<Node> {
         for (Node<?> jar : webapp.find("WEB-INF/lib/*.jar")) {
             embedded = Embedded.forNodeOpt(true, jar, rootConfig);
             if (embedded != null && embedded.lp == null) {
-                if (!embedded.jarModule.loadEntries().isEmpty()) {
-                    result.add(embedded.jarModule.getName());
+                module = embedded.createModule();
+                if (!module.loadEntries().isEmpty()) {
+                    result.add(module.getName());
                 }
             }
         }
