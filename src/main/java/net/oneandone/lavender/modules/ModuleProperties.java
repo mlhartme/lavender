@@ -225,7 +225,7 @@ public class ModuleProperties extends PropertiesBase {
 
     //--
 
-    public final Filter filter;
+    public final Filter embeddedFilter;
     public final String source;
     public final Collection<ScmProperties> configs;
 
@@ -233,7 +233,7 @@ public class ModuleProperties extends PropertiesBase {
         if (filter == null) {
             throw new IllegalArgumentException();
         }
-        this.filter = filter;
+        this.embeddedFilter = filter;
         this.source = source;
         this.configs = new ArrayList<>();
     }

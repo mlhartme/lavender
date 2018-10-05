@@ -69,7 +69,7 @@ public abstract class PustefixJar {
                 throw new IOException("missing pominfo.properties in jar " + jar);
             }
             lp = ModuleProperties.loadNode(true, propertyNode, loaded[2]);
-            filter = lp.filter;
+            filter = lp.embeddedFilter;
         }
         hasResourceIndex = loaded[3] != null;
         if (lp == null && hasResourceIndex) {
@@ -145,10 +145,10 @@ public abstract class PustefixJar {
         return new PustefixJar(config, lp, hasResourceIndex) {
             @Override
             public Module createModule() {
-                return new NodeModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", moduleProperties.filter) {
+                return new NodeModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", moduleProperties.embeddedFilter) {
                     @Override
                     protected Map<String, Node> loadEntries() throws IOException {
-                        return files(moduleProperties.filter, config, jarLive);
+                        return files(moduleProperties.embeddedFilter, config, jarLive);
                     }
                 };
             }
@@ -200,5 +200,6 @@ public abstract class PustefixJar {
         this.hasResourceIndex = hasResourceIndex;
     }
 
+    /** @return an embedded module that servers all resources from the jar itself */
     public abstract Module createModule() throws IOException;
 }

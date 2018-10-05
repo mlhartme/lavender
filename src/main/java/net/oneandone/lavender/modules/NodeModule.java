@@ -58,7 +58,7 @@ public abstract class NodeModule extends Module<Node> {
             addJarModules(cache, rootConfig, prod, jar, secrets, legacy, result);
         }
         webappSource = application.live(webapp);
-        root = warModule(rootConfig, application.filter, webappSource);
+        root = warModule(rootConfig, application.embeddedFilter, webappSource);
         result.add(root);
         application.addModules(cache, prod, secrets, result, null);
         return result;
