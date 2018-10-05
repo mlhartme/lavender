@@ -67,22 +67,22 @@ public abstract class NodeModule extends Module<Node> {
     /** @param legacy null to detect legcy modules; in this case, result != indicates a legacy module */
     public static List<Module> jarModuleOpt(FileNode cache, WarConfig rootConfig, boolean prod, Node jarOrig, Secrets secrets, List<String> legacy)
             throws IOException, XmlException, SAXException {
-        Embedded embedded;
+        PustefixJar pustefixJar;
         List<Module> result;
 
         result = new ArrayList<>();
-        embedded = Embedded.forNodeOpt(prod, jarOrig, rootConfig);
-        if (embedded == null) {
+        pustefixJar = PustefixJar.forNodeOpt(prod, jarOrig, rootConfig);
+        if (pustefixJar == null) {
             return result;
         }
-        if (legacy.contains(embedded.config.getModuleName())) {
-            result.add(embedded.createModule());
+        if (legacy.contains(pustefixJar.config.getModuleName())) {
+            result.add(pustefixJar.createModule());
             return result;
         }
-        if (embedded.lp == null) {
+        if (pustefixJar.lp == null) {
             return result;
         }
-        embedded.lp.addModules(cache, prod, secrets, result, embedded.config);
+        pustefixJar.lp.addModules(cache, prod, secrets, result, pustefixJar.config);
         return result;
     }
 
@@ -91,16 +91,16 @@ public abstract class NodeModule extends Module<Node> {
     public static List<String> scanLegacy(Node<?> webapp) throws Exception {
         List<String> result;
         WarConfig rootConfig;
-        Embedded embedded;
+        PustefixJar pustefixJar;
         Module module;
 
         result = new ArrayList<>();
         rootConfig = WarConfig.fromXml(webapp);
         // add modules before webapp, because they have a prefix
         for (Node<?> jar : webapp.find("WEB-INF/lib/*.jar")) {
-            embedded = Embedded.forNodeOpt(true, jar, rootConfig);
-            if (embedded != null && embedded.lp == null) {
-                module = embedded.createModule();
+            pustefixJar = PustefixJar.forNodeOpt(true, jar, rootConfig);
+            if (pustefixJar != null && pustefixJar.lp == null) {
+                module = pustefixJar.createModule();
                 if (!module.loadEntries().isEmpty()) {
                     result.add(module.getName());
                 }

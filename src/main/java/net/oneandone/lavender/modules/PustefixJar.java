@@ -18,12 +18,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /** To create modules that load resources from jars. */
-public abstract class Embedded {
+public abstract class PustefixJar {
     private static final String RESOURCE_INDEX = "META-INF/pustefix-resource.index";
 
     /** @return null if not a pustefix module */
-    public static Embedded forNodeOpt(boolean prod, Node jar, WarConfig rootConfig) throws IOException, SAXException, XmlException {
-        Embedded result;
+    public static PustefixJar forNodeOpt(boolean prod, Node jar, WarConfig rootConfig) throws IOException, SAXException, XmlException {
+        PustefixJar result;
 
         if (jar instanceof FileNode) {
             result = forFileNodeOpt(prod, (FileNode) jar, rootConfig);
@@ -42,7 +42,7 @@ public abstract class Embedded {
     }
 
     /** To properly make jars available as a module, I have to load them into memory when the jar is itself contained in a war. */
-    public static Embedded forOtherNodeOpt(Node jar, WarConfig rootConfig) throws IOException {
+    public static PustefixJar forOtherNodeOpt(Node jar, WarConfig rootConfig) throws IOException {
         JarConfig config;
         ModuleProperties lp;
         boolean hasResourceIndex;
@@ -78,7 +78,7 @@ public abstract class Embedded {
             // -> the has not enabled lavender for this module
             return null;
         }
-        return new Embedded(config, lp, hasResourceIndex) {
+        return new PustefixJar(config, lp, hasResourceIndex) {
             @Override
             public Module createModule() throws IOException {
                 World world;
@@ -116,7 +116,7 @@ public abstract class Embedded {
         };
     }
 
-    public static Embedded forFileNodeOpt(boolean prod, FileNode jarOrig, WarConfig rootConfig) throws IOException, XmlException, SAXException {
+    public static PustefixJar forFileNodeOpt(boolean prod, FileNode jarOrig, WarConfig rootConfig) throws IOException, XmlException, SAXException {
         JarConfig config;
         ModuleProperties lp;
         boolean hasResourceIndex;
@@ -145,7 +145,7 @@ public abstract class Embedded {
         } else {
             jarLive = jarTmp;
         }
-        return new Embedded(config, lp, hasResourceIndex) {
+        return new PustefixJar(config, lp, hasResourceIndex) {
             @Override
             public Module createModule() {
                 return new NodeModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", lp.filter) {
@@ -197,7 +197,7 @@ public abstract class Embedded {
     public final ModuleProperties lp;
     public final boolean hasResourceIndex;
 
-    public Embedded(JarConfig config, ModuleProperties lp, boolean hasResourceIndex) {
+    public PustefixJar(JarConfig config, ModuleProperties lp, boolean hasResourceIndex) {
         this.config = config;
         this.lp = lp;
         this.hasResourceIndex = hasResourceIndex;
