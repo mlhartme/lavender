@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.modules;
 
+import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.xml.Selector;
 import net.oneandone.sushi.xml.Xml;
 import net.oneandone.sushi.xml.XmlException;
@@ -40,6 +41,14 @@ public class PustefixJarConfig {
     /** trimmed, without heading slash, with tailing slash */
     private final List<String> statics;
 
+    public static PustefixJarConfig load(Node src, WarConfig warConfig) throws IOException {
+        try (InputStream configSrc = src.newInputStream()) {
+            return PustefixJarConfig.load(src.getWorld().getXml(), warConfig, configSrc);
+        } catch (SAXException | XmlException e) {
+            throw new IOException(src + ": cannot load module descriptor:" + e.getMessage(), e);
+        }
+
+    }
     public static PustefixJarConfig load(Xml xml, WarConfig parent, InputStream src) throws IOException, SAXException, XmlException {
         String path;
         Element root;

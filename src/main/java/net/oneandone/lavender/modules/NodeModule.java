@@ -39,7 +39,7 @@ public abstract class NodeModule extends Module<Node> {
     // used to detect a recent parent pom
 
     public static List<Module> fromWebapp(FileNode cache, boolean prod, Node<?> webapp, Secrets secrets)
-            throws IOException, SAXException, XmlException {
+            throws IOException {
         Node<?> webappSource;
         List<Module> result;
         WarConfig rootConfig;
@@ -65,7 +65,7 @@ public abstract class NodeModule extends Module<Node> {
     }
 
     private static void addJarModules(FileNode cache, WarConfig rootConfig, boolean prod, Node jarOrig, Secrets secrets, List<String> legacy, List<Module> result)
-            throws IOException, XmlException, SAXException {
+            throws IOException {
         PustefixJar pustefixJar;
 
         pustefixJar = PustefixJar.forNodeOpt(prod, jarOrig, rootConfig);
