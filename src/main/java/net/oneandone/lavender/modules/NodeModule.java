@@ -40,10 +40,8 @@ public abstract class NodeModule extends Module<Node> {
 
     public static List<Module> fromWebapp(FileNode cache, boolean prod, Node<?> webapp, Secrets secrets)
             throws IOException {
-        Node<?> webappSource;
         List<Module> result;
         WarConfig rootConfig;
-        NodeModule root;
         ModuleProperties application;
         List<String> legacy;
 
@@ -57,9 +55,6 @@ public abstract class NodeModule extends Module<Node> {
         for (Node<?> jar : webapp.find("WEB-INF/lib/*.jar")) {
             addJarModules(cache, rootConfig, prod, jar, secrets, legacy, result);
         }
-        webappSource = application.live(webapp);
-        root = warModule(rootConfig, application.embeddedFilter, webappSource);
-        result.add(root);
         application.addModules(cache, prod, secrets, result, null);
         return result;
     }
@@ -71,7 +66,7 @@ public abstract class NodeModule extends Module<Node> {
         pustefixJar = PustefixJar.forNodeOpt(prod, jarOrig, rootConfig);
         if (pustefixJar != null) {
             if (legacy.contains(pustefixJar.config.getModuleName())) {
-                result.add(pustefixJar.createModule());
+                result.add(pustefixJar.createModule(ModuleProperties.defaultFilter()));
             } else {
                 if (pustefixJar.moduleProperties != null) {
                     pustefixJar.moduleProperties.addModules(cache, prod, secrets, result, pustefixJar.config);
@@ -94,7 +89,7 @@ public abstract class NodeModule extends Module<Node> {
         for (Node<?> jar : webapp.find("WEB-INF/lib/*.jar")) {
             pustefixJar = PustefixJar.forNodeOpt(true, jar, rootConfig);
             if (pustefixJar != null && pustefixJar.moduleProperties == null) {
-                module = pustefixJar.createModule();
+                module = pustefixJar.createModule(ModuleProperties.defaultFilter());
                 if (!module.loadEntries().isEmpty()) {
                     result.add(module.getName());
                 }
@@ -105,7 +100,8 @@ public abstract class NodeModule extends Module<Node> {
 
     //--
 
-    public static NodeModule warModule(final WarConfig config, final Filter filter, final Node webapp) throws IOException {
+    // TODO: currently unused
+    public static NodeModule warModule(WarConfig config, Filter filter, Node webapp) throws IOException {
         Element root;
         Selector selector;
         String name;
@@ -125,7 +121,7 @@ public abstract class NodeModule extends Module<Node> {
         }
     }
 
-    private static Map<String, Node> scanExploded(final WarConfig global, final Filter filter, final Node exploded) throws IOException {
+    private static Map<String, Node> scanExploded(WarConfig global, Filter filter, Node exploded) throws IOException {
         Filter f;
         final Map<String, Node> result;
 

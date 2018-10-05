@@ -116,60 +116,78 @@ public class ModuleProperties extends PropertiesBase {
         if (pominfo == null) {
             throw new IOException("pominfo.properties for module not found: " + properties);
         }
-        relative = eat(properties, "pustefix.relative");
+        relative = eatOpt(properties, "pustefix.relative", null);
         if (!prod && thisMachine(pominfo.getProperty("ethernet"))) {
-            source = join(pominfo.getProperty("basedir"), relative);
+            source = pominfo.getProperty("basedir");
+            if (relative != null) {
+                source = join(source, relative);
+            }
         } else {
             source = null;
         }
-        result = new ModuleProperties(eatFilter(properties, "pustefix", DEFAULT_INCLUDES), source);
-        for (String prefix : prefixes(properties, ScmProperties.SVN_PREFIX)) {
-            String scmSvn = "scm:svn:";
 
-            scmurlProd = (String) properties.remove(prefix);
-            scmurlDevel = eatOpt(properties, prefix + ".devel", scmurlProd);
-            if (scmurlProd.startsWith(scmSvn) && !scmurlDevel.startsWith(scmSvn)) { // TODO
-                scmurlDevel = scmSvn + scmurlDevel;
-                LOG.warn("fixed devel url: " + scmurlDevel + ". Please update this module to the latest parent pom to fix this warning.");
+        result = new ModuleProperties(source);
+        if (relative != null) {
+            // legacy descriptor
+            checkUnmatchable(eatFilter(properties, "pustefix", DEFAULT_INCLUDES));
+            for (String prefix : prefixes(properties, ScmProperties.SVN_PREFIX)) {
+                String scmSvn = "scm:svn:";
+
+                scmurlProd = (String) properties.remove(prefix);
+                scmurlDevel = eatOpt(properties, prefix + ".devel", scmurlProd);
+                if (scmurlProd.startsWith(scmSvn) && !scmurlDevel.startsWith(scmSvn)) { // TODO
+                    scmurlDevel = scmSvn + scmurlDevel;
+                    LOG.warn("fixed devel url: " + scmurlDevel + ". Please update this module to the latest parent pom to fix this warning.");
+                }
+                tag = eatOpt(properties, prefix + ".revision", "-1");
+                scmsrc = eatLegacySvnSource(properties, prefix, source);
+                scmsrc = fallback(scmurlProd, scmsrc);
+                result.configs.add(
+                        new ScmProperties(
+                                prefix.substring(prefix.indexOf('.') + 1),
+                                eatFilter(properties, prefix, DEFAULT_INCLUDES),
+                                scmurlProd, scmurlDevel, tag, "",
+                                eatOpt(properties, prefix + ".type", Module.TYPE),
+                                eatBoolean(properties, prefix + ".lavendelize", true),
+                                eatOpt(properties, prefix + ".resourcePathPrefix", ""),
+                                eatOpt(properties, prefix + ".targetPathPrefix", ""),
+                                scmsrc));
             }
-            tag = eatOpt(properties, prefix + ".revision", "-1");
-            scmsrc = eatLegacySvnSource(properties, prefix, source);
-            scmsrc = fallback(scmurlProd, scmsrc);
-            result.configs.add(
-                    new ScmProperties(
-                            prefix.substring(prefix.indexOf('.') + 1),
-                            eatFilter(properties, prefix, DEFAULT_INCLUDES),
-                            scmurlProd, scmurlDevel, tag, "",
-                            eatOpt(properties, prefix + ".type", Module.TYPE),
-                            eatBoolean(properties, prefix + ".lavendelize", true),
-                            eatOpt(properties, prefix + ".resourcePathPrefix", ""),
-                            eatOpt(properties, prefix + ".targetPathPrefix", ""),
-                            scmsrc));
-        }
-        for (String prefix : prefixes(properties, ScmProperties.SCM_PREFIX)) {
-            scmurlProd = (String) properties.remove(prefix);
-            scmurlDevel = eatOpt(properties, prefix + ".devel", scmurlProd);
-            tag = eatOpt(properties, prefix + ".tag", "");
-            String path = eatOpt(properties, prefix + ".path", "");
-            if (!path.isEmpty() && !path.startsWith("/")) {
-                path = "/" + path;
+        } else {
+            for (String prefix : prefixes(properties, ScmProperties.SCM_PREFIX)) {
+                scmurlProd = (String) properties.remove(prefix);
+                scmurlDevel = eatOpt(properties, prefix + ".devel", scmurlProd);
+                tag = eatOpt(properties, prefix + ".tag", "");
+                String path = eatOpt(properties, prefix + ".path", "");
+                if (!path.isEmpty() && !path.startsWith("/")) {
+                    path = "/" + path;
+                }
+                scmsrc = fallback(scmurlProd, source);
+                result.configs.add(
+                        new ScmProperties(
+                                prefix.substring(prefix.indexOf('.') + 1),
+                                eatFilter(properties, prefix, DEFAULT_INCLUDES),
+                                scmurlProd, scmurlDevel, tag, path,
+                                eatOpt(properties, prefix + ".type", Module.TYPE),
+                                eatBoolean(properties, prefix + ".lavendelize", true),
+                                eatOpt(properties, prefix + ".resourcePathPrefix", ""),
+                                eatOpt(properties, prefix + ".targetPathPrefix", ""),
+                                scmsrc));
             }
-            scmsrc = fallback(scmurlProd, source);
-            result.configs.add(
-                    new ScmProperties(
-                            prefix.substring(prefix.indexOf('.') + 1),
-                            eatFilter(properties, prefix, DEFAULT_INCLUDES),
-                            scmurlProd, scmurlDevel, tag, path,
-                            eatOpt(properties, prefix + ".type", Module.TYPE),
-                            eatBoolean(properties, prefix + ".lavendelize", true),
-                            eatOpt(properties, prefix + ".resourcePathPrefix", ""),
-                            eatOpt(properties, prefix + ".targetPathPrefix", ""),
-                            scmsrc));
         }
         if (properties.size() > 0) {
             throw new IllegalArgumentException("unknown properties: " + properties);
         }
         return result;
+    }
+
+    private static void checkUnmatchable(Filter filter) {
+        String[] array;
+
+        array = filter.getExcludes();
+        if (array.length != 1 || !"**/*".equals(array[0])) {
+            throw new UnsupportedOperationException("unsupported filter: " + Arrays.asList(filter.getExcludes()));
+        }
     }
 
     private static String eatLegacySvnSource(Properties properties, String prefix, String source) {
@@ -225,15 +243,10 @@ public class ModuleProperties extends PropertiesBase {
 
     //--
 
-    public final Filter embeddedFilter;
     public final String source;
     public final Collection<ScmProperties> configs;
 
-    public ModuleProperties(Filter filter, String source) {
-        if (filter == null) {
-            throw new IllegalArgumentException();
-        }
-        this.embeddedFilter = filter;
+    public ModuleProperties(String source) {
         this.source = source;
         this.configs = new ArrayList<>();
     }

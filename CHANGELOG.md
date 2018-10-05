@@ -5,6 +5,8 @@
 * pominfo.properties, lavender.properties and resource index are now required for lavender modules; madues that don't have that
   have to be declared as legacy modules in the application; added `scan-legacy` to detect them
 
+* dumped pustefix.* properties from new descriptors; report an error if legacy descriptors contain a matchable filter
+
 * added support for bitbucket modules
   * caution: repositories have to be pushed
   * caution: Bitbucket passwords do not equal intranet passwords; it's usually not defined because ssh is used for cloning a repository,

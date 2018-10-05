@@ -51,7 +51,6 @@ public abstract class PustefixJar {
         boolean hasResourceIndex;
 
         Node[] loaded;
-        Filter filter;
         Node propertyNode;
 
         loaded = ModuleProperties.loadStreamNodes(jar, PUSTEFIX_MODULE_XML,
@@ -62,14 +61,12 @@ public abstract class PustefixJar {
         config = PustefixJarConfig.load(loaded[0], warConfig);
         propertyNode = loaded[1];
         if (propertyNode == null) {
-            filter = ModuleProperties.defaultFilter();
             lp = null;
         } else {
             if (loaded[2] == null) {
                 throw new IOException("missing pominfo.properties in jar " + jar);
             }
             lp = ModuleProperties.loadNode(true, propertyNode, loaded[2]);
-            filter = lp.embeddedFilter;
         }
         hasResourceIndex = loaded[3] != null;
         if (lp == null && hasResourceIndex) {
@@ -79,7 +76,7 @@ public abstract class PustefixJar {
         }
         return new PustefixJar(config, lp, hasResourceIndex) {
             @Override
-            public Module createModule() throws IOException {
+            public Module createModule(Filter filter) throws IOException {
                 World world;
                 ZipEntry entry;
                 String path;
@@ -117,7 +114,7 @@ public abstract class PustefixJar {
 
     private static PustefixJar forFileNodeOpt(boolean prod, FileNode jarOrig, WarConfig warConfig) throws IOException {
         PustefixJarConfig config;
-        ModuleProperties lp;
+        ModuleProperties moduleProperties;
         boolean hasResourceIndex;
 
         Node exploded;
@@ -131,24 +128,24 @@ public abstract class PustefixJar {
             return null;
         }
         config = PustefixJarConfig.load(configFile, warConfig);
-        lp = ModuleProperties.loadModuleOpt(prod, exploded);
-        if (lp == null) {
+        moduleProperties = ModuleProperties.loadModuleOpt(prod, exploded);
+        if (moduleProperties == null) {
             return null;
         }
         hasResourceIndex = exploded.join(RESOURCE_INDEX).exists();
-        jarTmp = prod ? jarOrig : lp.live(jarOrig);
+        jarTmp = prod ? jarOrig : moduleProperties.live(jarOrig);
         if (jarTmp.isFile()) {
             jarLive = ((FileNode) jarTmp).openJar();
         } else {
             jarLive = jarTmp;
         }
-        return new PustefixJar(config, lp, hasResourceIndex) {
+        return new PustefixJar(config, moduleProperties, hasResourceIndex) {
             @Override
-            public Module createModule() {
-                return new NodeModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", moduleProperties.embeddedFilter) {
+            public Module createModule(Filter filter) {
+                return new NodeModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
                     @Override
                     protected Map<String, Node> loadEntries() throws IOException {
-                        return files(moduleProperties.embeddedFilter, config, jarLive);
+                        return files(filter, config, jarLive);
                     }
                 };
             }
@@ -201,5 +198,5 @@ public abstract class PustefixJar {
     }
 
     /** @return an embedded module that servers all resources from the jar itself */
-    public abstract Module createModule() throws IOException;
+    public abstract Module createModule(Filter filter) throws IOException;
 }

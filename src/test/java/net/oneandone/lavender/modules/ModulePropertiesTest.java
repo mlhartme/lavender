@@ -28,11 +28,12 @@ import static org.junit.Assert.assertFalse;
 public class ModulePropertiesTest {
     @Test
     public void legacyEmpty() throws IOException {
-        Properties p;
+        Properties props;
 
-        p = new Properties();
-        p.put("pustefix.relative", "base");
-        assertEquals(0, ModuleProperties.parse(true, p, pomInfo()).configs.size());
+        props= new Properties();
+        props.put("pustefix.relative", "base");
+        props.put("pustefix.excludes", "**/*");
+        assertEquals(0, ModuleProperties.parse(true, props, pomInfo()).configs.size());
     }
 
     @Test
@@ -42,12 +43,10 @@ public class ModulePropertiesTest {
         ScmProperties config;
 
         props = new Properties();
-        props.put("pustefix.relative", "relative");
         props.put("scm.foo", "svn");
         props.put("scm.foo.targetPathPrefix", "prefix");
         props.put("scm.foo.lavendelize", "false");
         result = ModuleProperties.parse(false, props, pomInfo());
-        assertEquals("someDirectory/relative", result.source);
         assertEquals(1, result.configs.size());
         config = result.configs.iterator().next();
         assertEquals("foo", config.name);
@@ -67,6 +66,7 @@ public class ModulePropertiesTest {
 
         props = new Properties();
         props.put("pustefix.relative", "relative");
+        props.put("pustefix.excludes", "**/*");
         props.put("svn.foo", "svn");
         props.put("svn.foo.targetPathPrefix", "prefix");
         props.put("svn.foo.lavendelize", "false");
@@ -87,6 +87,7 @@ public class ModulePropertiesTest {
         Properties props;
 
         props = new Properties();
+        props.put("pustefix.excludes", "**/*");
         ModuleProperties.parse(true, props, pomInfo());
     }
 
@@ -96,6 +97,7 @@ public class ModulePropertiesTest {
 
         props = new Properties();
         props.put("pustefix.relative", "foo");
+        props.put("pustefix.excludes", "**/*");
         props.put("svn.module.nosuchkey", "bla");
         ModuleProperties.parse(true, props, pomInfo());
     }
@@ -107,6 +109,7 @@ public class ModulePropertiesTest {
 
         props = new Properties();
         props.put("pustefix.relative", "foo");
+        props.put("pustefix.excludes", "**/*");
         props.put("svn.foo", "1");
         props.put("svn.bar", "2");
         props.put("svn.baz", "3");
