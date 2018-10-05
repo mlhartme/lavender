@@ -72,6 +72,11 @@ public class ScmProperties {
         this.source = source;
     }
 
+    public Node live(Node root) {
+        return source != null ? root.getWorld().file(source) : root;
+    }
+
+
     public Module create(FileNode cacheDir, boolean prod, Secrets secrets, PustefixJarConfig jarConfig) throws IOException {
         World world;
         final FileNode checkout;

@@ -126,7 +126,7 @@ public class ModuleProperties extends PropertiesBase {
             source = null;
         }
 
-        result = new ModuleProperties(source);
+        result = new ModuleProperties();
         if (relative != null) {
             // legacy descriptor
             checkUnmatchable(eatFilter(properties, "pustefix", DEFAULT_INCLUDES));
@@ -243,11 +243,9 @@ public class ModuleProperties extends PropertiesBase {
 
     //--
 
-    public final String source;
     public final Collection<ScmProperties> configs;
 
-    public ModuleProperties(String source) {
-        this.source = source;
+    public ModuleProperties() {
         this.configs = new ArrayList<>();
     }
 
@@ -259,7 +257,10 @@ public class ModuleProperties extends PropertiesBase {
     }
 
     public Node live(Node root) {
-        return source != null ? root.getWorld().file(source) : root;
+        if (configs.size() != 1) { // TODO
+            throw new IllegalStateException();
+        }
+        return configs.iterator().next().live(root);
     }
 
 

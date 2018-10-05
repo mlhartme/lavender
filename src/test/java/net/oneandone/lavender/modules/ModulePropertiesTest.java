@@ -72,7 +72,6 @@ public class ModulePropertiesTest {
         props.put("svn.foo.lavendelize", "false");
         props.put("svn.foo.relative", "sub");
         result = ModuleProperties.parse(false, props, pomInfo());
-        assertEquals("someDirectory/relative", result.source);
         assertEquals(1, result.configs.size());
         config = result.configs.iterator().next();
         assertEquals("foo", config.name);
