@@ -27,21 +27,20 @@ import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 
 public class Scm extends Base {
-    private final String resourcePrefix;
-    private final String targetPrefix;
+    private final String prefix;
     private final String name;
     private final Cluster cluster;
     private final String docrootName;
     private final String indexName;
 
-    public Scm(Globals globals, String resourcePrefix, String targetPrefix, String name, String clusterName, String docrootName, String indexName)
+    public Scm(Globals globals, String prefix, String name, String clusterName, String docrootName, String indexName)
             throws IOException, URISyntaxException {
         super(globals);
-        this.resourcePrefix = resourcePrefix;
-        this.targetPrefix = targetPrefix;
+        this.prefix = prefix;
         this.name = name;
         this.cluster = globals.network().get(clusterName);
         this.docrootName = docrootName;
@@ -51,7 +50,8 @@ public class Scm extends Base {
     public void run() throws IOException, URISyntaxException {
         Docroot docroot;
         Filter filter;
-        String scmurl;
+        URI url;
+        String scmurlstr;
         ScmProperties moduleConfig;
         Module module;
         Distributor distributor;
@@ -64,8 +64,12 @@ public class Scm extends Base {
         docroot = cluster.docroot(docrootName);
         filter = new Filter();
         filter.includeAll();
-        scmurl = "scm:" + properties.getScm(name);
-        moduleConfig = new ScmProperties("scm", filter, scmurl, scmurl, "", "", Module.TYPE, false, resourcePrefix, targetPrefix, null);
+        url = properties.lookupScm(name);
+        if (url == null) {
+            throw new IOException("unknown scm: " + name);
+        }
+        scmurlstr = "scm:" + url;
+        moduleConfig = new ScmProperties("scm", filter, scmurlstr, scmurlstr, "", "", Module.TYPE, false, "", prefix, null);
         cacheroot = globals.cacheroot();
         module = moduleConfig.create(cacheroot, true, properties.secrets, null);
         try (Pool pool = globals.pool()) {

@@ -203,7 +203,7 @@ public class HostProperties extends PropertiesBase {
         // disable them for integration tests, because I don't have .ssh on pearl/gems
     }
 
-    public URI getScm(String name) {
+    public URI lookupScm(String name) {
         return scms.get(name);
     }
 
