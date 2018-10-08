@@ -29,7 +29,7 @@ import net.oneandone.sushi.fs.filter.Filter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-public class Svn extends Base {
+public class Scm extends Base {
     private final String resourcePrefix;
     private final String targetPrefix;
     private final String name;
@@ -37,7 +37,7 @@ public class Svn extends Base {
     private final String docrootName;
     private final String indexName;
 
-    public Svn(Globals globals, String resourcePrefix, String targetPrefix, String name, String clusterName, String docrootName, String indexName)
+    public Scm(Globals globals, String resourcePrefix, String targetPrefix, String name, String clusterName, String docrootName, String indexName)
             throws IOException, URISyntaxException {
         super(globals);
         this.resourcePrefix = resourcePrefix;
@@ -65,7 +65,7 @@ public class Svn extends Base {
         filter = new Filter();
         filter.includeAll();
         scmurl = "scm:" + properties.getScm(name);
-        moduleConfig = new ScmProperties("scm", filter, scmurl, scmurl, "-1", "", Module.TYPE, false, resourcePrefix, targetPrefix, null);
+        moduleConfig = new ScmProperties("scm", filter, scmurl, scmurl, "", "", Module.TYPE, false, resourcePrefix, targetPrefix, null);
         cacheroot = globals.cacheroot();
         module = moduleConfig.create(cacheroot, true, properties.secrets, null);
         try (Pool pool = globals.pool()) {
