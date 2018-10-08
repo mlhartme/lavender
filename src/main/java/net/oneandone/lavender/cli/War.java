@@ -44,7 +44,7 @@ public class War extends Base {
         this.nodes = docroot.nodesFile();
     }
 
-    public void run() throws IOException, SAXException, XmlException, URISyntaxException {
+    public void run() throws IOException, URISyntaxException {
         FileNode tmp;
         FileNode cacheroot;
         FileNode outputNodesFile;

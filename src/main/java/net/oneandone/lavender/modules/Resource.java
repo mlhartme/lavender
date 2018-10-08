@@ -21,7 +21,7 @@ import java.io.OutputStream;
 public abstract class Resource {
     public abstract String getPath();
 
-    public abstract String getContentId() throws IOException;
+    public abstract String getContentId();
 
     /** for logging purpose */
     public abstract String getOrigin();

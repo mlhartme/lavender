@@ -50,7 +50,7 @@ public class NodeModuleTest {
     @Test
     public void directory() throws Exception {
         FileNode dir;
-        Module module;
+        Module<?> module;
         Iterator<Resource> iter;
         Resource resource;
 

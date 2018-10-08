@@ -28,7 +28,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 public class BitbucketModuleIT {
-    private static World WORLD;
+    private static final World WORLD;
 
     static {
         try {
@@ -41,7 +41,7 @@ public class BitbucketModuleIT {
     @Test
     public void directory() throws Exception {
         Secrets secrets;
-        Module module;
+        Module<?> module;
         Iterator<Resource> iter;
         Resource resource;
 

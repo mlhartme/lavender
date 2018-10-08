@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.assertEquals;
 
@@ -56,7 +57,7 @@ public class WriterOutputStreamTest {
          * each. The third byte of the first chunk can't be processed immediately. Verify the splitted bytes are
          * assembled correctly to characters.
          */
-        byte[] bytes = "\u00e4\u00f6\u00fc".getBytes("UTF-8");
+        byte[] bytes = "\u00e4\u00f6\u00fc".getBytes(StandardCharsets.UTF_8);
         assertEquals(6, bytes.length);
         byte[] b1 = new byte[3];
         byte[] b2 = new byte[3];
@@ -75,19 +76,19 @@ public class WriterOutputStreamTest {
 
     @Test
     public void testWriteByteArrayOffLen() throws IOException {
-        wos.write("\u00e4\u00f6\u00fc".getBytes(UTF_8), 2, 2);
+        wos.write("\u00e4\u00f6\u00fc".getBytes(StandardCharsets.UTF_8), 2, 2);
         assertEquals("\u00f6", result.toString());
         result.getBuffer().setLength(0);
 
-        wos.write("abc".getBytes(UTF_8), 0, 1);
+        wos.write("abc".getBytes(StandardCharsets.UTF_8), 0, 1);
         assertEquals("a", result.toString());
         result.getBuffer().setLength(0);
 
-        wos.write("xyz".getBytes(UTF_8), 1, 2);
+        wos.write("xyz".getBytes(StandardCharsets.UTF_8), 1, 2);
         assertEquals("yz", result.toString());
         result.getBuffer().setLength(0);
 
-        wos.write("".getBytes(UTF_8), 0, 0);
+        wos.write("".getBytes(StandardCharsets.UTF_8), 0, 0);
         assertEquals("", result.toString());
         result.getBuffer().setLength(0);
     }
@@ -124,10 +125,10 @@ public class WriterOutputStreamTest {
 
     @Test
     public void testMalformedInput() throws IOException {
-        wos.write("\u00e4ndern".getBytes("ISO-8859-1"));
+        wos.write("\u00e4ndern".getBytes(StandardCharsets.ISO_8859_1));
         assertEquals("\uFFFDndern", result.toString());
         result.getBuffer().setLength(0);
-        wos.write("l\u00f6schen".getBytes("ISO-8859-1"));
+        wos.write("l\u00f6schen".getBytes(StandardCharsets.ISO_8859_1));
         assertEquals("l\uFFFDschen", result.toString());
     }
 }

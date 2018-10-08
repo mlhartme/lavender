@@ -56,8 +56,7 @@ public class LavendelizeHttpServletRequest extends HttpServletRequestWrapper {
             }
         }
 
-        Enumeration<String> en = Collections.enumeration(list);
-        return en;
+        return Collections.enumeration(list);
     }
 
     @Override

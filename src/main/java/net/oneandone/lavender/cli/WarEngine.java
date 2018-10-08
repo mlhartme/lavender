@@ -23,10 +23,8 @@ import net.oneandone.lavender.modules.Module;
 import net.oneandone.lavender.modules.NodeModule;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
-import net.oneandone.sushi.xml.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -37,7 +35,6 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,7 +109,6 @@ public class WarEngine {
      * @param webIndex Lavender index for lavender.idx file containing mappings from originalPath to
      *                 lavenderized path (CDN paths)
      * @param nodesFile Nodes for lavender.nodes file containing all CDN hosts
-     * @throws IOException
      */
     private void updateWarFile(Index webIndex, Node nodesFile) throws IOException {
         Map<String, Object> env;
@@ -128,7 +124,7 @@ public class WarEngine {
 
             entry = fs.getPath(Lavender.LAVENDER_NODES);
             Files.copy(nodesFile.newInputStream(), entry, StandardCopyOption.REPLACE_EXISTING);
-        };
+        }
     }
 
 }

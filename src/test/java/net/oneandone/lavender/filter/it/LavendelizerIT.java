@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 
 import static org.junit.Assert.assertEquals;
@@ -135,6 +136,6 @@ public class LavendelizerIT {
             new Buffer().copy(in, out);
             bytes = out.toByteArray();
         }
-        return new String(bytes, "utf8");
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 }

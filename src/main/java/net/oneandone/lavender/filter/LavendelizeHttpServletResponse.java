@@ -60,7 +60,7 @@ public class LavendelizeHttpServletResponse extends HttpServletResponseWrapper {
      * The headers. Also store them here for logging and testing - they're unavailable in the original
      * HttpServletResponseWrapper.
      */
-    private Map<String, String> headers = new HashMap<String, String>();
+    private Map<String, String> headers = new HashMap<>();
 
     /** The writer, lazy initialized when getWriter() is called. */
     protected PrintWriter writer;

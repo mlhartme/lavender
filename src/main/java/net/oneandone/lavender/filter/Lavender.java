@@ -51,7 +51,7 @@ public class Lavender implements Filter, LavenderMBean {
 
     public static final String ALLOW_PROD_DEV_MIX_MODE = "lavender.allowProdDevMixMode";
 
-    private AtomicReference<Filter> delegate = new AtomicReference<>();
+    private final AtomicReference<Filter> delegate = new AtomicReference<>();
 
     /** The delegate configuration. */
     protected FilterConfig filterConfig;

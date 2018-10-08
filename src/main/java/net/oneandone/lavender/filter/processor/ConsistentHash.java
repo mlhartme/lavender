@@ -92,9 +92,7 @@ public class ConsistentHash {
             throw new IllegalArgumentException("Expected a 16 byte / 128 bit hash.");
         }
 
-        int key = (md5[0] & 0xFF) << 24 | (md5[1] & 0xFF) << 16 | (md5[2] & 0xFF) << 8 | (md5[3] & 0xFF);
-
-        return key;
+        return (md5[0] & 0xFF) << 24 | (md5[1] & 0xFF) << 16 | (md5[2] & 0xFF) << 8 | (md5[3] & 0xFF);
     }
 
     public static byte[] md5(String data) {

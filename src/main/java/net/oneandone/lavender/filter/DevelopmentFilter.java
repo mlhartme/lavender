@@ -66,7 +66,7 @@ public class DevelopmentFilter implements Filter {
             properties = HostProperties.load(HostProperties.file(world), false);
             FileNode cache = properties.cacheroot();
             modules = loadModulesFromWebapp(webapp, properties, cache);
-        } catch (XmlException | IOException | SAXException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             throw new ServletException("Could not initialize Lavender development filter", e);
         }
@@ -96,8 +96,7 @@ public class DevelopmentFilter implements Filter {
         return modules.size();
     }
 
-    List<Module> loadModulesFromWebapp(Node webapp, HostProperties properties, FileNode cache)
-            throws IOException, SAXException, XmlException {
+    List<Module> loadModulesFromWebapp(Node webapp, HostProperties properties, FileNode cache) throws IOException {
         return NodeModule.fromWebapp(cache, false, webapp, properties.secrets);
     }
 
