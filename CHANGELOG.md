@@ -2,40 +2,43 @@
 
 ### 2.7.0 (pending)
 
-* pominfo.properties, lavender.properties and resource index are now required for lavender modules; madues that don't have that
-  have to be declared as legacy modules in the application; added `scan-legacy` to detect them
-
-* dumped pustefix.* properties from new descriptors; report an error if legacy descriptors contain a matchable filter
-
-* added support for bitbucket modules
+* added support for bitbucket modules: derive you pom from at least frontend-parent 3.4.0 or application-parent-3.10.0
   * caution: repositories have to be pushed
   * caution: Bitbucket passwords do not equal intranet passwords; it's usually not defined because ssh is used for cloning a repository,
     you can set it with
 
-* different credentials for different scm repositories
+* DevelopmentFilter
+  * use etags only (based on Resource.getContentId), last-modified header is gone
 
-* svn properties generalized to scm properties (old svn properties still work, but applications should switch to the latest frontend-parent
-  to generate the new properties)
-  * svn prefix changed to scm
-  * dumped `scm.foo.relative`, it was alway empty
-  * added `scm.foo.path` property that get's the path formerly appended to the url or devel url
-  * replaced `revision` by `tag`
+* cli
+  * dumped `-lastconfig` switch, it was not used by puc, and you can now reconfigure the location of the network file
+  * simplified command line by aligning the arguments passed to the various publishing commands:
+    * 'war': it's just `war cluster docroot index` now
+    * 'svn': it's just `directory cluster docroot` now
+    * 'file': mandatory argument are now `archive cluster docroot index`
+  * remove connection locks on ctrl-c (via shutdown hook)
+  * lock files now contain user, machine and command being executed
 
 * caching:
   * dumped cache lock - use atomic reads and writes instead
   * introduced md5 cache maintained by Distributor for all modules
   * changed svn entry cache: dumped md5, size and last modified fields; svn caches entries now reside under <cachdir>/svn
 
-* DevelopmentFilter
-  * use etags only (based on Resource.getContentId), last-modified header is gone
+* user configuration cleanup
+  * svn properties generalized to scm properties (old svn properties still work, but applications should switch to the latest frontend-parent
+    to generate the new properties)
+    * svn prefix changed to scm
+    * dumped `scm.foo.relative`, it was always empty
+    * added `scm.foo.path` property that get's the path formerly appended to the url or devel url
+    * replaced `revision` by `tag`
+    * dumped pustefix.* properties from new descriptors, thus, it's no longer possible to configure embedded resources;
+      report an error if legacy descriptors contain a matchable filter
+    * added a legacy property to configure old modules; use `lavender scan-legacy` to search a project for legacy modules
+  * pominfo.properties, lavender.properties and resource index are now required for lavender modules; madues that don't have that
+    have to be declared as legacy modules in the application; added `scan-legacy` to detect them
 
-* api
-  * Resource class cleanup
-    * getContentId replaces getLastModified
-    * NodeResource replaces DefaultResource
-  * moved Distributor class from `index` to `modules` module to
-
-* configuration cleanup
+* admin configuration cleanup
+  * different credentials for different scm repositories
   * system properties -> host properties
     * renamed `lavender.properties` to `lavender/host.properties`; also renamed the corresponding system property `lavender.properties` to `lavender.hostproperties`
       and the environment variable `LAVENDER_PROPERTIES` to `LAVENDER_HOSTPROPERTIES`
@@ -47,22 +50,11 @@
     * renamed docroot docroot to docroot documents
     * merge aliases into docroot
 
-* cli
-  * dumped `-lastconfig` switch, it was not used by puc, and you can now reconfigure the location of the network file
-  * simplified command line by aligning the arguments passed to the various publishing commands:
-    * 'war': it's just `war cluster docroot index` now
-    * 'svn': it's just `directory cluster docroot` now
-    * 'file': mandatory argument are now `archive cluster docroot index`
-  * remove connection locks on ctrl-c (via shutdown hook)
-  * remove cache lock on ctrl-c (via deleteAtExit)
- 
-* java 10 support
+* java 10 fixes
   * fixed hardcoded references to com.sun.zipfs 
   * added explicit javax.xml.bind dependencies
 
-* lock files now contain user, machine and command being executed
-
-* dependency update: 
+* dependency updates:
   * sushi 3.1.6 to 3.1.7
   * svnkit 1.8.5 to 1.9.3
   * slf4j 1.7.5 to 1.7.25

@@ -47,7 +47,7 @@ public abstract class NodeModule extends Module<Node> {
         for (Node<?> jar : webapp.find("WEB-INF/lib/*.jar")) {
             addJarModules(cache, rootConfig, prod, jar, secrets, legacy, result);
         }
-        application.addModules(cache, prod, secrets, result, null);
+        application.createModules(cache, prod, secrets, result, null);
         return result;
     }
 
@@ -61,7 +61,7 @@ public abstract class NodeModule extends Module<Node> {
                 result.add(pustefixJar.createModule(ModuleProperties.defaultFilter()));
             } else {
                 if (pustefixJar.moduleProperties != null) {
-                    pustefixJar.moduleProperties.addModules(cache, prod, secrets, result, pustefixJar.config);
+                    pustefixJar.moduleProperties.createModules(cache, prod, secrets, result, pustefixJar.config);
                 }
             }
         }

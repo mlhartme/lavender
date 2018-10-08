@@ -15,12 +15,10 @@
  */
 package net.oneandone.lavender.cli;
 
-import net.oneandone.inline.ArgumentException;
 import net.oneandone.lavender.config.Cluster;
 import net.oneandone.lavender.config.Docroot;
 import net.oneandone.lavender.config.HostProperties;
 import net.oneandone.lavender.config.Pool;
-import net.oneandone.lavender.config.UsernamePassword;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.Distributor;
 import net.oneandone.lavender.modules.Module;
@@ -32,15 +30,22 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 public class Svn extends Base {
-    private final String directory;
+    private final String resourcePrefix;
+    private final String targetPrefix;
+    private final String name;
     private final Cluster cluster;
     private final String docrootName;
+    private final String indexName;
 
-    public Svn(Globals globals, String directory, String clusterName, String docrootName) throws IOException, URISyntaxException {
+    public Svn(Globals globals, String resourcePrefix, String targetPrefix, String name, String clusterName, String docrootName, String indexName)
+            throws IOException, URISyntaxException {
         super(globals);
-        this.directory = directory;
+        this.resourcePrefix = resourcePrefix;
+        this.targetPrefix = targetPrefix;
+        this.name = name;
         this.cluster = globals.network().get(clusterName);
         this.docrootName = docrootName;
+        this.indexName = indexName;
     }
 
     public void run() throws IOException, URISyntaxException {
@@ -55,19 +60,16 @@ public class Svn extends Base {
         FileNode cacheroot;
         HostProperties properties;
 
-        if (directory.isEmpty() || directory.contains("/")) {
-            throw new ArgumentException("invalid directory: " + directory);
-        }
         properties = globals.properties();
         docroot = cluster.docroot(docrootName);
         filter = new Filter();
         filter.includeAll();
-        scmurl = "scm:" + properties.getScm("svn") + "/data/" + directory;
-        moduleConfig = new ScmProperties("svn", filter, scmurl, scmurl, "-1", "", Module.TYPE, false, "", directory + "/", null);
+        scmurl = "scm:" + properties.getScm(name);
+        moduleConfig = new ScmProperties("scm", filter, scmurl, scmurl, "-1", "", Module.TYPE, false, resourcePrefix, targetPrefix, null);
         cacheroot = globals.cacheroot();
         module = moduleConfig.create(cacheroot, true, properties.secrets, null);
         try (Pool pool = globals.pool()) {
-            distributor = Distributor.open(cacheroot, cluster.connect(pool), docroot, directory + ".idx");
+            distributor = Distributor.open(cacheroot, cluster.connect(pool), docroot, indexName);
             changed = distributor.publish(module);
             index = distributor.close();
         }

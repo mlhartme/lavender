@@ -1,5 +1,6 @@
 package net.oneandone.lavender.modules;
 
+import net.oneandone.sushi.fs.ExistsException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -119,8 +120,6 @@ public abstract class PustefixJar {
 
         Node exploded;
         Node configFile;
-        Node jarTmp;
-        Node jarLive;
 
         exploded = jarOrig.openJar();
         configFile = exploded.join(PUSTEFIX_MODULE_XML);
@@ -133,15 +132,18 @@ public abstract class PustefixJar {
             return null;
         }
         hasResourceIndex = exploded.join(RESOURCE_INDEX).exists();
-        jarTmp = prod ? jarOrig : moduleProperties.live(jarOrig);
-        if (jarTmp.isFile()) {
-            jarLive = ((FileNode) jarTmp).openJar();
-        } else {
-            jarLive = jarTmp;
-        }
         return new PustefixJar(config, moduleProperties, hasResourceIndex) {
             @Override
-            public Module createModule(Filter filter) {
+            public Module createModule(Filter filter) throws IOException {
+                Node jarTmp;
+                Node jarLive;
+
+                jarTmp = prod ? jarOrig : moduleProperties.embeddedLive(jarOrig);
+                if (jarTmp.isFile()) {
+                    jarLive = ((FileNode) jarTmp).openJar();
+                } else {
+                    jarLive = jarTmp;
+                }
                 return new NodeModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
                     @Override
                     protected Map<String, Node> loadEntries() throws IOException {

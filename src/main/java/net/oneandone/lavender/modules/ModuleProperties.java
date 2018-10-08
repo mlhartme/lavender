@@ -126,7 +126,7 @@ public class ModuleProperties extends PropertiesBase {
             source = null;
         }
 
-        result = new ModuleProperties();
+        result = new ModuleProperties(source);
         if (relative != null) {
             // legacy descriptor
             checkUnmatchable(eatFilter(properties, "pustefix", DEFAULT_INCLUDES));
@@ -243,24 +243,23 @@ public class ModuleProperties extends PropertiesBase {
 
     //--
 
+    public final String embeddedSource;
     public final Collection<ScmProperties> configs;
 
-    public ModuleProperties() {
+    public ModuleProperties(String embeddedSource) {
+        this.embeddedSource = embeddedSource;
         this.configs = new ArrayList<>();
     }
 
-    public void addModules(FileNode cache, boolean prod, Secrets secrets, List<Module> result, PustefixJarConfig jarConfig)
+    public void createModules(FileNode cache, boolean prod, Secrets secrets, List<Module> result, PustefixJarConfig jarConfig)
             throws IOException {
         for (ScmProperties config : configs) {
             result.add(config.create(cache, prod, secrets, jarConfig));
         }
     }
 
-    public Node live(Node root) {
-        if (configs.size() != 1) { // TODO
-            throw new IllegalStateException();
-        }
-        return configs.iterator().next().live(root);
+    public Node embeddedLive(Node root) {
+        return embeddedSource != null ? root.getWorld().file(embeddedSource) : root;
     }
 
 
