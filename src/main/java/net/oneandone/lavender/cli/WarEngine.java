@@ -70,7 +70,7 @@ public class WarEngine {
      *
      * @return types mapped to indexes
      */
-    public Index run() throws IOException, XmlException, SAXException {
+    public Index run() throws IOException {
         long started;
         List<Module> modules;
         Index index;
