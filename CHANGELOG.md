@@ -12,9 +12,10 @@
 
 * cli
   * dumped `-lastconfig` switch, it was not used by puc, and you can now reconfigure the location of the network file
+  * generalized `svn` command to `scm`, and the first argument is now the scm name defined in the host properties
   * simplified command line by aligning the arguments passed to the various publishing commands:
     * 'war': it's just `war cluster docroot index` now
-    * 'svn': it's just `directory cluster docroot` now
+    * 'scm': it's just `scm cluster docroot index` now
     * 'file': mandatory argument are now `archive cluster docroot index`
   * remove connection locks on ctrl-c (via shutdown hook)
   * lock files now contain user, machine and command being executed
