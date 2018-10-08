@@ -58,7 +58,7 @@ public class Main {
 
             cli.add(War.class, "war war cluster docroot index");
             cli.add(ScanLegacy.class, "scan-legacy war");
-            cli.add(Scm.class, "scm -prefix scm cluster docroot index?");
+            cli.add(Scm.class, "scm -prefix=null scm cluster docroot index?");
             cli.add(File.class, "file -prefix archive cluster docroot index");
             cli.add(Direct.class, "direct cluster arg+");
             cli.add(Fsck.class, "fsck -md5 -gc -mac -repair-all-idx cluster");
@@ -84,10 +84,11 @@ public class Main {
         help.append("                            legacy is a pustefix module with embedded resources but not lavender.properties file\n");
         help.append("  'scm' ['-prefix' prefix] scm cluster docroot index?\n");
         help.append("                            publish resources from the specified scm\n");
-        help.append("                            <name> is searched in from host.properties; index defaults to scm + '.idx'\n");
+        help.append("                            <scm> is searched in from host.properties;\n");
+        help.append("                            index defaults to <scm> + '.idx'; prefix defaults to <scm> + '/'");
         help.append("  'file' ['-prefix' prefix] archive cluster docroot index\n");
         help.append("                            publish resources from archive to docroot on the specified cluster;\n");
-        help.append("                            index is a file name with suffix\n");
+        help.append("                            index is a file name with suffix; default prefix is empty;\n");
         help.append("                            archive is simply a directory or an zip archive (e.g. a jar- or zip file)\n");
         help.append("other commands\n");
         help.append("  'help'                    print this message\n");

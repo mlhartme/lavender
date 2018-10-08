@@ -32,19 +32,19 @@ import java.net.URISyntaxException;
 
 public class Scm extends Base {
     private final String prefix;
-    private final String name;
+    private final String scm;
     private final Cluster cluster;
     private final String docrootName;
     private final String indexName;
 
-    public Scm(Globals globals, String prefix, String name, String clusterName, String docrootName, String indexName)
+    public Scm(Globals globals, String prefix, String scm, String clusterName, String docrootName, String indexName)
             throws IOException, URISyntaxException {
         super(globals);
-        this.prefix = prefix;
-        this.name = name;
+        this.prefix = prefix == null ? scm + "/" : prefix;
+        this.scm = scm;
         this.cluster = globals.network().get(clusterName);
         this.docrootName = docrootName;
-        this.indexName = indexName.isEmpty() ? name + ".idx" : indexName;
+        this.indexName = indexName.isEmpty() ? scm + ".idx" : indexName;
     }
 
     public void run() throws IOException, URISyntaxException {
@@ -64,9 +64,9 @@ public class Scm extends Base {
         docroot = cluster.docroot(docrootName);
         filter = new Filter();
         filter.includeAll();
-        url = properties.lookupScm(name);
+        url = properties.lookupScm(scm);
         if (url == null) {
-            throw new IOException("unknown scm: " + name);
+            throw new IOException("scm not found is host properties: " + scm);
         }
         scmurlstr = "scm:" + url;
         moduleConfig = new ScmProperties("scm", filter, scmurlstr, scmurlstr, "", "", Module.TYPE, false, "", prefix, null);
