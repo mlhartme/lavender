@@ -75,6 +75,7 @@ public class ModuleProperties extends PropertiesBase {
         Node src;
         Properties pominfo;
         Properties properties;
+        String str;
 
         src = webapp.join(ModuleProperties.APP_PROPERTIES);
         src.checkFile();
@@ -87,11 +88,12 @@ public class ModuleProperties extends PropertiesBase {
             throw new IOException("pominfo.properties for application not found");
         }
         properties = src.readProperties();
-        if (legacy == null) {
-            PropertiesBase.eatOpt(properties, "legacy", null);
-        } else {
-            legacy.addAll(Separator.COMMA.split(PropertiesBase.eatOpt(properties, "legacy", "")));
+        str = PropertiesBase.eatOpt(properties, "legacy", null);
+        if (str == null) {
+            throw new IOException("missing 'legacy' property in your application's lavender.properties");
         }
+        LOG.info("legacy modules: " + str);
+        legacy.addAll(Separator.COMMA.split(str));
         return parse(prod, properties, pominfo);
     }
 
