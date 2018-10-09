@@ -36,7 +36,7 @@
     * replaced `revision` by `tag`
     * dumped pustefix.* properties; thus, it's no longer possible to configure embedded resources;
       report an error if legacy descriptors contain a matchable filter
-    * added a legacy property to configure old modules; use `lavender scan-legacy` to search a project for legacy modules;
+    * added a `legacy` property to configure old modules; use `lavender scan-legacy` to search a project for legacy modules;
       lavender repos an error if a new descriptor does not define this property
   * pominfo.properties, lavender.properties and resource index are now required for lavender modules
 
@@ -45,7 +45,7 @@
     * changed terminology: system properties are now called host properties (to better distinguish them from Java's system properties)
     * renamed `lavender.properties` to `lavender/host.properties`; also renamed the corresponding system property `lavender.properties` to `lavender.hostproperties`
       and the environment variable `LAVENDER_PROPERTIES` to `LAVENDER_HOSTPROPERTIES`
-    * location of network.xml is configurable now
+    * added `location` property to configure the location of the network.xml
     * instead of a single svn url, you can now configure a map of urls (including git urls)
     * configurable secrets path: `secrets` defines a colon-separated path where to search for secrets files; wildcard allowed
   * renamed net.xml to network.xml

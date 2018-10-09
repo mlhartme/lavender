@@ -99,6 +99,7 @@ public class Distributor {
 
     /** @return number of changed (updated or added) resources */
     public long publish(Module<?> module) throws IOException {
+        FileNode cacheFile;
         String path;
         String contentId;
         Label label;
@@ -107,7 +108,8 @@ public class Distributor {
         boolean dataBuffered;
 
         count = 0;
-        try (Md5Cache cache = Md5Cache.loadOrCreate(cacheroot.join("md5", module.getName() + ".cache"))) {
+        cacheFile = cacheroot.join("md5", module.getName() + ".cache"); // it's save to base the file on the simple module name because cache lookup always includes the content id
+        try (Md5Cache cache = Md5Cache.loadOrCreate(cacheFile)) {
             for (Resource resource : module) {
                 buffer.reset();
                 path = resource.getPath();
