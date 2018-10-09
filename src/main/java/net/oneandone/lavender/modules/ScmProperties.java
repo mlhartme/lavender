@@ -153,17 +153,17 @@ public class ScmProperties {
 
     private SvnModule createSvnModule(FileNode cacheDir, PustefixJarConfig jarConfig, World world, String scm, Secrets secrets, long pinnedRevision) throws IOException {
         SvnNode root;
-        String idxName;
+        String cacheName;
         FileNode cache;
 
         try {
             root = (SvnNode) world.node(secrets.withSecrets(URI.create(scm)));
             // make sure to get a proper error message - and to get it early
             root.checkDirectory();
-            idxName = root.getSvnurl().getPath().replace('/', '.') + ".idx";
-            idxName = Strings.removeLeftOpt(idxName, ".");
+            cacheName = root.getSvnurl().getPath().replace('/', '.') + ".idx";
+            cacheName = Strings.removeLeftOpt(cacheName, ".");
             // CAUTION: place all files directly in the configured cache directory - sub directories would cause permission problems
-            cache = cacheDir.join("svn", root.getRoot().getRepository().getRepositoryRoot(false).getHost() + "_" + idxName);
+            cache = cacheDir.join("svn", root.getRoot().getRepository().getRepositoryRoot(false).getHost() + "_" + cacheName);
             cache.getParent().mkdirsOpt();
             return new SvnModule(type, name, cache, root, pinnedRevision, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
         } catch (RuntimeException | IOException e) {
