@@ -36,6 +36,8 @@ public abstract class NodeModule extends Module<Node> {
         WarConfig rootConfig;
         ModuleProperties application;
         List<String> legacy;
+        PustefixJar pustefixJar;
+
 
         LOG.trace("scanning " + webapp);
         legacy = new ArrayList<>();
@@ -45,30 +47,24 @@ public abstract class NodeModule extends Module<Node> {
         rootConfig = WarConfig.fromXml(webapp);
         // add modules before webapp, because they have a prefix
         for (Node<?> jar : webapp.find("WEB-INF/lib/*.jar")) {
-            addJarModules(cache, rootConfig, prod, jar, secrets, legacy, result);
+            pustefixJar = PustefixJar.forNodeOpt(prod, jar, rootConfig);
+            if (pustefixJar != null) {
+                if (legacy.contains(pustefixJar.config.getModuleName())) {
+                    result.add(pustefixJar.createModule(ModuleProperties.defaultFilter()));
+                } else {
+                    if (pustefixJar.moduleProperties != null) {
+                        pustefixJar.moduleProperties.createModules(cache, prod, secrets, result, pustefixJar.config);
+                    }
+                }
+            }
         }
         application.createModules(cache, prod, secrets, result, null);
         return result;
     }
 
-    private static void addJarModules(FileNode cache, WarConfig rootConfig, boolean prod, Node jarOrig, Secrets secrets, List<String> legacy, List<Module> result)
-            throws IOException {
-        PustefixJar pustefixJar;
-
-        pustefixJar = PustefixJar.forNodeOpt(prod, jarOrig, rootConfig);
-        if (pustefixJar != null) {
-            if (legacy.contains(pustefixJar.config.getModuleName())) {
-                result.add(pustefixJar.createModule(ModuleProperties.defaultFilter()));
-            } else {
-                if (pustefixJar.moduleProperties != null) {
-                    pustefixJar.moduleProperties.createModules(cache, prod, secrets, result, pustefixJar.config);
-                }
-            }
-        }
-    }
-
     //--
 
+    /** @return list of legacy modules */
     public static List<String> scanLegacy(Node<?> webapp) throws Exception {
         List<String> result;
         WarConfig rootConfig;

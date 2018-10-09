@@ -24,7 +24,7 @@ public abstract class PustefixJar {
     private static final String RESOURCE_INDEX = "META-INF/pustefix-resource.index";
     public static final String POMINFO_PROPERTIES = "META-INF/pominfo.properties";
 
-    /** @return null if not a pustefix module */
+    /** @return null if not a pustefix jar */
     public static PustefixJar forNodeOpt(boolean prod, Node jar, WarConfig rootConfig) throws IOException {
         PustefixJar result;
 
@@ -53,7 +53,7 @@ public abstract class PustefixJar {
         Node[] loaded;
         Node propertyNode;
 
-        loaded =loadStreamNodes(jar, PUSTEFIX_MODULE_XML, ModuleProperties.MODULE_PROPERTIES, POMINFO_PROPERTIES, RESOURCE_INDEX);
+        loaded = loadStreamNodes(jar, PUSTEFIX_MODULE_XML, ModuleProperties.MODULE_PROPERTIES, POMINFO_PROPERTIES, RESOURCE_INDEX);
         if (loaded[0] == null) {
             return null;
         }
