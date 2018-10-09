@@ -28,6 +28,10 @@ public abstract class Resource {
 
     public abstract void writeTo(OutputStream dest) throws IOException;
 
+    /**
+     * Resources that can quickly check if a resource is out-dated should do so here; all other should return true to indicate that it
+     * might be outdated
+     */
     public abstract boolean isOutdated();
 
     @Override

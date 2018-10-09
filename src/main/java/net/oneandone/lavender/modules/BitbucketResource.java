@@ -42,6 +42,8 @@ public class BitbucketResource extends Resource {
 
     @Override
     public boolean isOutdated() {
-        return false; // TODO
+        // the least expensive way to check for changes is to re-load changes with content ids
+        // (node that bitbucket's lastModified api call didn't work for me, some command wasn'd found on the server)
+        return true;
     }
 }
