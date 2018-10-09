@@ -83,7 +83,7 @@ public class Bitbucket {
 
         world = World.create(false);
         cache = world.file("cache");
-        bitbucket = new Bitbucket((HttpNode) world.validNode("http://bitbucket.1and1.org:7990/rest/api/1.0"));
+        bitbucket = new Bitbucket((HttpNode) world.validNode("https://bitbucket.1and1.org/rest/api/1.0"));
         latestCommit = bitbucket.latestCommit("CISOOPS", "lavender-test-module", "master");
         if (cache.exists()) {
             System.out.println("no cache");

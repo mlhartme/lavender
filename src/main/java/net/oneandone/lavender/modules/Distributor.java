@@ -163,7 +163,7 @@ public class Distributor {
                     buffer.writeTo(out);
                 }
             } else {
-                tmp = dest.getParent().join(".atomicUpdate");
+                tmp = dest.getParent().join(".atomicUpdate"); // because apache is happily serving files while we update them ...
                 try (OutputStream out = tmp.newOutputStream()) {
                     buffer.writeTo(out);
                 }

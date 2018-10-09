@@ -326,7 +326,7 @@ public class ModuleProperties extends PropertiesBase {
 
     //--
 
-    public static final Map<String, String> FALLBACK_SOURCES;
+    private static final Map<String, String> FALLBACK_SOURCES;
 
     static {
         String str;

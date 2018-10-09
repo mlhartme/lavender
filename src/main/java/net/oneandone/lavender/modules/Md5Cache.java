@@ -72,7 +72,7 @@ public class Md5Cache implements AutoCloseable {
     public void add(Entry entry) {
         int idx;
 
-        idx = lookup(entry.path);
+        idx = indexOf(entry.path);
         if (idx != -1) {
             entries.remove(idx);
         }
@@ -80,7 +80,7 @@ public class Md5Cache implements AutoCloseable {
         modified = true;
     }
 
-    private int lookup(String path) {
+    private int indexOf(String path) {
         for (int i = 0, max = entries.size(); i < max; i++) {
             if (entries.get(i).path.equals(path)) {
                 return i;

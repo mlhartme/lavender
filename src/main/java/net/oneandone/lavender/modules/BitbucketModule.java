@@ -61,7 +61,7 @@ public class BitbucketModule extends Module<BitbucketEntry> {
 
         loadedRevision = bitbucket.latestCommit(project, repository, branch);
         if (loadedRevision == null) {
-            throw new IOException("cannot determin last commit, project=" + project + ", repository=" + repository + ", branch=" + branch);
+            throw new IOException("cannot determine last commit, project=" + project + ", repository=" + repository + ", branch=" + branch);
         }
         raw = bitbucket.changes(project, repository, loadedRevision);
         filter = getFilter();

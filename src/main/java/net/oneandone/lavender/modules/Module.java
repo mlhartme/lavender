@@ -117,8 +117,8 @@ public abstract class Module<T> implements Iterable<Resource> {
             } catch (Exception e) {
                 throw new IOException(name + " entries failed: " + e.getMessage(), e);
             }
-            LOG.debug(name + ": scanned " + lazyEntries.size() + " entries in " + (System.currentTimeMillis() - started) + "ms");
             lastScan = System.currentTimeMillis();
+            LOG.debug(name + ": scanned " + lazyEntries.size() + " entries in " + (lastScan - started) + "ms");
         }
         return lazyEntries;
     }
@@ -163,7 +163,7 @@ public abstract class Module<T> implements Iterable<Resource> {
     }
 
     public Iterator<Resource> iterator() {
-        final Iterator<Map.Entry<String, T>> base;
+        Iterator<Map.Entry<String, T>> base;
 
         try {
             base = entries().entrySet().iterator();
