@@ -48,34 +48,33 @@ public abstract class PustefixJar {
     /** Loads resources from the jar into memory. */
     private static PustefixJar forOtherNodeOpt(Node jar, WarConfig warConfig) throws IOException {
         PustefixJarConfig config;
-        ModuleProperties lp;
+        ModuleProperties moduleProperties;
         boolean hasResourceIndex;
 
         Node[] loaded;
         Node propertyNode;
 
-        loaded = ModuleProperties.loadStreamNodes(jar, PUSTEFIX_MODULE_XML,
-                ModuleProperties.MODULE_PROPERTIES, POMINFO_PROPERTIES, RESOURCE_INDEX);
+        loaded =loadStreamNodes(jar, PUSTEFIX_MODULE_XML, ModuleProperties.MODULE_PROPERTIES, POMINFO_PROPERTIES, RESOURCE_INDEX);
         if (loaded[0] == null) {
             return null;
         }
         config = PustefixJarConfig.load(loaded[0], warConfig);
         propertyNode = loaded[1];
         if (propertyNode == null) {
-            lp = null;
+            moduleProperties = null;
         } else {
             if (loaded[2] == null) {
                 throw new IOException("missing pominfo.properties in jar " + jar);
             }
-            lp = ModuleProperties.loadNode(true, propertyNode, loaded[2]);
+            moduleProperties = ModuleProperties.loadModule(true, propertyNode, loaded[2]);
         }
         hasResourceIndex = loaded[3] != null;
-        if (lp == null && hasResourceIndex) {
+        if (moduleProperties == null && hasResourceIndex) {
             // ok - we have a recent parent pom without lavender properties
             // -> the has not enabled lavender for this module
             return null;
         }
-        return new PustefixJar(config, lp, hasResourceIndex) {
+        return new PustefixJar(config, moduleProperties, hasResourceIndex) {
             @Override
             public Module createModule(Filter filter) throws IOException {
                 World world;
@@ -185,6 +184,48 @@ public abstract class PustefixJar {
             }
         });
         return result;
+    }
+
+    //--
+
+    /** To properly make jars available as a module, I have to load them into memory when the jar is itself packaged into a war. */
+    private static Node[] loadStreamNodes(Node jar, String ... names) throws IOException {
+        World world;
+        int count;
+        Node[] result;
+        ZipEntry entry;
+        String path;
+        Node dest;
+        int idx;
+
+        world = jar.getWorld();
+        count = 0;
+        result = new Node[names.length];
+        try (ZipInputStream src = new ZipInputStream(jar.newInputStream())) {
+            while ((entry = src.getNextEntry()) != null) {
+                path = entry.getName();
+                idx = indexOf(names, path);
+                if (idx != -1) {
+                    count++;
+                    dest = world.memoryNode();
+                    result[idx] = dest;
+                    world.getBuffer().copy(src, dest);
+                    if (count == names.length) {
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    private static int indexOf(String[] all, String element) {
+        for (int i = 0; i < all.length; i++) {
+            if (element.equals(all[i])) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     //--

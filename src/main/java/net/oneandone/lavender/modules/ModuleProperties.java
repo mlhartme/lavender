@@ -47,29 +47,14 @@ public class ModuleProperties extends PropertiesBase {
 
     public static final String MODULE_PROPERTIES = "META-INF/lavender.properties";
     private static final String APP_PROPERTIES = "WEB-INF/lavender.properties";
-    public static final List<String> DEFAULT_INCLUDES = new ArrayList<>(Arrays.asList(
+    private static final List<String> DEFAULT_INCLUDES = new ArrayList<>(Arrays.asList(
             "**/*.gif", "**/*.png", "**/*.jpg", "**/*.jpeg", "**/*.ico", "**/*.swf", "**/*.css", "**/*.js"));
 
     public static Filter defaultFilter() {
         return new Filter().include(DEFAULT_INCLUDES);
     }
 
-    public static ModuleProperties loadNode(boolean prod, Node root, Node pominfo) throws IOException {
-        return ModuleProperties.parse(prod, root.readProperties(), pominfo.readProperties());
-    }
-
-    public static ModuleProperties loadModuleOpt(boolean prod, Node root) throws IOException {
-        Node src;
-
-        if (root == null) {
-            return null;
-        }
-        src = root.join(ModuleProperties.MODULE_PROPERTIES);
-        if (!src.exists()) {
-            return null;
-        }
-        return ModuleProperties.parse(prod, src.readProperties(), pominfoOpt(root));
-    }
+    //--
 
     public static ModuleProperties loadApp(boolean prod, Node webapp, List<String> legacy) throws IOException {
         Node src;
@@ -95,6 +80,23 @@ public class ModuleProperties extends PropertiesBase {
         LOG.info("legacy modules: " + str);
         legacy.addAll(Separator.COMMA.split(str));
         return parse(prod, properties, pominfo);
+    }
+
+    public static ModuleProperties loadModule(boolean prod, Node root, Node pominfo) throws IOException {
+        return ModuleProperties.parse(prod, root.readProperties(), pominfo.readProperties());
+    }
+
+    public static ModuleProperties loadModuleOpt(boolean prod, Node root) throws IOException {
+        Node src;
+
+        if (root == null) {
+            return null;
+        }
+        src = root.join(ModuleProperties.MODULE_PROPERTIES);
+        if (!src.exists()) {
+            return null;
+        }
+        return ModuleProperties.parse(prod, src.readProperties(), pominfoOpt(root));
     }
 
     private static Properties pominfoOpt(Node root) throws IOException {
@@ -301,7 +303,7 @@ public class ModuleProperties extends PropertiesBase {
         return result;
     }
 
-    public static String toHex(byte ... bytes) {
+    private static String toHex(byte ... bytes) {
         StringBuilder builder;
 
         builder = new StringBuilder();
@@ -360,47 +362,5 @@ public class ModuleProperties extends PropertiesBase {
             LOG.info("fallback for url " + url + ": " + fallbackSource);
         }
         return fallbackSource != null ? fallbackSource : source;
-    }
-
-    //--
-
-    /** To properly make jars available as a module, I have to load them into memory when the jar is itself packaged into a war. */
-    public static Node[] loadStreamNodes(Node jar, String ... names) throws IOException {
-        World world;
-        int count;
-        Node[] result;
-        ZipEntry entry;
-        String path;
-        Node dest;
-        int idx;
-
-        world = jar.getWorld();
-        count = 0;
-        result = new Node[names.length];
-        try (ZipInputStream src = new ZipInputStream(jar.newInputStream())) {
-            while ((entry = src.getNextEntry()) != null) {
-                path = entry.getName();
-                idx = indexOf(names, path);
-                if (idx != -1) {
-                    count++;
-                    dest = world.memoryNode();
-                    result[idx] = dest;
-                    world.getBuffer().copy(src, dest);
-                    if (count == names.length) {
-                        break;
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    private static int indexOf(String[] all, String element) {
-        for (int i = 0; i < all.length; i++) {
-            if (element.equals(all[i])) {
-                return i;
-            }
-        }
-        return -1;
     }
 }
