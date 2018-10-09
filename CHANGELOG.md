@@ -11,7 +11,6 @@
   * use etags only (based on Resource.getContentId), last-modified header is gone
 
 * cli
-  * changed terminology: system properties are now called host properties (to better distinguish them from Java's system properties)
   * dumped `-lastconfig` switch, it was not used by puc, and you can now reconfigure `network` in the host properties
   * generalized `svn` command to `scm`; the first argument is now the scm name defined in the host properties
   * simplified command line by aligning the arguments passed to the various publishing commands:
@@ -43,6 +42,7 @@
 
 * admin configuration cleanup
   * system properties -> host properties
+    * changed terminology: system properties are now called host properties (to better distinguish them from Java's system properties)
     * renamed `lavender.properties` to `lavender/host.properties`; also renamed the corresponding system property `lavender.properties` to `lavender.hostproperties`
       and the environment variable `LAVENDER_PROPERTIES` to `LAVENDER_HOSTPROPERTIES`
     * location of network.xml is configurable now
