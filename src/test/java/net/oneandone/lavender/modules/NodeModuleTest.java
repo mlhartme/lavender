@@ -18,13 +18,10 @@ package net.oneandone.lavender.modules;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
-import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.xml.Xml;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -34,7 +31,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 public class NodeModuleTest {
     private static World WORLD;

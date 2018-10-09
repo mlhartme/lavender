@@ -22,10 +22,8 @@ import net.oneandone.lavender.modules.Resource;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
-import net.oneandone.sushi.xml.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -39,7 +37,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

@@ -21,8 +21,6 @@ import net.oneandone.lavender.config.HostProperties;
 import net.oneandone.lavender.config.Pool;
 import net.oneandone.lavender.modules.Distributor;
 import net.oneandone.sushi.fs.file.FileNode;
-import net.oneandone.sushi.xml.XmlException;
-import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

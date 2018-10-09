@@ -19,7 +19,6 @@ import net.oneandone.lavender.config.PropertiesBase;
 import net.oneandone.lavender.config.Secrets;
 import net.oneandone.sushi.fs.FileNotFoundException;
 import net.oneandone.sushi.fs.Node;
-import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.util.Separator;
@@ -38,8 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 /** represents module (or application module) properties */
 public class ModuleProperties extends PropertiesBase {

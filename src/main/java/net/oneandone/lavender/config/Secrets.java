@@ -15,10 +15,7 @@
  */
 package net.oneandone.lavender.config;
 
-import com.sun.jna.platform.win32.Netapi32Util;
 import net.oneandone.sushi.fs.Node;
-import net.oneandone.sushi.fs.World;
-import net.oneandone.sushi.fs.svn.SvnNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
