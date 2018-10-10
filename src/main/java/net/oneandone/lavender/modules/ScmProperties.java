@@ -72,6 +72,7 @@ public class ScmProperties {
         this.source = source;
     }
 
+    /** @param jarConfig null when creating the application module or a temporary module for the scm command */
     public Module create(FileNode cacheDir, boolean prod, Secrets secrets, PustefixJarConfig jarConfig) throws IOException {
         World world;
         final FileNode checkout;
