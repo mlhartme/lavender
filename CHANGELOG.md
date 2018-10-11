@@ -68,9 +68,10 @@
     * renamed docroot docroot to docroot documents
     * merge aliases into docroot
 
-* java 10 fixes
-  * fixed hardcoded references to com.sun.zipfs 
+* added java 11 support
+  * fixed hardcoded references to com.sun.zipfs
   * added explicit javax.xml.bind dependencies
+  * launcher adds the respective java 9+ options when $JAVA_MODULES is defined
 
 * dependency updates:
   * sushi 3.1.6 to 3.1.7

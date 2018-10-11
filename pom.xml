@@ -247,13 +247,14 @@
         <configuration>
           <name>lavender</name>
           <main>net.oneandone.lavender.cli.Main</main>
+          <extensions>
+            <extension>if [ ! -z "$JAVA_MODULES" ] ; then</extension>
+            <extension>  OPTIONS="--illegal-access=deny --add-exports=java.base/sun.security.ssl=ALL-UNNAMED $OPTIONS"</extension><!-- TODO: svnkit needs access to sun.security.ssl -->
+            <extension>fi</extension>
+          </extensions>
           <options>-Djava.awt.headless=true</options>
           <remove>META-INF/DEPENDENCIES, META-INF/NOTICE, META-INF/LICENSE.txt, META-INF/NOTICE.txt, META-INF/LICENSE, META-INF/wsd.properties, META-INF/pominfo.properties</remove>
           <equal>com/jcraft/jsch/agentproxy/**/*</equal>
-
-          <!-- for upload -->
-          <symlink>${env.TOWER_TOOLS}/bin/lavender</symlink>
-          <target>${env.TOWER_TOOLS}/lavender</target>
         </configuration>
         <executions>
           <execution>
