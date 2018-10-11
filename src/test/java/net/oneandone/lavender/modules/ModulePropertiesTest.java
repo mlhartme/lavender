@@ -67,7 +67,7 @@ public class ModulePropertiesTest {
         props = new Properties();
         props.put("pustefix.relative", "relative");
         props.put("pustefix.excludes", "**/*");
-        props.put("svn.foo", "svn");
+        props.put("svn.foo", "someurl");
         props.put("svn.foo.targetPathPrefix", "prefix");
         props.put("svn.foo.lavendelize", "false");
         props.put("svn.foo.relative", "sub");
@@ -77,8 +77,8 @@ public class ModulePropertiesTest {
         assertEquals("foo", config.name);
         assertFalse(config.lavendelize);
         assertEquals("prefix", config.targetPathPrefix);
-        assertEquals("svn", config.connectionProd);
-        assertEquals("svn", config.connectionDevel);
+        assertEquals("scm:svn:someurl", config.connectionProd);
+        assertEquals("scm:svn:someurl", config.connectionDevel);
     }
 
     @Test(expected = IllegalArgumentException.class)

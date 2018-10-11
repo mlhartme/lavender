@@ -2,6 +2,16 @@
 
 ### 2.7.0 (pending)
 
+#### rc3
+
+* work-around for application-parent bug: automatically prepend missing scm:svn: to prod urls (rc2 did this for devel urls only)
+
+#### rc2
+
+* fix module name for scm commands
+
+#### rc1
+
 * added support for bitbucket modules: derive you pom from at least frontend-parent 3.4.0 or application-parent-3.10.0;
   note that loading resources from the server does not see local changes that have not been pushed yet;
   * caution: Bitbucket passwords do not equal intranet passwords; it's usually not defined because ssh is used for cloning a repository,
