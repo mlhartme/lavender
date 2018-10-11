@@ -2,6 +2,10 @@
 
 ### 2.7.0 (pending)
 
+#### rc4
+
+* fixed permissions for svn cache files
+
 #### rc3
 
 * work-around for application-parent bug: automatically prepend missing scm:svn: to prod urls (rc2 did this for devel urls only)

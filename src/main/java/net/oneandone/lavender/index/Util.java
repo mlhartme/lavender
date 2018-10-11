@@ -46,7 +46,8 @@ public class Util {
 
     private static int tmpNo = 1;
 
-    // TODO: the normal tmp file mechanism is allowed to create files with rw- --- --- permission - which is a problem here!
+    // Java's tmp file mechanism is allowed to create files with rw- --- --- permission.
+    // Use this method if you want tmp files created with regular user permissions.
     public static FileNode newTmpFile(FileNode parent) {
         FileNode file;
 

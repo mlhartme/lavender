@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.modules;
 
+import net.oneandone.lavender.index.Util;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.svn.SvnNode;
@@ -142,7 +143,7 @@ public class SvnModule extends Module<SvnEntry> {
         // * no corruption by crashed/killed processes
         // * works for multiple users as long as the cache directory has the proper permissions
         parent = cacheFile.getParent();
-        tmp = parent.createTempFile();
+        tmp = Util.newTmpFile(parent);
         try (Writer dest = tmp.newWriter()) {
             dest.write(Long.toString(moduleRevision));
             dest.write('\n');
