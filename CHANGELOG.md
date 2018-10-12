@@ -100,7 +100,7 @@
 
 
 ### 2.5.5 (2016-12-21)
-
+q
 * Added `remove-entry` command
 
 
