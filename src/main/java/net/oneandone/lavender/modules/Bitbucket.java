@@ -109,6 +109,10 @@ public class Bitbucket {
         this.parser = new JsonParser();
     }
 
+    public String getOrigin(String project, String repository) {
+        return api.getRoot().node("", null).join(project, repository).getUri().toString();
+    }
+
     public String latestCommit(String project, String repository, String branch) throws IOException {
         List<String> result;
 

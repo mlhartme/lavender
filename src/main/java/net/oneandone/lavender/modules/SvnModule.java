@@ -58,7 +58,7 @@ public class SvnModule extends Module<SvnEntry> {
     public SvnModule(String type, String name, FileNode cacheFile, SvnNode root,
                      long pinnedRevision, boolean lavendelize, String resourcePathPrefix,
                      String targetPathPrefix, Filter filter, PustefixJarConfig jarConfig) {
-        super(type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
+        super(root.getUri().toString(), type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
         this.cacheFile = cacheFile;
         this.root = root;
         this.pinnedRevision = pinnedRevision;

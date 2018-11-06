@@ -39,7 +39,7 @@ public class DistributorTest {
 
         world = World.createMinimal();
         dir = world.guessProjectHome(getClass()).join("src/test/module");
-        module = new NodeModule(Module.TYPE, "foo", true, "", "", world.filter().includeAll()) {
+        module = new NodeModule(dir, Module.TYPE, "foo", true, "", "", world.filter().includeAll()) {
             @Override
             protected Map<String, Node> loadEntries() throws Exception {
                 Map<String, Node> result;

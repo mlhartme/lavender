@@ -2,6 +2,11 @@
 
 ### 2.7.0 (pending)
 
+#### rc5
+
+* fixed md5 caching problem
+
+
 #### rc4
 
 * fixed permissions for svn cache files

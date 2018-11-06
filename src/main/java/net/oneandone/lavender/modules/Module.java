@@ -35,6 +35,8 @@ public abstract class Module<T> implements Iterable<Resource> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Module.class);
 
+    private final String origin;
+
     /** currently not used; might be used again in the future if we want to publish different types to different clusters/docroots */
     private final String type;
     /** usually Maven coordinates without version; used to name md5 cache files */
@@ -53,7 +55,8 @@ public abstract class Module<T> implements Iterable<Resource> {
 
     private long lastScan;
 
-    public Module(String type, String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
+    public Module(String origin, String type, String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
+        this.origin = origin;
         this.type = type;
         this.name = name;
         this.lavendelize = lavendelize;
@@ -64,6 +67,10 @@ public abstract class Module<T> implements Iterable<Resource> {
     }
 
     //--
+
+    public String getOrigin() {
+        return origin;
+    }
 
     public String getType() {
         return type;

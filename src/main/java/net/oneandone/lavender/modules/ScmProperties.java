@@ -86,7 +86,7 @@ public class ScmProperties {
                 // I could also check if the svnurl noted in the artifact matches the svn url of checkout,
                 // but that fails for frontend teams creating a branch without adjusting scm elements in the pom.
 
-                return new NodeModule(type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter) {
+                return new NodeModule(checkout, type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter) {
                     @Override
                     protected Map<String, Node> loadEntries() throws Exception {
                         Filter f;
@@ -152,7 +152,7 @@ public class ScmProperties {
         }
     }
 
-    public static String urlToCachename(String url) {
+    public static String urlToFilename(String url) {
         url = url.replace(":", "-");
         // CAUTION: place all files directly in the configured cache directory - sub directories would cause permission problems
         url = url.replace("/", "_");
@@ -168,7 +168,7 @@ public class ScmProperties {
             root = (SvnNode) world.node(secrets.withSecrets(URI.create(scm)));
             // make sure to get a proper error message - and to get it early
             root.checkDirectory();
-            cache = cacheDir.join("svn", urlToCachename(scm) + ".idx");
+            cache = cacheDir.join("svn", urlToFilename(scm) + ".idx");
             cache.getParent().mkdirsOpt();
             return new SvnModule(type, name, cache, root, pinnedRevision, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
         } catch (RuntimeException | IOException e) {

@@ -88,8 +88,8 @@ public abstract class NodeModule extends Module<Node> {
 
     //--
 
-    public NodeModule(String type, String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
-        super(type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
+    public NodeModule(Node origin, String type, String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
+        super(origin.getUri().toString(), type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
     }
 
     protected Resource createResource(String resourcePath, Node file) throws IOException {

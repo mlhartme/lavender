@@ -101,7 +101,7 @@ public abstract class PustefixJar {
                     }
                 }
 
-                return new NodeModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
+                return new NodeModule(jar, Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
                     public Map<String, Node> loadEntries() {
                         // no need to re-loadEntries files from memory
                         return files;
@@ -142,7 +142,7 @@ public abstract class PustefixJar {
                 } else {
                     jarLive = jarTmp;
                 }
-                return new NodeModule(Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
+                return new NodeModule(jarOrig, Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
                     @Override
                     protected Map<String, Node> loadEntries() throws IOException {
                         return files(filter, config, jarLive);

@@ -108,7 +108,10 @@ public class Distributor {
         boolean dataBuffered;
 
         count = 0;
-        cacheFile = cacheroot.join("md5", module.getName() + ".cache"); // it's save to base the file on the simple module name because cache lookup always includes the content id
+        // it's not save to base the file on the simple module name even though lookup always includes the content id --
+        // different modules may have the same name (webapp!), and both of them may container different files at the same path with the
+        // same contentId. This happend for "vi-presender-domain-new.png"
+        cacheFile = cacheroot.join("md5", ScmProperties.urlToFilename(module.getOrigin()) + ".cache");
         try (Md5Cache cache = Md5Cache.loadOrCreate(cacheFile)) {
             for (Resource resource : module) {
                 buffer.reset();
