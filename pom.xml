@@ -248,6 +248,15 @@
           <name>lavender</name>
           <main>net.oneandone.lavender.cli.Main</main>
           <extensions>
+            <extension>if [ -z $JAVA_MODULES ] ; then</extension>
+            <!-- takes less than 1/10 of a second: -->
+            <extension>  export JAVA_VERSION=$(java -version 2>&amp;1 | head -n 1 | cut -f 3 -d ' ' | cut -f 2 -d '"')</extension>
+            <extension>  # echo java ${JAVA_VERSION}</extension>
+            <extension>  case "$JAVA_VERSION" in</extension>
+            <extension>    "1.8"*) export JAVA_MODULES=false ;;</extension>
+            <extension>    *) export JAVA_MODULES=true ;;</extension>
+            <extension>  esac</extension>
+            <extension>fi</extension>
             <extension>if [ "$JAVA_MODULES" != "false" ] ; then</extension>
             <extension>  OPTIONS="--illegal-access=deny --add-exports=java.base/sun.security.ssl=ALL-UNNAMED $OPTIONS"</extension><!-- TODO: svnkit needs access to sun.security.ssl -->
             <extension>fi</extension>
