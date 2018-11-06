@@ -249,6 +249,7 @@
           <main>net.oneandone.lavender.cli.Main</main>
           <extensions>
             <extension>if [ -z $JAVA_MODULES ] ; then</extension>
+            <!-- auto-detect; see https://www.oracle.com/technetwork/java/javase/versioning-naming-139433.html -->
             <!-- takes less than 1/10 of a second: -->
             <extension>  export JAVA_VERSION=$(java -version 2>&amp;1 | head -n 1 | cut -f 3 -d ' ' | cut -f 2 -d '"')</extension>
             <extension>  # echo java ${JAVA_VERSION}</extension>
