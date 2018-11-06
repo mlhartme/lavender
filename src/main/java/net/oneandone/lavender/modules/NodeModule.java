@@ -50,7 +50,7 @@ public abstract class NodeModule extends Module<Node> {
             pustefixJar = PustefixJar.forNodeOpt(prod, jar, rootConfig);
             if (pustefixJar != null) {
                 if (legacy.contains(pustefixJar.config.getModuleName())) {
-                    result.add(pustefixJar.createModule(ModuleProperties.defaultFilter()));
+                    result.add(pustefixJar.createLegacyModule(ModuleProperties.defaultFilter()));
                 } else {
                     if (pustefixJar.moduleProperties != null) {
                         pustefixJar.moduleProperties.createModules(cache, prod, secrets, result, pustefixJar.config);
@@ -77,7 +77,7 @@ public abstract class NodeModule extends Module<Node> {
         for (Node<?> jar : webapp.find("WEB-INF/lib/*.jar")) {
             pustefixJar = PustefixJar.forNodeOpt(true, jar, rootConfig);
             if (pustefixJar != null && pustefixJar.moduleProperties == null) {
-                module = pustefixJar.createModule(ModuleProperties.defaultFilter());
+                module = pustefixJar.createLegacyModule(ModuleProperties.defaultFilter());
                 if (!module.loadEntries().isEmpty()) {
                     result.add(module.getName());
                 }
@@ -89,7 +89,11 @@ public abstract class NodeModule extends Module<Node> {
     //--
 
     public NodeModule(Node origin, String type, String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
-        super(origin.getUri().toString(), type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
+        this(origin.getUri().toString(), type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
+    }
+
+    public NodeModule(String origin, String type, String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
+        super(origin, type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
     }
 
     protected Resource createResource(String resourcePath, Node file) throws IOException {

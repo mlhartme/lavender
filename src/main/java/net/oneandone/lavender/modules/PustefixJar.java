@@ -75,7 +75,7 @@ public abstract class PustefixJar {
         }
         return new PustefixJar(config, moduleProperties, hasResourceIndex) {
             @Override
-            public Module createModule(Filter filter) throws IOException {
+            public Module createLegacyModule(Filter filter) throws IOException {
                 World world;
                 ZipEntry entry;
                 String path;
@@ -101,7 +101,7 @@ public abstract class PustefixJar {
                     }
                 }
 
-                return new NodeModule(jar, Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
+                return new NodeModule(jar.getName() /* this is the artifact name with the version */, Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
                     public Map<String, Node> loadEntries() {
                         // no need to re-loadEntries files from memory
                         return files;
@@ -132,7 +132,7 @@ public abstract class PustefixJar {
         hasResourceIndex = exploded.join(RESOURCE_INDEX).exists();
         return new PustefixJar(config, moduleProperties, hasResourceIndex) {
             @Override
-            public Module createModule(Filter filter) throws IOException {
+            public Module createLegacyModule(Filter filter) throws IOException {
                 Node jarTmp;
                 Node jarLive;
 
@@ -142,7 +142,7 @@ public abstract class PustefixJar {
                 } else {
                     jarLive = jarTmp;
                 }
-                return new NodeModule(jarOrig, Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
+                return new NodeModule(jarOrig.getName(), Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
                     @Override
                     protected Map<String, Node> loadEntries() throws IOException {
                         return files(filter, config, jarLive);
@@ -239,6 +239,9 @@ public abstract class PustefixJar {
         this.hasResourceIndex = hasResourceIndex;
     }
 
-    /** @return an embedded module that servers all resources from the jar itself */
-    public abstract Module createModule(Filter filter) throws IOException;
+    /**
+     * @return an embedded module that serves all resources from the jar itself. Caching for this module is based on the jar file name,
+     * i.e. the artifact and the version
+     */
+    public abstract Module createLegacyModule(Filter filter) throws IOException;
 }
