@@ -1,34 +1,6 @@
 ## Changelog 
 
-### 2.7.0 (pending)
-
-#### rc6
-
-* fixed source location for new descriptors
-* dumped live support for embedded modules (to simplify the code)
-* legacy option is optional now
-* secrets path separator is a comma now
-
-
-#### rc5 (2018-11-06)
-
-* fixed md5 caching problem
-* launch with --illegal-access=deny when running on Java 9+
-
-
-#### rc4
-
-* fixed permissions for svn cache files
-
-#### rc3
-
-* work-around for application-parent bug: automatically prepend missing scm:svn: to prod urls (rc2 did this for devel urls only)
-
-#### rc2
-
-* fix module name for scm commands
-
-#### rc1
+### 2.7.0 (2018-11-07)
 
 * added support for bitbucket modules: derive you pom from at least frontend-parent 3.4.0 or application-parent-3.10.0;
   note that loading resources from the server does not see local changes that have not been pushed yet;
