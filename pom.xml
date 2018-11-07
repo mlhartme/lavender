@@ -24,6 +24,7 @@
   </scm>
 
   <properties>
+    <checkstyle.skip>true</checkstyle.skip>
     <tomcat.version>7.0.90</tomcat.version>
   </properties>
 
