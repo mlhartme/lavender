@@ -17,6 +17,7 @@ package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.config.Secrets;
 import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.file.FileNode;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -44,9 +45,15 @@ public class BitbucketModuleIT {
         Module<?> module;
         Iterator<Resource> iter;
         Resource resource;
+        FileNode file;
 
+        file = WORLD.file("it.secrets");
+        if (!file.exists() && file.getParent().equals("checkout")) {
+            // release build
+            file = file.getParent().getParent().getParent().join(file.getName());
+        }
         secrets = new Secrets();
-        secrets.addAll(WORLD.file("it.secrets"));
+        secrets.addAll(file);
         module = new BitbucketModule(Bitbucket.create(WORLD, "bitbucket.1and1.org", secrets.lookup("git")),
                 "CISOOPS", "lavender-test-module", "master", "", "myname", false,
                 "", "", WORLD.filter().include("**/*.jpg", "**/*.css"), null);
