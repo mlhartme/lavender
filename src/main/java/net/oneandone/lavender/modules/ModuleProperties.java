@@ -168,7 +168,7 @@ public class ModuleProperties extends PropertiesBase {
                 if (!path.isEmpty() && !path.startsWith("/")) {
                     path = "/" + path;
                 }
-                scmsrc = fallback(scmurlProd, source);
+                scmsrc = fallback(scmurlProd, source == null ? null : join(source, path));
                 result.configs.add(
                         new ScmProperties(
                                 prefix.substring(prefix.indexOf('.') + 1),

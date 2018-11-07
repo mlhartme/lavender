@@ -4,6 +4,7 @@
 
 #### rc6
 
+* fixed source location for new descriptors
 * dumped live support for embedded modules (to simplify the code)
 * legacy option is optional now
 * secrets path separator is a comma now

@@ -25,6 +25,8 @@ import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.filter.Predicate;
 import net.oneandone.sushi.fs.svn.SvnNode;
 import net.oneandone.sushi.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -33,6 +35,8 @@ import java.util.Map;
 
 /** Factory for Scm modules. Stores scm info from the respective pom plus filter configuration */
 public class ScmProperties {
+    private static final Logger LOG = LoggerFactory.getLogger(ScmProperties.class);
+
     public static final String SVN_PREFIX = "svn.";
     public static final String SCM_PREFIX = "scm.";
 
@@ -83,6 +87,7 @@ public class ScmProperties {
         if (source != null) {
             checkout = world.file(source);
             if (checkout.isDirectory()) {
+                LOG.info(name + ": create source module: " + source);
                 // I could also check if the svnurl noted in the artifact matches the svn url of checkout,
                 // but that fails for frontend teams creating a branch without adjusting scm elements in the pom.
 
