@@ -33,14 +33,14 @@
 * added support for bitbucket modules: derive you pom from at least frontend-parent 3.4.0 or application-parent-3.10.0;
   note that loading resources from the server does not see local changes that have not been pushed yet;
   * caution: Bitbucket passwords do not equal intranet passwords; it's usually not defined because ssh is used for cloning a repository,
-    you can set it with
+    ask Frank Kleine how to set it
 
 * DevelopmentFilter
   * use etags only (based on Resource.getContentId), last-modified header is gone
 
 * cli
-  * dumped `-lastconfig` switch, it was not used by puc, and you can now reconfigure `network` in the host properties
-  * generalized `svn` command to `scm`; the first argument is now the scm name defined in the host properties
+  * dumped `-lastconfig` switch, it was not used by puc, and you can now reconfigure `network` in the host.properties
+  * generalized `svn` command to `scm`; the first argument is now the scm name defined in host.properties
   * simplified command line by aligning the arguments passed to the various publishing commands:
     * 'war': it's just `war cluster docroot index` now
     * 'scm': it's just `scm cluster docroot index` now
@@ -63,9 +63,8 @@
     * added `scm.foo.path` to configure the path formerly appended to the url or devel url (typically `src/main/resources`)
     * replaced `revision` by `tag`
     * dumped pustefix.* properties; thus, it's no longer possible to configure embedded resources;
-      report an error if legacy descriptors contain a matchable filter
-    * added a `legacy` property to configure old modules; use `lavender scan-legacy` to search a project for legacy modules;
-      lavender repos an error if a new descriptor does not define this property
+      lav ender reports an error if legacy descriptors contain a matchable filter
+    * added a `legacy` property to configure old modules; use `lavender scan-legacy` to search a project for legacy modules
   * pominfo.properties, lavender.properties and resource index are now required for lavender modules
 
 * admin configuration cleanup
@@ -73,9 +72,10 @@
     * changed terminology: system properties are now called host properties (to better distinguish them from Java's system properties)
     * renamed `lavender.properties` to `lavender/host.properties`; also renamed the corresponding system property `lavender.properties` to `lavender.hostproperties`
       and the environment variable `LAVENDER_PROPERTIES` to `LAVENDER_HOSTPROPERTIES`
-    * added `location` property to configure the location of the network.xml
-    * instead of a single svn url, you can now configure a map of urls (including git urls)
-    * configurable secrets path: `secrets` defines a comma-separated (CAUTION: not colon, because that's used in fault file names) path where to search for secrets files; wildcard allowed
+    * added `network` property to configure the location of the network.xml
+    * instead of a single svn url, you can now configure a map of scm urls (including git urls)
+    * configurable secrets path: `secrets` defines a comma-separated (CAUTION: not colon, because that's used in fault file names) 
+      path where to search for secrets files; wildcard allowed
   * renamed net.xml to network.xml
   * in network.xml
     * renamed docroot type to docroot name
@@ -85,7 +85,7 @@
 * added java 11 support
   * fixed hardcoded references to com.sun.zipfs
   * added explicit javax.xml.bind dependencies
-  * launcher adds the respective java 9+ options when $JAVA_MODULES is defined
+  * launcher adds the respective java 9+ options when it its detected
 
 * dependency updates:
   * sushi 3.1.6 to 3.1.7
