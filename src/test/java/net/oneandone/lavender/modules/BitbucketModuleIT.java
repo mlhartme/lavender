@@ -48,9 +48,8 @@ public class BitbucketModuleIT {
         FileNode file;
 
         file = WORLD.file("it.secrets");
-        if (!file.exists() && file.getParent().equals("checkout")) {
-            // release build
-            file = file.getParent().getParent().getParent().join(file.getName());
+        if (!file.isFile()) {
+            throw new IOException("not found: " + file.getAbsolute());
         }
         secrets = new Secrets();
         secrets.addAll(file);
