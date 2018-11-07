@@ -125,14 +125,11 @@ public class ModuleProperties extends PropertiesBase {
         relative = eatOpt(properties, "pustefix.relative", null);
         if (!prod && thisMachine(pominfo.getProperty("ethernet"))) {
             source = pominfo.getProperty("basedir");
-            if (relative != null) {
-                source = join(source, relative);
-            }
         } else {
             source = null;
         }
 
-        result = new ModuleProperties(source);
+        result = new ModuleProperties();
         if (relative != null) {
             // legacy descriptor
             checkUnmatchable(eatFilter(properties, "pustefix", DEFAULT_INCLUDES));
@@ -149,7 +146,7 @@ public class ModuleProperties extends PropertiesBase {
                 }
 
                 tag = eatOpt(properties, prefix + ".revision", "-1");
-                scmsrc = eatLegacySvnSource(properties, prefix, source);
+                scmsrc = eatLegacySvnSource(properties, prefix, source == null ? null : join(source, relative));
                 scmsrc = fallback(scmurlProd, scmsrc);
                 result.configs.add(
                         new ScmProperties(
@@ -252,11 +249,9 @@ public class ModuleProperties extends PropertiesBase {
 
     //--
 
-    public final String embeddedSource;
     public final Collection<ScmProperties> configs;
 
-    public ModuleProperties(String embeddedSource) {
-        this.embeddedSource = embeddedSource;
+    public ModuleProperties() {
         this.configs = new ArrayList<>();
     }
 
@@ -266,11 +261,6 @@ public class ModuleProperties extends PropertiesBase {
             result.add(config.create(cache, prod, secrets, jarConfig));
         }
     }
-
-    public Node embeddedLive(Node root) {
-        return embeddedSource != null ? root.getWorld().file(embeddedSource) : root;
-    }
-
 
     //--
 

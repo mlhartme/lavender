@@ -133,15 +133,9 @@ public abstract class PustefixJar {
         return new PustefixJar(config, moduleProperties, hasResourceIndex) {
             @Override
             public Module createLegacyModule(Filter filter) throws IOException {
-                Node jarTmp;
                 Node jarLive;
 
-                jarTmp = prod ? jarOrig : moduleProperties.embeddedLive(jarOrig);
-                if (jarTmp.isFile()) {
-                    jarLive = ((FileNode) jarTmp).openJar();
-                } else {
-                    jarLive = jarTmp;
-                }
+                jarLive = jarOrig.isFile() ? jarOrig.openJar() : jarOrig;
                 return new NodeModule(jarOrig.getName(), Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
                     @Override
                     protected Map<String, Node> loadEntries() throws IOException {
