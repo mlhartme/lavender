@@ -2,9 +2,16 @@
 
 ### 2.7.0 (pending)
 
-#### rc5
+#### rc6
+
+* legacy option is optional now
+* secrets path separator is a comma now
+
+
+#### rc5 (2018-11-06)
 
 * fixed md5 caching problem
+* launch with --illegal-access=deny when running on Java 9+
 
 
 #### rc4
@@ -66,7 +73,7 @@
       and the environment variable `LAVENDER_PROPERTIES` to `LAVENDER_HOSTPROPERTIES`
     * added `location` property to configure the location of the network.xml
     * instead of a single svn url, you can now configure a map of urls (including git urls)
-    * configurable secrets path: `secrets` defines a colon-separated path where to search for secrets files; wildcard allowed
+    * configurable secrets path: `secrets` defines a comma-separated (CAUTION: not colon, because that's used in fault file names) path where to search for secrets files; wildcard allowed
   * renamed net.xml to network.xml
   * in network.xml
     * renamed docroot type to docroot name

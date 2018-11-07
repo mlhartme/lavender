@@ -78,11 +78,7 @@ public class ModuleProperties extends PropertiesBase {
                 throw new IOException("failed to check legacy applications: " + e.getMessage(), e);
             }
         } else {
-            str = PropertiesBase.eatOpt(properties, "legacy", null);
-            if (str == null) {
-                throw new IOException("missing 'legacy' property in your application's lavender.properties");
-            }
-            legacy.addAll(Separator.COMMA.split(str));
+            legacy.addAll(Separator.COMMA.split(PropertiesBase.eatOpt(properties, "legacy", "")));
         }
         LOG.info("legacy modules: " + legacy);
         return parse(prod, properties, pominfo);

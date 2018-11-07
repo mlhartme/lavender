@@ -72,7 +72,7 @@ public class HostProperties extends PropertiesBase {
         throw new IOException("cannot locate lavender properties");
     }
 
-    private static final Separator SECRETS_PATH_SEPRATOR = Separator.on(':').trim();
+    private static final Separator SECRETS_PATH_SEPRATOR = Separator.on(',').trim();
 
     private static HostProperties properties(Node file) throws IOException, URISyntaxException {
         java.util.Properties properties;
