@@ -56,7 +56,7 @@ public class HostProperties extends PropertiesBase {
         if (path != null) {
             return world.file(path);
         }
-        parent = world.locateClasspathItem(HostProperties.class).getParent();
+        parent = world.locateClasspathEntry(HostProperties.class).getParent();
         file = parent.join("host.properties");
         if (file.exists()) {
             return file;

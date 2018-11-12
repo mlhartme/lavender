@@ -1,5 +1,11 @@
 ## Changelog 
 
+### 2.7.1 (pending)
+
+* fixed launcher script Java Module detection: Java 1.7 does not have modules
+* update sushi 3.1.7 to 3.2.0
+
+
 ### 2.7.0 (2018-11-07)
 
 * added support for bitbucket modules: derive you pom from at least frontend-parent 3.4.0 or application-parent-3.10.0;

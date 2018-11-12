@@ -71,7 +71,7 @@
     <dependency>
       <groupId>net.oneandone</groupId>
       <artifactId>sushi</artifactId>
-      <version>3.1.7</version>
+      <version>3.2.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>net.oneandone</groupId>
@@ -255,7 +255,7 @@
             <extension>  export JAVA_VERSION=$(java -version 2&gt;&amp;1 | head -n 1 | cut -f 3 -d ' ' | cut -f 2 -d '"')</extension>
             <extension>  # echo java ${JAVA_VERSION}</extension>
             <extension>  case "$JAVA_VERSION" in</extension>
-            <extension>    "1.8"*) export JAVA_MODULES=false ;;</extension>
+            <extension>    "1."*) export JAVA_MODULES=false ;;</extension>
             <extension>    *) export JAVA_MODULES=true ;;</extension>
             <extension>  esac</extension>
             <extension>fi</extension>
