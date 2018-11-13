@@ -4,6 +4,7 @@
 
 * fixed launcher script Java Module detection: Java 1.7 does not have modules
 * update sushi 3.1.7 to 3.2.0
+* update lazy-foss-parent 1.0.2 to 1.0.3
 
 
 ### 2.7.0 (2018-11-07)
