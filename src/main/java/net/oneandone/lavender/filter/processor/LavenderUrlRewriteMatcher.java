@@ -35,25 +35,34 @@ import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.SOURCE;
 
 public enum LavenderUrlRewriteMatcher implements UrlRewriteMatcher {
 
-    IMG_MATCHER(SRC, p -> p.getTag() == IMG),
+    IMG_MATCHER(SRC, p -> p.getTag() == IMG, true),
     LINK_MATCHER(HREF, p -> p.getTag() == LINK &&
-            Arrays.asList("stylesheet", "icon", "shortcut icon").contains(p.getAttribute(REL))),
+            Arrays.asList("stylesheet", "icon", "shortcut icon").contains(p.getAttribute(REL)), false),
     SCRIPT_MATCHER(SRC, p -> p.getTag() == SCRIPT &&
-            (("text/javascript".equals(p.getAttribute(TYPE))) || !p.containsAttribute(TYPE))),
-    INPUT_MATCHER(SRC, p -> p.getTag() == INPUT && "image".equals(p.getAttribute(TYPE))),
-    A_MATCHER(HREF, p -> p.getTag() == A),
-    SOURCE_MATCHER(SRC, p -> p.getTag() == SOURCE),
-    FORM_MATCHER(ACTION, p -> p.getTag() == FORM),
-    IFRAME_MATCHER(SRC, p -> p.getTag() == IFRAME),
-    DATA_LAVENDER_MATCHER(DATA_LAVENDER_ATTR, p -> true);
+            (("text/javascript".equals(p.getAttribute(TYPE))) || !p.containsAttribute(TYPE)), false),
+    INPUT_MATCHER(SRC, p -> p.getTag() == INPUT && "image".equals(p.getAttribute(TYPE)), false),
+    A_MATCHER(HREF, p -> p.getTag() == A, false),
+    SOURCE_MATCHER(SRC, p -> p.getTag() == SOURCE, false),
+    FORM_MATCHER(ACTION, p -> p.getTag() == FORM, false),
+    IFRAME_MATCHER(SRC, p -> p.getTag() == IFRAME, false),
+    DATA_LAVENDER_MATCHER(DATA_LAVENDER_ATTR, p -> true, false);
 
 
     private final Predicate<HtmlElement> predicate;
     private final HtmlAttribute attributeToRewrite;
+    private final boolean ignoreData;
 
-    LavenderUrlRewriteMatcher(HtmlAttribute attributeToRewrite, Predicate<HtmlElement> rewritePredicate) {
+    LavenderUrlRewriteMatcher(HtmlAttribute attributeToRewrite, Predicate<HtmlElement> rewritePredicate, boolean ignoreData) {
         this.attributeToRewrite = attributeToRewrite;
         this.predicate = rewritePredicate;
+        this.ignoreData = ignoreData;
+    }
+
+    public boolean ignoreValue(String value) {
+        if (ignoreData && (value != null) && value.startsWith("data:")) {
+            return true;
+        }
+        return false;
     }
 
     @Override

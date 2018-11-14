@@ -181,6 +181,30 @@ public class HtmlProcessorTest {
     }
 
     @Test
+    public void testImgNormal() throws IOException {
+
+        String input = "<img src='/a/b/c' /><links href='/x/y/z' />";
+        String expected = "<img src='http://a.b.c' /><links href='/x/y/z' />";
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(expected, out.getBuffer().toString());
+    }
+
+    @Test
+    public void testImgData() throws IOException {
+
+        String input = "<img src='data:/a/b/c' /><links href='/x/y/z' />";
+        String expected = "<img src='data:/a/b/c' /><links href='/x/y/z' />";
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(expected, out.getBuffer().toString());
+    }
+
+    @Test
     public void testAllAtributes() throws IOException {
 
         String input = "<img href='aaa' rel='bbb' src='/a/b/c' type='ccc' style='ddd' zzz='zzz' />";

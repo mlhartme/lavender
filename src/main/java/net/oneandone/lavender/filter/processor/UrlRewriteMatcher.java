@@ -18,6 +18,7 @@ package net.oneandone.lavender.filter.processor;
 public interface UrlRewriteMatcher {
 
     boolean matches(HtmlElement htmlElement);
+    boolean ignoreValue(String value);
 
     HtmlAttribute getAttributeToRewrite();
 

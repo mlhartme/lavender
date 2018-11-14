@@ -2,6 +2,7 @@
 
 ### 2.7.1 (pending)
 
+* do not rewrite `img/@src` attributes if their value starts with `data:` (case sensitive) 
 * fixed launcher script Java Module detection: Java 1.7 does not have modules
 * update sushi 3.1.7 to 3.2.0
 * update lazy-foss-parent 1.0.2 to 1.0.3

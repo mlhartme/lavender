@@ -391,10 +391,16 @@ public class HtmlProcessor extends AbstractProcessor {
 
             if (attributeValue.attr == LavenderHtmlAttribute.STYLE) {
                 rewriteCss(attributeValue);
-            } else if (matchesRewriteUrl(currentTag, attributeValue.attr, attributes)) {
-                matchesRewriteUrl(attributeValue.getValue());
             } else {
-                out.write(attributeValue.getValue());
+                UrlRewriteMatcher matcher = lookupRewriteMatcher(currentTag, attributeValue.attr, attributes);
+                String value;
+
+                value = attributeValue.getValue();
+                if (matcher != null && !matcher.ignoreValue(value)) {
+                    matchesRewriteUrl(value);
+                } else {
+                    out.write(value);
+                }
             }
 
             index = attributeValue.end;
@@ -454,16 +460,15 @@ public class HtmlProcessor extends AbstractProcessor {
         return OTHER_HTML_ATTRIBUTE;
     }
 
-    private boolean matchesRewriteUrl(HtmlTag currentTag, HtmlAttribute currentAttribute,
-            List<HtmlAttributeValue> attributeValues) {
+    private UrlRewriteMatcher lookupRewriteMatcher(HtmlTag currentTag, HtmlAttribute currentAttribute, List<HtmlAttributeValue> attributeValues) {
         HtmlElement htmlElement = new HtmlElement(currentTag, attributeValues);
 
         for (UrlRewriteMatcher urlRewriteMatcher : urlRewriteMatchers) {
             if (currentAttribute == urlRewriteMatcher.getAttributeToRewrite() &&
                     urlRewriteMatcher.matches(htmlElement)) {
-                return true;
+                return urlRewriteMatcher;
             }
         }
-        return false;
+        return null;
     }
 }
