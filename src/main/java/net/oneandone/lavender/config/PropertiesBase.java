@@ -18,7 +18,7 @@ package net.oneandone.lavender.config;
 import java.util.Properties;
 
 /** represents module (or application module) properties */
-public class PropertiesBase {
+public abstract class PropertiesBase {
     public static boolean eatBoolean(Properties p, String key, boolean dflt) {
         String result;
 

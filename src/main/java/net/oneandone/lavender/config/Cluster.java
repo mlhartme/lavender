@@ -63,22 +63,22 @@ public class Cluster {
     }
 
 
-    public Host host(String name) {
+    public Host host(String hostName) {
         for (Host host : hosts) {
-            if (name.equals(host.getName())) {
+            if (hostName.equals(host.getName())) {
                 return host;
             }
         }
-        throw new IllegalArgumentException("host not found: " + name);
+        throw new IllegalArgumentException("host not found: " + hostName);
     }
 
-    public Docroot docroot(String name) {
+    public Docroot docroot(String docrootName) {
         for (Docroot docroot : docroots) {
-            if (name.equals(docroot.getName())) {
+            if (docrootName.equals(docroot.getName())) {
                 return docroot;
             }
         }
-        throw new IllegalArgumentException("docroot not found: " + name);
+        throw new IllegalArgumentException("docroot not found: " + docrootName);
     }
 
     public Cluster addLocalhost(FileNode basedir) throws IOException {
