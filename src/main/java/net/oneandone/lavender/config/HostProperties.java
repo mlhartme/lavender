@@ -86,7 +86,7 @@ public class HostProperties extends PropertiesBase {
 
         world = file.getWorld();
         properties = file.readProperties();
-        str = eatOpt(properties,"cache", null);
+        str = eatOpt(properties, "cache", null);
         if (str == null) {
             cache = world.getHome().join(".cache/lavender");
         } else {

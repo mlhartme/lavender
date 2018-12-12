@@ -121,8 +121,7 @@ public class CssProcessor extends AbstractProcessor {
         }
 
         // Handle quotes
-        if ((uriBuffer.charAt(start) == '\'' && uriBuffer.charAt(end - 1) == '\'') ||
-                (uriBuffer.charAt(start) == '"' && uriBuffer.charAt(end - 1) == '"')) {
+        if ((uriBuffer.charAt(start) == '\'' && uriBuffer.charAt(end - 1) == '\'') || (uriBuffer.charAt(start) == '"' && uriBuffer.charAt(end - 1) == '"')) {
             start++;
             end--;
         }

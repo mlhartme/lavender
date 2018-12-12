@@ -107,4 +107,7 @@ public class Main {
 
         return help.toString();
     }
+
+    private Main() {
+    }
 }

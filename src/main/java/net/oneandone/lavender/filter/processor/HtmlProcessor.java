@@ -467,8 +467,7 @@ public class HtmlProcessor extends AbstractProcessor {
         HtmlElement htmlElement = new HtmlElement(tag, attributeValues);
 
         for (UrlRewriteMatcher urlRewriteMatcher : urlRewriteMatchers) {
-            if (attribute == urlRewriteMatcher.getAttributeToRewrite() &&
-                    urlRewriteMatcher.matches(htmlElement)) {
+            if (attribute == urlRewriteMatcher.getAttributeToRewrite() && urlRewriteMatcher.matches(htmlElement)) {
                 return urlRewriteMatcher;
             }
         }

@@ -42,4 +42,6 @@ public class UriHelper {
         return resolved;
     }
 
+    private UriHelper() {
+    }
 }

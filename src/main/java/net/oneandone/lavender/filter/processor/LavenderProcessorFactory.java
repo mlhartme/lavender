@@ -50,8 +50,7 @@ public class LavenderProcessorFactory implements ProcessorFactory {
             }
         }
 
-        if(processor!=null)
-        {
+        if (processor != null) {
             processor.setRewriteEngine(rewriteEngine, baseURI, contextPath);
         }
 
