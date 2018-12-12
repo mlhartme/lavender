@@ -131,16 +131,10 @@ public class ScmProperties {
             }
             // fall-through
         }
-        if (prod) {
-            scm = connectionProd;
-            pinnedRevision = tag.isEmpty() ? -1 : Long.parseLong(tag);
-        } else {
-            scm = connectionDevel;
-            // devel url is never pinned:
-            pinnedRevision = -1;
-        }
+        scm = prod ? connectionProd : connectionDevel;
         scm = Strings.removeLeft(scm, "scm:");
         if (scm.startsWith("svn:")) {
+            pinnedRevision = !prod || tag.isEmpty() ? -1 : Long.parseLong(tag);
             return createSvnModule(cacheDir, jarConfig, world, scm + path, secrets, pinnedRevision);
         } else if (scm.startsWith("git:")) {
             return createBitbucketModule(cacheDir.getWorld(), scm, secrets, accessPathPrefix(path), jarConfig);

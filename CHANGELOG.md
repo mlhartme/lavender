@@ -2,6 +2,7 @@
 
 ### 2.7.2 (pending)
 
+* fixed NumberFormatException when creating released git modules
 * update lazy-foss-parent 1.0.4 to 1.2.0
 
 
