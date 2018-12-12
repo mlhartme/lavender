@@ -4,7 +4,7 @@
   <parent>
     <groupId>net.oneandone.maven.poms</groupId>
     <artifactId>lazy-foss-parent</artifactId>
-    <version>1.0.4</version>
+    <version>1.1.0</version>
     <relativePath />
   </parent>
 
@@ -225,22 +225,6 @@
 
   <build>
     <plugins>
-      <plugin>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <configuration>
-          <rules>
-            <banDuplicateClasses>
-              <findAllDuplicates>true</findAllDuplicates>
-              <ignoreClasses>
-                <ignoreClass>org.apache.http.annotation.*</ignoreClass>
-                <ignoreClass>org.hamcrest.*</ignoreClass>
-                <ignoreClass>org.apache.PeriodicEventListener</ignoreClass>
-                <ignoreClass>org.apache.AnnotationProcessor</ignoreClass>
-               </ignoreClasses>
-            </banDuplicateClasses>
-          </rules>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>net.oneandone.maven.plugins</groupId>
         <artifactId>application</artifactId>

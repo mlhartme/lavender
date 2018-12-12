@@ -1,5 +1,10 @@
 ## Changelog 
 
+### 2.7.2 (pending)
+
+* update lazy-foss-parent 1.0.4 to 1.1.0
+
+
 ### 2.7.1 (2018-11-22)
 
 * do not rewrite `img/@src` attributes if their value starts with `data:` (case sensitive) 
