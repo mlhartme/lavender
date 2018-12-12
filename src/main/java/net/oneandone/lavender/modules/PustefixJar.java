@@ -111,7 +111,8 @@ public abstract class PustefixJar {
                     }
                     path = entry.getName();
                     if (!entry.isDirectory()) {
-                        if ((resourcePath = config.getPath(path)) != null && filter.matches(path)) {
+                        resourcePath = config.getPath(path);
+                        if (resourcePath != null && filter.matches(path)) {
                             child = root.join(path);
                             child.getParent().mkdirsOpt();
                             world.getBuffer().copy(src, child);

@@ -43,8 +43,8 @@ import java.util.Map;
 public class ProductionFilter implements Filter {
     private static final Logger LOG = LoggerFactory.getLogger(ProductionFilter.class);
 
-    World world;
-    LavenderProcessorFactory processorFactory;
+    private World world;
+    private LavenderProcessorFactory processorFactory;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
