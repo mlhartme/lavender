@@ -104,7 +104,11 @@ public abstract class PustefixJar {
                 root = world.getMemoryFilesystem().root().node(UUID.randomUUID().toString(), null).mkdir();
                 src = new ZipInputStream(jar.newInputStream());
                 files = new HashMap<>();
-                while ((entry = src.getNextEntry()) != null) {
+                while (true) {
+                    entry = src.getNextEntry();
+                    if (entry == null) {
+                        break;
+                    }
                     path = entry.getName();
                     if (!entry.isDirectory()) {
                         if ((resourcePath = config.getPath(path)) != null && filter.matches(path)) {
