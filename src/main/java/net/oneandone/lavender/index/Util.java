@@ -32,7 +32,7 @@ public class Util {
         }
     }
 
-    public static synchronized byte[] md5(byte ... data) {
+    public static synchronized byte[] md5(byte... data) {
         return md5(data, data.length);
     }
 

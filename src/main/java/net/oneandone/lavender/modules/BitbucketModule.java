@@ -33,6 +33,7 @@ public class BitbucketModule extends Module<BitbucketEntry> {
 
     private String loadedRevision;
 
+    // CHECKSTYLE:OFF
     public BitbucketModule(Bitbucket bitbucket, String project, String repository, String branch, String accessPathPrefix,
                            String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter, PustefixJarConfig config) {
         super(bitbucket.getOrigin(project, repository), Module.TYPE, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
@@ -49,6 +50,7 @@ public class BitbucketModule extends Module<BitbucketEntry> {
 
         this.loadedRevision = null;
     }
+    // CHECKSTYLE:ON
 
     @Override
     protected Map<String, BitbucketEntry> loadEntries() throws IOException {

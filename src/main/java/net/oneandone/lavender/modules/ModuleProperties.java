@@ -298,7 +298,7 @@ public class ModuleProperties extends PropertiesBase {
         return result;
     }
 
-    private static String toHex(byte ... bytes) {
+    private static String toHex(byte... bytes) {
         StringBuilder builder;
 
         builder = new StringBuilder();

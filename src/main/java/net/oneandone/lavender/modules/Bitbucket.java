@@ -189,7 +189,7 @@ public class Bitbucket {
         void add(JsonElement element);
     }
 
-    public void getPaged(Collector collector, HttpNode node, String ... params) throws IOException {
+    public void getPaged(Collector collector, HttpNode node, String... params) throws IOException {
         HttpNode req;
         int start;
         JsonObject response;
@@ -210,7 +210,7 @@ public class Bitbucket {
         }
     }
 
-    private static String query(int start, int limit, String ... params) {
+    private static String query(int start, int limit, String... params) {
         StringBuilder result;
 
         result = new StringBuilder("start=" + start + "&limit=" + limit);

@@ -116,7 +116,8 @@ public abstract class PustefixJar {
                     }
                 }
 
-                return new NodeModule(jar.getName() /* this is the artifact name with the version */, Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
+                return new NodeModule(jar.getName() /* this is the artifact name with the version */, Module.TYPE, config.getModuleName(),
+                        true, config.getResourcePathPrefix(), "", filter) {
                     public Map<String, Node> loadEntries() {
                         // no need to re-loadEntries files from memory
                         return files;
@@ -197,7 +198,7 @@ public abstract class PustefixJar {
     //--
 
     /** To properly make jars available as a module, I have to load them into memory when the jar is itself packaged into a war. */
-    private static Node[] loadStreamNodes(Node jar, String ... names) throws IOException {
+    private static Node[] loadStreamNodes(Node jar, String... names) throws IOException {
         World world;
         int count;
         Node[] result;

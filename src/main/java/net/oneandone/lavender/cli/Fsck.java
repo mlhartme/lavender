@@ -289,7 +289,7 @@ public class Fsck extends Base {
         return problem;
     }
 
-    public static List<String> find(Node base, String ... args) throws IOException {
+    public static List<String> find(Node base, String... args) throws IOException {
         String str;
         List<String> lst;
 
@@ -307,7 +307,7 @@ public class Fsck extends Base {
         return lst;
     }
 
-    private static String exec(Node dir, String ... cmd) throws IOException {
+    private static String exec(Node dir, String... cmd) throws IOException {
         if (dir instanceof SshNode) {
             try {
                 return ((SshNode) dir).getRoot().exec(Strings.append(new String[] { "cd", "/" + dir.getPath(), "&&" }, escape(cmd)));

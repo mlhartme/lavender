@@ -37,7 +37,7 @@ public class Main {
         }
     }
 
-    public static int doMain(Globals globals, String ... args) throws IOException {
+    public static int doMain(Globals globals, String... args) throws IOException {
         Console console;
         Cli cli;
 

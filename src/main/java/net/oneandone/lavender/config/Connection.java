@@ -74,7 +74,7 @@ public class Connection implements AutoCloseable {
         return host;
     }
 
-    public Node join(String ... names) {
+    public Node join(String... names) {
         return root.join(names);
     }
 
