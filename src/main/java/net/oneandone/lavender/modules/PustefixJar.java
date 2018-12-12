@@ -211,7 +211,11 @@ public abstract class PustefixJar {
         count = 0;
         result = new Node[names.length];
         try (ZipInputStream src = new ZipInputStream(jar.newInputStream())) {
-            while ((entry = src.getNextEntry()) != null) {
+            while (true) {
+                entry = src.getNextEntry();
+                if (entry == null) {
+                    break;
+                }
                 path = entry.getName();
                 idx = indexOf(names, path);
                 if (idx != -1) {

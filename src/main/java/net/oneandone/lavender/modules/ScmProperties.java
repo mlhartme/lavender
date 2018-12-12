@@ -55,8 +55,10 @@ public class ScmProperties {
     /** Absolute path relative to local sources for this module, null if not available */
     public final String source;
 
-    public ScmProperties(String name, Filter filter, String connectionProd, String connectionDevel, String tag, String path, String type, boolean lavendelize, String resourcePathPrefix,
-                         String targetPathPrefix, String source) {
+    /// CHECKSTYLE:OFF
+    public ScmProperties(String name, Filter filter, String connectionProd, String connectionDevel, String tag, String path, String type,
+                         boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, String source) {
+        /// CHECKSTYLE:ON
         if (connectionProd == null) {
             throw new NullPointerException();
         }
@@ -111,15 +113,15 @@ public class ScmProperties {
                             }
 
                             public void select(Node node, boolean isLink) {
-                                String path;
+                                String relative;
 
-                                path = node.getRelative(checkout);
-                                if (filter.matches(path)) {
+                                relative = node.getRelative(checkout);
+                                if (filter.matches(relative)) {
                                     if (jarConfig != null) {
-                                        path = jarConfig.getPath(path);
+                                        relative = jarConfig.getPath(relative);
                                     }
-                                    if (path != null) {
-                                        result.put(path, node);
+                                    if (relative != null) {
+                                        result.put(relative, node);
                                     }
                                 }
                             }
@@ -181,7 +183,7 @@ public class ScmProperties {
                                                   String accessPathPrefix, PustefixJarConfig config) throws IOException {
         URI uri;
         UsernamePassword up;
-        String path;
+        String uriPath;
         String project;
         String repository;
         int idx;
@@ -192,10 +194,10 @@ public class ScmProperties {
             throw new IllegalArgumentException("git uri expected, got " + urlstr);
         }
         uri = URI.create(uri.getSchemeSpecificPart());
-        path = Strings.removeLeft(uri.getPath(), "/");
-        idx = path.indexOf('/');
-        project = path.substring(0, idx);
-        repository = Strings.removeRight(path.substring(idx + 1), ".git");
+        uriPath = Strings.removeLeft(uri.getPath(), "/");
+        idx = uriPath.indexOf('/');
+        project = uriPath.substring(0, idx);
+        repository = Strings.removeRight(uriPath.substring(idx + 1), ".git");
         return new BitbucketModule(Bitbucket.create(world, uri.getHost(), up),
                 project, repository, tag.isEmpty() ? "master" : tag, accessPathPrefix, name, lavendelize, resourcePathPrefix,
                 targetPathPrefix, filter, config);
