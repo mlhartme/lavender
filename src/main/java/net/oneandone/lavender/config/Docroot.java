@@ -113,7 +113,7 @@ public class Docroot {
 
     /** @return all indexes without the all index */
     public List<? extends Node> indexList(Connection connection) throws ListException, DirectoryNotFoundException {
-        List result;
+        List<? extends Node> result;
         Iterator<? extends Node> iter;
 
         result = connection.join(indexes).list();

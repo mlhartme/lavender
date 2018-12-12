@@ -27,8 +27,8 @@ import static org.junit.Assert.assertEquals;
 public class WriterOutputStreamTest {
     private static final String UTF_8 = "UTF-8";
 
-    protected WriterOutputStream wos;
-    protected StringWriter result;
+    private WriterOutputStream wos;
+    private StringWriter result;
 
     @Before
     public void setup() {

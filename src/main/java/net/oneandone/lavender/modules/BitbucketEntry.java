@@ -39,7 +39,7 @@ public class BitbucketEntry {
 
         if (obj instanceof BitbucketEntry) {
             entry = (BitbucketEntry) obj;
-            return publicPath.equals(entry.publicPath) && accessPath.equals(entry.accessPath) && contentId == entry.contentId;
+            return publicPath.equals(entry.publicPath) && accessPath.equals(entry.accessPath) && contentId.equals(entry.contentId);
         }
         return false;
     }

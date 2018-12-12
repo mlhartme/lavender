@@ -57,10 +57,7 @@ public enum LavenderUrlRewriteMatcher implements UrlRewriteMatcher {
     }
 
     public boolean ignoreValue(String value) {
-        if (ignoreData && (value != null) && value.startsWith("data:")) {
-            return true;
-        }
-        return false;
+        return ignoreData && (value != null) && value.startsWith("data:");
     }
 
     @Override

@@ -146,7 +146,7 @@ public class LavendelizeHttpServletResponsePT {
         PrintWriter writer = response.getWriter();
         writer.write(content);
         writer.close();
-        assertEquals(content, wrappedResponse.getResult().toString());
+        assertEquals(content, wrappedResponse.getResult());
     }
 
     class OutputStreamRunner implements Runnable {

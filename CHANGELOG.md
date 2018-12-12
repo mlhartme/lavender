@@ -5,6 +5,7 @@
 * fixed NumberFormatException when creating released git modules
 * update lazy-foss-parent 1.0.4 to 1.2.0
 * checkstyle fixes
+* IntelliJ code inspection fixes
 
 
 ### 2.7.1 (2018-11-22)

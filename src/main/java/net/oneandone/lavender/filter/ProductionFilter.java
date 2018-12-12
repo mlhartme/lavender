@@ -43,11 +43,12 @@ import java.util.Map;
 public class ProductionFilter implements Filter {
     private static final Logger LOG = LoggerFactory.getLogger(ProductionFilter.class);
 
-    private World world;
     private LavenderProcessorFactory processorFactory;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
+        World world;
+
         try {
             world = World.create(false);
         } catch (IOException e) {

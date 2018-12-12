@@ -58,8 +58,8 @@ public class CssProcessor extends AbstractProcessor {
         /** The default state. */
         OTHER(false, ')');
 
-        private boolean strict;
-        private char[] chars;
+        private final boolean strict;
+        private final char[] chars;
 
         State(boolean strict, char... chars) {
             this.strict = strict;
