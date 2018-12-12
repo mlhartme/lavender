@@ -49,17 +49,17 @@ public class DevelopmentFilter implements Filter {
     private List<Module> modules;
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig init) throws ServletException {
         long started;
         World world;
         HostProperties properties;
         Node webapp;
 
         started = System.currentTimeMillis();
-        this.filterConfig = filterConfig;
+        this.filterConfig = init;
         try {
             world = World.create(false);
-            webapp = world.file(filterConfig.getServletContext().getRealPath(""));
+            webapp = world.file(init.getServletContext().getRealPath(""));
             properties = HostProperties.load(HostProperties.file(world), false);
             FileNode cache = properties.cacheroot();
             modules = loadModulesFromWebapp(webapp, properties, cache);
@@ -176,7 +176,7 @@ public class DevelopmentFilter implements Filter {
         if (etag.equals(previousEtag)) {
             LOG.debug("ETag match: returning 304 Not Modified: " + resource.getPath());
             response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
-        } else  { 		// first time through - set last modified time to now
+        } else  { // first time through - set last modified time to now
             buffer = new ByteArrayOutputStream(1024 * 100);
             resource.writeTo(buffer);
             if (withBody) {

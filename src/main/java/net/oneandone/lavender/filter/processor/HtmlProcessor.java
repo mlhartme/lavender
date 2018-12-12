@@ -33,7 +33,10 @@ public class HtmlProcessor extends AbstractProcessor {
     /** The main state of this processor. */
     protected State state = State.NULL;
 
-    /** The current currentTag, but only if it has attributes. CAUTION: properly set only between &lt; ... &gt;; outside of angle brackets, it contains the last value of currentTag. */
+    /**
+     * The current currentTag, but only if it has attributes. CAUTION: properly set only between &lt; ... &gt;;
+     * outside of angle brackets, it contains the last value of currentTag.
+     */
     protected HtmlTag currentTag;
 
     /** The current attribute within a currentTag. */
@@ -460,11 +463,11 @@ public class HtmlProcessor extends AbstractProcessor {
         return OTHER_HTML_ATTRIBUTE;
     }
 
-    private UrlRewriteMatcher lookupRewriteMatcher(HtmlTag currentTag, HtmlAttribute currentAttribute, List<HtmlAttributeValue> attributeValues) {
-        HtmlElement htmlElement = new HtmlElement(currentTag, attributeValues);
+    private UrlRewriteMatcher lookupRewriteMatcher(HtmlTag tag, HtmlAttribute attribute, List<HtmlAttributeValue> attributeValues) {
+        HtmlElement htmlElement = new HtmlElement(tag, attributeValues);
 
         for (UrlRewriteMatcher urlRewriteMatcher : urlRewriteMatchers) {
-            if (currentAttribute == urlRewriteMatcher.getAttributeToRewrite() &&
+            if (attribute == urlRewriteMatcher.getAttributeToRewrite() &&
                     urlRewriteMatcher.matches(htmlElement)) {
                 return urlRewriteMatcher;
             }

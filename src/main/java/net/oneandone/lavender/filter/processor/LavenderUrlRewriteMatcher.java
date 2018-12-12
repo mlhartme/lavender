@@ -36,10 +36,8 @@ import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.SOURCE;
 public enum LavenderUrlRewriteMatcher implements UrlRewriteMatcher {
 
     IMG_MATCHER(SRC, p -> p.getTag() == IMG, true),
-    LINK_MATCHER(HREF, p -> p.getTag() == LINK &&
-            Arrays.asList("stylesheet", "icon", "shortcut icon").contains(p.getAttribute(REL)), false),
-    SCRIPT_MATCHER(SRC, p -> p.getTag() == SCRIPT &&
-            (("text/javascript".equals(p.getAttribute(TYPE))) || !p.containsAttribute(TYPE)), false),
+    LINK_MATCHER(HREF, p -> p.getTag() == LINK && Arrays.asList("stylesheet", "icon", "shortcut icon").contains(p.getAttribute(REL)), false),
+    SCRIPT_MATCHER(SRC, p -> p.getTag() == SCRIPT && (("text/javascript".equals(p.getAttribute(TYPE))) || !p.containsAttribute(TYPE)), false),
     INPUT_MATCHER(SRC, p -> p.getTag() == INPUT && "image".equals(p.getAttribute(TYPE)), false),
     A_MATCHER(HREF, p -> p.getTag() == A, false),
     SOURCE_MATCHER(SRC, p -> p.getTag() == SOURCE, false),
