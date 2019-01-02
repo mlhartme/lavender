@@ -73,6 +73,18 @@ public class HtmlProcessorTest {
     }
 
     @Test
+    public void testHtml5SourceSet() throws IOException {
+
+        String input = "<img src='/x/y/z' srcset='/x/y/z, /x/y/z 640w,\n /x/y/z 2.0x, data:AAAA'/>";
+        String expected = "<img src='http://a.b.c' srcset='http://a.b.c, http://a.b.c 640w,\n http://a.b.c 2.0x, data:AAAA'/>";
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(expected, out.getBuffer().toString());
+    }
+
+    @Test
     public void testDataLavenderAttributes() throws IOException {
         String input = "<a src='/x/y/z' data-lavender-a='x/y/z' data-lavender-2='x/y/z' >";
         String output = "<a src='/x/y/z' data-lavender-a='http://a.b.c' data-lavender-2='http://a.b.c' >";
