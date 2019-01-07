@@ -23,6 +23,7 @@ import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.DATA
 import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.HREF;
 import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.REL;
 import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.SRC;
+import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.SRCSET;
 import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.TYPE;
 import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.A;
 import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.FORM;
@@ -36,11 +37,13 @@ import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.SOURCE;
 public enum LavenderUrlRewriteMatcher implements UrlRewriteMatcher {
 
     IMG_MATCHER(SRC, p -> p.getTag() == IMG, true),
+    IMG_SOURCESET_MATCHER(SRCSET, p -> p.getTag() == IMG, false),
     LINK_MATCHER(HREF, p -> p.getTag() == LINK && Arrays.asList("stylesheet", "icon", "shortcut icon").contains(p.getAttribute(REL)), false),
     SCRIPT_MATCHER(SRC, p -> p.getTag() == SCRIPT && (("text/javascript".equals(p.getAttribute(TYPE))) || !p.containsAttribute(TYPE)), false),
     INPUT_MATCHER(SRC, p -> p.getTag() == INPUT && "image".equals(p.getAttribute(TYPE)), false),
     A_MATCHER(HREF, p -> p.getTag() == A, false),
     SOURCE_MATCHER(SRC, p -> p.getTag() == SOURCE, false),
+    SOURCE_SOURCESET_MATCHER(SRCSET, p -> p.getTag() == SOURCE, false),
     FORM_MATCHER(ACTION, p -> p.getTag() == FORM, false),
     IFRAME_MATCHER(SRC, p -> p.getTag() == IFRAME, false),
     DATA_LAVENDER_MATCHER(DATA_LAVENDER_ATTR, p -> true, false);

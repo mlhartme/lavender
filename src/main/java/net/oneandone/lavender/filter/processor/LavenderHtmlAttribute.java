@@ -22,6 +22,7 @@ import java.util.function.Predicate;
 public enum LavenderHtmlAttribute implements HtmlAttribute {
 
     SRC("src"),
+    SRCSET("srcset"),
     HREF("href"),
     REL("rel"),
     STYLE("style"),

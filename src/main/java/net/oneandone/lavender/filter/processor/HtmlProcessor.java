@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class HtmlProcessor extends AbstractProcessor {
 
@@ -29,6 +31,19 @@ public class HtmlProcessor extends AbstractProcessor {
 
     private static final HtmlTag OTHER_HTML_TAG = () -> "";
     private static final HtmlAttribute OTHER_HTML_ATTRIBUTE = x -> false;
+
+    /**
+     * Parse URLs from image candidate strings in "srcset" according to https://html.spec.whatwg.org/multipage/images.html#srcset-attributes
+     * Matching groups:
+     * <ul>
+     *     <li>ASCII Whitespace (optional</li>
+     *     <li>URL</li>
+     *     <li>ASCII Whitespace (optional)</li>
+     *     <li>Remainder (Width or Density descriptors) including ASCII Whitespace (optional)</li>
+     *     <li>Candidate separator (',') or end of line</li>
+     * </ul>
+     */
+    private static final Pattern SRCSET_PATTERN = Pattern.compile("([\\t\\n\\f\\r ]*)([^,\\t\\n\\f\\r ]+)([\\t\\n\\f\\r ]*)([^,]*)(,|$)");
 
     /** The main state of this processor. */
     protected State state = State.NULL;
@@ -399,7 +414,9 @@ public class HtmlProcessor extends AbstractProcessor {
                 String value;
 
                 value = attributeValue.getValue();
-                if (matcher != null && !matcher.ignoreValue(value)) {
+                if (matcher != null && attributeValue.attr == LavenderHtmlAttribute.SRCSET)
+                    rewriteSrcSet(attributeValue.getValue());
+                else if (matcher != null && !matcher.ignoreValue(value)) {
                     matchesRewriteUrl(value);
                 } else {
                     out.write(value);
@@ -427,6 +444,26 @@ public class HtmlProcessor extends AbstractProcessor {
         cssProcessor.setRewriteEngine(rewriteEngine, baseURI, contextPath);
         cssProcessor.setWriter(out);
         cssProcessor.process(tagBuffer, htmlAttributeValue.start, htmlAttributeValue.end - htmlAttributeValue.start);
+    }
+
+    private void rewriteSrcSet(String attributeValue) throws IOException {
+        Matcher elements = SRCSET_PATTERN.matcher(attributeValue);
+        StringBuffer replacement = new StringBuffer();
+        while (elements.find()) {
+            String url = elements.group(2);
+            if (!url.startsWith("data:")) {
+                url = rewriteEngine.rewrite(url, baseURI, contextPath);
+            }
+            elements.appendReplacement(replacement, new StringBuilder()
+                    .append(elements.group(1))
+                    .append(url)
+                    .append(elements.group(3))
+                    .append(elements.group(4))
+                    .append(elements.group(5))
+                    .toString());
+        }
+        elements.appendTail(replacement);
+        out.write(replacement.toString());
     }
 
     private void markValueStart() {

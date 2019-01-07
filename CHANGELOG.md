@@ -6,6 +6,7 @@
 * update lazy-foss-parent 1.0.4 to 1.2.0
 * checkstyle fixes
 * IntelliJ code inspection fixes
+* rewrite img/@srcset and source/@srcset
 
 
 ### 2.7.1 (2018-11-22)
