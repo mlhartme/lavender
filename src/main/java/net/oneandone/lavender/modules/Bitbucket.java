@@ -23,16 +23,14 @@ import net.oneandone.lavender.config.UsernamePassword;
 import net.oneandone.sushi.fs.NodeInstantiationException;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
-import net.oneandone.sushi.fs.http.HttpNode;
+import net.oneandone.sushi.fs.http.*;
+import net.oneandone.sushi.fs.http.model.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
+import java.net.*;
+import java.nio.CharBuffer;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Bitbucket rest api. As of 2018-09-18, we have bitbucket server 5.13.1.
@@ -180,9 +178,70 @@ public class Bitbucket {
     public void writeTo(String project, String repository, String path, String at, OutputStream dest) throws IOException {
         HttpNode node;
 
+//        https://github.com/git-lfs/git-lfs/blob/master/docs/api/batch.md
+
         node = api.join("projects", project, "repos", repository, "raw", path);
         node = node.getRoot().node(node.getPath(), "at=" + at);
-        node.copyFileTo(dest);
+
+        byte[] identifier = "version https://git-lfs.github.com/spec/v1\n".getBytes("UTF-8");
+        InputStream from = node.newInputStream();
+        byte[] buffer = new byte[8192];
+        int bytesRead = from.read(buffer, 0, identifier.length);
+        byte[] bufferSliceToCompare = Arrays.copyOfRange(buffer, 0, bytesRead);
+        if (java.util.Arrays.equals(bufferSliceToCompare, identifier)) {
+            // interpret as LFS link
+            BufferedReader reader = new BufferedReader(new InputStreamReader(from));
+            String oidLine = reader.readLine(); // read line with oid info
+            String sizeLine = reader.readLine(); // read line with size info
+            reader.close();
+            String oid;
+            if (oidLine.startsWith("oid sha256:")){
+                oid = oidLine.substring(11);
+            } else {
+                throw new RuntimeException("LFS link does not contain supported oid.");
+            }
+            long size;
+            if (sizeLine.startsWith("size ")){
+                size = Long.parseLong(sizeLine.substring(5));
+            } else {
+                throw new RuntimeException("LFS link does not contain supported size.");
+            }
+
+            String lfsApiPath = String.join("/", "scm", project, repository + ".git", "info/lfs/objects/batch");
+            HttpNode lfsApiNode = api.getRoot().node(lfsApiPath, null);
+
+            Request request = new Request("POST", lfsApiNode);
+            request.addRequestHeader("Accept", "application/vnd.git-lfs+json");
+            request.addRequestHeader("Content-Type", "application/vnd.git-lfs+json");
+            String payload = String.format("{\"operation\": \"download\", \"transfers\": [\"basic\"], \"objects\": [{\"oid\": \"%s\", \"size\": "
+                    + "%d}]}", oid, size);
+            Body body = new Body(null, null, payload.length(), new ByteArrayInputStream(payload.getBytes()), false);
+
+            Response response = request.request(body);
+            JsonObject all;
+            JsonElement element = new JsonParser().parse(new String(response.getBodyBytes(), "UTF-8"));
+            all = element.getAsJsonObject();
+            String downloadUrl = null;
+            for (JsonElement je: all.get("objects").getAsJsonArray()){
+                downloadUrl = je.getAsJsonObject().get("actions").getAsJsonObject().get("download").getAsJsonObject().get("href").getAsString();
+            }
+            if (downloadUrl == null){
+                throw new RuntimeException("Object for LFS link not found.");
+            }
+            // download file content and write into "dest"
+            URL url = new URL(downloadUrl);
+            BufferedInputStream fromStream = new BufferedInputStream(url.openStream());
+
+            while ((bytesRead = fromStream.read(buffer)) != -1){
+                dest.write(buffer, 0, bytesRead);
+            }
+        } else {
+            // direct download from bitbucket
+            while (bytesRead != -1){
+                dest.write(buffer, 0, bytesRead);
+                bytesRead = from.read(buffer);
+            }
+        }
     }
 
     private interface Collector {

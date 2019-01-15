@@ -52,6 +52,7 @@ public class BitbucketResource extends Resource {
 
     @Override
     public void writeTo(OutputStream dest) throws IOException {
+        // TODO: check if this is a LFS link and then get the data using that link.
         bitbucket.writeTo(project, repository, entry.accessPath, at, dest);
     }
 
