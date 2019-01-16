@@ -14,7 +14,7 @@
 
   <groupId>net.oneandone</groupId>
   <artifactId>lavender</artifactId>
-  <version>SHOPDEV-1217-SNAPSHOT</version>
+  <version>lfs-support-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <scm>
