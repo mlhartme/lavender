@@ -204,67 +204,73 @@ public class Bitbucket {
     public void writeTo(String project, String repository, String path, String at, OutputStream dest) throws IOException {
         HttpNode node;
         Buffer buffer;
-        InputStream from;
         int bytesRead;
-
-//        https://github.com/git-lfs/git-lfs/blob/master/docs/api/batch.md
 
         node = api.join("projects", project, "repos", repository, "raw", path);
         node = node.getRoot().node(node.getPath(), "at=" + at);
         buffer = node.getWorld().getBuffer();
-        from = node.newInputStream();
-        bytesRead = buffer.fill(from, LFS_IDENTIFIER.length);
-        if (!buffer.diff(LFS_IDENTIFIER, bytesRead)) {
-            // interpret as LFS link
-
-            String content = buffer.readString(from, UTF_8);
-            from.close();
-            int idx = content.indexOf('\n');
-            String oidLine = content.substring(0, idx).trim();
-            String sizeLine = content.substring(idx + 1).trim();
-            String oid;
-            if (oidLine.startsWith("oid sha256:")){
-                oid = oidLine.substring(11);
+        try (InputStream from = node.newInputStream()) {
+            bytesRead = buffer.fill(from, LFS_IDENTIFIER.length);
+            if (buffer.diff(LFS_IDENTIFIER, bytesRead)) {
+                // regular file
+                buffer.flush(dest, bytesRead);
+                buffer.copy(from, dest);
             } else {
-                throw new RuntimeException("LFS link does not contain supported oid: " + oidLine);
+                lfsWriteTo(buffer.readString(from, UTF_8), project, repository, dest);
             }
-            long size;
-            if (sizeLine.startsWith("size ")){
-                size = Long.parseLong(sizeLine.substring(5));
-            } else {
-                throw new RuntimeException("LFS link does not contain supported size: " + sizeLine);
-            }
-
-            String lfsApiPath = String.join("/", "scm", project, repository + ".git", "info/lfs/objects/batch");
-            HttpNode lfsApiNode = api.getRoot().node(lfsApiPath, null);
-
-            Request request = new Request("POST", lfsApiNode);
-            request.addRequestHeader("Accept", "application/vnd.git-lfs+json");
-            request.addRequestHeader("Content-Type", "application/vnd.git-lfs+json");
-            String payload = String.format("{\"operation\": \"download\", \"transfers\": [\"basic\"], \"objects\": [{\"oid\": \"%s\", \"size\": "
-                    + "%d}]}", oid, size);
-            Body body = new Body(null, null, payload.length(), new ByteArrayInputStream(payload.getBytes()), false);
-
-            Response response = request.request(body);
-            JsonObject all;
-            JsonElement element = new JsonParser().parse(new String(response.getBodyBytes(), "UTF-8"));
-            all = element.getAsJsonObject();
-            String downloadUrl = null;
-            for (JsonElement je: all.get("objects").getAsJsonArray()){
-                downloadUrl = je.getAsJsonObject().get("actions").getAsJsonObject().get("download").getAsJsonObject().get("href").getAsString();
-            }
-            if (downloadUrl == null){
-                throw new RuntimeException("Object for LFS link not found.");
-            }
-            // download file content and write into "dest"
-            URL url = new URL(downloadUrl);
-            BufferedInputStream fromStream = new BufferedInputStream(url.openStream());
-
-            buffer.copy(fromStream, dest);
-        } else {
-            buffer.flush(dest, bytesRead);
-            buffer.copy(from, dest);
         }
+    }
+
+    // https://github.com/git-lfs/git-lfs/blob/master/docs/api/batch.md
+    private void lfsWriteTo(String content, String project, String repository, OutputStream dest) throws IOException {
+        int idx;
+        String oidLine;
+        String sizeLine;
+        String oid;
+        long size;
+
+        idx = content.indexOf('\n');
+        oidLine = content.substring(0, idx).trim();
+        sizeLine = content.substring(idx + 1).trim();
+        if (oidLine.startsWith("oid sha256:")) {
+            oid = oidLine.substring(11);
+        } else {
+            throw new RuntimeException("LFS link does not contain supported oid: " + oidLine);
+        }
+        if (sizeLine.startsWith("size ")) {
+            size = Long.parseLong(sizeLine.substring(5));
+        } else {
+            throw new RuntimeException("LFS link does not contain supported size: " + sizeLine);
+        }
+        lfsWriteTo(oid, size, project, repository, dest);
+    }
+
+    private void lfsWriteTo(String oid, long size, String project, String repository, OutputStream dest) throws IOException {
+        String lfsApiPath = String.join("/", "scm", project, repository + ".git", "info/lfs/objects/batch");
+        HttpNode lfsApiNode = api.getRoot().node(lfsApiPath, null);
+
+        Request request = new Request("POST", lfsApiNode);
+        request.addRequestHeader("Accept", "application/vnd.git-lfs+json");
+        request.addRequestHeader("Content-Type", "application/vnd.git-lfs+json");
+        String payload = String.format("{\"operation\": \"download\", \"transfers\": [\"basic\"], \"objects\": [{\"oid\": \"%s\", \"size\": "
+                + "%d}]}", oid, size);
+        Body body = new Body(null, null, payload.length(), new ByteArrayInputStream(payload.getBytes()), false);
+
+        Response response = request.request(body);
+        JsonObject all;
+        JsonElement element = new JsonParser().parse(new String(response.getBodyBytes(), "UTF-8"));
+        all = element.getAsJsonObject();
+        String downloadUrl = null;
+        for (JsonElement je: all.get("objects").getAsJsonArray()){
+            downloadUrl = je.getAsJsonObject().get("actions").getAsJsonObject().get("download").getAsJsonObject().get("href").getAsString();
+        }
+        if (downloadUrl == null){
+            throw new RuntimeException("Object for LFS link not found.");
+        }
+        // download file content and write into "dest"
+        URL url = new URL(downloadUrl);
+        BufferedInputStream fromStream = new BufferedInputStream(url.openStream());
+        api.getWorld().getBuffer().copy(fromStream, dest);
     }
 
     private interface Collector {
