@@ -23,14 +23,26 @@ import net.oneandone.lavender.config.UsernamePassword;
 import net.oneandone.sushi.fs.NodeInstantiationException;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
-import net.oneandone.sushi.fs.http.*;
-import net.oneandone.sushi.fs.http.model.*;
+import net.oneandone.sushi.fs.http.HttpNode;
+import net.oneandone.sushi.fs.http.model.Body;
+import net.oneandone.sushi.fs.http.model.Request;
+import net.oneandone.sushi.fs.http.model.Response;
 
-import java.io.*;
-import java.net.*;
-import java.nio.CharBuffer;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.URL;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Bitbucket rest api. As of 2018-09-18, we have bitbucket server 5.13.1.

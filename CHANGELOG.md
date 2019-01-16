@@ -2,11 +2,12 @@
 
 ### 2.7.2 (pending)
 
+* added support for git lfs (contributed by Lars Hutzelmann)
+* rewrite img/@srcset and source/@srcset (contributed by Marcus Trautwirg)
 * fixed NumberFormatException when creating released git modules
 * update lazy-foss-parent 1.0.4 to 1.2.0
 * checkstyle fixes
 * IntelliJ code inspection fixes
-* rewrite img/@srcset and source/@srcset
 
 
 ### 2.7.1 (2018-11-22)
