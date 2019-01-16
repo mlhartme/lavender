@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -187,6 +188,16 @@ public class Bitbucket {
         return result;
     }
 
+    private static final byte[] LFS_IDENTIFIER;
+
+    static {
+        try {
+            LFS_IDENTIFIER = "version https://git-lfs.github.com/spec/v1\n".getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     public void writeTo(String project, String repository, String path, String at, OutputStream dest) throws IOException {
         HttpNode node;
 
@@ -195,12 +206,11 @@ public class Bitbucket {
         node = api.join("projects", project, "repos", repository, "raw", path);
         node = node.getRoot().node(node.getPath(), "at=" + at);
 
-        byte[] identifier = "version https://git-lfs.github.com/spec/v1\n".getBytes("UTF-8");
         InputStream from = node.newInputStream();
         byte[] buffer = new byte[8192];
-        int bytesRead = from.read(buffer, 0, identifier.length);
+        int bytesRead = from.read(buffer, 0, LFS_IDENTIFIER.length);
         byte[] bufferSliceToCompare = Arrays.copyOfRange(buffer, 0, bytesRead);
-        if (java.util.Arrays.equals(bufferSliceToCompare, identifier)) {
+        if (java.util.Arrays.equals(bufferSliceToCompare, LFS_IDENTIFIER)) {
             // interpret as LFS link
             BufferedReader reader = new BufferedReader(new InputStreamReader(from));
             String oidLine = reader.readLine(); // read line with oid info
