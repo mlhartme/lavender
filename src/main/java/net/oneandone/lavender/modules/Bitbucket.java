@@ -27,6 +27,8 @@ import net.oneandone.sushi.fs.http.HttpNode;
 import net.oneandone.sushi.fs.http.model.Body;
 import net.oneandone.sushi.fs.http.model.Request;
 import net.oneandone.sushi.fs.http.model.Response;
+import net.oneandone.sushi.io.Buffer;
+import net.oneandone.sushi.io.LineReader;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -190,9 +192,10 @@ public class Bitbucket {
 
     private static final byte[] LFS_IDENTIFIER;
 
+    static final String UTF_8 = "UTF-8";
     static {
         try {
-            LFS_IDENTIFIER = "version https://git-lfs.github.com/spec/v1\n".getBytes("UTF-8");
+            LFS_IDENTIFIER = "version https://git-lfs.github.com/spec/v1\n".getBytes(UTF_8);
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException(e);
         }
@@ -200,33 +203,36 @@ public class Bitbucket {
 
     public void writeTo(String project, String repository, String path, String at, OutputStream dest) throws IOException {
         HttpNode node;
+        Buffer buffer;
+        InputStream from;
+        int bytesRead;
 
 //        https://github.com/git-lfs/git-lfs/blob/master/docs/api/batch.md
 
         node = api.join("projects", project, "repos", repository, "raw", path);
         node = node.getRoot().node(node.getPath(), "at=" + at);
-
-        InputStream from = node.newInputStream();
-        byte[] buffer = new byte[8192];
-        int bytesRead = from.read(buffer, 0, LFS_IDENTIFIER.length);
-        byte[] bufferSliceToCompare = Arrays.copyOfRange(buffer, 0, bytesRead);
-        if (java.util.Arrays.equals(bufferSliceToCompare, LFS_IDENTIFIER)) {
+        buffer = node.getWorld().getBuffer();
+        from = node.newInputStream();
+        bytesRead = buffer.fill(from, LFS_IDENTIFIER.length);
+        if (!buffer.diff(LFS_IDENTIFIER, bytesRead)) {
             // interpret as LFS link
-            BufferedReader reader = new BufferedReader(new InputStreamReader(from));
-            String oidLine = reader.readLine(); // read line with oid info
-            String sizeLine = reader.readLine(); // read line with size info
-            reader.close();
+
+            String content = buffer.readString(from, UTF_8);
+            from.close();
+            int idx = content.indexOf('\n');
+            String oidLine = content.substring(0, idx).trim();
+            String sizeLine = content.substring(idx + 1).trim();
             String oid;
             if (oidLine.startsWith("oid sha256:")){
                 oid = oidLine.substring(11);
             } else {
-                throw new RuntimeException("LFS link does not contain supported oid.");
+                throw new RuntimeException("LFS link does not contain supported oid: " + oidLine);
             }
             long size;
             if (sizeLine.startsWith("size ")){
                 size = Long.parseLong(sizeLine.substring(5));
             } else {
-                throw new RuntimeException("LFS link does not contain supported size.");
+                throw new RuntimeException("LFS link does not contain supported size: " + sizeLine);
             }
 
             String lfsApiPath = String.join("/", "scm", project, repository + ".git", "info/lfs/objects/batch");
@@ -254,15 +260,10 @@ public class Bitbucket {
             URL url = new URL(downloadUrl);
             BufferedInputStream fromStream = new BufferedInputStream(url.openStream());
 
-            while ((bytesRead = fromStream.read(buffer)) != -1){
-                dest.write(buffer, 0, bytesRead);
-            }
+            buffer.copy(fromStream, dest);
         } else {
-            // direct download from bitbucket
-            while (bytesRead != -1){
-                dest.write(buffer, 0, bytesRead);
-                bytesRead = from.read(buffer);
-            }
+            buffer.flush(dest, bytesRead);
+            buffer.copy(from, dest);
         }
     }
 
