@@ -28,21 +28,17 @@ import net.oneandone.sushi.fs.http.model.Body;
 import net.oneandone.sushi.fs.http.model.Request;
 import net.oneandone.sushi.fs.http.model.Response;
 import net.oneandone.sushi.io.Buffer;
-import net.oneandone.sushi.io.LineReader;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -246,19 +242,21 @@ public class Bitbucket {
     }
 
     private void lfsWriteTo(String oid, long size, String project, String repository, OutputStream dest) throws IOException {
-        String lfsApiPath = String.join("/", "scm", project, repository + ".git", "info/lfs/objects/batch");
-        HttpNode lfsApiNode = api.getRoot().node(lfsApiPath, null);
+        HttpNode lfsApiNode;
+        Request request;
+        String payload;
 
-        Request request = new Request("POST", lfsApiNode);
+        lfsApiNode = api.getRootNode().join("scm", project, repository + ".git", "info/lfs/objects/batch");
+        request = new Request("POST", lfsApiNode);
         request.addRequestHeader("Accept", "application/vnd.git-lfs+json");
         request.addRequestHeader("Content-Type", "application/vnd.git-lfs+json");
-        String payload = String.format("{\"operation\": \"download\", \"transfers\": [\"basic\"], \"objects\": [{\"oid\": \"%s\", \"size\": "
+        payload = String.format("{\"operation\": \"download\", \"transfers\": [\"basic\"], \"objects\": [{\"oid\": \"%s\", \"size\": "
                 + "%d}]}", oid, size);
         Body body = new Body(null, null, payload.length(), new ByteArrayInputStream(payload.getBytes()), false);
 
         Response response = request.request(body);
         JsonObject all;
-        JsonElement element = new JsonParser().parse(new String(response.getBodyBytes(), "UTF-8"));
+        JsonElement element = parser.parse(new String(response.getBodyBytes(), UTF_8));
         all = element.getAsJsonObject();
         String downloadUrl = null;
         for (JsonElement je: all.get("objects").getAsJsonArray()){
