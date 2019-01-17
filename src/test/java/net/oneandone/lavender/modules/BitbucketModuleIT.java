@@ -20,13 +20,16 @@ import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Iterator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class BitbucketModuleIT {
     private static final World WORLD;
@@ -46,6 +49,8 @@ public class BitbucketModuleIT {
         Iterator<Resource> iter;
         Resource resource;
         FileNode file;
+        ByteArrayOutputStream normal;
+        ByteArrayOutputStream lfs;
 
         file = WORLD.file("it.secrets");
         if (!file.exists() && file.getParent().getName().equals("checkout")) {
@@ -69,6 +74,13 @@ public class BitbucketModuleIT {
         assertEquals("empty.css", resource.getPath());
         resource = iter.next();
         assertEquals("Penny_test.jpg", resource.getPath());
+        normal = new ByteArrayOutputStream();
+        resource.writeTo(normal);
+        resource = iter.next();
+        assertEquals("lfs/lfs-test.jpg", resource.getPath());
+        lfs = new ByteArrayOutputStream();
+        resource.writeTo(lfs);
+        assertTrue(Arrays.equals(normal.toByteArray(), lfs.toByteArray()));
         assertFalse(iter.hasNext());
     }
 }
