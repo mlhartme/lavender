@@ -114,8 +114,8 @@ public class Bitbucket {
     private final HttpNode api;
     private final JsonParser parser;
 
-    public Bitbucket(HttpNode root) {
-        this.api = root;
+    public Bitbucket(HttpNode api) {
+        this.api = api;
         this.parser = new JsonParser();
     }
 
