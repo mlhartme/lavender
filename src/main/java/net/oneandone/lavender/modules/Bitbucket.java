@@ -245,6 +245,11 @@ public class Bitbucket {
         HttpNode lfsApiNode;
         Request request;
         String payload;
+        Body body;
+        Response response;
+        JsonArray array;
+        JsonElement element;
+        String downloadUrl;
 
         lfsApiNode = api.getRootNode().join("scm", project, repository + ".git", "info/lfs/objects/batch");
         request = new Request("POST", lfsApiNode);
@@ -252,20 +257,15 @@ public class Bitbucket {
         request.addRequestHeader("Content-Type", "application/vnd.git-lfs+json");
         payload = String.format("{\"operation\": \"download\", \"transfers\": [\"basic\"], \"objects\": [{\"oid\": \"%s\", \"size\": "
                 + "%d}]}", oid, size);
-        Body body = new Body(null, null, payload.length(), new ByteArrayInputStream(payload.getBytes()), false);
+        body = new Body(null, null, payload.length(), new ByteArrayInputStream(payload.getBytes()), false);
 
-        Response response = request.request(body);
-        JsonObject all;
-        JsonElement element = parser.parse(new String(response.getBodyBytes(), UTF_8));
-        all = element.getAsJsonObject();
-        String downloadUrl = null;
-        for (JsonElement je: all.get("objects").getAsJsonArray()){
-            downloadUrl = je.getAsJsonObject().get("actions").getAsJsonObject().get("download").getAsJsonObject().get("href").getAsString();
+        response = request.request(body);
+        element = parser.parse(new String(response.getBodyBytes(), UTF_8));
+        array = element.getAsJsonObject().get("objects").getAsJsonArray();
+        if (array.size() != 1) {
+            throw new RuntimeException("Unique object for LFS link not found: " + element);
         }
-        if (downloadUrl == null){
-            throw new RuntimeException("Object for LFS link not found.");
-        }
-        // download file content and write into "dest"
+        downloadUrl = array.get(0).getAsJsonObject().get("actions").getAsJsonObject().get("download").getAsJsonObject().get("href").getAsString();
         URL url = new URL(downloadUrl);
         BufferedInputStream fromStream = new BufferedInputStream(url.openStream());
         api.getWorld().getBuffer().copy(fromStream, dest);
