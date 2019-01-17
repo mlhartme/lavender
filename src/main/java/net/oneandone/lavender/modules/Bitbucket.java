@@ -25,6 +25,7 @@ import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.http.HttpNode;
 import net.oneandone.sushi.fs.http.model.Body;
+import net.oneandone.sushi.fs.http.model.HeaderList;
 import net.oneandone.sushi.fs.http.model.Request;
 import net.oneandone.sushi.fs.http.model.Response;
 import net.oneandone.sushi.io.Buffer;
@@ -186,9 +187,11 @@ public class Bitbucket {
         return result;
     }
 
+    private static final String UTF_8 = "UTF-8";
+    private static final HeaderList LFS_HEADERS = HeaderList.of(
+            "Accept", "application/vnd.git-lfs+json",
+            "Content-Type", "application/vnd.git-lfs+json");
     private static final byte[] LFS_IDENTIFIER;
-
-    static final String UTF_8 = "UTF-8";
     static {
         try {
             LFS_IDENTIFIER = "version https://git-lfs.github.com/spec/v1\n".getBytes(UTF_8);
@@ -242,26 +245,20 @@ public class Bitbucket {
     }
 
     private void lfsWriteTo(String oid, long size, String project, String repository, OutputStream dest) throws IOException {
-        HttpNode lfsApiNode;
-        String response;
+        HttpNode lfs;
+        JsonElement response;
         JsonArray array;
-        JsonElement element;
-        String downloadUrl;
+        String url;
 
-        lfsApiNode = api.getRootNode().join("scm", project, repository + ".git", "info/lfs/objects/batch");
-        lfsApiNode.addHeader("Accept", "application/vnd.git-lfs+json");
-        lfsApiNode.addHeader("Content-Type", "application/vnd.git-lfs+json");
-        response = lfsApiNode.post(String.format(
-                "{\"operation\": \"download\", \"transfers\": [\"basic\"], \"objects\": [{\"oid\": \"%s\", \"size\": %d}]}", oid, size));
-        element = parser.parse(response);
-        array = element.getAsJsonObject().get("objects").getAsJsonArray();
+        lfs = api.getRootNode().join("scm", project, repository + ".git", "info/lfs/objects/batch").withHeaders(LFS_HEADERS);
+        response = parser.parse(lfs.post(String.format(
+                "{\"operation\": \"download\", \"transfers\": [\"basic\"], \"objects\": [{\"oid\": \"%s\", \"size\": %d}]}", oid, size)));
+        array = response.getAsJsonObject().get("objects").getAsJsonArray();
         if (array.size() != 1) {
-            throw new RuntimeException("Unique object for LFS link not found: " + element);
+            throw new RuntimeException("Unique object for LFS link not found: " + response);
         }
-        downloadUrl = array.get(0).getAsJsonObject().get("actions").getAsJsonObject().get("download").getAsJsonObject().get("href").getAsString();
-        URL url = new URL(downloadUrl);
-        BufferedInputStream fromStream = new BufferedInputStream(url.openStream());
-        api.getWorld().getBuffer().copy(fromStream, dest);
+        url = array.get(0).getAsJsonObject().get("actions").getAsJsonObject().get("download").getAsJsonObject().get("href").getAsString();
+        lfs.getWorld().validNode(url).copyFileTo(dest);
     }
 
     private interface Collector {
