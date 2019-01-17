@@ -243,24 +243,17 @@ public class Bitbucket {
 
     private void lfsWriteTo(String oid, long size, String project, String repository, OutputStream dest) throws IOException {
         HttpNode lfsApiNode;
-        Request request;
-        String payload;
-        Body body;
-        Response response;
+        String response;
         JsonArray array;
         JsonElement element;
         String downloadUrl;
 
         lfsApiNode = api.getRootNode().join("scm", project, repository + ".git", "info/lfs/objects/batch");
-        request = new Request("POST", lfsApiNode);
-        request.addRequestHeader("Accept", "application/vnd.git-lfs+json");
-        request.addRequestHeader("Content-Type", "application/vnd.git-lfs+json");
-        payload = String.format("{\"operation\": \"download\", \"transfers\": [\"basic\"], \"objects\": [{\"oid\": \"%s\", \"size\": "
-                + "%d}]}", oid, size);
-        body = new Body(null, null, payload.length(), new ByteArrayInputStream(payload.getBytes()), false);
-
-        response = request.request(body);
-        element = parser.parse(new String(response.getBodyBytes(), UTF_8));
+        lfsApiNode.addHeader("Accept", "application/vnd.git-lfs+json");
+        lfsApiNode.addHeader("Content-Type", "application/vnd.git-lfs+json");
+        response = lfsApiNode.post(String.format(
+                "{\"operation\": \"download\", \"transfers\": [\"basic\"], \"objects\": [{\"oid\": \"%s\", \"size\": %d}]}", oid, size));
+        element = parser.parse(response);
         array = element.getAsJsonObject().get("objects").getAsJsonArray();
         if (array.size() != 1) {
             throw new RuntimeException("Unique object for LFS link not found: " + element);
