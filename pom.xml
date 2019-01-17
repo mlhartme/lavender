@@ -14,7 +14,7 @@
 
   <groupId>net.oneandone</groupId>
   <artifactId>lavender</artifactId>
-  <version>lfs-support-SNAPSHOT</version>
+  <version>2.7.2-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <scm>
