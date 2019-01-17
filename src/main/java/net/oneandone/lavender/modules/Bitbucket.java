@@ -206,7 +206,7 @@ public class Bitbucket {
         int bytesRead;
 
         node = api.join("projects", project, "repos", repository, "raw", path);
-        node = node.getRoot().node(node.getPath(), "at=" + at);
+        node = node.withParameter("at", at);
         buffer = node.getWorld().getBuffer();
         try (InputStream from = node.newInputStream()) {
             bytesRead = buffer.fill(from, LFS_IDENTIFIER.length);
@@ -273,7 +273,7 @@ public class Bitbucket {
 
         start = 0;
         while (true) {
-            req = node.getRoot().node(node.getPath(), query(start, 25, params));
+            req = node.withParameters("start", Integer.toString(start), "limit", "25").withParameters(params);
             response = parser.parse(req.readString()).getAsJsonObject();
             values = response.get("values").getAsJsonArray();
             for (JsonElement element : values) {
@@ -284,18 +284,5 @@ public class Bitbucket {
             }
             start = response.get("nextPageStart").getAsInt();
         }
-    }
-
-    private static String query(int start, int limit, String... params) {
-        StringBuilder result;
-
-        result = new StringBuilder("start=" + start + "&limit=" + limit);
-        for (int i = 0; i < params.length; i += 2) {
-            result.append('&');
-            result.append(params[i]);
-            result.append('=');
-            result.append(params[i + 1]);
-        }
-        return result.toString();
     }
 }
