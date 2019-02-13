@@ -52,7 +52,7 @@ public class Bitbucket {
     public static Bitbucket create(World world, String hostname, UsernamePassword up) throws NodeInstantiationException {
         String credentials;
 
-        if (up != null) {
+        if (up != null && !up.equals(UsernamePassword.ANONYMOUS)) {
             credentials = up.username + ":" + up.password + "@";
         } else {
             credentials = "";

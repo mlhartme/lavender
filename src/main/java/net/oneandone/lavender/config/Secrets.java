@@ -47,14 +47,16 @@ public class Secrets extends PropertiesBase {
         LOG.debug("addAll secrets: " + source);
 
         Properties p;
+        String match;
 
         p = source.readProperties();
         for (String name : names(p)) {
+            match = (String) p.remove(name);
             if (p.remove(name + ".anonymous") != null) {
-                add(name, UsernamePassword.ANONYMOUS);
+                add(match, UsernamePassword.ANONYMOUS);
             } else {
                 p.remove(name);
-                add(name, new UsernamePassword(eat(p, name + ".username"), eat(p, name + ".password")));
+                add(match, new UsernamePassword(eat(p, name + ".username"), eat(p, name + ".password")));
             }
         }
         if (!p.isEmpty()) {

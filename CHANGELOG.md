@@ -4,6 +4,8 @@
 
 * added support for git lfs (contributed by Lars Hutzelmann)
 * rewrite img/@srcset and source/@srcset (contributed by Marcus Trautwirg)
+* fixed scm matching for secrets selection
+* fixed anonymous bitbucket access
 * fixed NumberFormatException when creating released git modules
 * update lazy-foss-parent 1.0.4 to 1.2.0
 * checkstyle fixes

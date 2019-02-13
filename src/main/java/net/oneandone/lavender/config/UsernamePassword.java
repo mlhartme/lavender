@@ -44,4 +44,18 @@ public class UsernamePassword {
         }
         return URI.create(fullUri.getScheme() + ":" + uri.getScheme() + "://" + username + ":" + password + "@" + uri.getHost() + port + uri.getPath());
     }
+
+    public int hashCode() {
+        return password.hashCode();
+    }
+
+    public boolean equals(Object obj) {
+        UsernamePassword up;
+
+        if (obj instanceof UsernamePassword) {
+            up = (UsernamePassword) obj;
+            return username.equals(up.username) && password.equals(up.password);
+        }
+        return false;
+    }
 }
