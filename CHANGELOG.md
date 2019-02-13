@@ -1,6 +1,6 @@
 ## Changelog 
 
-### 2.7.2 (pending)
+### 2.7.2 (2019-02-13)
 
 * added support for git lfs (contributed by Lars Hutzelmann)
 * rewrite img/@srcset and source/@srcset (contributed by Marcus Trautwirg)
