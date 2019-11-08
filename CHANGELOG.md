@@ -1,5 +1,10 @@
 ## Changelog 
 
+### 2.7.3 (2019-11-08)
+
+* fixed corrupt images server by DevelFilter
+
+
 ### 2.7.2 (2019-02-13)
 
 * added support for git lfs (contributed by Lars Hutzelmann)

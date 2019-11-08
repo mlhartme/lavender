@@ -158,7 +158,7 @@ public class DevelopmentFilter implements Filter {
     }
 
 
-    // TODO: does "synchronized" help? Why!?
+    // TODO: synchronized fixes image corruption problems with concurrent requests - but I don't understand why :(
     public synchronized void doGetRequest(Resource resource, HttpServletRequest request, HttpServletResponse response, boolean withBody) throws IOException {
         String etag;
         String contentType;
