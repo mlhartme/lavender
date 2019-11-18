@@ -414,9 +414,9 @@ public class HtmlProcessor extends AbstractProcessor {
                 String value;
 
                 value = attributeValue.getValue();
-                if (matcher != null && attributeValue.attr == LavenderHtmlAttribute.SRCSET)
+                if (matcher != null && attributeValue.attr == LavenderHtmlAttribute.SRCSET) {
                     rewriteSrcSet(attributeValue.getValue());
-                else if (matcher != null && !matcher.ignoreValue(value)) {
+                } else if (matcher != null && !matcher.ignoreValue(value)) {
                     matchesRewriteUrl(value);
                 } else {
                     out.write(value);
