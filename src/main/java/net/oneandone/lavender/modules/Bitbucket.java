@@ -23,12 +23,16 @@ import net.oneandone.lavender.config.UsernamePassword;
 import net.oneandone.sushi.fs.NodeInstantiationException;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
+import net.oneandone.sushi.fs.http.HttpFilesystem;
 import net.oneandone.sushi.fs.http.HttpNode;
+import net.oneandone.sushi.fs.http.HttpRoot;
 import net.oneandone.sushi.fs.http.model.Body;
 import net.oneandone.sushi.fs.http.model.HeaderList;
 import net.oneandone.sushi.fs.http.model.Request;
 import net.oneandone.sushi.fs.http.model.Response;
 import net.oneandone.sushi.io.Buffer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -49,8 +53,16 @@ import java.util.Map;
  * <a href="https://docs.atlassian.com/bitbucket-server/rest/5.13.0/bitbucket-rest.html">Rest API documentation</a>
  */
 public class Bitbucket {
+    private static final Logger LOG = LoggerFactory.getLogger(Bitbucket.class);
+
     public static Bitbucket create(World world, String hostname, UsernamePassword up) throws NodeInstantiationException {
         String credentials;
+        String wireLog;
+
+        wireLog = System.getProperty("lavender.bitbucket.wirelog");
+        if (wireLog != null) {
+            HttpFilesystem.wireLog(wireLog);
+        }
 
         if (up != null && !up.equals(UsernamePassword.ANONYMOUS)) {
             credentials = up.username + ":" + up.password + "@";
@@ -270,6 +282,7 @@ public class Bitbucket {
         int start;
         JsonObject response;
         JsonArray values;
+        JsonElement next;
 
         start = 0;
         while (true) {
@@ -282,7 +295,13 @@ public class Bitbucket {
             if (response.get("isLastPage").getAsBoolean()) {
                 break;
             }
-            start = response.get("nextPageStart").getAsInt();
+            next = response.get("nextPageStart");
+            if (next.isJsonNull()) {
+                // i've seen null returned without "isLastPage" beeing set :(
+                LOG.info("nextPageStart is null");
+                break;
+            }
+            start = next.getAsInt();
         }
     }
 }

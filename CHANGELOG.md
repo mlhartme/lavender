@@ -1,5 +1,12 @@
 ## Changelog 
 
+### 2.7.4 (pending)
+
+* Bitbucker support
+  * added `lavender.bitbucket.wirelog` property to enable a wire log
+  * fixed handling of JsonNull in page results (Bitbucket return nextPage null without indicating this by `isLastPage`)
+
+
 ### 2.7.3 (2019-11-08)
 
 * fixed corrupt images server by DevelFilter
