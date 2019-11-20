@@ -1,6 +1,6 @@
 ## Changelog 
 
-### 2.7.4 (pending)
+### 2.7.4 (2019-11-20)
 
 * Bitbucker support
   * added `lavender.bitbucket.wirelog` property to enable a wire log
