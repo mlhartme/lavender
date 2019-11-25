@@ -1,8 +1,14 @@
 ## Changelog 
 
+### 2.7.5 (pending)
+
+* Bitbucket support
+  * fix lastCommit to also check for tags
+
+ 
 ### 2.7.4 (2019-11-20)
 
-* Bitbucker support
+* Bitbucket support
   * added `lavender.bitbucket.wirelog` property to enable a wire log
   * fixed handling of JsonNull in page results (Bitbucket return nextPage null without indicating this by `isLastPage`)
 

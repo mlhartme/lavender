@@ -128,7 +128,7 @@ public class Bitbucket {
         return api.getRoot().node("", null).join(project, repository).getUri().toString();
     }
 
-    public String latestCommit(String project, String repository, String branch) throws IOException {
+    public String latestCommit(String project, String repository, String branchOrTag) throws IOException {
         List<String> result;
 
         result = new ArrayList<>();
@@ -136,14 +136,30 @@ public class Bitbucket {
             JsonObject obj;
 
             obj = element.getAsJsonObject();
-            if (branch.equals(obj.get("displayId").getAsString())) {
+            if (branchOrTag.equals(obj.get("displayId").getAsString())) {
                 result.add(obj.get("latestCommit").getAsString());
             }
         }, api.join("projects", project, "repos", repository, "branches"));
         switch (result.size()) {
-            case 0: return null;
+            case 0: break; // fall-through
             case 1: return result.get(0);
-            default: throw new IOException(branch + ": branch ambiguous: " + result);
+            default: throw new IOException(branchOrTag + ": branch ambiguous: " + result);
+        }
+
+        getPaged(element -> {
+            JsonObject obj;
+
+            obj = element.getAsJsonObject();
+            if (branchOrTag.equals(obj.get("displayId").getAsString())) {
+                result.add(obj.get("latestCommit").getAsString());
+            }
+        }, api.join("projects", project, "repos", repository, "tags"));
+        switch (result.size()) {
+            case 0: return null;
+            case 1:
+                System.out.println("found tag: " + repository + " " + branchOrTag);
+                return result.get(0);
+            default: throw new IOException(branchOrTag + ": tag ambiguous: " + result);
         }
     }
 
@@ -291,7 +307,7 @@ public class Bitbucket {
             next = response.get("nextPageStart");
             if (next.isJsonNull()) {
                 // i've seen null returned without "isLastPage" beeing set :(
-                LOG.info("nextPageStart is null");
+                LOG.info(node + ": nextPageStart is null");
                 break;
             }
             start = next.getAsInt();
