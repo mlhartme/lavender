@@ -157,7 +157,6 @@ public class Bitbucket {
         switch (result.size()) {
             case 0: return null;
             case 1:
-                System.out.println("found tag: " + repository + " " + branchOrTag);
                 return result.get(0);
             default: throw new IOException(branchOrTag + ": tag ambiguous: " + result);
         }

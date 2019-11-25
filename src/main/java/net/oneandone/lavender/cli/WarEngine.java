@@ -97,6 +97,7 @@ public class WarEngine {
 
         changed = 0;
         for (Module module : modules) {
+            LOG.debug("publish module " + module.getName() + " " + module.getOrigin());
             changed += distributor.publish(module);
         }
         return changed;

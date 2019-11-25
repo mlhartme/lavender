@@ -25,7 +25,7 @@ public class BitbucketModule extends Module<BitbucketEntry> {
     private final Bitbucket bitbucket;
     private final String project;
     private final String repository;
-    private final String branch;
+    private final String branchOrTag;
     private final String accessPathPrefix;
 
     /** may be null */
@@ -34,7 +34,7 @@ public class BitbucketModule extends Module<BitbucketEntry> {
     private String loadedRevision;
 
     // CHECKSTYLE:OFF
-    public BitbucketModule(Bitbucket bitbucket, String project, String repository, String branch, String accessPathPrefix,
+    public BitbucketModule(Bitbucket bitbucket, String project, String repository, String branchOrTag, String accessPathPrefix,
                            String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter, PustefixJarConfig config) {
         super(bitbucket.getOrigin(project, repository), Module.TYPE, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
 
@@ -44,7 +44,7 @@ public class BitbucketModule extends Module<BitbucketEntry> {
         this.bitbucket = bitbucket;
         this.project = project;
         this.repository = repository;
-        this.branch = branch;
+        this.branchOrTag = branchOrTag;
         this.accessPathPrefix = accessPathPrefix;
         this.config = config;
 
@@ -61,9 +61,10 @@ public class BitbucketModule extends Module<BitbucketEntry> {
         String accessPath;
         String relativeAccessPath;
 
-        loadedRevision = bitbucket.latestCommit(project, repository, branch);
+        loadedRevision = bitbucket.latestCommit(project, repository, branchOrTag);
         if (loadedRevision == null) {
-            throw new IOException("cannot determine last commit, project=" + project + ", repository=" + repository + ", branch=" + branch);
+            throw new IOException("cannot determine last commit, project="
+                    + project + ", repository=" + repository + ", branch=" + branchOrTag);
         }
         raw = bitbucket.changes(project, repository, loadedRevision);
         filter = getFilter();
