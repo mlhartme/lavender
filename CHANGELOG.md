@@ -1,9 +1,10 @@
 ## Changelog 
 
-### 2.7.5 (pending)
+### 2.7.5 (2019-11-25)
 
 * Bitbucket support
-  * fix lastCommit to also check for tags
+  * fixed lastCommit to also check for tags
+  * tweaked log output
 
  
 ### 2.7.4 (2019-11-20)
