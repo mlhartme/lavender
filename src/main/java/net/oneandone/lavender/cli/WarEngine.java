@@ -93,12 +93,14 @@ public class WarEngine {
     }
 
     private long extract(List<Module> modules) throws IOException {
+        long count;
         long changed;
 
         changed = 0;
         for (Module module : modules) {
-            LOG.info("publish module " + module.getName() + " " + module.getOrigin());
-            changed += distributor.publish(module);
+            count = distributor.publish(module);
+            LOG.info("publish module " + module.getName() + ": " + count);
+            changed += count;
         }
         return changed;
     }
