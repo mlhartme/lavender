@@ -1,5 +1,11 @@
 ## Changelog 
 
+### 2.7.6 (pending)
+
+* Bitbucket support
+  * fixed encoding problem in userInfo
+  
+
 ### 2.7.5 (2019-11-25)
 
 * Bitbucket support

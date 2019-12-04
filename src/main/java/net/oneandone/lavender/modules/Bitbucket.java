@@ -35,6 +35,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,6 +53,7 @@ public class Bitbucket {
     public static Bitbucket create(World world, String hostname, UsernamePassword up) throws NodeInstantiationException {
         String credentials;
         String wireLog;
+        URI uri;
 
         wireLog = System.getProperty("lavender.bitbucket.wirelog");
         if (wireLog != null) {
@@ -58,11 +61,16 @@ public class Bitbucket {
         }
 
         if (up != null && !up.equals(UsernamePassword.ANONYMOUS)) {
-            credentials = up.username + ":" + up.password + "@";
+            credentials = up.username + ":" + up.password;
         } else {
-            credentials = "";
+            credentials = null;
         }
-        return new Bitbucket((HttpNode) world.validNode("https://" + credentials + hostname + "/rest/api/1.0"));
+        try {
+            uri = new URI("https", credentials, hostname, -1, "/rest/api/1.0", null, null);
+        } catch (URISyntaxException e) {
+            throw new IllegalStateException(e);
+        }
+        return new Bitbucket((HttpNode) world.node(uri));
     }
 
 
