@@ -44,8 +44,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Bitbucket rest api. As of 2018-09-18, we have bitbucket server 5.13.1.
- * <a href="https://docs.atlassian.com/bitbucket-server/rest/5.13.0/bitbucket-rest.html">Rest API documentation</a>
+ * Bitbucket rest api. As of 2018-09-18, we have bitbucket server 5.13.1. As of 2019-12-10 we have 6.8.0
+ * <a href="https://docs.atlassian.com/bitbucket-server/rest/6.8.0/bitbucket-rest.html">Rest API documentation</a>
+ * TODO: https://developer.atlassian.com/bitbucket/api/2/reference/resource/
  */
 public class Bitbucket {
     private static final Logger LOG = LoggerFactory.getLogger(Bitbucket.class);
@@ -302,7 +303,7 @@ public class Bitbucket {
 
         start = 0;
         while (true) {
-            req = node.withParameters("start", Integer.toString(start), "limit", "25").withParameters(params);
+            req = node.withParameters("start", Integer.toString(start), "limit", "100").withParameters(params);
             response = parser.parse(req.readString()).getAsJsonObject();
             values = response.get("values").getAsJsonArray();
             for (JsonElement element : values) {
@@ -313,9 +314,7 @@ public class Bitbucket {
             }
             next = response.get("nextPageStart");
             if (next.isJsonNull()) {
-                // i've seen null returned without "isLastPage" beeing set :(
-                LOG.info(node + ": nextPageStart is null");
-                break;
+                throw new IOException("TODO: this seems to indicate we've hit a hard server limit: there are more entries, but it won't return them ...");
             }
             start = next.getAsInt();
         }
