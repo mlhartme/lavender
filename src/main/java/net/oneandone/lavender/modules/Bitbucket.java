@@ -22,6 +22,7 @@ import com.google.gson.JsonParser;
 import net.oneandone.lavender.config.UsernamePassword;
 import net.oneandone.sushi.fs.NodeInstantiationException;
 import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.http.HttpFilesystem;
 import net.oneandone.sushi.fs.http.HttpNode;
 import net.oneandone.sushi.fs.http.model.HeaderList;
@@ -77,7 +78,7 @@ public class Bitbucket {
     private static final String NULL_COMMIT = "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
 
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
-        run("CISOOPS", "lavender-test-module");
+        run("CISOOPS", "puc");
     }
 
     public static void run(String project, String repository) throws IOException {
@@ -93,7 +94,7 @@ public class Bitbucket {
         world = World.create(false);
         bitbucket = new Bitbucket((HttpNode) world.validNode("https://bitbucket.1and1.org/rest/api/1.0"));
         latestCommit = bitbucket.latestCommit(project, repository, "master");
-        files = bitbucket.files(project, repository, latestCommit);
+        files = bitbucket.files(project, repository, latestCommit, world.filter().include("**/*.java"));
         directories = new ArrayList<>();
         for (String file : files) {
             idx = file.lastIndexOf('/');
@@ -102,13 +103,13 @@ public class Bitbucket {
                 directories.add(directory);
             }
         }
-        System.out.println("files: " + files);
-        System.out.println("directories: " + directories);
+        System.out.println("files: " + files.size() + " " + files);
+        System.out.println("directories: " + directories.size() + " " + directories);
         contentMap = new HashMap<>();
         for (String d : directories) {
             bitbucket.lastModified(project, repository, d, latestCommit, contentMap);
         }
-        System.out.println("contentMap: " + contentMap);
+        System.out.println("contentMap: " + contentMap.size() + " " + contentMap);
     }
 
     private final HttpNode api;
@@ -170,7 +171,7 @@ public class Bitbucket {
 
             name = entry.getKey();
             path = directory.isEmpty() ? name : directory + "/" + name;
-            result.put(name, entry.getValue().getAsJsonObject().get("id").getAsString() + "@" + path);
+            result.put(path, entry.getValue().getAsJsonObject().get("id").getAsString());
         }
     }
 
@@ -211,11 +212,16 @@ public class Bitbucket {
      * @param at revision
      */
     // curl 'https://bitbucket.1and1.org/rest/api/1.0/projects/CISOOPS/repos/lavender-test-module/files'  | python -m json.tool
-    public List<String> files(String project, String repository, String at) throws IOException {
+    public List<String> files(String project, String repository, String at, Filter filter) throws IOException {
         List<String> result;
 
         result = new ArrayList<>();
-        getPaged(element -> result.add(element.getAsString()), api.join("projects", project, "repos", repository, "files"), "at", at);
+        getPaged(element -> {
+            String path = element.getAsString();
+            if (filter == null || filter.matches(path)) {
+                result.add(path);
+            }
+        }, api.join("projects", project, "repos", repository, "files"), "at", at);
         return result;
     }
 
