@@ -22,7 +22,6 @@ import com.google.gson.JsonParser;
 import net.oneandone.lavender.config.UsernamePassword;
 import net.oneandone.sushi.fs.NodeInstantiationException;
 import net.oneandone.sushi.fs.World;
-import net.oneandone.sushi.fs.filter.Filter;
 import net.oneandone.sushi.fs.http.HttpFilesystem;
 import net.oneandone.sushi.fs.http.HttpNode;
 import net.oneandone.sushi.fs.http.model.HeaderList;
@@ -92,7 +91,7 @@ public class Bitbucket {
         world = World.create(false);
         bitbucket = new Bitbucket((HttpNode) world.validNode("https://bitbucket.1and1.org/rest/api/1.0"));
         latestCommit = bitbucket.latestCommit(project, repository, "master");
-        files = bitbucket.files(project, repository, latestCommit, world.filter().include("**/*.java"));
+        files = bitbucket.files(project, repository, latestCommit);
         directories = directories(files);
         System.out.println("files: " + files.size() + " " + files);
         System.out.println("directories: " + directories.size() + " " + directories);
@@ -103,7 +102,7 @@ public class Bitbucket {
         System.out.println("contentMap: " + contentMap.size() + " " + contentMap);
     }
 
-    public static List<String> directories(List<String> files) {
+    private static List<String> directories(List<String> files) {
         List<String> directories;
         int idx;
         String directory;
@@ -219,16 +218,11 @@ public class Bitbucket {
      * @param at revision
      */
     // curl 'https://bitbucket.1and1.org/rest/api/1.0/projects/CISOOPS/repos/lavender-test-module/files'  | python -m json.tool
-    public List<String> files(String project, String repository, String at, Filter filter) throws IOException {
+    public List<String> files(String project, String repository, String at) throws IOException {
         List<String> result;
 
         result = new ArrayList<>();
-        getPaged(element -> {
-            String path = element.getAsString();
-            if (filter == null || filter.matches(path)) {
-                result.add(path);
-            }
-        }, api.join("projects", project, "repos", repository, "files"), "at", at);
+        getPaged(element -> result.add(element.getAsString()), api.join("projects", project, "repos", repository, "files"), "at", at);
         return result;
     }
 
