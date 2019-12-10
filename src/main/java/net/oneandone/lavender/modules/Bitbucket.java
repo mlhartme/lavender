@@ -22,7 +22,6 @@ import com.google.gson.JsonParser;
 import net.oneandone.lavender.config.UsernamePassword;
 import net.oneandone.sushi.fs.NodeInstantiationException;
 import net.oneandone.sushi.fs.World;
-import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.http.HttpFilesystem;
 import net.oneandone.sushi.fs.http.HttpNode;
 import net.oneandone.sushi.fs.http.model.HeaderList;
@@ -30,7 +29,6 @@ import net.oneandone.sushi.io.Buffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -79,50 +77,38 @@ public class Bitbucket {
     private static final String NULL_COMMIT = "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
 
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
-        digests();
-        run();
+        run("CISOOPS", "lavender-test-module");
     }
 
-    public static void digests() throws IOException, NoSuchAlgorithmException {
-        World world;
-        FileNode file;
-
-        world = World.create();
-        System.out.println("bitbucket content id: d9ffe8f740c9e629005a5c30de53c92e757dfb22");
-        file = world.file("/Users/mhm/lavender-test-module/README");
-        for (String name : new String[] { "md5", "sha", "sha-1", "sha-256", "sha-384", "sha-512"}) {
-            System.out.println(name + ": " + file.digest(name));
-        }
-    }
-
-    public static void run() throws IOException {
+    public static void run(String project, String repository) throws IOException {
         World world;
         Bitbucket bitbucket;
-        FileNode cache;
-
-        String cachedCommit;
-        String latestCommit;
         List<String> files;
-        Map<String, String> changes;
+        List<String> directories;
+        String latestCommit;
+        int idx;
+        String directory;
+        Map<String, String> contentMap;
 
         world = World.create(false);
-        cache = world.file("cache");
         bitbucket = new Bitbucket((HttpNode) world.validNode("https://bitbucket.1and1.org/rest/api/1.0"));
-        latestCommit = bitbucket.latestCommit("CISOOPS", "lavender-test-module", "master");
-        if (cache.exists()) {
-            System.out.println("no cache");
-            files = cache.readLines();
-            cachedCommit = files.remove(0);
-            changes = bitbucket.changes("CISOOPS", "lavender-test-module", latestCommit, cachedCommit);
-            System.out.println("changes: " + changes);
-        } else {
-            files = bitbucket.files("CISOOPS", "lavender-test-module", latestCommit);
-            System.out.println("files: " + files);
-            System.out.println("changes: " + bitbucket.changes("CISOOPS", "lavender-test-module", latestCommit, NULL_COMMIT));
+        latestCommit = bitbucket.latestCommit(project, repository, "master");
+        files = bitbucket.files(project, repository, latestCommit);
+        directories = new ArrayList<>();
+        for (String file : files) {
+            idx = file.lastIndexOf('/');
+            directory = idx == -1 ? "" : file.substring(0, idx);
+            if (!directories.contains(directory)) {
+                directories.add(directory);
+            }
         }
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        bitbucket.writeTo("CISOOPS", "lavender-test-module", "README", latestCommit, buffer);
-        System.out.println("file: " + buffer.toString());
+        System.out.println("files: " + files);
+        System.out.println("directories: " + directories);
+        contentMap = new HashMap<>();
+        for (String d : directories) {
+            bitbucket.lastModified(project, repository, d, latestCommit, contentMap);
+        }
+        System.out.println("contentMap: " + contentMap);
     }
 
     private final HttpNode api;
@@ -168,6 +154,23 @@ public class Bitbucket {
             case 1:
                 return result.get(0);
             default: throw new IOException(branchOrTag + ": tag ambiguous: " + result);
+        }
+    }
+
+    public void lastModified(String project, String repository, String directory, String at,
+                                 Map<String, String> result) throws IOException {
+        HttpNode req;
+        JsonObject response;
+
+        req = api.join("projects", project, "repos", repository, "last-modified/" + directory).withParameter("at", at);
+        response = parser.parse(req.readString()).getAsJsonObject();
+        for (Map.Entry<String, JsonElement> entry : response.get("files").getAsJsonObject().entrySet()) {
+            String name;
+            String path;
+
+            name = entry.getKey();
+            path = directory.isEmpty() ? name : directory + "/" + name;
+            result.put(name, entry.getValue().getAsJsonObject().get("id").getAsString() + "@" + path);
         }
     }
 
