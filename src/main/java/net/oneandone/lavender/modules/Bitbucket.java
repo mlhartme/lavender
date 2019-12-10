@@ -87,14 +87,27 @@ public class Bitbucket {
         List<String> files;
         List<String> directories;
         String latestCommit;
-        int idx;
-        String directory;
         Map<String, String> contentMap;
 
         world = World.create(false);
         bitbucket = new Bitbucket((HttpNode) world.validNode("https://bitbucket.1and1.org/rest/api/1.0"));
         latestCommit = bitbucket.latestCommit(project, repository, "master");
         files = bitbucket.files(project, repository, latestCommit, world.filter().include("**/*.java"));
+        directories = directories(files);
+        System.out.println("files: " + files.size() + " " + files);
+        System.out.println("directories: " + directories.size() + " " + directories);
+        contentMap = new HashMap<>();
+        for (String d : directories) {
+            bitbucket.lastModified(project, repository, d, latestCommit, contentMap);
+        }
+        System.out.println("contentMap: " + contentMap.size() + " " + contentMap);
+    }
+
+    public static List<String> directories(List<String> files) {
+        List<String> directories;
+        int idx;
+        String directory;
+
         directories = new ArrayList<>();
         for (String file : files) {
             idx = file.lastIndexOf('/');
@@ -103,13 +116,7 @@ public class Bitbucket {
                 directories.add(directory);
             }
         }
-        System.out.println("files: " + files.size() + " " + files);
-        System.out.println("directories: " + directories.size() + " " + directories);
-        contentMap = new HashMap<>();
-        for (String d : directories) {
-            bitbucket.lastModified(project, repository, d, latestCommit, contentMap);
-        }
-        System.out.println("contentMap: " + contentMap.size() + " " + contentMap);
+        return directories;
     }
 
     private final HttpNode api;
