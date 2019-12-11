@@ -2,13 +2,12 @@
 
 ### 2.8.0 (2019-12-11)
 
-* Bitbucket support
-  * fixed missing images due to lavender.properties `path` not removed from accessPath
-  * fixed missing images if repository history longer then 1000 entries
-  * fixed encoding problem in userInfo
-
-* softInvalidateEntries invalidates after 10 seconds now (was 5)
 * reject legacy configuration
+* softInvalidateEntries invalidates after 10 seconds now (was 5)
+* Bitbucket support
+  * fixed missing images due to lavender.properties `path` not removed from accessPath (thanks to Alex M)
+  * fixed missing images if repository history longer then 1000 entries (for Alex M)
+  * fixed encoding problem in userInfo (for Lars H)
 
 
 ### 2.7.5 (2019-11-25)
