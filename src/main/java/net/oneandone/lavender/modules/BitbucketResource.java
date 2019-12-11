@@ -42,7 +42,11 @@ public class BitbucketResource extends Resource {
 
     @Override
     public String getContentId() {
-        return entry.contentId;
+        try {
+            return entry.getContentId();
+        } catch (IOException e) {
+            throw new RuntimeException("TODO", e);
+        }
     }
 
     @Override

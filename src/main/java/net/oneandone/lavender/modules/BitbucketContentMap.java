@@ -40,7 +40,7 @@ public class BitbucketContentMap {
         this.fallbackDirectories = new HashMap<>();
     }
 
-    public String lookup(String path) throws IOException {
+    public synchronized String lookup(String path) throws IOException {
         String contentId;
         int idx;
         String directory;
@@ -69,7 +69,7 @@ public class BitbucketContentMap {
         return contentId + "@" + path;
     }
 
-    public int size() {
+    public synchronized int size() {
         return files.size();
     }
 }

@@ -81,7 +81,7 @@ public class BitbucketModule extends Module<BitbucketEntry> {
                         publicPath = accessPath;
                     }
                     if (publicPath != null) {
-                        result.put(publicPath, new BitbucketEntry(publicPath, accessPath, contentMap.lookup(accessPath)));
+                        result.put(publicPath, new BitbucketEntry(publicPath, accessPath, contentMap));
                     }
                 }
             }
