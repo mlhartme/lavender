@@ -28,7 +28,10 @@ public class BitbucketContentMap {
     /** path -> last modified commit hash */
     private final Map<String, String> files;
 
-    /** dirs where last modified did not return files: path -> last modified commit hash of the dir */
+    /**
+     * dirs where last modified did not return files: path -> last modified commit hash of the dir.
+     * Seems to happen for large directories.
+     */
     private final Map<String, String> fallbackDirectories;
 
     public BitbucketContentMap(Bitbucket bitbucket, String project, String repository, String at) {

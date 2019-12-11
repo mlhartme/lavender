@@ -179,7 +179,8 @@ public class Bitbucket {
     }
 
     /**
-     * Does not return removals!
+     * Does not return removals! CAUTION: Bitbucket returns 1000 max entries, even though I use paging,
+     * which makes this method useless for real-world apps.
      *
      * @param from commit that contains the requested changes
      * @param to   what to compare to, in my case the last revision I've seen - or the null revision
