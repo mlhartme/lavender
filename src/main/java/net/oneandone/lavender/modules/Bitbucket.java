@@ -26,8 +26,6 @@ import net.oneandone.sushi.fs.http.HttpFilesystem;
 import net.oneandone.sushi.fs.http.HttpNode;
 import net.oneandone.sushi.fs.http.model.HeaderList;
 import net.oneandone.sushi.io.Buffer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +33,6 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,8 +44,6 @@ import java.util.Map;
  * TODO: https://developer.atlassian.com/bitbucket/api/2/reference/resource/
  */
 public class Bitbucket {
-    private static final Logger LOG = LoggerFactory.getLogger(Bitbucket.class);
-
     public static Bitbucket create(World world, String hostname, UsernamePassword up) throws NodeInstantiationException {
         String credentials;
         String wireLog;
@@ -76,7 +71,7 @@ public class Bitbucket {
     // https://stackoverflow.com/questions/9765453/is-gits-semi-secret-empty-tree-object-reliable-and-why-is-there-not-a-symbolic
     private static final String NULL_COMMIT = "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
 
-    public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
+    public static void main(String[] args) throws IOException {
         run("CISOOPS", "puc");
     }
 
@@ -164,7 +159,7 @@ public class Bitbucket {
         }
     }
 
-    public void lastModified(String project, String repository, String directory, String at,
+    public String lastModified(String project, String repository, String directory, String at,
                                  Map<String, String> result) throws IOException {
         HttpNode req;
         JsonObject response;
@@ -179,6 +174,7 @@ public class Bitbucket {
             path = directory.isEmpty() ? name : directory + "/" + name;
             result.put(path, entry.getValue().getAsJsonObject().get("id").getAsString());
         }
+        return response.get("latestCommit").getAsJsonObject().get("id").getAsString();
     }
 
     /**
@@ -324,7 +320,8 @@ public class Bitbucket {
             }
             next = response.get("nextPageStart");
             if (next.isJsonNull()) {
-                throw new IOException("TODO: this seems to indicate we've hit a hard server limit: there are more entries, but it won't return them ...");
+                throw new IOException("TODO: this seems to indicate we've hit a hard server limit: "
+                        + "there are more entries, but it won't return them ...");
             }
             start = next.getAsInt();
         }
