@@ -35,6 +35,7 @@ public class BitbucketModule extends Module<BitbucketEntry> {
     private final PustefixJarConfig config;
 
     private String loadedRevision;
+    private BitbucketContentMap contentMap;
 
     // CHECKSTYLE:OFF
     public BitbucketModule(Bitbucket bitbucket, String project, String repository, String branchOrTag, String accessPathPrefix,
@@ -52,6 +53,7 @@ public class BitbucketModule extends Module<BitbucketEntry> {
         this.config = config;
 
         this.loadedRevision = null;
+        this.contentMap = null;
     }
     // CHECKSTYLE:ON
 
@@ -62,7 +64,6 @@ public class BitbucketModule extends Module<BitbucketEntry> {
         Filter filter;
         String publicPath;
         String relativeAccessPath;
-        BitbucketContentMap contentMap;
 
         loadedRevision = bitbucket.latestCommit(project, repository, branchOrTag);
         if (loadedRevision == null) {
@@ -72,7 +73,9 @@ public class BitbucketModule extends Module<BitbucketEntry> {
         accessPaths = bitbucket.files(project, repository, loadedRevision);
         filter = getFilter();
         result = new HashMap<>();
-        contentMap = new BitbucketContentMap(bitbucket, project, repository, loadedRevision);
+        if (contentMap == null) {
+            contentMap = new BitbucketContentMap(bitbucket, project, repository, loadedRevision);
+        }
         for (String accessPath : accessPaths) {
             if (accessPath.startsWith(accessPathPrefix)) {
                 relativeAccessPath = accessPath.substring(accessPathPrefix.length());

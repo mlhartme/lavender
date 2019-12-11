@@ -102,7 +102,7 @@ public abstract class Module<T> implements Iterable<Resource> {
         return lazyEntries;
     }
 
-    /** invalidate entries if it's older than 5 seconds */
+    /** invalidate entries if it's older than 10 seconds */
     public boolean softInvalidateEntries() {
         if (System.currentTimeMillis() - lastScan < 5000) {
             return false;
