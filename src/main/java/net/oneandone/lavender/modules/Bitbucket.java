@@ -41,7 +41,8 @@ import java.util.Map;
 /**
  * Bitbucket rest api. As of 2018-09-18, we have bitbucket server 5.13.1. As of 2019-12-10 we have 6.8.0
  * <a href="https://docs.atlassian.com/bitbucket-server/rest/6.8.0/bitbucket-rest.html">Rest API documentation</a>
- * TODO: https://developer.atlassian.com/bitbucket/api/2/reference/resource/
+ * Note that there are also Cloud APIs (https://developer.atlassian.com/bitbucket/api/2/reference/resource/), but they
+ * are not available on our server.
  */
 public class Bitbucket {
     public static Bitbucket create(World world, String hostname, UsernamePassword up) throws NodeInstantiationException {
