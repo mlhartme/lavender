@@ -197,7 +197,7 @@ public class SvnModule extends Module<SvnEntry> {
                 new ISVNDirEntryHandler() {
             @Override
             public void handleDirEntry(SVNDirEntry entry) {
-                String accessPath;
+                String accessPath;  // does *not* included lavender.properties path (because the path was appended to scm url)
                 String publicPath;
 
                 if (entry.getKind() == SVNNodeKind.FILE) {

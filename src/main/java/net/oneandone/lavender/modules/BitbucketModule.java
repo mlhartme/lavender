@@ -27,6 +27,8 @@ public class BitbucketModule extends Module<BitbucketEntry> {
     private final String project;
     private final String repository;
     private final String branchOrTag;
+
+    /** this is the path from the lavender.properties (SvnModule doesn't have this field - it's appended to the svnurl instead */
     private final String accessPathPrefix;
 
     /** may be null */
@@ -78,7 +80,7 @@ public class BitbucketModule extends Module<BitbucketEntry> {
                     if (config != null) {
                         publicPath = config.getPath(relativeAccessPath);
                     } else {
-                        publicPath = accessPath;
+                        publicPath = relativeAccessPath;
                     }
                     if (publicPath != null) {
                         result.put(publicPath, new BitbucketEntry(publicPath, accessPath, contentMap));
