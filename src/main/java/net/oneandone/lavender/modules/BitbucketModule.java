@@ -60,7 +60,7 @@ public class BitbucketModule extends Module<BitbucketEntry> {
         Filter filter;
         String publicPath;
         String relativeAccessPath;
-        Map<String, String> contentMap; // accessPath -> contentId
+        BitbucketContentMap contentMap;
 
         loadedRevision = bitbucket.latestCommit(project, repository, branchOrTag);
         if (loadedRevision == null) {
@@ -70,7 +70,7 @@ public class BitbucketModule extends Module<BitbucketEntry> {
         accessPaths = bitbucket.files(project, repository, loadedRevision);
         filter = getFilter();
         result = new HashMap<>();
-        contentMap = new HashMap<>();
+        contentMap = new BitbucketContentMap(bitbucket, project, repository, loadedRevision);
         for (String accessPath : accessPaths) {
             if (accessPath.startsWith(accessPathPrefix)) {
                 relativeAccessPath = accessPath.substring(accessPathPrefix.length());
@@ -81,34 +81,12 @@ public class BitbucketModule extends Module<BitbucketEntry> {
                         publicPath = accessPath;
                     }
                     if (publicPath != null) {
-                        result.put(publicPath, new BitbucketEntry(publicPath, accessPath,
-                                contentId(bitbucket, project, repository, loadedRevision, accessPath, contentMap)));
+                        result.put(publicPath, new BitbucketEntry(publicPath, accessPath, contentMap.lookup(accessPath)));
                     }
                 }
             }
         }
         return result;
-    }
-
-    private static String contentId(Bitbucket bitbucket, String project, String repository, String at, String path,
-                                    Map<String, String> contentMap) throws IOException {
-        String contentId;
-        int idx;
-        String directory;
-
-        contentId = contentMap.get(path);
-        if (contentId == null) {
-            idx = path.lastIndexOf('/');
-            directory = idx == -1 ? "" : path.substring(0, idx);
-            System.out.println("> lastModified " + directory + " " + contentMap.size());
-            bitbucket.lastModified(project, repository, directory, at, contentMap);
-            System.out.println("< lastModified " + directory + " " + contentMap.size());
-            contentId = contentMap.get(path);
-            if (contentId == null) {
-                throw new IllegalStateException(path);
-            }
-        }
-        return contentId + "@" + path;
     }
 
     @Override
