@@ -57,7 +57,6 @@ public class ModuleProperties extends PropertiesBase {
         Node src;
         Properties pominfo;
         Properties properties;
-        String str;
 
         src = webapp.join(ModuleProperties.APP_PROPERTIES);
         src.checkFile();
@@ -77,11 +76,15 @@ public class ModuleProperties extends PropertiesBase {
             } catch (Exception e) {
                 throw new IOException("failed to check legacy applications: " + e.getMessage(), e);
             }
+            throw new IOException("legacy apps no longer supported");
         } else {
             legacy.addAll(Separator.COMMA.split(PropertiesBase.eatOpt(properties, "legacy", "")));
+            if (!legacy.isEmpty()) {
+                throw new IOException("legacy modules no longer supported");
+            }
+            LOG.info("legacy modules: " + legacy);
+            return parse(prod, properties, pominfo);
         }
-        LOG.info("legacy modules: " + legacy);
-        return parse(prod, properties, pominfo);
     }
 
     public static ModuleProperties loadModule(boolean prod, Node root, Node pominfo) throws IOException {

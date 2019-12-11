@@ -1,10 +1,13 @@
 ## Changelog 
 
-### 2.7.6 (pending)
+### 2.8.0 (pending)
 
 * Bitbucket support
+  * fixed missing images if repository history longer then 1000 entries
   * fixed encoding problem in userInfo
   
+* reject legacy configuration
+
 
 ### 2.7.5 (2019-11-25)
 
