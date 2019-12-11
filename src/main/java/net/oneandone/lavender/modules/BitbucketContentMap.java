@@ -25,38 +25,51 @@ public class BitbucketContentMap {
     private final String repository;
     private final String at;
 
+    /** path -> last modified commit hash */
+    private final Map<String, String> files;
 
-    private final Map<String, String> map;
+    /** dirs where last modified did not return files: path -> last modified commit hash of the dir */
+    private final Map<String, String> fallbackDirectories;
 
     public BitbucketContentMap(Bitbucket bitbucket, String project, String repository, String at) {
         this.bitbucket = bitbucket;
         this.project = project;
         this.repository = repository;
         this.at = at;
-        this.map = new HashMap<>();
+        this.files = new HashMap<>();
+        this.fallbackDirectories = new HashMap<>();
     }
 
     public String lookup(String path) throws IOException {
         String contentId;
         int idx;
         String directory;
+        String direcotoryId;
 
-        contentId = map.get(path);
+        contentId = files.get(path);
         if (contentId == null) {
             idx = path.lastIndexOf('/');
             directory = idx == -1 ? "" : path.substring(0, idx);
-            System.out.println("last-modified " + directory + " ...");
-            bitbucket.lastModified(project, repository, directory, at, map);
-            System.out.println("last-modified " + directory + " " + map.size());
-            contentId = map.get(path);
-            if (contentId == null) {
-                throw new IllegalStateException(path);
+
+            contentId = fallbackDirectories.get(directory);
+            if (contentId != null) {
+                System.out.println("using fallback id: " + path + " " + contentId);
+            } else {
+                System.out.println("last-modified " + directory + " ...");
+                direcotoryId = bitbucket.lastModified(project, repository, directory, at, files);
+                System.out.println("last-modified " + directory + " " + files.size());
+                contentId = files.get(path);
+                if (contentId == null) {
+                    System.out.println("adding fallbackDirectory: " + path + " " + direcotoryId);
+                    fallbackDirectories.put(directory, direcotoryId);
+                    contentId = direcotoryId;
+                }
             }
         }
         return contentId + "@" + path;
     }
 
     public int size() {
-        return map.size();
+        return files.size();
     }
 }
