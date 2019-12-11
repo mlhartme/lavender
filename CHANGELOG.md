@@ -3,6 +3,7 @@
 ### 2.8.0 (pending)
 
 * Bitbucket support
+  * fixed missing images due to lavender.properties `path` not removed from accessPath
   * fixed missing images if repository history longer then 1000 entries
   * fixed encoding problem in userInfo
   
