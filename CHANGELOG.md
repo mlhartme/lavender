@@ -8,6 +8,7 @@
   * fixed missing images due to lavender.properties `path` not removed from accessPath (thanks to Alex M)
   * fixed missing images if repository history longer then 1000 entries (for Alex M)
   * fixed encoding problem in userInfo (for Lars H)
+  * added printlns to detect api bottlenecks
 
 
 ### 2.7.5 (2019-11-25)
