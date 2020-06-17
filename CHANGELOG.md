@@ -3,6 +3,7 @@
 ### 2.8.1 (2020-06-17)
 
 * added support for <link rel="preload"> (thanks to Andreas P)
+* updated parent 1.3.2 to 1.3.4
 
 
 ### 2.8.0 (2019-12-11)
