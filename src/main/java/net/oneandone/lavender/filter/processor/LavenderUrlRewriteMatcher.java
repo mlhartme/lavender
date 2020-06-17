@@ -38,7 +38,7 @@ public enum LavenderUrlRewriteMatcher implements UrlRewriteMatcher {
 
     IMG_MATCHER(SRC, p -> p.getTag() == IMG, true),
     IMG_SOURCESET_MATCHER(SRCSET, p -> p.getTag() == IMG, false),
-    LINK_MATCHER(HREF, p -> p.getTag() == LINK && Arrays.asList("stylesheet", "icon", "shortcut icon").contains(p.getAttribute(REL)), false),
+    LINK_MATCHER(HREF, p -> p.getTag() == LINK && Arrays.asList("stylesheet", "icon", "shortcut icon", "preload").contains(p.getAttribute(REL)), false),
     SCRIPT_MATCHER(SRC, p -> p.getTag() == SCRIPT && (("text/javascript".equals(p.getAttribute(TYPE))) || !p.containsAttribute(TYPE)), false),
     INPUT_MATCHER(SRC, p -> p.getTag() == INPUT && "image".equals(p.getAttribute(TYPE)), false),
     A_MATCHER(HREF, p -> p.getTag() == A, false),

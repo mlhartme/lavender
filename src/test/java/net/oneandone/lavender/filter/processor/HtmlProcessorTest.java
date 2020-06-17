@@ -287,6 +287,18 @@ public class HtmlProcessorTest {
 
         assertEquals(expected, out.getBuffer().toString());
     }
+    
+    @Test
+    public void testOnlyLinkRelPreload() throws IOException {
+
+        String input = "<link rel='other' href='/x/y/z' /><link href='/x/y/z' /><link rel='preload' href='/x/y/z' />";
+        String expected = "<link rel='other' href='/x/y/z' /><link href='/x/y/z' /><link rel='preload' href='http://a.b.c' />";
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(expected, out.getBuffer().toString());
+    }
 
     @Test
     public void testOnlyScriptTypeTextJavascript() throws IOException {
