@@ -1,5 +1,10 @@
 ## Changelog 
 
+### 2.8.1 (2020-06-17)
+
+* added support for <link rel="preload"> (thanks to Andreas P)
+
+
 ### 2.8.0 (2019-12-11)
 
 * reject legacy configuration
