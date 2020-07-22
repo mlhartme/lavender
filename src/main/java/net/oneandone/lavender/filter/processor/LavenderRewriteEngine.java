@@ -148,10 +148,14 @@ public class LavenderRewriteEngine implements RewriteEngine {
             return reference;
         }
 
-        return calculateURL(label, baseURI);
+        return calculateURL(label, baseURI, reference.getQuery());
     }
 
     public URI calculateURL(Label label, URI baseURI) {
+        return calculateURL(label, baseURI, null);
+    }
+
+    public URI calculateURL(Label label, URI baseURI, String query) {
         if (label.getLavendelizedPath() == null) {
             throw new IllegalStateException();
         }
@@ -162,7 +166,7 @@ public class LavenderRewriteEngine implements RewriteEngine {
         String path = nodeURI.getPath() + lavendelizedPath;
         int port = nodeURI.getPort();
         try {
-            return new URI(nodeURI.getScheme(), null, node, port, path, null, null);
+            return new URI(nodeURI.getScheme(), null, node, port, path, query, null);
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException(e);
         }

@@ -58,6 +58,11 @@ public class LavenderRewriteEngineTest {
     }
 
     @Test
+    public void rewritePreservesQueryParameter() {
+        assertEquals("http://s1.cdn.net/out.jpg?param=1", engine.rewrite("http://localhost:80/in.jpg?param=1", URI.create("http://localhost:80"), "/"));
+    }
+
+    @Test
     public void rewriteImplicitProtocol() {
         assertEquals("http://s1.cdn.net/out.jpg", engine.rewrite("//localhost:80/in.jpg", URI.create("http://localhost:80"), "/"));
     }
