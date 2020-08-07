@@ -3,7 +3,9 @@
 ### 2.9.0 (pending)
 
 * changed HostProperties.network from Node to URI to avoid svn access (for Ionos Shops)
-
+  CAUTION: this is an incompatible api change (although it's unlikely that this field is
+  used by none-lavender code)
+  
 
 ### 2.8.1 (2020-06-17)
 
