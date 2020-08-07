@@ -1,5 +1,10 @@
 ## Changelog 
 
+### 2.9.0 (pending)
+
+* changed HostProperties.network from Node to URI to avoid svn access (for Ionos Shops)
+
+
 ### 2.8.1 (2020-06-17)
 
 * added support for <link rel="preload"> (thanks to Andreas P)

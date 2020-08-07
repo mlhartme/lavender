@@ -35,7 +35,7 @@ public class HostPropertiesTest {
 
         world = World.create(false);
         properties = HostProperties.load(world.guessProjectHome(Network.class).join("src/test/config/host.properties"), false);
-        network = Network.load(properties.network);
+        network = Network.load(world.node(properties.network));
         cluster = network.lookup("local");
         assertNotNull(cluster);
         assertEquals("local", cluster.getName());

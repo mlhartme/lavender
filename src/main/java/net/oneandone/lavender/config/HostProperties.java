@@ -80,7 +80,7 @@ public class HostProperties extends PropertiesBase {
         FileNode cache;
         Secrets secrets;
         World world;
-        Node network;
+        URI network;
         HostProperties result;
         Node<?> root;
 
@@ -114,9 +114,9 @@ public class HostProperties extends PropertiesBase {
         }
         str = eatOpt(properties, "network", null);
         if (str == null) {
-            network = file.getParent().join("network.xml");
+            network = file.getParent().join("network.xml").getUri();
         } else {
-            network = world.node(secrets.withSecrets(new URI(str)));
+            network = secrets.withSecrets(new URI(str));
         }
         result = new HostProperties(world, cache, network, secrets);
         for (String key : properties.stringPropertyNames()) {
@@ -139,11 +139,13 @@ public class HostProperties extends PropertiesBase {
     private final FileNode cache;
     /** don't store the node, so I can create properties without accessing svn (and thus without svn credentials) */
     private final Map<String, URI> scms;
-    public final Node network;
+
+    /** caution: URI, not node to avoid access */
+    public final URI network;
     public final Secrets secrets;
     private final List<Node> sshKeys;
 
-    public HostProperties(World world, FileNode cache, Node network, Secrets secrets) {
+    public HostProperties(World world, FileNode cache, URI network, Secrets secrets) {
         this.world = world;
         this.cache = cache;
         this.scms = new HashMap<>();
