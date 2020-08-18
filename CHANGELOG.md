@@ -1,6 +1,6 @@
 ## Changelog 
 
-### 2.9.0 (pending)
+### 2.9.0 (2020-08-18)
 
 * changed HostProperties.network from Node to URI to avoid svn access (for Ionos Shops)
   CAUTION: this is an incompatible api change (although it's unlikely that this field is
