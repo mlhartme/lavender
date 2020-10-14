@@ -15,14 +15,14 @@
  */
 package net.oneandone.lavender.filter;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class WriterOutputStreamTest {
     private static final String UTF_8 = "UTF-8";
@@ -30,7 +30,7 @@ public class WriterOutputStreamTest {
     private WriterOutputStream wos;
     private StringWriter result;
 
-    @Before
+    @BeforeEach
     public void setup() {
         result = new StringWriter();
         wos = WriterOutputStream.create(result, UTF_8);

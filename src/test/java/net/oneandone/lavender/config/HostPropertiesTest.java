@@ -16,13 +16,13 @@
 package net.oneandone.lavender.config;
 
 import net.oneandone.sushi.fs.World;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /** Host properties, secrets, and network. */
 public class HostPropertiesTest {

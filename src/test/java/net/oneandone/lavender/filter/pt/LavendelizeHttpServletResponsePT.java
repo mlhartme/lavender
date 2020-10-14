@@ -17,21 +17,21 @@ package net.oneandone.lavender.filter.pt;
 
 import net.oneandone.lavender.filter.LavendelizeHttpServletResponse;
 import net.oneandone.lavender.filter.processor.LavenderProcessorFactory;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import javax.servlet.ServletOutputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Runs a performance test.
  */
-@Ignore
+@Disabled
 public class LavendelizeHttpServletResponsePT {
 
     private static URI requestURI;
@@ -39,7 +39,7 @@ public class LavendelizeHttpServletResponsePT {
     private static LavenderProcessorFactory processorFactory;
     private static String content;
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         content = "";
         for (int i = 0; i < 1000; i++) {

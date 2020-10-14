@@ -15,8 +15,8 @@
  */
 package net.oneandone.lavender.filter;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -24,12 +24,12 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,7 +38,7 @@ public class LavendelizeHttpServletRequestTest {
     private LavendelizeHttpServletRequest request;
     private HttpServletRequest wrappedRequest;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         wrappedRequest = mock(HttpServletRequest.class);
         request = new LavendelizeHttpServletRequest(wrappedRequest);

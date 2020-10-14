@@ -16,14 +16,15 @@
 package net.oneandone.lavender.modules;
 
 import net.oneandone.sushi.util.Separator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ModulePropertiesTest {
     @Test
@@ -81,24 +82,28 @@ public class ModulePropertiesTest {
         assertEquals("scm:svn:someurl", config.connectionDevel);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void legacyUndefinedNormal() throws IOException {
+    @Test()
+    public void legacyUndefinedNormal() {
         Properties props;
 
         props = new Properties();
         props.put("pustefix.excludes", "**/*");
-        ModuleProperties.parse(true, props, pomInfo());
+        assertThrows(IllegalArgumentException.class, () -> {
+            ModuleProperties.parse(true, props, pomInfo());
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void legacyUndefinedSvn() throws IOException {
+    @Test()
+    public void legacyUndefinedSvn() {
         Properties props;
 
         props = new Properties();
         props.put("pustefix.relative", "foo");
         props.put("pustefix.excludes", "**/*");
         props.put("svn.module.nosuchkey", "bla");
-        ModuleProperties.parse(true, props, pomInfo());
+        assertThrows(IllegalArgumentException.class, () -> {
+            ModuleProperties.parse(true, props, pomInfo());
+        });
     }
 
     @Test

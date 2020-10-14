@@ -15,15 +15,15 @@
  */
 package net.oneandone.lavender.filter.processor;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URI;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -35,7 +35,7 @@ public class HtmlProcessorTest {
     protected StringWriter out;
     protected Processor processor;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         RewriteEngine rewriteEngine = mock(RewriteEngine.class);
         when(rewriteEngine.rewrite(any(String.class), eq(URI.create("http://x.y.z")), anyString())).thenReturn("http://a.b.c");
@@ -430,7 +430,7 @@ public class HtmlProcessorTest {
     }
 
     @Test
-    @Ignore("invalid test")
+    @Disabled("invalid test")
     public void testEscapedSingleQuotes() throws IOException {
 
         String input = "...<img alt=' \\' \" \" ' src='/a/b/c'>...";
@@ -443,7 +443,7 @@ public class HtmlProcessorTest {
     }
 
     @Test
-    @Ignore("invalid test")
+    @Disabled("invalid test")
     public void testEscapedDoubleQuotes() throws IOException {
 
         String input = "...<img alt=\" ' \\' \\\" \\\" \" src=\"/a/b/c\">...";

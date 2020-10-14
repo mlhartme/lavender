@@ -16,14 +16,14 @@
 package net.oneandone.lavender.filter.processor;
 
 import net.oneandone.sushi.fs.World;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URI;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -37,7 +37,7 @@ public class CssProcessorTest {
     protected CssProcessor processor;
     protected RewriteEngine rewriteEngine;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         rewriteEngine = mock(RewriteEngine.class);
         when(rewriteEngine.rewrite(eq("/x/y/z.gif"), eq(URI.create("http://x.y.z")), anyString())).thenReturn("http://a.b.c");

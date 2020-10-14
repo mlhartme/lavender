@@ -16,15 +16,15 @@
 package net.oneandone.lavender.filter;
 
 import net.oneandone.lavender.filter.processor.Processor;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
 import java.io.Writer;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
@@ -40,7 +40,7 @@ public class LavendelizeWriterTest {
     protected LavendelizeWriter lw;
     protected ReaderAnswer reader;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         processor = mock(Processor.class);
 

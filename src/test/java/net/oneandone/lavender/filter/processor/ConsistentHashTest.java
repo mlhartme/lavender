@@ -17,21 +17,22 @@ package net.oneandone.lavender.filter.processor;
 
 import net.oneandone.lavender.index.Hex;
 import net.oneandone.lavender.index.Util;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ConsistentHashTest {
 
     private ConsistentHash ch;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ch = new ConsistentHash(200, new String[] { "n1", "n2", "n3", "n4" });
     }
@@ -52,11 +53,13 @@ public class ConsistentHashTest {
         assertEquals(600, ch.circle.size());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test()
     public void testEmptyCircle() {
         ConsistentHash consistentHash = new ConsistentHash(200, new String[] {});
         byte[] md5 = Util.md5();
-        consistentHash.getNodeForHash(md5);
+        assertThrows(IllegalStateException.class, () -> {
+            consistentHash.getNodeForHash(md5);
+        });
     }
 
     @Test

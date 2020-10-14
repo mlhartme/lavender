@@ -18,8 +18,8 @@ package net.oneandone.lavender.filter;
 import net.oneandone.lavender.filter.processor.LavenderProcessorFactory;
 import net.oneandone.lavender.filter.processor.Processor;
 import net.oneandone.sushi.io.MultiWriter;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -29,12 +29,13 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -46,7 +47,7 @@ public class LavendelizeHttpServletResponseTest {
     private HttpServletResponse wrappedResponse;
     private LavenderProcessorFactory processorFactory;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         wrappedResponse = mock(HttpServletResponse.class);
         processorFactory = mock(LavenderProcessorFactory.class);
@@ -98,13 +99,15 @@ public class LavendelizeHttpServletResponseTest {
         assertSame(writer, response.getWriter());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test()
     public void testGetOutputStreamAfterGetWriter() throws IOException {
         PrintWriter wrappedWriter = new PrintWriter(MultiWriter.createNullWriter());
         when(wrappedResponse.getWriter()).thenReturn(wrappedWriter);
 
-        response.getWriter();
-        response.getOutputStream();
+        assertThrows(IllegalStateException.class, () -> {
+            response.getWriter();
+            response.getOutputStream();
+        });
     }
 
     @Test
@@ -140,7 +143,7 @@ public class LavendelizeHttpServletResponseTest {
         assertSame(outputStream, response.getOutputStream());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test()
     public void testGetWriterAfterGetOutputStream() throws IOException {
         ServletOutputStream wrappedOutputStream = new ServletOutputStream() {
             public void write(int b) {
@@ -150,8 +153,10 @@ public class LavendelizeHttpServletResponseTest {
         when(wrappedResponse.getWriter()).thenReturn(new PrintWriter(new StringWriter()));
         when(wrappedResponse.getOutputStream()).thenReturn(wrappedOutputStream);
 
-        response.getOutputStream();
-        response.getWriter();
+        assertThrows(IllegalStateException.class, () -> {
+            response.getOutputStream();
+            response.getWriter();
+        });
     }
 
     @Test

@@ -15,8 +15,8 @@
  */
 package net.oneandone.lavender.filter.it;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +24,7 @@ public class ErrorToolNGTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(ErrorToolNGTest.class);
 
-    @Ignore
+    @Disabled
     @Test
     public void testErrorToolNG() throws Exception {
         LOG.error("This is my error message.", new RuntimeException("abc"));

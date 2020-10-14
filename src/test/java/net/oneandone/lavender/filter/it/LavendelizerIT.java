@@ -19,9 +19,9 @@ import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.io.Buffer;
 import org.apache.catalina.startup.Tomcat;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -32,8 +32,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Runs Lavendelizer in Tomcat.
@@ -45,7 +45,7 @@ public class LavendelizerIT {
     private static final int PORT = 8087;
     private static Tomcat container;
 
-    @BeforeClass
+    @BeforeAll
     public static void startTomcat() throws Exception {
         FileNode dest = HOME.join("target/testapp1");
 
@@ -57,7 +57,7 @@ public class LavendelizerIT {
         container.start();
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopTomcat() throws Exception {
         if (container != null) {
             container.stop();
@@ -103,7 +103,7 @@ public class LavendelizerIT {
         String content;
 
         content = doGet("encoding.html");
-        assertTrue(content, content.contains("äöüÄÖÜß€µ"));
+        assertTrue(content.contains("äöüÄÖÜß€µ"));
     }
 
 

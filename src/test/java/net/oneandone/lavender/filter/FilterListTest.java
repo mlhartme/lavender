@@ -15,8 +15,8 @@
  */
 package net.oneandone.lavender.filter;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -65,7 +65,7 @@ public class FilterListTest {
 
     private List<Filter> filters;
 
-    @Before
+    @BeforeEach
     public void setUp () {
         MockitoAnnotations.initMocks(this);
 

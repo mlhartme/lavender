@@ -18,21 +18,20 @@ package net.oneandone.lavender.modules;
 import net.oneandone.lavender.index.Hex;
 import net.oneandone.lavender.index.Util;
 import net.oneandone.sushi.fs.World;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ResourceTest {
     private static final World WORLD = World.createMinimal();
     private Resource resource;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         resource = NodeResource.forBytes(WORLD,  "modules/x/img/close.gif", (byte) 0x00, (byte) 0x01, (byte) 0x7F, (byte) 0x80, (byte) 0x81, (byte) 0xFF);
     }
@@ -67,7 +66,7 @@ public class ResourceTest {
         md5 = Util.md5(data);
         assertNotNull(md5);
         assertEquals(16, md5.length);
-        Assert.assertEquals("852e7d76cdb8af7395cd039c0ecc293a", Hex.encodeString(md5));
+        assertEquals("852e7d76cdb8af7395cd039c0ecc293a", Hex.encodeString(md5));
     }
 
     @Test

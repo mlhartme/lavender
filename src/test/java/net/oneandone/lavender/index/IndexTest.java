@@ -17,16 +17,17 @@ package net.oneandone.lavender.index;
 
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class IndexTest {
     private static final World WORLD = World.createMinimal();
@@ -34,7 +35,7 @@ public class IndexTest {
     private FileNode indexFile;
     private Index index;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         indexFile = WORLD.getTemp().createTempFile();
         index = new Index();
@@ -100,15 +101,19 @@ public class IndexTest {
         Index.load(indexFile);
     }
 
-    @Test(expected = IOException.class)
+    @Test()
     public void testPropertiesConstructorNonExistingFile() throws Exception {
-        Index.load(indexFile.join("file:///nosuchfile"));
+        assertThrows(IOException.class, () -> {
+            Index.load(indexFile.join("file:///nosuchfile"));
+        });
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test()
     public void testPropertiesConstructorCorruptPropertiesFile() throws Exception {
         indexFile.writeString("\\u00");
-        Index.load(indexFile);
+        assertThrows(RuntimeException.class, () -> {
+            Index.load(indexFile);
+        });
     }
 
 }

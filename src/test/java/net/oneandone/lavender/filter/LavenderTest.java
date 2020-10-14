@@ -19,9 +19,9 @@ import net.oneandone.sushi.fs.DeleteException;
 import net.oneandone.sushi.fs.NodeNotFoundException;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -30,9 +30,9 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -55,7 +55,7 @@ public class LavenderTest {
     @Mock
     private ServletContext servletContext;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         MockitoAnnotations.initMocks(this);
         root = WORLD.getTemp().createTempDirectory();
@@ -70,7 +70,7 @@ public class LavenderTest {
         when(servletContext.getRealPath("")).thenReturn(lavenderRoot.getAbsolute());
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws NodeNotFoundException, DeleteException {
         if (root != null) {
             root.deleteTree();

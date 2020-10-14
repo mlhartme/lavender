@@ -2,8 +2,8 @@
 
 ### 2.9.1 (pending)
 
-* update junit 4.12 to 4.13.1
-* update lazy-foss-parent 1.3.4 to 1.4.0
+* update junit 4.12 to 5.7.0
+* update lazy-foss-parent 1.3.4 to 1.4.1
 
 
 ### 2.9.0 (2020-08-18)

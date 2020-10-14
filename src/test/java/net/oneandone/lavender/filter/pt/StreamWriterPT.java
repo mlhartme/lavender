@@ -16,8 +16,8 @@
 package net.oneandone.lavender.filter.pt;
 
 import net.oneandone.sushi.io.MultiOutputStream;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
-@Ignore
+@Disabled
 public class StreamWriterPT {
 
     @Test
