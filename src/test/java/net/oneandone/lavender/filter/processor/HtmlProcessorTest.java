@@ -217,6 +217,18 @@ public class HtmlProcessorTest {
     }
 
     @Test
+    public void testObject() throws IOException {
+
+        String input = "<object type='image/svg+xml' data='/a/b/c'>";
+        String expected = "<object type='image/svg+xml' data='http://a.b.c'>";
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(expected, out.getBuffer().toString());
+    }
+
+    @Test
     public void testAllAtributes() throws IOException {
 
         String input = "<img href='aaa' rel='bbb' src='/a/b/c' type='ccc' style='ddd' zzz='zzz' />";

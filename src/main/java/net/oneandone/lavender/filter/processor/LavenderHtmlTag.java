@@ -27,7 +27,8 @@ public enum LavenderHtmlTag implements HtmlTag {
     A("a"),
     SOURCE("source"),
     FORM("form"),
-    IFRAME("iframe");
+    IFRAME("iframe"),
+    OBJECT("object");
 
     private String name;
 

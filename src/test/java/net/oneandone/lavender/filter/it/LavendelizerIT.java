@@ -94,6 +94,7 @@ public class LavendelizerIT {
         assertTrue(content.contains("http://lavendel1.local/lavender/app/75d5b048491003744336d32a78154449-logo.png?param=value"));
         assertTrue(content.contains("http://lavendel1.local/lavender/app/e4ccf35257829c23b8e31e16619289ba-background.png"));
         assertTrue(content.contains("http://lavendel3.local/lavender/app/3dcdd67e7205534e2f7ad7c41683dc40-main.js"));
+        assertTrue(content.contains("http://lavendel4.local/lavender/app/573a3252c18d2a6dce86d440cb1a9023-image.svg"));
 
         assertTrue(content.endsWith("</html>"));
     }

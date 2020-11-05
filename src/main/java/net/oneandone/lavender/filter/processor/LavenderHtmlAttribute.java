@@ -30,6 +30,7 @@ public enum LavenderHtmlAttribute implements HtmlAttribute {
     NAME("name"),
     VALUE("value"),
     ACTION("action"),
+    DATA("data"),
 
     /** everything starting with "data-lavender-" */
     DATA_LAVENDER_ATTR(x -> x.startsWith("data-lavender-"));

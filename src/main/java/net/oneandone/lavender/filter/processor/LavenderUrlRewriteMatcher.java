@@ -18,21 +18,8 @@ package net.oneandone.lavender.filter.processor;
 import java.util.Arrays;
 import java.util.function.Predicate;
 
-import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.ACTION;
-import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.DATA_LAVENDER_ATTR;
-import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.HREF;
-import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.REL;
-import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.SRC;
-import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.SRCSET;
-import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.TYPE;
-import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.A;
-import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.FORM;
-import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.IFRAME;
-import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.IMG;
-import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.INPUT;
-import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.LINK;
-import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.SCRIPT;
-import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.SOURCE;
+import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.*;
+import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.*;
 
 public enum LavenderUrlRewriteMatcher implements UrlRewriteMatcher {
 
@@ -46,6 +33,7 @@ public enum LavenderUrlRewriteMatcher implements UrlRewriteMatcher {
     SOURCE_SOURCESET_MATCHER(SRCSET, p -> p.getTag() == SOURCE, false),
     FORM_MATCHER(ACTION, p -> p.getTag() == FORM, false),
     IFRAME_MATCHER(SRC, p -> p.getTag() == IFRAME, false),
+    OBJECT_MATCHER(DATA, p -> p.getTag() == OBJECT, false),
     DATA_LAVENDER_MATCHER(DATA_LAVENDER_ATTR, p -> true, false);
 
 
