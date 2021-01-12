@@ -16,7 +16,6 @@
 package net.oneandone.lavender.filter.processor;
 
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.function.Predicate;
 
 import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.ACTION;
