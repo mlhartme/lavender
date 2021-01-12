@@ -16,6 +16,7 @@
 package net.oneandone.lavender.filter.processor;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.ACTION;
@@ -52,7 +53,7 @@ public enum LavenderUrlRewriteMatcher implements UrlRewriteMatcher {
     FORM_MATCHER(ACTION, p -> p.getTag() == FORM, false),
     IFRAME_MATCHER(SRC, p -> p.getTag() == IFRAME, false),
     OBJECT_MATCHER(DATA, p -> p.getTag() == OBJECT, false),
-    OG_IMAGE_MATCHER(CONTENT, p -> p.getTag() == META && p.getAttribute(PROPERTY).equals("og:image"), false),
+    OG_IMAGE_MATCHER(CONTENT, p -> p.getTag() == META && "og:image".equals(p.getAttribute(PROPERTY)), false),
     DATA_LAVENDER_MATCHER(DATA_LAVENDER_ATTR, p -> true, false);
 
 
