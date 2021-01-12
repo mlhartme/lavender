@@ -21,6 +21,7 @@ package net.oneandone.lavender.filter.processor;
 public enum LavenderHtmlTag implements HtmlTag {
 
     IMG("img"),
+    META("meta"),
     LINK("link"),
     SCRIPT("script"),
     INPUT("input"),
