@@ -26,6 +26,8 @@ import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.REL;
 import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.SRC;
 import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.SRCSET;
 import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.TYPE;
+import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.PROPERTY;
+import static net.oneandone.lavender.filter.processor.LavenderHtmlAttribute.CONTENT;
 import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.A;
 import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.FORM;
 import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.IFRAME;
@@ -35,6 +37,7 @@ import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.LINK;
 import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.OBJECT;
 import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.SCRIPT;
 import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.SOURCE;
+import static net.oneandone.lavender.filter.processor.LavenderHtmlTag.META;
 
 public enum LavenderUrlRewriteMatcher implements UrlRewriteMatcher {
 
@@ -49,6 +52,7 @@ public enum LavenderUrlRewriteMatcher implements UrlRewriteMatcher {
     FORM_MATCHER(ACTION, p -> p.getTag() == FORM, false),
     IFRAME_MATCHER(SRC, p -> p.getTag() == IFRAME, false),
     OBJECT_MATCHER(DATA, p -> p.getTag() == OBJECT, false),
+    OG_IMAGE_MATCHER(CONTENT, p -> p.getTag() == META && "og:image".equals(p.getAttribute(PROPERTY)), false),
     DATA_LAVENDER_MATCHER(DATA_LAVENDER_ATTR, p -> true, false);
 
 

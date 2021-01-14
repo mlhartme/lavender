@@ -85,6 +85,28 @@ public class HtmlProcessorTest {
     }
 
     @Test
+    public void testHtml5OgImageMeta() throws IOException {
+        String input = "<meta content='/x/y/z' property='og:image'/>";
+        String expected = "<meta content='http://a.b.c' property='og:image'/>";
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(expected, out.getBuffer().toString());
+    }
+
+    @Test
+    public void testHtml5IgnoresNonOgImageMeta() throws IOException {
+        String input = "<meta content='/x/y/z' />";
+        String expected = "<meta content='/x/y/z' />";
+
+        processor.process(input, 0, input.length());
+        processor.flush();
+
+        assertEquals(expected, out.getBuffer().toString());
+    }
+
+    @Test
     public void testDataLavenderAttributes() throws IOException {
         String input = "<a src='/x/y/z' data-lavender-a='x/y/z' data-lavender-2='x/y/z' >";
         String output = "<a src='/x/y/z' data-lavender-a='http://a.b.c' data-lavender-2='http://a.b.c' >";
