@@ -3,7 +3,7 @@
 ### 2.9.1 (pending)
 
 * update junit 4.12 to 5.7.0
-* support og:image in meta-tags
+* support og:image in meta-tags (thanks to Marcel E)
 
 
 ### 2.9.0 (2020-08-18)
