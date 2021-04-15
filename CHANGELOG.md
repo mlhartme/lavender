@@ -2,7 +2,9 @@
 
 ### 2.9.2 (pending)
 
-* update mockito 1.8.5 to 3.9.0
+* update test dependencies to fix build on Java 16
+  * mockito 1.8.5 to 3.9.0
+  * tomcat 7.0.90 to 7.0.108
 
 
 ### 2.9.1 (2021-01-14)
