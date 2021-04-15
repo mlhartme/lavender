@@ -2,7 +2,7 @@
 
 ### 2.9.2 (pending)
 
-* update mockito 1.8.5 to 2.28.2
+* update mockito 1.8.5 to 3.9.0
 
 
 ### 2.9.1 (2021-01-14)
