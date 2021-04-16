@@ -1,8 +1,9 @@
 ## Changelog 
 
-### 2.9.2 (pending)
+### 2.10.0 (pending)
 
-* update dependencies for latest decade
+* big dependency update
+  * update svnkit 1.9.3 to 1.10.3
   * update sushi 3.2.1 to 3.2.2
   * update slf4j 1.7.25 to 1.7.30
   * update jsch 0.1.54 to 0.1.55
