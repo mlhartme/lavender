@@ -2,11 +2,13 @@
 
 ### 2.10.0 (pending)
 
+CAUTION: this version requires Java 11+
+
 * fixed application warning with Java 16: the launcher no longer checks the Java version, 
   and it no longer sets the illegal-access option
 * big dependency update
   * update svnkit 1.9.3 to 1.10.3
-  * update sushi 3.2.1 to 3.2.2
+  * update sushi 3.2.1 to 3.3.0 (requires Java 11)
   * update slf4j 1.7.25 to 1.7.30
   * update jsch 0.1.54 to 0.1.55
   * update jsch.agentproxy 0.0.7 to 0.0.9  
