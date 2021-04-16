@@ -7,6 +7,9 @@
 * update test dependencies to fix build on Java 16
   * mockito 1.8.5 to 3.9.0
   * tomcat 7.0.90 to 7.0.108
+* other test dependency updates:
+  * update junit-jupiter 5.7.0 to 5.7.1
+  * dumped httpcore 4.3.1, it's not needed
 
 
 ### 2.9.1 (2021-01-14)
