@@ -58,8 +58,8 @@ public class Main {
 
             cli.add(War.class, "war war cluster docroot index");
             cli.add(ScanLegacy.class, "scan-legacy war");
-            cli.add(Scm.class, "scm -prefix=null scm cluster docroot index?");
-            cli.add(File.class, "file -prefix archive cluster docroot index");
+            cli.add(Scm.class, "scm -prefix scm cluster docroot index?");
+            cli.add(File.class, "file -prefix= archive cluster docroot index");
             cli.add(Direct.class, "direct cluster arg+");
             cli.add(Fsck.class, "fsck -md5 -gc -mac -repair-all-idx cluster");
             cli.add(RemoveEntry.class, "remove-entry cluster originalPath+");
