@@ -5,6 +5,8 @@
 * update dependencies for latest decade
   * update sushi 3.2.1 to 3.2.2
   * update slf4j 1.7.25 to 1.7.30
+  * update jsch 0.1.54 to 0.1.55
+  * update jsch.agentproxy 0.0.7 to 0.0.9  
   * update test dependencies to fix build on Java 16
     * mockito 1.8.5 to 3.9.0
     * tomcat 7.0.90 to 7.0.108
