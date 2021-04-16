@@ -26,10 +26,10 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Contains resources. Can iterate all resources and probe for existing ones. Resources originate from "entries", which are
- * loaded lazily.
+ * Contains resources. Can iterate all resources and probe for existing ones.
+ * Resources originate from "entries" (of parameter type E), which are loaded lazily.
  */
-public abstract class Module<T> implements Iterable<Resource> {
+public abstract class Module<E> implements Iterable<Resource> {
     /** currently not used */
     public static final String TYPE = "web";
 
@@ -51,7 +51,7 @@ public abstract class Module<T> implements Iterable<Resource> {
     private final Filter filter;
 
     /** maps resource names for module specific data for this resource; this data is typically used to instantiated resources */
-    private Map<String, T> lazyEntries;
+    private Map<String, E> lazyEntries;
 
     private long lastScan;
 
@@ -98,7 +98,7 @@ public abstract class Module<T> implements Iterable<Resource> {
 
     //-- entry handling
 
-    public Map<String, T> loadedEntries() {
+    public Map<String, E> loadedEntries() {
         return lazyEntries;
     }
 
@@ -112,7 +112,7 @@ public abstract class Module<T> implements Iterable<Resource> {
         }
     }
 
-    private Map<String, T> entries() throws IOException {
+    private Map<String, E> entries() throws IOException {
         long started;
 
         if (lazyEntries == null) {
@@ -131,7 +131,7 @@ public abstract class Module<T> implements Iterable<Resource> {
     }
 
     /** @return all entries that match the module's filter */
-    protected abstract Map<String, T> loadEntries() throws Exception;
+    protected abstract Map<String, E> loadEntries() throws Exception;
 
     public String matches(String resourcePath) {
         String path;
@@ -154,12 +154,12 @@ public abstract class Module<T> implements Iterable<Resource> {
      * @param path of the entry
      * @param data of the entry
      */
-    protected abstract Resource createResource(String path, T data) throws IOException;
+    protected abstract Resource createResource(String path, E data) throws IOException;
 
     /** @return null if not found */
     public Resource probe(String resourcePath) throws IOException {
         String path;
-        T data;
+        E data;
 
         path = matches(resourcePath);
         if (path == null) {
@@ -170,7 +170,7 @@ public abstract class Module<T> implements Iterable<Resource> {
     }
 
     public Iterator<Resource> iterator() {
-        Iterator<Map.Entry<String, T>> base;
+        Iterator<Map.Entry<String, E>> base;
 
         try {
             base = entries().entrySet().iterator();
@@ -185,7 +185,7 @@ public abstract class Module<T> implements Iterable<Resource> {
 
             @Override
             public Resource next() {
-                Map.Entry<String, T> entry;
+                Map.Entry<String, E> entry;
 
                 entry = base.next();
                 try {

@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-/** represents module (or application module) properties */
+/** Represents application properties or module properties. Factory for modules */
 public class ModuleProperties extends PropertiesBase {
     private static final Logger LOG = LoggerFactory.getLogger(ModuleProperties.class);
 
