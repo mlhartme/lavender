@@ -2,6 +2,8 @@
 
 ### 2.10.0 (pending)
 
+* fixed application warning with Java 16: the launcher no longer checks the Java version, 
+  and it no longer sets the illegal-access option
 * big dependency update
   * update svnkit 1.9.3 to 1.10.3
   * update sushi 3.2.1 to 3.2.2
