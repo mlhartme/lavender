@@ -21,8 +21,8 @@ CAUTION: this version requires Java 11+
   * other test dependency updates:
     * update junit 5.7.0 to 5.7.1
     * dumped httpcore 4.3.1, it's not needed
-  * fixed scope of jaxb dependencies: they are needed for tests only;
-    helps to avoid dependency conflicts and reduces that application file size
+  * dumped jaxb dependencies, they were needed by Tomcat in integration tests, but this was solved by 
+    compiling for Java 11
 
 
 ### 2.9.1 (2021-01-14)
