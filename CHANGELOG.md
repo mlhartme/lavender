@@ -2,6 +2,8 @@
 
 ### 2.9.2 (pending)
 
+* fixed scope of jaxb and activation dependencies: they are needed for tests only;
+  helps to avoid dependency conflicts and reduces that application file size
 * update test dependencies to fix build on Java 16
   * mockito 1.8.5 to 3.9.0
   * tomcat 7.0.90 to 7.0.108
