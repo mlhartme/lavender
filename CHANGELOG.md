@@ -7,8 +7,9 @@ CAUTION: this version requires Java 11+
 * fixed application warning with Java 16: the launcher no longer checks the Java version, 
   and it no longer sets the illegal-access option
 * big dependency update
+  * update parent 1.3.4 to 1.4.2 (compiles for Java 11)
+  * update sushi 3.2.1 to 3.3.0 (compiled for Java 11)
   * update svnkit 1.9.3 to 1.10.3
-  * update sushi 3.2.1 to 3.3.0 (requires Java 11)
   * update slf4j 1.7.25 to 1.7.30
   * update jsch 0.1.54 to 0.1.55
   * update jsch.agentproxy 0.0.7 to 0.0.9  
@@ -20,7 +21,7 @@ CAUTION: this version requires Java 11+
   * other test dependency updates:
     * update junit 5.7.0 to 5.7.1
     * dumped httpcore 4.3.1, it's not needed
-  * fixed scope of jaxb and activation dependencies: they are needed for tests only;
+  * fixed scope of jaxb dependencies: they are needed for tests only;
     helps to avoid dependency conflicts and reduces that application file size
 
 
