@@ -18,20 +18,15 @@ package net.oneandone.lavender.modules;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
-import net.oneandone.sushi.fs.filter.Action;
-import net.oneandone.sushi.fs.filter.Filter;
-import net.oneandone.sushi.fs.filter.Predicate;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * A pustefix jar is a jar with pustefix module descriptor. It's not called pustefix module because it must not be confused with Lavender
- * modules; it can be possible to instantiate a Lavender module (more precisely: an embedded module, i.e. a module that loads all resources
- * from the underlying jar) from a pustefix jar.
+ * A pustefix jar is a jar with a pustefix module descriptor. If it also has module properties,
+ * you can instantiate a Lavender module from it (more precisely: an embedded module,
+ * i.e. a module that loads all resources from the underlying jar)
  */
 public class PustefixJar {
     private static final String PUSTEFIX_MODULE_XML = "META-INF/pustefix-module.xml";
@@ -110,39 +105,6 @@ public class PustefixJar {
         }
         hasResourceIndex = exploded.join(RESOURCE_INDEX).exists();
         return new PustefixJar(config, moduleProperties, hasResourceIndex);
-    }
-
-    private static Map<String, Node> files(final Filter filter, final PustefixJarConfig config, final Node exploded) throws IOException {
-        Filter f;
-        final Map<String, Node> result;
-
-        result = new HashMap<>();
-        f = exploded.getWorld().filter().predicate(Predicate.FILE).includeAll();
-        f.invoke(exploded, new Action() {
-            public void enter(Node node, boolean isLink) {
-            }
-
-            public void enterFailed(Node node, boolean isLink, IOException e) throws IOException {
-                throw e;
-            }
-
-            public void leave(Node node, boolean isLink) {
-            }
-
-            public void select(Node node, boolean isLink) {
-                String path;
-                String resourcePath;
-
-                path = node.getRelative(exploded);
-                if (filter.matches(path)) {
-                    resourcePath = config.getPath(path);
-                    if (resourcePath != null) {
-                        result.put(resourcePath, node);
-                    }
-                }
-            }
-        });
-        return result;
     }
 
     //--
