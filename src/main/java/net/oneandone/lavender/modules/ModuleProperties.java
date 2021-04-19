@@ -100,7 +100,6 @@ public class ModuleProperties extends PropertiesBase {
     // public only for testing
     public static ModuleProperties parse(boolean prod, Properties properties, Properties pominfo) throws IOException {
         ModuleProperties result;
-        String relative;
         String source;
         String scmurlProd;
         String scmurlDevel;
@@ -110,7 +109,9 @@ public class ModuleProperties extends PropertiesBase {
         if (pominfo == null) {
             throw new IOException("pominfo.properties for module not found: " + properties);
         }
-        relative = eatOpt(properties, "pustefix.relative", null);
+        if (eatOpt(properties, "pustefix.relative", null) != null) {
+            throw new IOException("pustefix.relative is no longer supported: " + pominfo.toString());
+        }
         if (!prod && thisMachine(pominfo.getProperty("ethernet"))) {
             source = pominfo.getProperty("basedir");
         } else {
@@ -118,77 +119,30 @@ public class ModuleProperties extends PropertiesBase {
         }
 
         result = new ModuleProperties();
-        if (relative != null) {
-            // legacy descriptor
-            checkUnmatchable(eatFilter(properties, "pustefix", DEFAULT_INCLUDES));
-            for (String prefix : prefixes(properties, ScmProperties.SVN_PREFIX)) {
-                String scmSvn = "scm:svn:";
-
-                scmurlProd = (String) properties.remove(prefix);
-                if (!scmurlProd.startsWith(scmSvn)) { // work-around missing scmsvn prefix when released with prerelease plugin
-                    scmurlProd = scmSvn + scmurlProd;
-                }
-                scmurlDevel = eatOpt(properties, prefix + ".devel", scmurlProd);
-                if (!scmurlDevel.startsWith(scmSvn)) { // work-around missing scmsvn prefix when released with prerelease plugin
-                    scmurlDevel = scmSvn + scmurlDevel;
-                }
-
-                tag = eatOpt(properties, prefix + ".revision", "-1");
-                scmsrc = eatLegacySvnSource(properties, prefix, source == null ? null : join(source, relative));
-                scmsrc = fallback(scmurlProd, scmsrc);
-                result.configs.add(
-                        new ScmProperties(
-                                prefix.substring(prefix.indexOf('.') + 1),
-                                eatFilter(properties, prefix, DEFAULT_INCLUDES),
-                                scmurlProd, scmurlDevel, tag, "",
-                                eatOpt(properties, prefix + ".type", Module.TYPE),
-                                eatBoolean(properties, prefix + ".lavendelize", true),
-                                eatOpt(properties, prefix + ".resourcePathPrefix", ""),
-                                eatOpt(properties, prefix + ".targetPathPrefix", ""),
-                                scmsrc));
+        for (String prefix : prefixes(properties, ScmProperties.SCM_PREFIX)) {
+            scmurlProd = (String) properties.remove(prefix);
+            scmurlDevel = eatOpt(properties, prefix + ".devel", scmurlProd);
+            tag = eatOpt(properties, prefix + ".tag", "");
+            String path = eatOpt(properties, prefix + ".path", "");
+            if (!path.isEmpty() && !path.startsWith("/")) {
+                path = "/" + path;
             }
-        } else {
-            for (String prefix : prefixes(properties, ScmProperties.SCM_PREFIX)) {
-                scmurlProd = (String) properties.remove(prefix);
-                scmurlDevel = eatOpt(properties, prefix + ".devel", scmurlProd);
-                tag = eatOpt(properties, prefix + ".tag", "");
-                String path = eatOpt(properties, prefix + ".path", "");
-                if (!path.isEmpty() && !path.startsWith("/")) {
-                    path = "/" + path;
-                }
-                scmsrc = fallback(scmurlProd, source == null ? null : join(source, path));
-                result.configs.add(
-                        new ScmProperties(
-                                prefix.substring(prefix.indexOf('.') + 1),
-                                eatFilter(properties, prefix, DEFAULT_INCLUDES),
-                                scmurlProd, scmurlDevel, tag, path,
-                                eatOpt(properties, prefix + ".type", Module.TYPE),
-                                eatBoolean(properties, prefix + ".lavendelize", true),
-                                eatOpt(properties, prefix + ".resourcePathPrefix", ""),
-                                eatOpt(properties, prefix + ".targetPathPrefix", ""),
-                                scmsrc));
-            }
+            scmsrc = fallback(scmurlProd, source == null ? null : join(source, path));
+            result.configs.add(
+                    new ScmProperties(
+                            prefix.substring(prefix.indexOf('.') + 1),
+                            eatFilter(properties, prefix, DEFAULT_INCLUDES),
+                            scmurlProd, scmurlDevel, tag, path,
+                            eatOpt(properties, prefix + ".type", Module.TYPE),
+                            eatBoolean(properties, prefix + ".lavendelize", true),
+                            eatOpt(properties, prefix + ".resourcePathPrefix", ""),
+                            eatOpt(properties, prefix + ".targetPathPrefix", ""),
+                            scmsrc));
         }
         if (properties.size() > 0) {
             throw new IllegalArgumentException("unknown properties: " + properties);
         }
         return result;
-    }
-
-    private static void checkUnmatchable(Filter filter) {
-        String[] array;
-
-        array = filter.getExcludes();
-        if (array.length != 1 || !"**/*".equals(array[0])) {
-            throw new UnsupportedOperationException("unsupported filter: " + Arrays.asList(filter.getExcludes()));
-        }
-    }
-
-    private static String eatLegacySvnSource(Properties properties, String prefix, String source) {
-        String relative;
-
-        relative = eatOpt(properties, prefix + ".relative", null);
-        return source == null || relative == null ? null : join(source, relative);
     }
 
     private static String join(String left, String right) {

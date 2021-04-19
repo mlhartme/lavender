@@ -28,16 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ModulePropertiesTest {
     @Test
-    public void legacyEmpty() throws IOException {
-        Properties props;
-
-        props= new Properties();
-        props.put("pustefix.relative", "base");
-        props.put("pustefix.excludes", "**/*");
-        assertEquals(0, ModuleProperties.parse(true, props, pomInfo()).configs.size());
-    }
-
-    @Test
     public void one() throws IOException {
         Properties props;
         ModuleProperties result;
@@ -55,70 +45,6 @@ public class ModulePropertiesTest {
         assertEquals("prefix", config.targetPathPrefix);
         assertEquals("svn", config.connectionProd);
         assertEquals("svn", config.connectionDevel);
-    }
-
-    //--
-
-    @Test
-    public void legacyOne() throws IOException {
-        Properties props;
-        ModuleProperties result;
-        ScmProperties config;
-
-        props = new Properties();
-        props.put("pustefix.relative", "relative");
-        props.put("pustefix.excludes", "**/*");
-        props.put("svn.foo", "someurl");
-        props.put("svn.foo.targetPathPrefix", "prefix");
-        props.put("svn.foo.lavendelize", "false");
-        props.put("svn.foo.relative", "sub");
-        result = ModuleProperties.parse(false, props, pomInfo());
-        assertEquals(1, result.configs.size());
-        config = result.configs.iterator().next();
-        assertEquals("foo", config.name);
-        assertFalse(config.lavendelize);
-        assertEquals("prefix", config.targetPathPrefix);
-        assertEquals("scm:svn:someurl", config.connectionProd);
-        assertEquals("scm:svn:someurl", config.connectionDevel);
-    }
-
-    @Test()
-    public void legacyUndefinedNormal() {
-        Properties props;
-
-        props = new Properties();
-        props.put("pustefix.excludes", "**/*");
-        assertThrows(IllegalArgumentException.class, () -> {
-            ModuleProperties.parse(true, props, pomInfo());
-        });
-    }
-
-    @Test()
-    public void legacyUndefinedSvn() {
-        Properties props;
-
-        props = new Properties();
-        props.put("pustefix.relative", "foo");
-        props.put("pustefix.excludes", "**/*");
-        props.put("svn.module.nosuchkey", "bla");
-        assertThrows(IllegalArgumentException.class, () -> {
-            ModuleProperties.parse(true, props, pomInfo());
-        });
-    }
-
-    @Test
-    public void legacyMore() throws IOException {
-        Properties props;
-        Collection<ScmProperties> result;
-
-        props = new Properties();
-        props.put("pustefix.relative", "foo");
-        props.put("pustefix.excludes", "**/*");
-        props.put("svn.foo", "1");
-        props.put("svn.bar", "2");
-        props.put("svn.baz", "3");
-        result = ModuleProperties.parse(true, props, pomInfo()).configs;
-        assertEquals(3, result.size());
     }
 
     private static Properties pomInfo() throws IOException {

@@ -5,7 +5,8 @@
 CAUTION: this version requires Java 11+
 
 * dumped legacy loading code:
-  * in application properties: pustefix.relative and legacy are no longer checked
+  * lavender.properties with `pustefix.relative` are rejected
+  * in application properties: `legacy` is no longer checked
   
   
 * fixed application warning with Java 16: the launcher no longer checks the Java version, 
@@ -127,7 +128,8 @@ CAUTION: this version requires Java 11+
 
 * module configuration cleanup
   * svn properties generalized to scm properties (old svn properties still work, but both application- and 
-    frontend-parents should be updated soon; they have to be updated to get bitbucket support)
+    frontend-parents should be updated soon; they have to be updated to get bitbucket support) Old svn properties are now called
+    legacy configuration, they are detected by the relative property
     * svn prefix changed to scm
     * dumped `scm.foo.relative`, it was always empty
     * added `scm.foo.path` to configure the path formerly appended to the url or devel url (typically `src/main/resources`)
