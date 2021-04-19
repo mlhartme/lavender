@@ -54,26 +54,23 @@ There are two types of property file in Lavender - host.properties and lavender.
 
 ### Lavender Properties
 
-The `lavender.properties` file is located in war or jar files and defines external resource paths for resources, typically subversion repositories. Lavender scans the war with its jar for module `lavender.properties` files and extracts files from the war/jar and optional from external resource paths to publish the files on the target cluster.
+`lavender.properties` in wars specify Lavender Application Modules; in jar files, they specify normal Lavender modules.
+Lavender scans the war for `WEB-INF/lavender.properties` files and all container jars for module `META-INF/lavender.properties` files and
+extracts files from the war/jar and optionally from external resource paths to publish the files on the target cluster.
 
-An example module `lavender.properties` file looks like this
+A typical `lavender.properties` specifies where for load resources from, it looks like this
 
-    ## Include everything from JAR file below htdocs
-    pustefix.relative=jar
-    # pustefix.excludes=**/*
-
-    ## To include resources from subversion uncomment following lines
-    # svn.jar-module=scm:svn:http://localhost:7181/svn/jar-module/tags/jar-module-1.0.0/src/main/resources
-    # svn.jar-module.devel=scm:svn:http://localhost:7181/svn/jar-module/trunk/src/main/resources
-    # svn.jar-module.includes=**/*.gif, **/*.png, **/*.jpg, **/*.jpeg, **/*.pdf
-    # svn.jar-module.resourcePathPrefix=modules/jar-module/
-    # svn.jar-module.relative=
-
-For war files the module `lavender.properties` file is located in `WEB-INF/lavender.properties`, for jar files it is located in `META-INF/lavender.properties`.
+    scm.webapp=scm\:git\:ssh\://git@bitbucket.1and1.org/sa/telesales-de.git
+    scm.webapp.devel=scm\:git\:ssh\://git@bitbucket.1and1.org/sa/telesales-de.git
+    scm.webapp.tag=feature/SHOPYELLOW-2671
+    scm.webapp.includes=**/*.gif, **/*.png, **/*.jpg, **/*.jpeg, **/*.pdf
+    scm.webapp.excludes=htdocs/**/*
+    scm.webapp.path=src/main/resources
+    scm.webapp.resourcePathPrefix=
 
 ### Host Properties
 
-Lavender's `host.properties` defines the network- and secrets configuration to use.
+Lavender's `host.properties` defines the network- and secrets configuration to use. You'll usually have a single file on your workstation
 
     ## host.properties file
     network=svn:https://svn.1and1.org/svn/sales/tools/lavender/config/network.xml
