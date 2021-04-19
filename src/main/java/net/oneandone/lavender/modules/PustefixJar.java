@@ -26,7 +26,8 @@ import java.util.zip.ZipInputStream;
 /**
  * A pustefix jar is a jar with a pustefix module descriptor. If it also has module properties,
  * you can instantiate a Lavender module from it (more precisely: an embedded module,
- * i.e. a module that loads all resources from the underlying jar)
+ * i.e. a module that loads all resources from the underlying jar).
+ * Every lavender module is a pustefix jar, but not vice-versa.
  */
 public class PustefixJar {
     private static final String PUSTEFIX_MODULE_XML = "META-INF/pustefix-module.xml";

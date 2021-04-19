@@ -47,10 +47,6 @@ public class ModuleProperties extends PropertiesBase {
     private static final List<String> DEFAULT_INCLUDES = new ArrayList<>(Arrays.asList(
             "**/*.gif", "**/*.png", "**/*.jpg", "**/*.jpeg", "**/*.ico", "**/*.swf", "**/*.css", "**/*.js"));
 
-    public static Filter defaultFilter() {
-        return new Filter().include(DEFAULT_INCLUDES);
-    }
-
     //--
 
     public static ModuleProperties loadApp(boolean prod, Node webapp) throws IOException {
