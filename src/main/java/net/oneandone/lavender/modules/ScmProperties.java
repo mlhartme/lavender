@@ -37,7 +37,6 @@ import java.util.Map;
 public class ScmProperties {
     private static final Logger LOG = LoggerFactory.getLogger(ScmProperties.class);
 
-    public static final String SVN_PREFIX = "svn.";
     public static final String SCM_PREFIX = "scm.";
 
     public final String name;
