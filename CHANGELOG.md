@@ -122,14 +122,14 @@ CAUTION: this version requires Java 11+
   * changed svn entry cache: dumped md5, size and last modified fields; svn caches entries now reside under <cachdir>/svn
 
 * module configuration cleanup
-  * svn properties generalized to scm properties (old svn properties still work, but both application- and frontend-parents should be
-    updated soon; they have to be updated to get bitbucket support)
+  * svn properties generalized to scm properties (old svn properties still work, but both application- and 
+    frontend-parents should be updated soon; they have to be updated to get bitbucket support)
     * svn prefix changed to scm
     * dumped `scm.foo.relative`, it was always empty
     * added `scm.foo.path` to configure the path formerly appended to the url or devel url (typically `src/main/resources`)
     * replaced `revision` by `tag`
     * dumped pustefix.* properties; thus, it's no longer possible to configure embedded resources;
-      lav ender reports an error if legacy descriptors contain a matchable filter
+      lavender reports an error if legacy descriptors contain a matchable filter
     * added a `legacy` property to configure old modules; use `lavender scan-legacy` to search a project for legacy modules
   * pominfo.properties, lavender.properties and resource index are now required for lavender modules
 
