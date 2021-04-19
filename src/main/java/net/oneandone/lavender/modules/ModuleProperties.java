@@ -53,7 +53,7 @@ public class ModuleProperties extends PropertiesBase {
 
     //--
 
-    public static ModuleProperties loadApp(boolean prod, Node webapp, List<String> legacy) throws IOException {
+    public static ModuleProperties loadApp(boolean prod, Node webapp) throws IOException {
         Node src;
         Properties pominfo;
         Properties properties;
@@ -69,22 +69,7 @@ public class ModuleProperties extends PropertiesBase {
             throw new IOException("pominfo.properties for application not found");
         }
         properties = src.readProperties();
-        if (properties.containsKey("pustefix.relative")) {
-            LOG.info("loading legacy application configuration");
-            try {
-                legacy.addAll(NodeModule.scanLegacy(webapp));
-            } catch (Exception e) {
-                throw new IOException("failed to check legacy applications: " + e.getMessage(), e);
-            }
-            throw new IOException("legacy apps no longer supported");
-        } else {
-            legacy.addAll(Separator.COMMA.split(PropertiesBase.eatOpt(properties, "legacy", "")));
-            if (!legacy.isEmpty()) {
-                throw new IOException("legacy modules no longer supported");
-            }
-            LOG.info("legacy modules: " + legacy);
-            return parse(prod, properties, pominfo);
-        }
+        return parse(prod, properties, pominfo);
     }
 
     public static ModuleProperties loadModule(boolean prod, Node root, Node pominfo) throws IOException {

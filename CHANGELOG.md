@@ -4,6 +4,10 @@
 
 CAUTION: this version requires Java 11+
 
+* dumped legacy loading code:
+  * in application properties: pustefix.relative and legacy are no longer checked
+  
+  
 * fixed application warning with Java 16: the launcher no longer checks the Java version, 
   and it no longer sets the illegal-access option
 * big dependency update

@@ -35,26 +35,19 @@ public abstract class NodeModule extends Module<Node> {
         List<Module> result;
         WarConfig rootConfig;
         ModuleProperties application;
-        List<String> legacy;
         PustefixJar pustefixJar;
 
 
         LOG.trace("scanning " + webapp);
-        legacy = new ArrayList<>();
-        application = ModuleProperties.loadApp(prod, webapp, legacy);
-        LOG.info("legacy modules: " + legacy);
+        application = ModuleProperties.loadApp(prod, webapp);
         result = new ArrayList<>();
         rootConfig = WarConfig.fromXml(webapp);
         // add modules before webapp, because they have a prefix
         for (Node<?> jar : webapp.find("WEB-INF/lib/*.jar")) {
             pustefixJar = PustefixJar.forNodeOpt(prod, jar, rootConfig);
             if (pustefixJar != null) {
-                if (legacy.contains(pustefixJar.config.getModuleName())) {
-                    result.add(pustefixJar.createLegacyModule(ModuleProperties.defaultFilter()));
-                } else {
-                    if (pustefixJar.moduleProperties != null) {
-                        pustefixJar.moduleProperties.createModules(cache, prod, secrets, result, pustefixJar.config);
-                    }
+                if (pustefixJar.moduleProperties != null) {
+                    pustefixJar.moduleProperties.createModules(cache, prod, secrets, result, pustefixJar.config);
                 }
             }
         }
