@@ -62,10 +62,6 @@ public class ModuleProperties extends PropertiesBase {
         src.checkFile();
         pominfo = pominfoOpt(webapp.join("WEB-INF/classes"));
         if (pominfo == null) {
-            // TODO: try target/classes - hack because pws deletes WEB-INF/classes to get virtual classpath working
-            pominfo = pominfoOpt(webapp.join("../classes"));
-        }
-        if (pominfo == null) {
             throw new IOException("pominfo.properties for application not found");
         }
         properties = src.readProperties();

@@ -9,6 +9,7 @@ CAUTION: this version requires Java 11+
   * lavender.properties with `pustefix.relative` are rejected
   * in application properties: `legacy` is no longer checked
   
+* dumped pws work-around that tried to load pominfo.properties from target/classes
   
 * fixed application warning with Java 16: the launcher no longer checks the Java version, 
   and it no longer sets the illegal-access option
