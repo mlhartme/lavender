@@ -25,7 +25,6 @@ import net.oneandone.sushi.fs.filter.Predicate;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -34,7 +33,7 @@ import java.util.zip.ZipInputStream;
  * modules; it can be possible to instantiate a Lavender module (more precisely: an embedded module, i.e. a module that loads all resources
  * from the underlying jar) from a pustefix jar.
  */
-public abstract class PustefixJar {
+public class PustefixJar {
     private static final String PUSTEFIX_MODULE_XML = "META-INF/pustefix-module.xml";
     private static final String RESOURCE_INDEX = "META-INF/pustefix-resource.index";
     public static final String POMINFO_PROPERTIES = "META-INF/pominfo.properties";
@@ -88,48 +87,7 @@ public abstract class PustefixJar {
             // -> the has not enabled lavender for this module
             return null;
         }
-        return new PustefixJar(config, moduleProperties, hasResourceIndex) {
-            @Override
-            public Module createLegacyModule(Filter filter) throws IOException {
-                World world;
-                ZipEntry entry;
-                String path;
-                ZipInputStream src;
-                Node root;
-                Node child;
-                Map<String, Node> files;
-                String resourcePath;
-
-                world = jar.getWorld();
-                root = world.getMemoryFilesystem().root().node(UUID.randomUUID().toString(), null).mkdir();
-                src = new ZipInputStream(jar.newInputStream());
-                files = new HashMap<>();
-                while (true) {
-                    entry = src.getNextEntry();
-                    if (entry == null) {
-                        break;
-                    }
-                    path = entry.getName();
-                    if (!entry.isDirectory()) {
-                        resourcePath = config.getPath(path);
-                        if (resourcePath != null && filter.matches(path)) {
-                            child = root.join(path);
-                            child.getParent().mkdirsOpt();
-                            world.getBuffer().copy(src, child);
-                            files.put(resourcePath, child);
-                        }
-                    }
-                }
-
-                return new NodeModule(jar.getName() /* this is the artifact name with the version */, Module.TYPE, config.getModuleName(),
-                        true, config.getResourcePathPrefix(), "", filter) {
-                    public Map<String, Node> loadEntries() {
-                        // no need to re-loadEntries files from memory
-                        return files;
-                    }
-                };
-            }
-        };
+        return new PustefixJar(config, moduleProperties, hasResourceIndex);
     }
 
     private static PustefixJar forFileNodeOpt(boolean prod, FileNode jarOrig, WarConfig warConfig) throws IOException {
@@ -151,20 +109,7 @@ public abstract class PustefixJar {
             return null;
         }
         hasResourceIndex = exploded.join(RESOURCE_INDEX).exists();
-        return new PustefixJar(config, moduleProperties, hasResourceIndex) {
-            @Override
-            public Module createLegacyModule(Filter filter) throws IOException {
-                Node jarLive;
-
-                jarLive = jarOrig.isFile() ? jarOrig.openJar() : jarOrig;
-                return new NodeModule(jarOrig.getName(), Module.TYPE, config.getModuleName(), true, config.getResourcePathPrefix(), "", filter) {
-                    @Override
-                    protected Map<String, Node> loadEntries() throws IOException {
-                        return files(filter, config, jarLive);
-                    }
-                };
-            }
-        };
+        return new PustefixJar(config, moduleProperties, hasResourceIndex);
     }
 
     private static Map<String, Node> files(final Filter filter, final PustefixJarConfig config, final Node exploded) throws IOException {
@@ -257,10 +202,4 @@ public abstract class PustefixJar {
         this.moduleProperties = moduleProperties;
         this.hasResourceIndex = hasResourceIndex;
     }
-
-    /**
-     * @return an embedded module that serves all resources from the jar itself. Caching for this module is based on the jar file name,
-     * i.e. the artifact and the version
-     */
-    public abstract Module createLegacyModule(Filter filter) throws IOException;
 }

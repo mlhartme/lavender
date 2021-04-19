@@ -57,30 +57,6 @@ public abstract class NodeModule extends Module<Node> {
 
     //--
 
-    /** @return list of legacy modules */
-    public static List<String> scanLegacy(Node<?> webapp) throws Exception {
-        List<String> result;
-        WarConfig rootConfig;
-        PustefixJar pustefixJar;
-        Module module;
-
-        result = new ArrayList<>();
-        rootConfig = WarConfig.fromXml(webapp);
-        // add modules before webapp, because they have a prefix
-        for (Node<?> jar : webapp.find("WEB-INF/lib/*.jar")) {
-            pustefixJar = PustefixJar.forNodeOpt(true, jar, rootConfig);
-            if (pustefixJar != null && pustefixJar.moduleProperties == null) {
-                module = pustefixJar.createLegacyModule(ModuleProperties.defaultFilter());
-                if (!module.loadEntries().isEmpty()) {
-                    result.add(module.getName());
-                }
-            }
-        }
-        return result;
-    }
-
-    //--
-
     public NodeModule(Node origin, String type, String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
         this(origin.getUri().toString(), type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
     }

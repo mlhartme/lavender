@@ -57,7 +57,6 @@ public class Main {
             }
 
             cli.add(War.class, "war war cluster docroot index");
-            cli.add(ScanLegacy.class, "scan-legacy war");
             cli.add(Scm.class, "scm -prefix scm cluster docroot index?");
             cli.add(File.class, "file -prefix= archive cluster docroot index");
             cli.add(Direct.class, "direct cluster arg+");

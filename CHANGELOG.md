@@ -5,6 +5,7 @@
 CAUTION: this version requires Java 11+
 
 * dumped legacy loading code:
+  * dumped `scan-legacy` command
   * lavender.properties with `pustefix.relative` are rejected
   * in application properties: `legacy` is no longer checked
   
@@ -51,7 +52,7 @@ CAUTION: this version requires Java 11+
 
 ### 2.8.0 (2019-12-11)
 
-* reject legacy configuration
+* reject `legacy` configuration
 * softInvalidateEntries invalidates after 10 seconds now (was 5)
 * Bitbucket support
   * fixed missing images due to lavender.properties `path` not removed from accessPath (thanks to Alex M)
@@ -128,8 +129,7 @@ CAUTION: this version requires Java 11+
 
 * module configuration cleanup
   * svn properties generalized to scm properties (old svn properties still work, but both application- and 
-    frontend-parents should be updated soon; they have to be updated to get bitbucket support) Old svn properties are now called
-    legacy configuration, they are detected by the relative property
+    frontend-parents should be updated soon; they have to be updated to get bitbucket support) 
     * svn prefix changed to scm
     * dumped `scm.foo.relative`, it was always empty
     * added `scm.foo.path` to configure the path formerly appended to the url or devel url (typically `src/main/resources`)
@@ -137,6 +137,8 @@ CAUTION: this version requires Java 11+
     * dumped pustefix.* properties; thus, it's no longer possible to configure embedded resources;
       lavender reports an error if legacy descriptors contain a matchable filter
     * added a `legacy` property to configure old modules; use `lavender scan-legacy` to search a project for legacy modules
+    It's still possible to load the old svn properties (now called legacy lavender properties), they are detected by the 
+    `pustefix.relative` property
   * pominfo.properties, lavender.properties and resource index are now required for lavender modules
 
 * admin configuration cleanup
