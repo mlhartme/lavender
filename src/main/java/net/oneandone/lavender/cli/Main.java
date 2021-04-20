@@ -78,8 +78,6 @@ public class Main {
         help.append("  'war' war cluster docroot index\n");
         help.append("                            publish resources from the specified war, adds nodes- and index file to the war\n");
         help.append("                            index is a file name with suffix\n");
-        help.append("  'scan-legacy' war         list all legacy modules in the specified war;\n");
-        help.append("                            legacy is a pustefix module with embedded resources but not lavender.properties file\n");
         help.append("  'scm' ['-prefix' prefix] scm cluster docroot index?\n");
         help.append("                            publish resources from the specified scm\n");
         help.append("                            <scm> is searched in from host.properties;\n");
