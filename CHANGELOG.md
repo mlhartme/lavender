@@ -9,6 +9,8 @@ CAUTION: this version requires Java 11+
   * dumped `scan-legacy` command
   * application lavender.properties with `legacy` are rejected as unknown
     (it was rejected since Lavender 2.8.0; I also checked the logs for 2021)
+  * lavender.properties with `type` properties are rejected  
+    (type had no effect and wasn't used in latest parent poms)
   * lavender.properties with `pustefix.relative` are rejected
     (they have been rejected for application properties; they were still supported for module properties)
   * removed unused module loading code  

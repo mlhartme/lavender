@@ -125,7 +125,6 @@ public class ModuleProperties extends PropertiesBase {
                             prefix.substring(prefix.indexOf('.') + 1),
                             eatFilter(properties, prefix, DEFAULT_INCLUDES),
                             scmurlProd, scmurlDevel, tag, path,
-                            eatOpt(properties, prefix + ".type", Module.TYPE),
                             eatBoolean(properties, prefix + ".lavendelize", true),
                             eatOpt(properties, prefix + ".resourcePathPrefix", ""),
                             eatOpt(properties, prefix + ".targetPathPrefix", ""),

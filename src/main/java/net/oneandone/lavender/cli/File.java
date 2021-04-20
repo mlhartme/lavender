@@ -70,7 +70,7 @@ public class File extends Base {
         docroot = cluster.docroot(docrootName);
         filter = new Filter();
         filter.includeAll();
-        module = new NodeModule(archive, Module.TYPE, indexName, false, "", prefix, filter) {
+        module = new NodeModule(archive, indexName, false, "", prefix, filter) {
             @Override
             protected Map<String, Node> loadEntries() throws Exception {
                 Map<String, Node> result;

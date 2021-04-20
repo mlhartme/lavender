@@ -46,7 +46,6 @@ public class ScmProperties {
     /** for svn: revision number */
     public final String tag;
     public final String path;
-    public final String type;
     public final boolean lavendelize;
     public final String resourcePathPrefix;
     public final String targetPathPrefix;
@@ -55,7 +54,7 @@ public class ScmProperties {
     public final String source;
 
     /// CHECKSTYLE:OFF
-    public ScmProperties(String name, Filter filter, String connectionProd, String connectionDevel, String tag, String path, String type,
+    public ScmProperties(String name, Filter filter, String connectionProd, String connectionDevel, String tag, String path,
                          boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, String source) {
         /// CHECKSTYLE:ON
         if (connectionProd == null) {
@@ -70,7 +69,6 @@ public class ScmProperties {
         this.connectionDevel = connectionDevel;
         this.tag = tag;
         this.path = path;
-        this.type = type;
         this.lavendelize = lavendelize;
         this.resourcePathPrefix = resourcePathPrefix;
         this.targetPathPrefix = targetPathPrefix;
@@ -92,7 +90,7 @@ public class ScmProperties {
                 // I could also check if the svnurl noted in the artifact matches the svn url of checkout,
                 // but that fails for frontend teams creating a branch without adjusting scm elements in the pom.
 
-                return new NodeModule(checkout, type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter) {
+                return new NodeModule(checkout, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter) {
                     @Override
                     protected Map<String, Node> loadEntries() throws Exception {
                         Filter f;
@@ -170,7 +168,7 @@ public class ScmProperties {
             root.checkDirectory();
             cache = cacheDir.join("svn", urlToFilename(scm) + ".idx");
             cache.getParent().mkdirsOpt();
-            return new SvnModule(type, name, cache, root, pinnedRevision, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
+            return new SvnModule(name, cache, root, pinnedRevision, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
         } catch (RuntimeException | IOException e) {
             throw e;
         } catch (Exception e) {

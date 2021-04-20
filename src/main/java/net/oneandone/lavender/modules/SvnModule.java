@@ -56,11 +56,11 @@ public class SvnModule extends Module<SvnEntry> {
     private final PustefixJarConfig jarConfig;
 
     // CHECKSTYLE:OFF
-    public SvnModule(String type, String name, FileNode cacheFile, SvnNode root,
+    public SvnModule(String name, FileNode cacheFile, SvnNode root,
                      long pinnedRevision, boolean lavendelize, String resourcePathPrefix,
                      String targetPathPrefix, Filter filter, PustefixJarConfig jarConfig) {
         // CHECKSTYLE:ON
-        super(root.getUri().toString(), type, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
+        super(root.getUri().toString(), name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
         this.cacheFile = cacheFile;
         this.root = root;
         this.pinnedRevision = pinnedRevision;

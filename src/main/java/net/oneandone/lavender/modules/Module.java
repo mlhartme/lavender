@@ -30,15 +30,10 @@ import java.util.Map;
  * Resources originate from "entries" (of parameter type E), which are loaded lazily.
  */
 public abstract class Module<E> implements Iterable<Resource> {
-    /** currently not used */
-    public static final String TYPE = "web";
-
     private static final Logger LOG = LoggerFactory.getLogger(Module.class);
 
     private final String origin;
 
-    /** currently not used; might be used again in the future if we want to publish different types to different clusters/docroots */
-    private final String type;
     /** usually Maven coordinates without version; used to name md5 cache files */
     private final String name;
     private final boolean lavendelize;
@@ -55,9 +50,8 @@ public abstract class Module<E> implements Iterable<Resource> {
 
     private long lastScan;
 
-    public Module(String origin, String type, String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
+    public Module(String origin, String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
         this.origin = origin;
-        this.type = type;
         this.name = name;
         this.lavendelize = lavendelize;
         this.resourcePathPrefix = resourcePathPrefix;
@@ -70,10 +64,6 @@ public abstract class Module<E> implements Iterable<Resource> {
 
     public String getOrigin() {
         return origin;
-    }
-
-    public String getType() {
-        return type;
     }
 
     public String getName() {

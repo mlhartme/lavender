@@ -40,7 +40,7 @@ public class BitbucketModule extends Module<BitbucketEntry> {
     // CHECKSTYLE:OFF
     public BitbucketModule(Bitbucket bitbucket, String project, String repository, String branchOrTag, String accessPathPrefix,
                            String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter, PustefixJarConfig config) {
-        super(bitbucket.getOrigin(project, repository), Module.TYPE, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
+        super(bitbucket.getOrigin(project, repository), name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
 
         if (!accessPathPrefix.isEmpty() && !accessPathPrefix.endsWith("/")) {
             throw new IllegalArgumentException(accessPathPrefix);
