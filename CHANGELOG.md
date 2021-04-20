@@ -4,6 +4,7 @@
 
 CAUTION: this version requires Java 11+
 
+* renamed branch `master` to `main`, https://github.com/github/renaming
 * cleanup lavender.properties loading code:
   * dumped `scan-legacy` command
   * application lavender.properties with `legacy` are rejected as unknown
