@@ -33,7 +33,7 @@ public abstract class NodeModule extends Module<Node> {
     public static List<Module> fromWebapp(FileNode cache, boolean prod, Node<?> webapp, Secrets secrets)
             throws IOException {
         List<Module> result;
-        WarConfig rootConfig;
+        PustefixWarConfig rootConfig;
         ModuleProperties application;
         PustefixJar pustefixJar;
 
@@ -41,7 +41,7 @@ public abstract class NodeModule extends Module<Node> {
         LOG.trace("scanning " + webapp);
         application = ModuleProperties.loadApp(prod, webapp);
         result = new ArrayList<>();
-        rootConfig = WarConfig.fromXml(webapp);
+        rootConfig = PustefixWarConfig.fromXml(webapp);
         // add modules before webapp, because they have a prefix
         for (Node<?> jar : webapp.find("WEB-INF/lib/*.jar")) {
             pustefixJar = PustefixJar.forNodeOpt(prod, jar, rootConfig);

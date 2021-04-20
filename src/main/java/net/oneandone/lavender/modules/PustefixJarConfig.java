@@ -35,13 +35,13 @@ public class PustefixJarConfig {
     private static final String MODULES = "modules/";
     private static final String PUSTEFIX_INF = "PUSTEFIX-INF/";
 
-    private final WarConfig global;
+    private final PustefixWarConfig global;
     private final String name;
 
     /** trimmed, without heading slash, with tailing slash */
     private final List<String> statics;
 
-    public static PustefixJarConfig load(Node src, WarConfig warConfig) throws IOException {
+    public static PustefixJarConfig load(Node src, PustefixWarConfig warConfig) throws IOException {
         try (InputStream configSrc = src.newInputStream()) {
             return PustefixJarConfig.load(src.getWorld().getXml(), warConfig, configSrc);
         } catch (SAXException | XmlException e) {
@@ -49,7 +49,7 @@ public class PustefixJarConfig {
         }
 
     }
-    public static PustefixJarConfig load(Xml xml, WarConfig parent, InputStream src) throws IOException, SAXException, XmlException {
+    public static PustefixJarConfig load(Xml xml, PustefixWarConfig parent, InputStream src) throws IOException, SAXException, XmlException {
         String path;
         Element root;
         Selector selector;
@@ -74,7 +74,7 @@ public class PustefixJarConfig {
         return new PustefixJarConfig(parent, name, statics);
     }
 
-    public PustefixJarConfig(WarConfig global, String name, List<String> statics) {
+    public PustefixJarConfig(PustefixWarConfig global, String name, List<String> statics) {
         this.global = global;
         this.name = name;
         this.statics = statics;
@@ -86,10 +86,6 @@ public class PustefixJarConfig {
 
     public List<String> getStatics() {
         return statics;
-    }
-
-    public String getResourcePathPrefix() {
-        return MODULES + getModuleName() + "/";
     }
 
     /* @return null if not public */

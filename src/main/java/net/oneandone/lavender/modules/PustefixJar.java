@@ -35,7 +35,7 @@ public class PustefixJar {
     public static final String POMINFO_PROPERTIES = "META-INF/pominfo.properties";
 
     /** @return null if not a pustefix jar */
-    public static PustefixJar forNodeOpt(boolean prod, Node jar, WarConfig rootConfig) throws IOException {
+    public static PustefixJar forNodeOpt(boolean prod, Node jar, PustefixWarConfig rootConfig) throws IOException {
         PustefixJar result;
 
         if (jar instanceof FileNode) {
@@ -55,7 +55,7 @@ public class PustefixJar {
     }
 
     /** Loads resources from the jar into memory. */
-    private static PustefixJar forOtherNodeOpt(Node jar, WarConfig warConfig) throws IOException {
+    private static PustefixJar forOtherNodeOpt(Node jar, PustefixWarConfig warConfig) throws IOException {
         PustefixJarConfig config;
         ModuleProperties moduleProperties;
         boolean hasResourceIndex;
@@ -86,7 +86,7 @@ public class PustefixJar {
         return new PustefixJar(config, moduleProperties, hasResourceIndex);
     }
 
-    private static PustefixJar forFileNodeOpt(boolean prod, FileNode jarOrig, WarConfig warConfig) throws IOException {
+    private static PustefixJar forFileNodeOpt(boolean prod, FileNode jarOrig, PustefixWarConfig warConfig) throws IOException {
         PustefixJarConfig config;
         ModuleProperties moduleProperties;
         boolean hasResourceIndex;

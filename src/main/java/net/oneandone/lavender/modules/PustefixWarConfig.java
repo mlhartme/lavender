@@ -24,8 +24,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WarConfig {
-    public static WarConfig fromXml(Node webapp) throws IOException {
+public class PustefixWarConfig {
+    public static PustefixWarConfig fromXml(Node webapp) throws IOException {
         String path;
         Element root;
         Selector selector;
@@ -46,7 +46,7 @@ public class WarConfig {
                 }
                 statics.add(path);
             }
-            return new WarConfig(statics);
+            return new PustefixWarConfig(statics);
         } catch (SAXException e) {
             throw new IOException("cannot load project descriptor: " + e);
         }
@@ -56,7 +56,7 @@ public class WarConfig {
 
     private final List<String> statics;
 
-    public WarConfig(List<String> statics) {
+    public PustefixWarConfig(List<String> statics) {
         this.statics = statics;
     }
 
