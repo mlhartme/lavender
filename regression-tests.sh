@@ -38,8 +38,6 @@ run() {
 echo "testing $(${old_lavender} version) vs $(${new_lavender} version)"
 rm -rf ${testhost}
 
-run com.oneandone.sales ionos-eu 0.0.63
-
 run com.ionos.shop order-de 3.2.27
 run com.ionos.shop order-es 3.2.20
 run com.ionos.shop order-it 3.2.20
@@ -48,6 +46,8 @@ run com.ionos.shop order-fr 3.2.24
 run com.ionos.shop order-uk 3.2.26
 run com.ionos.shop order-ca 3.2.18
 run com.ionos.shop order-mx 3.2.16
+
+run com.oneandone.sales ionos-eu 0.0.63
 
 run com.ionos.shop upgrade-us 2.3.84
 run com.ionos.shop upgrade-es 2.4.84
