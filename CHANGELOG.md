@@ -9,7 +9,8 @@ CAUTION: this version requires Java 11+
   * application lavender.properties with `legacy` are rejected as unknown
     (it was rejected since Lavender 2.8.0; I also checked the logs for 2021)
   * lavender.properties with `pustefix.relative` are rejected
-    (they have been rejected for application properties; they were still supported for module propertis)
+    (they have been rejected for application properties; they were still supported for module properties)
+  * removed unused module loading code  
 * dumped pws work-around that tried to load pominfo.properties from target/classes
 * fixed application warning with Java 16: the launcher no longer checks the Java version, 
   and it no longer sets the illegal-access option
@@ -137,8 +138,8 @@ CAUTION: this version requires Java 11+
     * replaced `revision` by `tag`
     * dumped pustefix.* properties; thus, it's no longer possible to configure embedded resources;
       lavender reports an error if legacy descriptors contain a matchable filter
-  * added a `legacy` property for applications properties to configure old modules; use `lavender scan-legacy` to search 
-    a project for legacy modules
+  * added a `legacy` property to applications properties to configure legacy modules - i.e. modules that don't have a module descriptor; 
+    use `lavender scan-legacy` to search a project for legacy modules
   * pominfo.properties, lavender.properties and resource index are now required for lavender modules
 
 * admin configuration cleanup

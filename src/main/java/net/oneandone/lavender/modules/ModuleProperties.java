@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-/** Represents application properties or module properties. Factory for modules */
+/** Represents application properties or module properties which are both load from `lavender.properties` files. Factory for modules */
 public class ModuleProperties extends PropertiesBase {
     private static final Logger LOG = LoggerFactory.getLogger(ModuleProperties.class);
 
