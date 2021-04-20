@@ -4,10 +4,11 @@
 
 CAUTION: this version requires Java 11+
 
-* dumped legacy loading code:
+* cleanup lavender.properties loading code:
   * dumped `scan-legacy` command
+  * application lavender.properties with `legacy` are rejected as unknown
+    (it was rejected since Lavender 2.8.0; I also checked the logs for 2021)
   * lavender.properties with `pustefix.relative` are rejected
-  * application lavender.properties with `legacy` are rejected  
 * dumped pws work-around that tried to load pominfo.properties from target/classes
 * fixed application warning with Java 16: the launcher no longer checks the Java version, 
   and it no longer sets the illegal-access option

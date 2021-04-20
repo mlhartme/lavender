@@ -61,9 +61,6 @@ public class ModuleProperties extends PropertiesBase {
             throw new IOException("pominfo.properties for application not found");
         }
         properties = src.readProperties();
-        if (properties.containsKey("legacy")) {
-            throw new IOException(src + ": property 'legacy' is no longer supported");
-        }
         return parse(prod, properties, pominfo);
     }
 
