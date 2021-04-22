@@ -19,6 +19,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * collects commit hashes to be used as contentIds. Bitbucket returns these hashes per directory,
+ * so this class lazyly issues calls for the directories needed.
+ */
 public class BitbucketContentMap {
     private final Bitbucket bitbucket;
     private final String project;

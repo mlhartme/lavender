@@ -19,8 +19,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public abstract class Resource {
+    /** resource path */
     public abstract String getPath();
 
+    /** something useable as etag; revision for svn; CAUTION: this is not the md5 hash! */
     public abstract String getContentId();
 
     /** for logging purpose */

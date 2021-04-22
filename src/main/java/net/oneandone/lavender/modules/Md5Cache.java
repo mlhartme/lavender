@@ -24,6 +24,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+/** needed to lavendelize resourcepath -> targetpath */
 public class Md5Cache implements AutoCloseable {
     public static Md5Cache loadOrCreate(FileNode file) throws IOException {
         Md5Cache result;

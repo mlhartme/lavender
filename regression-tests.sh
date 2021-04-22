@@ -44,13 +44,11 @@ run() {
 
 removeIndexComment() {
   if [ "$#" -ne 1 ] ; then
-    echo "usage: removeIndexComment <dir>"
+    echo "usage: removeIndexComment <indexes>"
     exit 1
   fi
-  dir=$1
-  echo "remove ${dir}"
-  find ${dir} -type f -print0 | while IFS= read -r -d $'\0' file; do
-    echo "$file"
+  indexes=$1
+  find ${indexes} -type f -print0 | while IFS= read -r -d $'\0' file; do
     echo "$(tail -n +2 ${file})" > ${file}
   done
 }
