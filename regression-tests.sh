@@ -18,6 +18,7 @@ run() {
   shift
   name=${artifactId}
   dir=target/regression-tests/${name}
+  rm -rf ${dir}
   mkdir -p ${dir}
   echo
   echo "testing ${name}"
@@ -31,11 +32,14 @@ run() {
   echo "* new lavender ..."
   ${new_lavender} war ${dir}/test.war walter web test.idx >${dir}/new.log 2>&1
   mv ${testhost}/web ${testhost}/${name}-new
-  removeIndexComment ${testhost}/${name}-old
-  removeIndexComment ${testhost}/${name}-new
+  removeIndexComment ${testhost}/${name}-old/indexes
+  removeIndexComment ${testhost}/${name}-new/indexes
   echo "* diff ..."
-  diff -r --brief ${testhost}/${name}-old ${testhost}/${name}-new >${dir}/diff.log
-  echo "  exit code: $?"
+  if diff -r --brief ${testhost}/${name}-old ${testhost}/${name}-new >${dir}/diff.log 2>&1 ; then
+    echo "  failed: $?"
+  else
+    echo "  ok"
+  fi
 }
 
 removeIndexComment() {
@@ -54,13 +58,13 @@ removeIndexComment() {
 echo "testing $(${old_lavender} version) vs $(${new_lavender} version)"
 rm -rf ${testhost}
 
+run com.ionos.shop order-ca 3.2.18
 run com.ionos.shop order-de 3.2.27
 run com.ionos.shop order-es 3.2.20
 run com.ionos.shop order-it 3.2.20
 run com.ionos.shop order-us 3.2.26
 run com.ionos.shop order-fr 3.2.24
 run com.ionos.shop order-uk 3.2.26
-run com.ionos.shop order-ca 3.2.18
 run com.ionos.shop order-mx 3.2.16
 
 run com.oneandone.sales ionos-eu 0.0.63

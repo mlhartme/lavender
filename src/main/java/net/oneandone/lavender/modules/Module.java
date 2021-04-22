@@ -28,6 +28,9 @@ import java.util.Map;
 /**
  * Contains resources. Can iterate all resources and probe for existing ones.
  * Resources originate from "entries" (of parameter type E), which are loaded lazily.
+ * Resources have a resource path, and all resources of a module all start with the
+ * module's resource path prefix. The module also configures how to map
+ * resource paths to a target path (e.g. if they are to be lavendelized)
  */
 public abstract class Module<E> implements Iterable<Resource> {
     private static final Logger LOG = LoggerFactory.getLogger(Module.class);
