@@ -31,8 +31,24 @@ run() {
   echo "* new lavender ..."
   ${new_lavender} war ${dir}/test.war walter web test.idx >${dir}/new.log 2>&1
   mv ${testhost}/web ${testhost}/${name}-new
+  removeIndexComment ${testhost}/${name}-old
+  removeIndexComment ${testhost}/${name}-new
   echo "* diff ..."
   diff -r --brief ${testhost}/${name}-old ${testhost}/${name}-new >${dir}/diff.log
+  echo "  exit code: $?"
+}
+
+removeIndexComment() {
+  if [ "$#" -ne 1 ] ; then
+    echo "usage: removeIndexComment <dir>"
+    exit 1
+  fi
+  dir=$1
+  echo "remove ${dir}"
+  find ${dir} -type f -print0 | while IFS= read -r -d $'\0' file; do
+    echo "$file"
+    echo "$(tail -n +2 ${file})" > ${file}
+  done
 }
 
 echo "testing $(${old_lavender} version) vs $(${new_lavender} version)"
