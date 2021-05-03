@@ -56,6 +56,7 @@ public class Main {
                 cli.begin(globals);
             }
 
+            cli.add(Info.class, "info war");
             cli.add(War.class, "war war cluster docroot index");
             cli.add(Scm.class, "scm -prefix scm cluster docroot index?");
             cli.add(File.class, "file -prefix= archive cluster docroot index");
@@ -75,6 +76,7 @@ public class Main {
         help.append("usage: 'lavender' global-options command\n");
         help.append("\n");
         help.append("publishing commands\n");
+        help.append("  'info' war\n");
         help.append("  'war' war cluster docroot index\n");
         help.append("                            publish resources from the specified war, adds nodes- and index file to the war\n");
         help.append("                            index is a file name with suffix\n");
