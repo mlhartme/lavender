@@ -36,10 +36,12 @@ import java.util.Map;
 public abstract class Module<E> implements Iterable<Resource> {
     private static final Logger LOG = LoggerFactory.getLogger(Module.class);
 
+
     private final String origin;
 
     /** usually Maven coordinates without version; used to name md5 cache files */
     private final String name;
+    public final ScmProperties descriptorOpt;
     private final boolean lavendelize;
 
     private final String resourcePathPrefix;
@@ -54,9 +56,10 @@ public abstract class Module<E> implements Iterable<Resource> {
 
     private long lastScan;
 
-    public Module(String origin, String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
+    public Module(String origin, String name, ScmProperties descriptorOpt, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
         this.origin = origin;
         this.name = name;
+        this.descriptorOpt = descriptorOpt;
         this.lavendelize = lavendelize;
         this.resourcePathPrefix = resourcePathPrefix;
         this.targetPathPrefix = targetPathPrefix;

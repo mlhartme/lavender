@@ -57,12 +57,12 @@ public abstract class NodeModule extends Module<Node> {
 
     //--
 
-    public NodeModule(Node origin, String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
-        this(origin.getUri().toString(), name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
+    public NodeModule(Node origin, String name, ScmProperties descriptorOpt, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
+        this(origin.getUri().toString(), name, descriptorOpt, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
     }
 
-    public NodeModule(String origin, String name, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
-        super(origin, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
+    public NodeModule(String origin, String name, ScmProperties descriptorOpt, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
+        super(origin, name, descriptorOpt, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
     }
 
     protected Resource createResource(String resourcePath, Node file) throws IOException {

@@ -90,7 +90,7 @@ public class ScmProperties {
                 // I could also check if the svnurl noted in the artifact matches the svn url of checkout,
                 // but that fails for frontend teams creating a branch without adjusting scm elements in the pom.
 
-                return new NodeModule(checkout, name, lavendelize, resourcePathPrefix, targetPathPrefix, filter) {
+                return new NodeModule(checkout, name, this, lavendelize, resourcePathPrefix, targetPathPrefix, filter) {
                     @Override
                     protected Map<String, Node> loadEntries() throws Exception {
                         Filter f;
@@ -168,7 +168,7 @@ public class ScmProperties {
             root.checkDirectory();
             cache = cacheDir.join("svn", urlToFilename(scm) + ".idx");
             cache.getParent().mkdirsOpt();
-            return new SvnModule(name, cache, root, pinnedRevision, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
+            return new SvnModule(name, this, cache, root, pinnedRevision, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
         } catch (RuntimeException | IOException e) {
             throw e;
         } catch (Exception e) {
@@ -196,7 +196,19 @@ public class ScmProperties {
         project = uriPath.substring(0, idx);
         repository = Strings.removeRight(uriPath.substring(idx + 1), ".git");
         return new BitbucketModule(Bitbucket.create(world, uri.getHost(), up),
-                project, repository, tag.isEmpty() ? "master" : tag, accessPathPrefix, name, lavendelize, resourcePathPrefix,
+                project, repository, tag.isEmpty() ? "master" : tag, accessPathPrefix, name, this, lavendelize, resourcePathPrefix,
                 targetPathPrefix, filter, config);
+    }
+
+    public String toString() {
+        return "name: " + name + ", "
+                + "filter: " + filter + ", "
+                + "connectionProd: " + connectionProd + ", "
+                + "connectionDevel: " + connectionDevel + ", "
+                + "tag: " + tag + ", "
+                + "path: " + path + ", "
+                + "lavendelize: " + lavendelize + ", "
+                + "resourcePathPrefix: " + resourcePathPrefix + ", "
+                + "targetPathPrefix: " + targetPathPrefix;
     }
 }

@@ -63,7 +63,7 @@ public class BitbucketModuleIT {
         secrets = new Secrets();
         secrets.addAll(file);
         module = new BitbucketModule(Bitbucket.create(WORLD, "bitbucket.1and1.org", secrets.lookup("git")),
-                "CISOOPS", "lavender-test-module", "master", "", "myname", false,
+                "CISOOPS", "lavender-test-module", "master", "", "myname", null,false,
                 "", "", WORLD.filter().include("**/*.jpg", "**/*.css"), null);
 
         assertNull(module.probe("no/such.file"));
