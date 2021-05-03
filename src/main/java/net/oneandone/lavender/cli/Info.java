@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 import net.oneandone.lavender.modules.Module;
+import net.oneandone.sushi.util.Strings;
 
 public class Info extends Base {
     private final FileNode war;
@@ -41,7 +42,7 @@ public class Info extends Base {
         modules = NodeModule.fromWebapp(globals.cacheroot(), true, open, globals.properties().secrets);
         for (Module module : modules) {
             System.out.println(module.getName());
-            System.out.println("  " + module.descriptorOpt);
+            System.out.println(Strings.indent("" + module.descriptorOpt, "  "));
         }
     }
 }

@@ -201,14 +201,15 @@ public class ScmProperties {
     }
 
     public String toString() {
-        return "name: " + name + ", "
-                + "filter: " + filter + ", "
-                + "connectionProd: " + connectionProd + ", "
-                + "connectionDevel: " + connectionDevel + ", "
-                + "tag: " + tag + ", "
-                + "path: " + path + ", "
-                + "lavendelize: " + lavendelize + ", "
-                + "resourcePathPrefix: " + resourcePathPrefix + ", "
+        return "name: " + name + "\n"
+                + "include: " + Strings.toList(filter.getIncludes()) + "\n"
+                + "exclude: " + Strings.toList(filter.getExcludes()) + "\n"
+                + "connectionProd: " + connectionProd + "\n"
+                + "connectionDevel: " + connectionDevel + "\n"
+                + "tag: " + tag + "\n"
+                + "path: " + path + "\n"
+                + "lavendelize: " + lavendelize + "\n"
+                + "resourcePathPrefix: " + resourcePathPrefix + "\n"
                 + "targetPathPrefix: " + targetPathPrefix;
     }
 }
