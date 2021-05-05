@@ -4,6 +4,7 @@
 
 CAUTION: this version requires Java 11+
 
+* added IndexModule which is used new lavender-plugin
 * added `info` command
 * renamed branch `master` to `main`, https://github.com/github/renaming
 * cleanup lavender.properties loading code:

@@ -24,12 +24,12 @@ import java.util.Map;
 public class IndexedModule extends Module<String> {
     private final World world;
     private final Map<String, String> index; // maps path to md5
-    private final String urlPattern; // with variables ${tag} and ${path}
+    private final UrlPattern urlPattern; // with variables ${tag} and ${path}
 
     // CHECKSTYLE:OFF
     public IndexedModule(World world, String origin, String name, ScmProperties descriptorOpt, boolean lavendelize,
                          String resourcePathPrefix, String targetPathPrefix, Filter filter,
-                         Map<String, String> index, String urlPattern) {
+                         Map<String, String> index, UrlPattern urlPattern) {
         super(origin, name, descriptorOpt, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
         this.world = world;
         this.index = index;
@@ -44,7 +44,7 @@ public class IndexedModule extends Module<String> {
 
     @Override
     protected Resource createResource(String resourcePath, String entry) {
-        return new IndexedResource(world, urlPattern, resourcePath, entry);
+        return new IndexedResource(urlPattern, resourcePath, entry);
     }
 
 

@@ -136,7 +136,7 @@ public class ScmProperties {
         scm = prod ? connectionProd : connectionDevel;
         scm = Strings.removeLeft(scm, "scm:");
         if (indexOpt != null) {
-            return createIndexedModule(world, scm);
+            return createIndexedModule(world, scm, "refs/heads/master" /* TODO */, secrets);
         } else {
             if (scm.startsWith("svn:")) {
                 pinnedRevision = !prod || tag.isEmpty() ? -1 : Long.parseLong(tag);
@@ -165,14 +165,15 @@ public class ScmProperties {
         return url;
     }
 
-    private IndexedModule createIndexedModule(World world, String scm) {
-        String urlPattern;
+    private IndexedModule createIndexedModule(World world, String scm, String at, Secrets secrets) throws IOException {
+        UrlPattern urlPattern;
 
         if (!scm.startsWith("git:")) {
             throw new UnsupportedOperationException("TODO " + scm);
         }
-        urlPattern = scm.substring(4); // TODO ...
-        return new IndexedModule(world, scm, name, this, lavendelize, resourcePathPrefix, targetPathPrefix, filter, indexOpt, urlPattern);
+        urlPattern = UrlPattern.create(world, scm.substring(4), at, secrets);
+        return new IndexedModule(world, scm, name, this, lavendelize, resourcePathPrefix, targetPathPrefix, filter, indexOpt,
+                urlPattern);
     }
 
     private SvnModule createSvnModule(FileNode cacheDir, PustefixJarConfig jarConfig, World world, String scm, Secrets secrets, long pinnedRevision) throws IOException {

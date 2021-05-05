@@ -15,21 +15,15 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.sushi.fs.Node;
-import net.oneandone.sushi.fs.NodeInstantiationException;
-import net.oneandone.sushi.fs.World;
-
 import java.io.IOException;
 import java.io.OutputStream;
 
 public class IndexedResource extends Resource {
-    private final World world;
-    private final String urlPattern;
+    private final UrlPattern urlPattern;
     private final String resourcePath;
     private final String md5;
 
-    public IndexedResource(World world, String urlPattern, String resourcePath, String md5) {
-        this.world = world;
+    public IndexedResource(UrlPattern urlPattern, String resourcePath, String md5) {
         this.urlPattern = urlPattern;
         this.resourcePath = resourcePath;
         this.md5 = md5;
@@ -47,21 +41,12 @@ public class IndexedResource extends Resource {
 
     @Override
     public String getOrigin() {
-        return lazyUrl.getUri().toString();
+        return urlPattern.getOrigin();
     }
 
     @Override
     public void writeTo(OutputStream dest) throws IOException {
-        url().copyFileTo(dest);
-    }
-
-    private Node<?> lazyUrl = null;
-
-    private Node<?> url() throws NodeInstantiationException {
-        if (lazyUrl == null) {
-            lazyUrl = world.validNode(urlPattern.replace("$(path}", resourcePath));
-        }
-        return lazyUrl;
+        urlPattern.writeTo(resourcePath, dest);
     }
 
     @Override
