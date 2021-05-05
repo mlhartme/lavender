@@ -15,6 +15,9 @@
  */
 package net.oneandone.lavender.config;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 
 /** represents module (or application module) properties */
@@ -48,5 +51,33 @@ public abstract class PropertiesBase {
 
         result = (String) p.remove(key);
         return result == null ? dflt : result;
+    }
+
+    public static Map<String, String> eatIndexOpt(Properties p) {
+        final String prefix = "index.";
+        final int length = prefix.length();
+        Map<String, String> map;
+        Iterator<Map.Entry<Object, Object>> iter;
+        Map.Entry<Object, Object> entry;
+        String key;
+
+        map = new HashMap<>();
+        iter = p.entrySet().iterator();
+        while (iter.hasNext()) {
+            entry = iter.next();
+            key = (String) entry.getKey();
+            if (key.startsWith(prefix)) {
+                map.put(key.substring(length), (String) entry.getValue());
+            }
+        }
+        if (map.isEmpty()) {
+            return null;
+        }
+        for (String suffix : map.keySet()) {
+            if (p.remove(prefix + suffix) == null) {
+                throw new IllegalStateException();
+            }
+        }
+        return map;
     }
 }

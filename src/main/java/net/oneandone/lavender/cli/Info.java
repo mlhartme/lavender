@@ -41,7 +41,7 @@ public class Info extends Base {
         open = war.openZip();
         modules = NodeModule.fromWebapp(globals.cacheroot(), true, open, globals.properties().secrets);
         for (Module module : modules) {
-            System.out.println(module.getName());
+            System.out.println(module.getName() + " " + module.getClass().getSimpleName());
             System.out.println(Strings.indent("" + module.descriptorOpt, "  "));
         }
     }

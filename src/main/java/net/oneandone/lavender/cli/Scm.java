@@ -69,7 +69,8 @@ public class Scm extends Base {
             throw new IOException("scm not found is host properties: " + scm);
         }
         scmurlstr = "scm:" + url;
-        moduleConfig = new ScmProperties(ScmProperties.urlToFilename(scmurlstr), filter, scmurlstr, scmurlstr, "", "", false, "", prefix, null);
+        moduleConfig = new ScmProperties(ScmProperties.urlToFilename(scmurlstr), filter, scmurlstr,
+                scmurlstr, "", "", false, "", prefix, null, null);
         cacheroot = globals.cacheroot();
         module = moduleConfig.create(cacheroot, true, properties.secrets, null);
         try (Pool pool = globals.pool()) {

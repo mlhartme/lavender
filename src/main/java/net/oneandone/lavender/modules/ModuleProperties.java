@@ -128,6 +128,7 @@ public class ModuleProperties extends PropertiesBase {
                             eatBoolean(properties, prefix + ".lavendelize", true),
                             eatOpt(properties, prefix + ".resourcePathPrefix", ""),
                             eatOpt(properties, prefix + ".targetPathPrefix", ""),
+                            eatIndexOpt(properties),
                             scmsrc));
         }
         if (properties.size() > 0) {

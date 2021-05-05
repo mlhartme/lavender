@@ -32,7 +32,6 @@ import java.util.List;
  * Represents META-INF/pustefix-module.xml. It's not called pustefix module because it must not be confused with Lavender modules.
  */
 public class PustefixJarConfig {
-    private static final String MODULES = "modules/";
     private static final String PUSTEFIX_INF = "PUSTEFIX-INF/";
 
     private final PustefixWarConfig global;

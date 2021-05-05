@@ -50,12 +50,15 @@ public class ScmProperties {
     public final String resourcePathPrefix;
     public final String targetPathPrefix;
 
+    public final Map<String, String> indexOpt;
+
     /** Absolute path relative to local sources for this module, null if not available */
     public final String source;
 
     /// CHECKSTYLE:OFF
     public ScmProperties(String name, Filter filter, String connectionProd, String connectionDevel, String tag, String path,
-                         boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, String source) {
+                         boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Map<String, String> indexOpt,
+                         String source) {
         /// CHECKSTYLE:ON
         if (connectionProd == null) {
             throw new NullPointerException();
@@ -72,6 +75,7 @@ public class ScmProperties {
         this.lavendelize = lavendelize;
         this.resourcePathPrefix = resourcePathPrefix;
         this.targetPathPrefix = targetPathPrefix;
+        this.indexOpt = indexOpt;
         this.source = source;
     }
 
@@ -124,7 +128,6 @@ public class ScmProperties {
                             }
                         });
                         return result;
-
                     }
                 };
             }
@@ -132,13 +135,17 @@ public class ScmProperties {
         }
         scm = prod ? connectionProd : connectionDevel;
         scm = Strings.removeLeft(scm, "scm:");
-        if (scm.startsWith("svn:")) {
-            pinnedRevision = !prod || tag.isEmpty() ? -1 : Long.parseLong(tag);
-            return createSvnModule(cacheDir, jarConfig, world, scm + path, secrets, pinnedRevision);
-        } else if (scm.startsWith("git:")) {
-            return createBitbucketModule(cacheDir.getWorld(), scm, secrets, accessPathPrefix(path), jarConfig);
+        if (indexOpt != null) {
+            return createIndexedModule(world, scm);
         } else {
-            throw new IllegalStateException("scm url not supported: " + scm);
+            if (scm.startsWith("svn:")) {
+                pinnedRevision = !prod || tag.isEmpty() ? -1 : Long.parseLong(tag);
+                return createSvnModule(cacheDir, jarConfig, world, scm + path, secrets, pinnedRevision);
+            } else if (scm.startsWith("git:")) {
+                return createBitbucketModule(world, scm, secrets, accessPathPrefix(path), jarConfig);
+            } else {
+                throw new IllegalStateException("scm url not supported: " + scm);
+            }
         }
     }
 
@@ -156,6 +163,16 @@ public class ScmProperties {
         url = url.replace("/", "_");
         url = Strings.removeLeftOpt(url, ".");
         return url;
+    }
+
+    private IndexedModule createIndexedModule(World world, String scm) {
+        String urlPattern;
+
+        if (!scm.startsWith("git:")) {
+            throw new UnsupportedOperationException("TODO " + scm);
+        }
+        urlPattern = scm.substring(4); // TODO ...
+        return new IndexedModule(world, scm, name, this, lavendelize, resourcePathPrefix, targetPathPrefix, filter, indexOpt, urlPattern);
     }
 
     private SvnModule createSvnModule(FileNode cacheDir, PustefixJarConfig jarConfig, World world, String scm, Secrets secrets, long pinnedRevision) throws IOException {
@@ -202,11 +219,11 @@ public class ScmProperties {
 
     public String toString() {
         return "name: " + name + "\n"
+                + "tag: " + tag + "\n"
                 + "include: " + Strings.toList(filter.getIncludes()) + "\n"
                 + "exclude: " + Strings.toList(filter.getExcludes()) + "\n"
                 + "connectionProd: " + connectionProd + "\n"
                 + "connectionDevel: " + connectionDevel + "\n"
-                + "tag: " + tag + "\n"
                 + "path: " + path + "\n"
                 + "lavendelize: " + lavendelize + "\n"
                 + "resourcePathPrefix: " + resourcePathPrefix + "\n"
