@@ -172,8 +172,7 @@ public class ScmProperties {
             throw new UnsupportedOperationException("TODO " + scm);
         }
         urlPattern = UrlPattern.create(world, scm.substring(4), at, secrets);
-        return new IndexedModule(world, scm, name, this, lavendelize, resourcePathPrefix, targetPathPrefix, filter, indexOpt,
-                urlPattern);
+        return new IndexedModule(scm, name, this, lavendelize, resourcePathPrefix, targetPathPrefix, filter, indexOpt, urlPattern);
     }
 
     private SvnModule createSvnModule(FileNode cacheDir, PustefixJarConfig jarConfig, World world, String scm, Secrets secrets, long pinnedRevision) throws IOException {

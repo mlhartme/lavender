@@ -22,16 +22,14 @@ import java.io.IOException;
 import java.util.Map;
 
 public class IndexedModule extends Module<String> {
-    private final World world;
     private final Map<String, String> index; // maps path to md5
     private final UrlPattern urlPattern; // with variables ${tag} and ${path}
 
     // CHECKSTYLE:OFF
-    public IndexedModule(World world, String origin, String name, ScmProperties descriptorOpt, boolean lavendelize,
+    public IndexedModule(String origin, String name, ScmProperties descriptorOpt, boolean lavendelize,
                          String resourcePathPrefix, String targetPathPrefix, Filter filter,
                          Map<String, String> index, UrlPattern urlPattern) {
         super(origin, name, descriptorOpt, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
-        this.world = world;
         this.index = index;
         this.urlPattern = urlPattern;
     }
