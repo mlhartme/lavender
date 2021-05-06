@@ -20,18 +20,20 @@ import java.io.OutputStream;
 
 public class IndexedResource extends Resource {
     private final UrlPattern urlPattern;
-    private final String resourcePath;
+    private final String publicPath;
+    private final String accessPath;
     private final String md5;
 
-    public IndexedResource(UrlPattern urlPattern, String resourcePath, String md5) {
+    public IndexedResource(UrlPattern urlPattern, String publicPath, String accessPath, String md5) {
         this.urlPattern = urlPattern;
-        this.resourcePath = resourcePath;
+        this.publicPath = publicPath;
+        this.accessPath = accessPath;
         this.md5 = md5;
     }
 
     @Override
     public String getPath() {
-        return resourcePath;
+        return publicPath;
     }
 
     @Override
@@ -46,12 +48,11 @@ public class IndexedResource extends Resource {
 
     @Override
     public void writeTo(OutputStream dest) throws IOException {
-        urlPattern.writeTo(resourcePath, dest);
+        urlPattern.writeTo(accessPath, dest);
     }
 
     @Override
     public boolean isOutdated() {
-        // TODO
-        return true;
+        return false; // indexed resources are never out-dated
     }
 }

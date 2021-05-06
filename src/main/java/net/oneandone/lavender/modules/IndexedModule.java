@@ -15,35 +15,54 @@
  */
 package net.oneandone.lavender.modules;
 
-import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.filter.Filter;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
-public class IndexedModule extends Module<String> {
+public class IndexedModule extends Module<IndexedEntry> {
+    private final PustefixJarConfig configOpt;
     private final Map<String, String> index; // maps path to md5
     private final UrlPattern urlPattern; // with variables ${tag} and ${path}
+
 
     // CHECKSTYLE:OFF
     public IndexedModule(String origin, String name, ScmProperties descriptorOpt, boolean lavendelize,
                          String resourcePathPrefix, String targetPathPrefix, Filter filter,
-                         Map<String, String> index, UrlPattern urlPattern) {
+                         PustefixJarConfig configOpt, Map<String, String> index, UrlPattern urlPattern) {
         super(origin, name, descriptorOpt, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
+        this.configOpt = configOpt;
         this.index = index;
         this.urlPattern = urlPattern;
     }
     // CHECKSTYLE:ON
 
     @Override
-    protected Map<String, String> loadEntries() throws IOException {
-        return index;
+    protected Map<String, IndexedEntry> loadEntries() throws IOException {
+        Map<String, IndexedEntry> result;
+        String accessPath;
+        String md5;
+        String publicPath;
+
+        result = new HashMap<>();
+        for (Map.Entry<String, String> entry : index.entrySet()) {
+            accessPath = entry.getKey();
+            md5 = entry.getKey();
+            if (configOpt != null) {
+                publicPath = configOpt.getPath(accessPath);
+            } else {
+                publicPath = accessPath;
+            }
+            if (publicPath != null) {
+                result.put(publicPath, new IndexedEntry(publicPath, accessPath, md5));
+            }
+        }
+        return result;
     }
 
     @Override
-    protected Resource createResource(String resourcePath, String entry) {
-        return new IndexedResource(urlPattern, resourcePath, entry);
+    protected Resource createResource(String resourcePath, IndexedEntry entry) {
+        return new IndexedResource(urlPattern, entry.publicPath, entry.accessPath, entry.md5);
     }
-
-
 }

@@ -79,8 +79,8 @@ public class ScmProperties {
         this.source = source;
     }
 
-    /** @param jarConfig null when creating the application module or a temporary module for the scm command */
-    public Module create(FileNode cacheDir, boolean prod, Secrets secrets, PustefixJarConfig jarConfig) throws IOException {
+    /** @param jarConfigOpt null when creating the application module or a temporary module for the scm command */
+    public Module create(FileNode cacheDir, boolean prod, Secrets secrets, PustefixJarConfig jarConfigOpt) throws IOException {
         World world;
         final FileNode checkout;
         String scm;
@@ -118,8 +118,8 @@ public class ScmProperties {
 
                                 relative = node.getRelative(checkout);
                                 if (filter.matches(relative)) {
-                                    if (jarConfig != null) {
-                                        relative = jarConfig.getPath(relative);
+                                    if (jarConfigOpt != null) {
+                                        relative = jarConfigOpt.getPath(relative);
                                     }
                                     if (relative != null) {
                                         result.put(relative, node);
@@ -136,13 +136,13 @@ public class ScmProperties {
         scm = prod ? connectionProd : connectionDevel;
         scm = Strings.removeLeft(scm, "scm:");
         if (indexOpt != null) {
-            return createIndexedModule(world, scm, "refs/heads/master" /* TODO */, secrets);
+            return createIndexedModule(world, scm, "refs/heads/master" /* TODO */, jarConfigOpt, secrets);
         } else {
             if (scm.startsWith("svn:")) {
                 pinnedRevision = !prod || tag.isEmpty() ? -1 : Long.parseLong(tag);
-                return createSvnModule(cacheDir, jarConfig, world, scm + path, secrets, pinnedRevision);
+                return createSvnModule(cacheDir, jarConfigOpt, world, scm + path, secrets, pinnedRevision);
             } else if (scm.startsWith("git:")) {
-                return createBitbucketModule(world, scm, secrets, accessPathPrefix(path), jarConfig);
+                return createBitbucketModule(world, scm, secrets, accessPathPrefix(path), jarConfigOpt);
             } else {
                 throw new IllegalStateException("scm url not supported: " + scm);
             }
@@ -165,14 +165,15 @@ public class ScmProperties {
         return url;
     }
 
-    private IndexedModule createIndexedModule(World world, String scm, String at, Secrets secrets) throws IOException {
+    private IndexedModule createIndexedModule(World world, String scm, String at, PustefixJarConfig configOpt, Secrets secrets) throws IOException {
         UrlPattern urlPattern;
 
         if (!scm.startsWith("git:")) {
             throw new UnsupportedOperationException("TODO " + scm);
         }
         urlPattern = UrlPattern.create(world, scm.substring(4), at, secrets);
-        return new IndexedModule(scm, name, this, lavendelize, resourcePathPrefix, targetPathPrefix, filter, indexOpt, urlPattern);
+        return new IndexedModule(scm, name, this, lavendelize, resourcePathPrefix, targetPathPrefix, filter,
+                configOpt, indexOpt, urlPattern);
     }
 
     private SvnModule createSvnModule(FileNode cacheDir, PustefixJarConfig jarConfig, World world, String scm, Secrets secrets, long pinnedRevision) throws IOException {
