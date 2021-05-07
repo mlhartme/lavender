@@ -64,6 +64,6 @@ public class IndexedModule extends Module<IndexedEntry> {
 
     @Override
     protected Resource createResource(String resourcePath, IndexedEntry entry) {
-        return new IndexedResource(urlPattern, entry.publicPath, entry.accessPath, entry.md5);
+        return new IndexedResource(urlPattern, resourcePath, entry.accessPath, entry.md5);
     }
 }

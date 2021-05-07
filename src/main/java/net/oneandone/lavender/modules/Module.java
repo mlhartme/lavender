@@ -148,10 +148,10 @@ public abstract class Module<E> implements Iterable<Resource> {
     /**
      * Instantiates a resource from an entry
      *
-     * @param path of the entry
+     * @param resourcePath of the entry
      * @param data of the entry
      */
-    protected abstract Resource createResource(String path, E data) throws IOException;
+    protected abstract Resource createResource(String resourcePath, E data) throws IOException;
 
     /** @return null if not found */
     public Resource probe(String resourcePath) throws IOException {

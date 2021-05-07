@@ -67,7 +67,7 @@ removeIndexComment() {
   fi
   indexes=$1
   find ${indexes} -type f -print0 | while IFS= read -r -d $'\0' file; do
-    echo "$(tail -n +2 ${file})" > ${file}
+    echo "$(tail -n +2 ${file})" | sort > ${file}
   done
 }
 
