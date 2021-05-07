@@ -71,7 +71,6 @@ public class UrlPattern {
     }
 
     public void writeTo(String path, OutputStream dest) throws IOException {
-        System.out.println("path " + path + " " + at); // TODO
         bitbucket.writeTo(project, repository, path, at, dest);
     }
 }
