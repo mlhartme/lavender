@@ -7,7 +7,7 @@ testhost=${HOME}/Projects/lavender/walter
 
 artifact() {
   if [ "$#" -ne 3 ] ; then
-    echo "usage: run <groupId> <artifactId> <version>"
+    echo "usage: artifact <groupId> <artifactId> <version>"
     exit 1
   fi
   groupId=$1
@@ -25,7 +25,7 @@ artifact() {
 
 war() {
   if [ "$#" -ne 3 ] ; then
-    echo "usage: run <name> <oldwar> <newwar>"
+    echo "usage: war <name> <oldwar> <newwar>"
     exit 1
   fi
   name=$1
@@ -74,6 +74,9 @@ removeIndexComment() {
 echo "testing $(${old_lavender} version) vs $(${new_lavender} version)"
 rm -rf ${testhost}
 
+root=/Users/mhm/Projects/github.com/net/oneandone/lavender-test/shops
+war ionos-eu ${root}/ionos-eu-orig/target/ionos-eu-0.0.64-SNAPSHOT.war ${root}/ionos-eu/target/ionos-eu-0.0.64-SNAPSHOT.war
+
 ## shops
 
 #artifact com.ionos.shop order-ca 3.2.18
@@ -85,7 +88,7 @@ rm -rf ${testhost}
 #artifact com.ionos.shop order-uk 3.2.26
 #artifact com.ionos.shop order-mx 3.2.16
 
-artifact com.oneandone.sales ionos-eu 0.0.63
+# artifact com.oneandone.sales ionos-eu 0.0.63
 
 #artifact com.ionos.shop cloud-de 2.0.13
 #artifact com.ionos.shop cloud-it 2.0.9
