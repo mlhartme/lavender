@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class IndexedModule extends Module<IndexedEntry> {
+    private final String accessPathPrefix;
     private final PustefixJarConfig configOpt;
     private final Map<String, String> index; // maps path to md5
     private final UrlPattern urlPattern; // with variables ${tag} and ${path}
@@ -30,8 +31,9 @@ public class IndexedModule extends Module<IndexedEntry> {
     // CHECKSTYLE:OFF
     public IndexedModule(String origin, String name, ScmProperties descriptorOpt, boolean lavendelize,
                          String resourcePathPrefix, String targetPathPrefix, Filter filter,
-                         PustefixJarConfig configOpt, Map<String, String> index, UrlPattern urlPattern) {
+                         String accessPathPrefix, PustefixJarConfig configOpt, Map<String, String> index, UrlPattern urlPattern) {
         super(origin, name, descriptorOpt, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
+        this.accessPathPrefix = accessPathPrefix;
         this.configOpt = configOpt;
         this.index = index;
         this.urlPattern = urlPattern;
@@ -41,21 +43,21 @@ public class IndexedModule extends Module<IndexedEntry> {
     @Override
     protected Map<String, IndexedEntry> loadEntries() throws IOException {
         Map<String, IndexedEntry> result;
-        String accessPath;
+        String path;
         String md5;
         String publicPath;
 
         result = new HashMap<>();
         for (Map.Entry<String, String> entry : index.entrySet()) {
-            accessPath = entry.getKey();
+            path = entry.getKey();
             md5 = entry.getKey();
             if (configOpt != null) {
-                publicPath = configOpt.getPath(accessPath);
+                publicPath = configOpt.getPath(path);
             } else {
-                publicPath = accessPath;
+                publicPath = path;
             }
             if (publicPath != null) {
-                result.put(publicPath, new IndexedEntry(publicPath, accessPath, md5));
+                result.put(publicPath, new IndexedEntry(publicPath, accessPathPrefix + path, md5));
             }
         }
         return result;
