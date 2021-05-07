@@ -50,14 +50,13 @@ public class IndexedModule extends Module<IndexedEntry> {
         result = new HashMap<>();
         for (Map.Entry<String, String> entry : index.entrySet()) {
             path = entry.getKey();
-            md5 = entry.getKey();
             if (configOpt != null) {
                 publicPath = configOpt.getPath(path);
             } else {
                 publicPath = path;
             }
             if (publicPath != null) {
-                result.put(publicPath, new IndexedEntry(publicPath, accessPathPrefix + path, md5));
+                result.put(publicPath, new IndexedEntry(publicPath, accessPathPrefix + path, entry.getValue()));
             }
         }
         return result;
