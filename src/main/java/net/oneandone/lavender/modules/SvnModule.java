@@ -56,7 +56,7 @@ public class SvnModule extends Module<SvnEntry> {
     private final PustefixJarConfig jarConfig;
 
     // CHECKSTYLE:OFF
-    public SvnModule(String name, ScmProperties descriptorOpt, FileNode cacheFile, SvnNode root,
+    public SvnModule(String name, ModuleProperties descriptorOpt, FileNode cacheFile, SvnNode root,
                      long pinnedRevision, boolean lavendelize, String resourcePathPrefix,
                      String targetPathPrefix, Filter filter, PustefixJarConfig jarConfig) {
         // CHECKSTYLE:ON

@@ -28,7 +28,7 @@ public class IndexedModule extends Module<IndexedEntry> {
     private final UrlPattern urlPattern;
 
     // CHECKSTYLE:OFF
-    public IndexedModule(String origin, String name, ScmProperties descriptorOpt, boolean lavendelize,
+    public IndexedModule(String origin, String name, ModuleProperties descriptorOpt, boolean lavendelize,
                          String resourcePathPrefix, String targetPathPrefix, Filter filter,
                          String accessPathPrefix, PustefixJarConfig configOpt, Map<String, String> index, UrlPattern urlPattern) {
         super(origin, name, descriptorOpt, lavendelize, resourcePathPrefix, targetPathPrefix, filter);

@@ -22,7 +22,7 @@ import net.oneandone.lavender.config.Pool;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.modules.Distributor;
 import net.oneandone.lavender.modules.Module;
-import net.oneandone.lavender.modules.ScmProperties;
+import net.oneandone.lavender.modules.ModuleProperties;
 import net.oneandone.sushi.fs.file.FileNode;
 import net.oneandone.sushi.fs.filter.Filter;
 
@@ -52,7 +52,7 @@ public class Scm extends Base {
         Filter filter;
         URI url;
         String scmurlstr;
-        ScmProperties moduleConfig;
+        ModuleProperties moduleConfig;
         Module module;
         Distributor distributor;
         long changed;
@@ -69,7 +69,7 @@ public class Scm extends Base {
             throw new IOException("scm not found is host properties: " + scm);
         }
         scmurlstr = "scm:" + url;
-        moduleConfig = new ScmProperties(ScmProperties.urlToFilename(scmurlstr), false, filter, scmurlstr,
+        moduleConfig = new ModuleProperties(ModuleProperties.urlToFilename(scmurlstr), false, filter, scmurlstr,
                 "", "", false, "", prefix, null, null);
         cacheroot = globals.cacheroot();
         module = moduleConfig.create(cacheroot, true, properties.secrets, null);

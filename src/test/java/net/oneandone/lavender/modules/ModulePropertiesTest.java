@@ -27,22 +27,38 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ModulePropertiesTest {
     @Test
-    public void one() throws IOException {
+    public void modern() throws IOException {
         Properties props;
         ModuleProperties result;
-        ScmProperties config;
+
+        props = new Properties();
+        props.put("module.name", "modern");
+        props.put("module.scmurl", "scm");
+        props.put("module.revision", "rev");
+        props.put("module.targetPathPrefix", "prefix");
+        props.put("module.lavendelize", "false");
+        result = ModuleProperties.parse(false, props, pomInfo());
+        assertEquals("modern", result.name);
+        assertFalse(result.lavendelize);
+        assertEquals("scm", result.scmurl);
+        assertEquals("rev", result.revision);
+        assertEquals("prefix", result.targetPathPrefix);
+    }
+
+    @Test
+    public void classic() throws IOException {
+        Properties props;
+        ModuleProperties result;
 
         props = new Properties();
         props.put("scm.foo", "svn");
         props.put("scm.foo.targetPathPrefix", "prefix");
         props.put("scm.foo.lavendelize", "false");
         result = ModuleProperties.parse(false, props, pomInfo());
-        assertEquals(1, result.configs.size());
-        config = result.configs.iterator().next();
-        assertEquals("foo", config.name);
-        assertFalse(config.lavendelize);
-        assertEquals("prefix", config.targetPathPrefix);
-        assertEquals("svn", config.scmurl);
+        assertEquals("foo", result.name);
+        assertFalse(result.lavendelize);
+        assertEquals("prefix", result.targetPathPrefix);
+        assertEquals("svn", result.scmurl);
     }
 
     private static Properties pomInfo() throws IOException {

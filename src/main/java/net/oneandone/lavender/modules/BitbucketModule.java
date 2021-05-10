@@ -39,7 +39,7 @@ public class BitbucketModule extends Module<BitbucketEntry> {
 
     // CHECKSTYLE:OFF
     public BitbucketModule(Bitbucket bitbucket, String project, String repository, String branchOrTag, String accessPathPrefix,
-                           String name, ScmProperties descriptorOpt, boolean lavendelize,
+                           String name, ModuleProperties descriptorOpt, boolean lavendelize,
                            String resourcePathPrefix, String targetPathPrefix, Filter filter, PustefixJarConfig config) {
         super(bitbucket.getOrigin(project, repository), name, descriptorOpt, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
 

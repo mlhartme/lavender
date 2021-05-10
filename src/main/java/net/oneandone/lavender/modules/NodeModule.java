@@ -47,21 +47,21 @@ public abstract class NodeModule extends Module<Node> {
             pustefixJar = PustefixJar.forNodeOpt(prod, jar, rootConfig);
             if (pustefixJar != null) {
                 if (pustefixJar.moduleProperties != null) {
-                    pustefixJar.moduleProperties.createModules(cache, prod, secrets, result, pustefixJar.config);
+                    result.add(pustefixJar.moduleProperties.create(cache, prod, secrets, pustefixJar.config));
                 }
             }
         }
-        application.createModules(cache, prod, secrets, result, null);
+        result.add(application.create(cache, prod, secrets, null));
         return result;
     }
 
     //--
 
-    public NodeModule(Node origin, String name, ScmProperties descriptorOpt, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
+    public NodeModule(Node origin, String name, ModuleProperties descriptorOpt, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
         this(origin.getUri().toString(), name, descriptorOpt, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
     }
 
-    public NodeModule(String origin, String name, ScmProperties descriptorOpt, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
+    public NodeModule(String origin, String name, ModuleProperties descriptorOpt, boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Filter filter) {
         super(origin, name, descriptorOpt, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
     }
 
