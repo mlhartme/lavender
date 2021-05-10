@@ -25,8 +25,7 @@ public class IndexedModule extends Module<IndexedEntry> {
     private final String accessPathPrefix;
     private final PustefixJarConfig configOpt;
     private final Map<String, String> index; // maps path to md5
-    private final UrlPattern urlPattern; // with variables ${tag} and ${path}
-
+    private final UrlPattern urlPattern;
 
     // CHECKSTYLE:OFF
     public IndexedModule(String origin, String name, ScmProperties descriptorOpt, boolean lavendelize,

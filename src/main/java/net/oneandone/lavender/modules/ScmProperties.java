@@ -42,10 +42,10 @@ public class ScmProperties {
     public final String name;
     public final boolean classic;
     public final Filter filter;
-    public final String connection;
+    public final String scmurl;
 
     /** for svn: revision number; git: commit hash */
-    public final String tag;
+    public final String revision;
     public final String path;
     public final boolean lavendelize;
     public final String resourcePathPrefix;
@@ -57,11 +57,11 @@ public class ScmProperties {
     public final String source;
 
     /// CHECKSTYLE:OFF
-    public ScmProperties(String name, boolean classic, Filter filter, String connection, String tag, String path,
+    public ScmProperties(String name, boolean classic, Filter filter, String scmurl, String revision, String path,
                          boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Map<String, String> indexOpt,
                          String source) {
         /// CHECKSTYLE:ON
-        if (connection == null) {
+        if (scmurl == null) {
             throw new NullPointerException();
         }
         if (name.startsWith("/") || name.endsWith("/")) {
@@ -70,8 +70,8 @@ public class ScmProperties {
         this.name = name;
         this.classic = classic;
         this.filter = filter;
-        this.connection = connection;
-        this.tag = tag;
+        this.scmurl = scmurl;
+        this.revision = revision;
         this.path = path;
         this.lavendelize = lavendelize;
         this.resourcePathPrefix = resourcePathPrefix;
@@ -134,12 +134,12 @@ public class ScmProperties {
             }
             // fall-through
         }
-        scm = Strings.removeLeft(connection, "scm:");
+        scm = Strings.removeLeft(scmurl, "scm:");
         if (indexOpt != null) {
-            return createIndexedModule(world, scm, tag, accessPathPrefix(path), jarConfigOpt, secrets);
+            return createIndexedModule(world, scm, revision, accessPathPrefix(path), jarConfigOpt, secrets);
         } else {
             if (scm.startsWith("svn:")) {
-                pinnedRevision = !prod || tag.isEmpty() ? -1 : Long.parseLong(tag);
+                pinnedRevision = !prod || revision.isEmpty() ? -1 : Long.parseLong(revision);
                 return createSvnModule(cacheDir, jarConfigOpt, world, scm + path, secrets, pinnedRevision);
             } else if (scm.startsWith("git:")) {
                 return createBitbucketModule(world, scm, secrets, accessPathPrefix(path), jarConfigOpt);
@@ -215,17 +215,17 @@ public class ScmProperties {
         project = uriPath.substring(0, idx);
         repository = Strings.removeRight(uriPath.substring(idx + 1), ".git");
         return new BitbucketModule(Bitbucket.create(world, uri.getHost(), up),
-                project, repository, tag.isEmpty() ? "master" : tag, accessPathPrefix, name, this, lavendelize, resourcePathPrefix,
+                project, repository, repository.isEmpty() ? "master" : revision, accessPathPrefix, name, this, lavendelize, resourcePathPrefix,
                 targetPathPrefix, filter, config);
     }
 
     public String toString() {
         return "name: " + name + "\n"
                 + "classic: " + classic + "\n"
-                + "tag: " + tag + "\n"
+                + "revision: " + revision + "\n"
                 + "include: " + Strings.toList(filter.getIncludes()) + "\n"
                 + "exclude: " + Strings.toList(filter.getExcludes()) + "\n"
-                + "connection: " + connection + "\n"
+                + "connection: " + scmurl + "\n"
                 + "path: " + path + "\n"
                 + "lavendelize: " + lavendelize + "\n"
                 + "resourcePathPrefix: " + resourcePathPrefix + "\n"

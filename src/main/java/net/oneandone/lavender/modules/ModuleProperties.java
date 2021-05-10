@@ -93,10 +93,6 @@ public class ModuleProperties extends PropertiesBase {
     public static ModuleProperties parse(boolean prod, Properties properties, Properties pominfo) throws IOException {
         ModuleProperties result;
         String source;
-        String scmurlProd;
-        String scmurlDevel;
-        String tag;
-        String scmsrc;
 
         if (pominfo == null) {
             throw new IOException("pominfo.properties for module not found: " + properties);
@@ -121,13 +117,13 @@ public class ModuleProperties extends PropertiesBase {
     private static ScmProperties loadModern(Properties properties, String source) {
         String name;
         String connection;
-        String tag;
+        String revision;
         String scmsrc;
         String path;
 
         name = eat(properties, "module.name");
         connection = eat(properties, "module.connection");
-        tag = eat(properties, "module.tag");
+        revision = eat(properties, "module.revision");
         path = eatOpt(properties, "module.path", "");
         if (!path.isEmpty() && !path.startsWith("/")) {
             path = "/" + path;
@@ -136,7 +132,7 @@ public class ModuleProperties extends PropertiesBase {
         return new ScmProperties(
                 name, false,
                 eatFilter(properties, "module", DEFAULT_INCLUDES),
-                connection, tag, path,
+                connection, revision, path,
                 eatBoolean(properties, "module.lavendelize", true),
                 eatOpt(properties, "module.resourcePathPrefix", ""),
                 eatOpt(properties, "module.targetPathPrefix", ""),

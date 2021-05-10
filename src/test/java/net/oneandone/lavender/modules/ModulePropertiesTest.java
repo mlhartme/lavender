@@ -19,7 +19,6 @@ import net.oneandone.sushi.util.Separator;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,7 +42,7 @@ public class ModulePropertiesTest {
         assertEquals("foo", config.name);
         assertFalse(config.lavendelize);
         assertEquals("prefix", config.targetPathPrefix);
-        assertEquals("svn", config.connection);
+        assertEquals("svn", config.scmurl);
     }
 
     private static Properties pomInfo() throws IOException {
