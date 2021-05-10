@@ -20,20 +20,14 @@ import java.io.OutputStream;
 
 public class IndexedResource extends Resource {
     private final UrlPattern urlPattern;
-    private final String resourcePath;
     private final String accessPath;
     private final String md5;
 
     public IndexedResource(UrlPattern urlPattern, String resourcePath, String accessPath, String md5) {
+        super(resourcePath);
         this.urlPattern = urlPattern;
-        this.resourcePath = resourcePath;
         this.accessPath = accessPath;
         this.md5 = md5;
-    }
-
-    @Override
-    public String getResourcePath() {
-        return resourcePath;
     }
 
     @Override

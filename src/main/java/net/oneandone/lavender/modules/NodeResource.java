@@ -37,17 +37,12 @@ public class NodeResource extends Resource {
     }
 
     private final Node node;
-    private final String resourcePath;
     private final long lastModified;
 
     private NodeResource(Node node, String resourcePath, long lastModified) {
+        super(resourcePath);
         this.node = node;
-        this.resourcePath = resourcePath;
         this.lastModified = lastModified;
-    }
-
-    public String getResourcePath() {
-        return resourcePath;
     }
 
     @Override

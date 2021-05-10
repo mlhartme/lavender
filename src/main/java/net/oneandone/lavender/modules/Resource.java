@@ -19,8 +19,15 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public abstract class Resource {
-    /** resource path */
-    public abstract String getResourcePath();
+    protected final String resourcePath;
+
+    public Resource(String resourcePath) {
+        this.resourcePath = resourcePath;
+    }
+
+    public String getResourcePath() {
+        return resourcePath;
+    }
 
     /** @return null if unknown */
     public abstract String getMd5Opt();

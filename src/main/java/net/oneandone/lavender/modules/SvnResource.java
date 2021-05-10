@@ -24,21 +24,15 @@ import java.io.OutputStream;
 public class SvnResource extends Resource {
     private final SvnModule module;
 
-    private final String resourcePath;
-
     private final SvnEntry entry;
 
     private final long accessRevision;
 
     public SvnResource(SvnModule module, String resourcePath, SvnEntry entry, long accessRevision) {
+        super(resourcePath);
         this.module = module;
-        this.resourcePath = resourcePath;
         this.entry = entry;
         this.accessRevision = accessRevision;
-    }
-
-    public String getResourcePath() {
-        return resourcePath;
     }
 
     @Override
