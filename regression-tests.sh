@@ -71,46 +71,49 @@ removeIndexComment() {
   done
 }
 
+shopArtifacts() {
+  artifact com.ionos.shop order-ca 3.2.18
+  artifact com.ionos.shop order-de 3.2.27
+  artifact com.ionos.shop order-es 3.2.20
+  artifact com.ionos.shop order-it 3.2.20
+  artifact com.ionos.shop order-us 3.2.26
+  artifact com.ionos.shop order-fr 3.2.24
+  artifact com.ionos.shop order-uk 3.2.26
+  artifact com.ionos.shop order-mx 3.2.16
+
+  artifact com.oneandone.sales ionos-eu 0.0.63
+
+  artifact com.ionos.shop cloud-de 2.0.13
+  artifact com.ionos.shop cloud-it 2.0.9
+  artifact com.ionos.shop cloud-ca 2.0.10
+  artifact com.ionos.shop cloud-fr 2.0.9
+  artifact com.ionos.shop cloud-mx 2.0.9
+  artifact com.ionos.shop cloud-uk 2.0.9
+  artifact com.ionos.shop cloud-us 2.0.9
+
+  artifact com.ionos.shop telesales-de 3.2.15
+  artifact com.ionos.shop telesales-es 3.2.12
+  artifact com.ionos.shop telesales-fr 3.2.9
+  artifact com.ionos.shop telesales-uk 3.2.12
+  artifact com.ionos.shop telesales-us 3.2.8
+}
+
+cpArtifacts() {
+  artifact com.ionos.shop upgrade-us 2.3.84
+  artifact com.ionos.shop upgrade-es 2.4.84
+  artifact com.ionos.shop upgrade-it 2.3.69
+  artifact com.ionos.shop upgrade-fr 3.2.85
+  artifact com.ionos.shop upgrade-uk 2.4.87
+  artifact com.ionos.shop upgrade-de 2.6.91
+  artifact com.ionos.shop upgrade-ca 2.4.69
+  artifact com.ionos.shop upgrade-mx 2.3.66
+}
+
 echo "testing $(${old_lavender} version) vs $(${new_lavender} version)"
 rm -rf ${testhost}
+
+# artifact com.oneandone.sales ionos-eu 0.0.63
 
 root=/Users/mhm/Projects/github.com/net/oneandone/lavender-test/shops
 war ionos-eu ${root}/ionos-eu-orig/target/ionos-eu-0.0.64-SNAPSHOT.war ${root}/ionos-eu/target/ionos-eu-0.0.64-SNAPSHOT.war
 
-## shops
-
-#artifact com.ionos.shop order-ca 3.2.18
-#artifact com.ionos.shop order-de 3.2.27
-#artifact com.ionos.shop order-es 3.2.20
-#artifact com.ionos.shop order-it 3.2.20
-#artifact com.ionos.shop order-us 3.2.26
-#artifact com.ionos.shop order-fr 3.2.24
-#artifact com.ionos.shop order-uk 3.2.26
-#artifact com.ionos.shop order-mx 3.2.16
-
-# artifact com.oneandone.sales ionos-eu 0.0.63
-
-#artifact com.ionos.shop cloud-de 2.0.13
-#artifact com.ionos.shop cloud-it 2.0.9
-#artifact com.ionos.shop cloud-ca 2.0.10
-#artifact com.ionos.shop cloud-fr 2.0.9
-#artifact com.ionos.shop cloud-mx 2.0.9
-#artifact com.ionos.shop cloud-uk 2.0.9
-#artifact com.ionos.shop cloud-us 2.0.9
-
-#artifact com.ionos.shop telesales-de 3.2.15
-#artifact com.ionos.shop telesales-es 3.2.12
-#artifact com.ionos.shop telesales-fr 3.2.9
-#artifact com.ionos.shop telesales-uk 3.2.12
-#artifact com.ionos.shop telesales-us 3.2.8
-
-## cp
-
-#artifact com.ionos.shop upgrade-us 2.3.84
-#artifact com.ionos.shop upgrade-es 2.4.84
-#artifact com.ionos.shop upgrade-it 2.3.69
-#artifact com.ionos.shop upgrade-fr 3.2.85
-#artifact com.ionos.shop upgrade-uk 2.4.87
-#artifact com.ionos.shop upgrade-de 2.6.91
-#artifact com.ionos.shop upgrade-ca 2.4.69
-#artifact com.ionos.shop upgrade-mx 2.3.66
