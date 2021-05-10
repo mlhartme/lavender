@@ -23,9 +23,7 @@ public abstract class Resource {
     public abstract String getPath();
 
     /** @return null if unknown */
-    public String getMd5Opt() {
-        return null; // TODO
-    }
+    public abstract String getMd5Opt();
 
     /** something useable as etag; revision for svn; CAUTION: this is not the md5 hash! */
     public abstract String getContentId();

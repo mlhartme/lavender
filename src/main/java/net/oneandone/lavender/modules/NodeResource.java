@@ -50,6 +50,11 @@ public class NodeResource extends Resource {
         return path;
     }
 
+    @Override
+    public String getMd5Opt() {
+        return null;
+    }
+
     public String getContentId() {
         return Long.toString(lastModified);
     }

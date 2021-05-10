@@ -41,6 +41,11 @@ public class BitbucketResource extends Resource {
     }
 
     @Override
+    public String getMd5Opt() {
+        return null;
+    }
+
+    @Override
     public String getContentId() {
         try {
             return entry.getContentId();

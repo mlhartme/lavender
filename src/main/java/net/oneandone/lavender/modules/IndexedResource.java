@@ -37,6 +37,11 @@ public class IndexedResource extends Resource {
     }
 
     @Override
+    public String getMd5Opt() {
+        return md5;
+    }
+
+    @Override
     public String getContentId() {
         return md5;
     }

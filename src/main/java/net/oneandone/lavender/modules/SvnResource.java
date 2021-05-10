@@ -41,6 +41,11 @@ public class SvnResource extends Resource {
         return resourcePath;
     }
 
+    @Override
+    public String getMd5Opt() {
+        return null;
+    }
+
     public String getContentId() {
         return Long.toString(entry.revision);
     }
