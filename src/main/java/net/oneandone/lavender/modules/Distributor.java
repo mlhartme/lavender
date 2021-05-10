@@ -116,10 +116,10 @@ public class Distributor {
         cacheFile = cacheroot.join("md5", ScmProperties.urlToFilename(module.getOrigin()) + ".cache");
         try (Md5Cache cache = Md5Cache.loadOrCreate(cacheFile)) {
             for (Resource resource : module) {
+                buffer.reset();
                 path = resource.getPath();
                 md5str = resource.getMd5Opt();
                 if (md5str == null) {
-                    buffer.reset();
                     contentId = resource.getContentId();
                     md5 = cache.lookup(path, contentId);
                     if (md5 == null) {
