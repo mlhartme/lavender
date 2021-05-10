@@ -111,34 +111,46 @@ public class ModuleProperties extends PropertiesBase {
         }
 
         result = new ModuleProperties();
-        for (String prefix : prefixes(properties, ScmProperties.SCM_PREFIX)) {
-            scmurlProd = (String) properties.remove(prefix);
-            scmurlDevel = eatOpt(properties, prefix + ".devel", scmurlProd);
-            tag = eatOpt(properties, prefix + ".tag", "");
-            String path = eatOpt(properties, prefix + ".path", "");
-            if (!path.isEmpty() && !path.startsWith("/")) {
-                path = "/" + path;
-            }
-            scmsrc = fallback(scmurlProd, source == null ? null : join(source, path));
-            if (!scmurlProd.equals(scmurlDevel)) {
-                throw new IOException("scm url mismatch between dev + prod: " + scmurlProd + " vs " + scmurlDevel);
-            }
-            result.configs.add(
-                    new ScmProperties(
-                            prefix.substring(prefix.indexOf('.') + 1),
-                            true,
-                            eatFilter(properties, prefix, DEFAULT_INCLUDES),
-                            scmurlProd, tag, path,
-                            eatBoolean(properties, prefix + ".lavendelize", true),
-                            eatOpt(properties, prefix + ".resourcePathPrefix", ""),
-                            eatOpt(properties, prefix + ".targetPathPrefix", ""),
-                            eatIndexOpt(properties),
-                            scmsrc));
-        }
+        result.configs.add(loadLegacy(properties, source));
         if (properties.size() > 0) {
             throw new IllegalArgumentException("unknown properties: " + properties);
         }
         return result;
+    }
+
+    private static ScmProperties loadLegacy(Properties properties, String source) throws IOException {
+        List<String> prefixes;
+        String prefix;
+        String tag;
+        String scmurlProd;
+        String scmurlDevel;
+        String scmsrc;
+
+        prefixes = prefixes(properties, ScmProperties.SCM_PREFIX);
+        if (prefixes.size() != 1) {
+            throw new IOException("one prefix expected, got " + prefixes);
+        }
+        prefix = prefixes.get(0);
+        scmurlProd = (String) properties.remove(prefix);
+        scmurlDevel = eatOpt(properties, prefix + ".devel", scmurlProd);
+        tag = eatOpt(properties, prefix + ".tag", "");
+        String path = eatOpt(properties, prefix + ".path", "");
+        if (!path.isEmpty() && !path.startsWith("/")) {
+            path = "/" + path;
+        }
+        scmsrc = fallback(scmurlProd, source == null ? null : join(source, path));
+        if (!scmurlProd.equals(scmurlDevel)) {
+            throw new IOException("scm url mismatch between dev + prod: " + scmurlProd + " vs " + scmurlDevel);
+        }
+        return new ScmProperties(
+                        prefix.substring(prefix.indexOf('.') + 1), true,
+                        eatFilter(properties, prefix, DEFAULT_INCLUDES),
+                        scmurlProd, tag, path,
+                        eatBoolean(properties, prefix + ".lavendelize", true),
+                        eatOpt(properties, prefix + ".resourcePathPrefix", ""),
+                        eatOpt(properties, prefix + ".targetPathPrefix", ""),
+                        eatIndexOpt(properties),
+                        scmsrc);
     }
 
     private static String join(String left, String right) {

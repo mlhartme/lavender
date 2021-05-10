@@ -9,7 +9,8 @@ CAUTION: this version requires Java 11+
 * renamed branch `master` to `main`, https://github.com/github/renaming
 * cleanup lavender.properties loading code:
   * dumped `scan-legacy` command
-  * prod- and devel connections have to be the same  
+  * prod- and devel connections have to be the same
+  * reject properties with multiple prefixes  
   * application lavender.properties with `legacy` are rejected as unknown
     (it was rejected since Lavender 2.8.0; I also checked the logs for 2021)
   * lavender.properties with `type` properties are rejected  
