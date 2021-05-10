@@ -182,7 +182,6 @@ public class HostProperties extends PropertiesBase {
             // make sure that users have individual sub directories - for shared machines
             return world.getTemp().join("lavender", System.getProperty("user.name"));
         } else {
-            // TODO: dump this case when we can dump pumama64
             return world.file(str);
         }
     }

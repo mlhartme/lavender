@@ -43,7 +43,6 @@ public class IndexedModule extends Module<IndexedEntry> {
     protected Map<String, IndexedEntry> loadEntries() throws IOException {
         Map<String, IndexedEntry> result;
         String path;
-        String md5;
         String publicPath;
 
         result = new HashMap<>();

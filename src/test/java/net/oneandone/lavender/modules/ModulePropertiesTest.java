@@ -69,5 +69,4 @@ public class ModulePropertiesTest {
         p.put("basedir", "someDirectory");
         return p;
     }
-
 }
