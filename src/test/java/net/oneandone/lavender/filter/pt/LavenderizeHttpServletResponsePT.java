@@ -15,7 +15,7 @@
  */
 package net.oneandone.lavender.filter.pt;
 
-import net.oneandone.lavender.filter.LavendelizeHttpServletResponse;
+import net.oneandone.lavender.filter.LavenderizeHttpServletResponse;
 import net.oneandone.lavender.filter.processor.LavenderProcessorFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Runs a performance test.
  */
 @Disabled
-public class LavendelizeHttpServletResponsePT {
+public class LavenderizeHttpServletResponsePT {
 
     private static URI requestURI;
     private static String contextPath;
@@ -126,7 +126,7 @@ public class LavendelizeHttpServletResponsePT {
     private void executeRequestWithOutputStream() throws Exception {
         MockHttpServletResponse wrappedResponse = new MockHttpServletResponse();
 
-        LavendelizeHttpServletResponse response = new LavendelizeHttpServletResponse(wrappedResponse, processorFactory,
+        LavenderizeHttpServletResponse response = new LavenderizeHttpServletResponse(wrappedResponse, processorFactory,
                 requestURI, null, contextPath, false);
         response.setContentType("text/html; charset=UTF-8");
 
@@ -139,7 +139,7 @@ public class LavendelizeHttpServletResponsePT {
     private void executeRequestWithWriter() {
         MockHttpServletResponse wrappedResponse = new MockHttpServletResponse();
 
-        LavendelizeHttpServletResponse response = new LavendelizeHttpServletResponse(wrappedResponse, processorFactory,
+        LavenderizeHttpServletResponse response = new LavenderizeHttpServletResponse(wrappedResponse, processorFactory,
                 requestURI, null, contextPath, false);
         response.setContentType("text/html; charset=UTF-8");
 

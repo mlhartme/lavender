@@ -75,8 +75,8 @@ public class ProductionFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
             FilterChain chain) throws IOException, ServletException {
         StringBuffer url;
-        LavendelizeHttpServletRequest lavenderRequest;
-        LavendelizeHttpServletResponse lavenderResponse;
+        LavenderizeHttpServletRequest lavenderRequest;
+        LavenderizeHttpServletResponse lavenderResponse;
 
         try {
             HttpServletRequest request = (HttpServletRequest) servletRequest;
@@ -86,8 +86,8 @@ public class ProductionFilter implements Filter {
             URI requestURI = URI.create(url.toString());
 
             // use custom request and response objects
-            lavenderRequest = new LavendelizeHttpServletRequest(request);
-            lavenderResponse = new LavendelizeHttpServletResponse(response, processorFactory,
+            lavenderRequest = new LavenderizeHttpServletRequest(request);
+            lavenderResponse = new LavenderizeHttpServletResponse(response, processorFactory,
                     requestURI, request.getHeader("User-Agent"), request.getContextPath() + "/", Gzip.canGzip(request));
             logRequest(url, request);
         } catch (RuntimeException re) {
@@ -130,7 +130,7 @@ public class ProductionFilter implements Filter {
         }
     }
 
-    private void logResponse(StringBuffer url, LavendelizeHttpServletResponse lavendelResponse) {
+    private void logResponse(StringBuffer url, LavenderizeHttpServletResponse lavendelResponse) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Leaving doFilter:  url=" + url);
         }

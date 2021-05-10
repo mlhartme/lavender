@@ -36,11 +36,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Runs Lavendelizer in Tomcat.
+ * Runs Lavenderizer in Tomcat.
  */
-public class LavendelizerIT {
+public class LavenderizerIT {
     private static final World WORLD = World.createMinimal();
-    private static final FileNode HOME = WORLD.guessProjectHome(LavendelizerIT.class);
+    private static final FileNode HOME = WORLD.guessProjectHome(LavenderizerIT.class);
 
     private static final int PORT = 8087;
     private static Tomcat container;

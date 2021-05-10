@@ -41,9 +41,9 @@ import java.util.zip.GZIPOutputStream;
  * An implementation of {@link HttpServletResponse} that uses a custom {@link ServletOutputStream} and
  * {@link PrintWriter} to lavendelize the response content.
  */
-public class LavendelizeHttpServletResponse extends HttpServletResponseWrapper {
+public class LavenderizeHttpServletResponse extends HttpServletResponseWrapper {
     /** The logger. */
-    private static final Logger LOG = LoggerFactory.getLogger(LavendelizeHttpServletResponse.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LavenderizeHttpServletResponse.class);
 
     /** The processor factory. */
     protected final ProcessorFactory processorFactory;
@@ -80,8 +80,8 @@ public class LavendelizeHttpServletResponse extends HttpServletResponseWrapper {
      */
     private boolean gzip;
 
-    public LavendelizeHttpServletResponse(HttpServletResponse response, ProcessorFactory processorFactory,
-            URI requestURI, String userAgent, String contextPath, boolean clientCanGzip) {
+    public LavenderizeHttpServletResponse(HttpServletResponse response, ProcessorFactory processorFactory,
+                                          URI requestURI, String userAgent, String contextPath, boolean clientCanGzip) {
         super(response);
         if (!contextPath.startsWith("/")) {
             throw new IllegalArgumentException(contextPath);
@@ -136,10 +136,10 @@ public class LavendelizeHttpServletResponse extends HttpServletResponseWrapper {
                         if (LOG.isDebugEnabled()) {
                             LOG.debug("getWriter() -> gzipped original outputStream");
                         }
-                        target = new OutputStreamWriter(new GZIPOutputStream(LavendelizeHttpServletResponse.super.getOutputStream()),
+                        target = new OutputStreamWriter(new GZIPOutputStream(LavenderizeHttpServletResponse.super.getOutputStream()),
                                 encoding);
                     } else {
-                        target = LavendelizeHttpServletResponse.super.getWriter();
+                        target = LavenderizeHttpServletResponse.super.getWriter();
                     }
                     if (processor == null) {
                         if (LOG.isDebugEnabled()) {
@@ -151,7 +151,7 @@ public class LavendelizeHttpServletResponse extends HttpServletResponseWrapper {
                             LOG.debug("getWriter() -> lavendelized writer (gzip=" + gzip +")");
                         }
                         processor.setWriter(target);
-                        return new LavendelizeWriter(processor);
+                        return new LavenderizeWriter(processor);
                     }
                 }
             });
@@ -178,7 +178,7 @@ public class LavendelizeHttpServletResponse extends HttpServletResponseWrapper {
 
                     processor = initialize();
                     if (processor == null) {
-                        tmp = LavendelizeHttpServletResponse.super.getOutputStream();
+                        tmp = LavenderizeHttpServletResponse.super.getOutputStream();
                         if (gzip) {
                             if (LOG.isDebugEnabled()) {
                                 LOG.debug("getOutputStream() -> original outputStream");
@@ -198,17 +198,17 @@ public class LavendelizeHttpServletResponse extends HttpServletResponseWrapper {
                                 LOG.debug("getOutputStream() -> lavendelized gzipped original outputStream");
                             }
                             processor.setWriter(new OutputStreamWriter(
-                                    new GZIPOutputStream(LavendelizeHttpServletResponse.super.getOutputStream()), encoding));
+                                    new GZIPOutputStream(LavenderizeHttpServletResponse.super.getOutputStream()), encoding));
                         } else {
                             if (LOG.isDebugEnabled()) {
                                 LOG.debug("getOutputStream() -> lavendelized original writer");
                             }
-                            processor.setWriter(LavendelizeHttpServletResponse.super.getWriter());
+                            processor.setWriter(LavenderizeHttpServletResponse.super.getWriter());
                         }
                         if (LOG.isDebugEnabled()) {
                             LOG.debug("Created WriterOutputStream with encoding " + encoding);
                         }
-                        return WriterOutputStream.create(new LavendelizeWriter(processor), encoding);
+                        return WriterOutputStream.create(new LavenderizeWriter(processor), encoding);
                     }
                 }
             };

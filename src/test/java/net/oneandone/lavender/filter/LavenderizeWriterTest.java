@@ -33,11 +33,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class LavendelizeWriterTest {
+public class LavenderizeWriterTest {
 
     protected Writer writer;
     protected Processor processor;
-    protected LavendelizeWriter lw;
+    protected LavenderizeWriter lw;
     protected ReaderAnswer reader;
 
     @BeforeEach
@@ -49,9 +49,9 @@ public class LavendelizeWriterTest {
 
         writer = mock(Writer.class);
 
-        LavendelizeHttpServletResponse response = mock(LavendelizeHttpServletResponse.class);
+        LavenderizeHttpServletResponse response = mock(LavenderizeHttpServletResponse.class);
         when(response.initialize()).thenReturn(processor);
-        lw = new LavendelizeWriter(processor);
+        lw = new LavenderizeWriter(processor);
     }
 
     @Test

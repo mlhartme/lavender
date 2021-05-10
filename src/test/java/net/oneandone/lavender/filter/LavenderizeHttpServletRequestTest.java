@@ -33,20 +33,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class LavendelizeHttpServletRequestTest {
+public class LavenderizeHttpServletRequestTest {
 
-    private LavendelizeHttpServletRequest request;
+    private LavenderizeHttpServletRequest request;
     private HttpServletRequest wrappedRequest;
 
     @BeforeEach
     public void setUp() {
         wrappedRequest = mock(HttpServletRequest.class);
-        request = new LavendelizeHttpServletRequest(wrappedRequest);
+        request = new LavenderizeHttpServletRequest(wrappedRequest);
     }
 
     @Test
     public void testConstructor() {
-        LavendelizeHttpServletRequest req = new LavendelizeHttpServletRequest(wrappedRequest);
+        LavenderizeHttpServletRequest req = new LavenderizeHttpServletRequest(wrappedRequest);
         assertSame(wrappedRequest, req.getRequest());
     }
 

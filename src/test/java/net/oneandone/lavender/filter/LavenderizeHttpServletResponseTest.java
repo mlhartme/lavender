@@ -41,9 +41,9 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class LavendelizeHttpServletResponseTest {
+public class LavenderizeHttpServletResponseTest {
 
-    private LavendelizeHttpServletResponse response;
+    private LavenderizeHttpServletResponse response;
     private HttpServletResponse wrappedResponse;
     private LavenderProcessorFactory processorFactory;
 
@@ -53,14 +53,14 @@ public class LavendelizeHttpServletResponseTest {
         processorFactory = mock(LavenderProcessorFactory.class);
         URI requestURI = URI.create("http://localhost:8080/a/b/c.html");
         String contextPath = "/a/";
-        response = new LavendelizeHttpServletResponse(wrappedResponse, processorFactory, requestURI, null, contextPath, false);
+        response = new LavenderizeHttpServletResponse(wrappedResponse, processorFactory, requestURI, null, contextPath, false);
     }
 
     @Test
     public void testConstructor() {
         URI requestURI = URI.create("http://localhost:8080/a/b/c.html");
         String contextPath = "/a/";
-        LavendelizeHttpServletResponse res = new LavendelizeHttpServletResponse(wrappedResponse, processorFactory,
+        LavenderizeHttpServletResponse res = new LavenderizeHttpServletResponse(wrappedResponse, processorFactory,
                 requestURI, null, contextPath, false);
 
         assertSame(wrappedResponse, res.getResponse());

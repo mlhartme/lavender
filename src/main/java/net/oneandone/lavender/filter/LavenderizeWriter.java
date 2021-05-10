@@ -26,9 +26,9 @@ import java.nio.CharBuffer;
 /**
  * A {@link Writer} that redirects the character stream to the {@link Processor}.
  */
-public class LavendelizeWriter extends Writer {
+public class LavenderizeWriter extends Writer {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LavendelizeWriter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LavenderizeWriter.class);
 
     /** The content processor. */
     private final Processor processor;
@@ -38,7 +38,7 @@ public class LavendelizeWriter extends Writer {
     /**
      * Instantiates a new lavendelize writer.
      */
-    public LavendelizeWriter(Processor processor) {
+    public LavenderizeWriter(Processor processor) {
         this.processor = processor;
         this.closed = false;
     }
