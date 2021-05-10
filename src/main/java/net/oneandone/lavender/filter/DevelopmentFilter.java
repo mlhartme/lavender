@@ -168,14 +168,14 @@ public class DevelopmentFilter implements Filter {
 
         etag = etag(resource.getContentId());
         response.setHeader("ETag", etag);
-        contentType = filterConfig.getServletContext().getMimeType(resource.getPath());
+        contentType = filterConfig.getServletContext().getMimeType(resource.getResourcePath());
         if (contentType != null) {
             response.setContentType(contentType);
         }
 
         previousEtag = request.getHeader("If-None-Match");
         if (etag.equals(previousEtag)) {
-            LOG.debug("ETag match: returning 304 Not Modified: " + resource.getPath());
+            LOG.debug("ETag match: returning 304 Not Modified: " + resource.getResourcePath());
             response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
         } else  { // first time through - set last modified time to now
             buffer = new ByteArrayOutputStream(1024 * 100);

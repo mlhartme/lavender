@@ -20,7 +20,7 @@ import java.io.OutputStream;
 
 public abstract class Resource {
     /** resource path */
-    public abstract String getPath();
+    public abstract String getResourcePath();
 
     /** @return null if unknown */
     public abstract String getMd5Opt();
@@ -41,6 +41,6 @@ public abstract class Resource {
 
     @Override
     public String toString() {
-        return getPath() + " ->" + getOrigin();
+        return getResourcePath() + " ->" + getOrigin();
     }
 }

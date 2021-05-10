@@ -37,7 +37,7 @@ public class SvnResource extends Resource {
         this.accessRevision = accessRevision;
     }
 
-    public String getPath() {
+    public String getResourcePath() {
         return resourcePath;
     }
 

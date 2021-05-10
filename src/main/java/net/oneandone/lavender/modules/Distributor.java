@@ -117,7 +117,7 @@ public class Distributor {
         try (Md5Cache cache = Md5Cache.loadOrCreate(cacheFile)) {
             for (Resource resource : module) {
                 buffer.reset();
-                path = resource.getPath();
+                path = resource.getResourcePath();
                 md5str = resource.getMd5Opt();
                 if (md5str == null) {
                     contentId = resource.getContentId();

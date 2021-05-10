@@ -71,9 +71,9 @@ public class NodeModuleTest {
 
         iter = module.iterator();
         resource = iter.next();
-        assertEquals("sub/main.css", resource.getPath());
+        assertEquals("sub/main.css", resource.getResourcePath());
         resource = iter.next();
-        assertEquals("vi_login_now.jpg", resource.getPath());
+        assertEquals("vi_login_now.jpg", resource.getResourcePath());
         assertFalse(iter.hasNext());
     }
 

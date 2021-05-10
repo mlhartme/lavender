@@ -32,7 +32,7 @@ public class IndexedResource extends Resource {
     }
 
     @Override
-    public String getPath() {
+    public String getResourcePath() {
         return resourcePath;
     }
 

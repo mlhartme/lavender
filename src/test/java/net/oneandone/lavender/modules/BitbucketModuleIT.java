@@ -71,13 +71,13 @@ public class BitbucketModuleIT {
 
         iter = module.iterator();
         resource = iter.next();
-        assertEquals("empty.css", resource.getPath());
+        assertEquals("empty.css", resource.getResourcePath());
         resource = iter.next();
-        assertEquals("Penny_test.jpg", resource.getPath());
+        assertEquals("Penny_test.jpg", resource.getResourcePath());
         normal = new ByteArrayOutputStream();
         resource.writeTo(normal);
         resource = iter.next();
-        assertEquals("lfs/lfs-test.jpg", resource.getPath());
+        assertEquals("lfs/lfs-test.jpg", resource.getResourcePath());
         lfs = new ByteArrayOutputStream();
         resource.writeTo(lfs);
         assertTrue(Arrays.equals(normal.toByteArray(), lfs.toByteArray()));

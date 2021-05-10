@@ -205,7 +205,7 @@ public abstract class Module<E> implements Iterable<Resource> {
         String filename;
         String md5str;
 
-        path = resource.getPath();
+        path = resource.getResourcePath();
         if (lavendelize) {
             filename = path.substring(path.lastIndexOf('/') + 1); // ok when not found
             md5str = Hex.encodeString(md5);
