@@ -188,7 +188,7 @@ public class Index implements Iterable<Label> {
             throw new IllegalStateException(originalPath + " = " + property);
         }
         lavendelizedPath = property.substring(0, idx);
-        md5 = Hex.decode(property.substring(idx + 1).toCharArray());
+        md5 = Hex.decodeString(property.substring(idx + 1));
         return new Label(originalPath, lavendelizedPath, md5);
     }
 

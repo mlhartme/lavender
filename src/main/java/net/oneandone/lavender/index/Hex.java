@@ -16,20 +16,20 @@
 package net.oneandone.lavender.index;
 
 public final class Hex {
-    public static byte[] decode(char[] data) {
+    public static byte[] decodeString(String str) {
         int max;
         byte[] result;
         int f;
 
-        max = data.length;
+        max = str.length();
         if (max % 2 != 0) {
             throw new IllegalArgumentException();
         }
-        result = new byte[max/2];
+        result = new byte[max / 2];
         for (int i = 0, j = 0; j < max; i++) {
-            f = decode(data[j]) << 4;
+            f = decode(str.charAt(j)) << 4;
             j++;
-            f = f | decode(data[j]);
+            f = f | decode(str.charAt(j));
             j++;
             result[i] = (byte) (f & 0xFF);
         }

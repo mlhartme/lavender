@@ -39,15 +39,15 @@ public class IndexTest {
     public void setup() throws IOException {
         indexFile = WORLD.getTemp().createTempFile();
         index = new Index();
-        index.add(new Label("img/close.gif", "app/ABCDEF1234567890-close.gif", Hex.decode("abcdef1234567890".toCharArray())));
+        index.add(new Label("img/close.gif", "app/ABCDEF1234567890-close.gif", Hex.decodeString("abcdef1234567890")));
         index.save(indexFile);
     }
 
     @Test
     public void testWriteToExistingFile() throws IOException {
-        Label l1 = new Label("img/test.png", "app/ABCDEF1234567890-test.png", Hex.decode("ABCDEF1234567890".toCharArray()));
+        Label l1 = new Label("img/test.png", "app/ABCDEF1234567890-test.png", Hex.decodeString("ABCDEF1234567890"));
         Label l2 = new Label("modules/stageassistent/img/test.gif", "stageassistent/ABCDEF1234567890-test.gif",
-                Hex.decode("ABCDEF1234567890".toCharArray()));
+                Hex.decodeString("ABCDEF1234567890"));
         index.add(l1);
         index.add(l2);
         index.save(indexFile);
@@ -68,9 +68,9 @@ public class IndexTest {
 
         Index myIndex = new Index();
 
-        Label l1 = new Label("img/test.png", "app/ABCDEF1234567890-test.png", Hex.decode("ABCDEF1234567890".toCharArray()));
+        Label l1 = new Label("img/test.png", "app/ABCDEF1234567890-test.png", Hex.decodeString("ABCDEF1234567890"));
         Label l2 = new Label("modules/stageassistent/img/test.gif", "stageassistent/ABCDEF1234567890-test.gif",
-                Hex.decode("ABCDEF1234567890".toCharArray()));
+                Hex.decodeString("ABCDEF1234567890"));
         myIndex.add(l1);
         myIndex.add(l2);
         myIndex.save(nonexistingfile);

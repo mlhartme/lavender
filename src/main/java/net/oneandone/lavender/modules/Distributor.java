@@ -17,6 +17,7 @@ package net.oneandone.lavender.modules;
 
 import net.oneandone.lavender.config.Connection;
 import net.oneandone.lavender.config.Docroot;
+import net.oneandone.lavender.index.Hex;
 import net.oneandone.lavender.index.Index;
 import net.oneandone.lavender.index.Label;
 import net.oneandone.lavender.index.Util;
@@ -104,6 +105,7 @@ public class Distributor {
         String contentId;
         Label label;
         long count;
+        String md5str;
         byte[] md5;
         boolean dataBuffered;
 
@@ -114,16 +116,22 @@ public class Distributor {
         cacheFile = cacheroot.join("md5", ScmProperties.urlToFilename(module.getOrigin()) + ".cache");
         try (Md5Cache cache = Md5Cache.loadOrCreate(cacheFile)) {
             for (Resource resource : module) {
-                buffer.reset();
                 path = resource.getPath();
-                contentId = resource.getContentId();
-                md5 = cache.lookup(path, contentId);
-                if (md5 == null) {
-                    resource.writeTo(buffer);
-                    dataBuffered = true;
-                    md5 = buffer.md5();
-                    cache.add(path, contentId, md5);
+                md5str = resource.getMd5Opt();
+                if (md5str == null) {
+                    buffer.reset();
+                    contentId = resource.getContentId();
+                    md5 = cache.lookup(path, contentId);
+                    if (md5 == null) {
+                        resource.writeTo(buffer);
+                        dataBuffered = true;
+                        md5 = buffer.md5();
+                        cache.add(path, contentId, md5);
+                    } else {
+                        dataBuffered = false;
+                    }
                 } else {
+                    md5 = Hex.decodeString(md5str);
                     dataBuffered = false;
                 }
                 label = module.createLabel(resource, md5);

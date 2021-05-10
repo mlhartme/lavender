@@ -52,7 +52,7 @@ public class Md5Cache implements AutoCloseable {
             idx = str.indexOf(SvnEntry.SEP, prev);
             contentId = SvnEntry.decode(str.substring(prev, idx));
             prev = idx + SvnEntry.LEN;
-            md5 = Hex.decode(str.substring(prev).toCharArray());
+            md5 = Hex.decodeString(str.substring(prev));
             return new Entry(path, contentId, md5);
         }
 
