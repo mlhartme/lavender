@@ -111,14 +111,40 @@ public class ModuleProperties extends PropertiesBase {
         }
 
         result = new ModuleProperties();
-        result.configs.add(loadLegacy(properties, source));
+        result.configs.add(properties.contains("module.name") ? loadModern(properties, source) : loadClassic(properties, source));
         if (properties.size() > 0) {
             throw new IllegalArgumentException("unknown properties: " + properties);
         }
         return result;
     }
 
-    private static ScmProperties loadLegacy(Properties properties, String source) throws IOException {
+    private static ScmProperties loadModern(Properties properties, String source) {
+        String name;
+        String connection;
+        String tag;
+        String scmsrc;
+        String path;
+
+        name = eat(properties, "module.name");
+        connection = eat(properties, "module.connection");
+        tag = eat(properties, "module.tag");
+        path = eatOpt(properties, "module.path", "");
+        if (!path.isEmpty() && !path.startsWith("/")) {
+            path = "/" + path;
+        }
+        scmsrc = fallback(connection, source == null ? null : join(source, path));
+        return new ScmProperties(
+                name, false,
+                eatFilter(properties, "module", DEFAULT_INCLUDES),
+                connection, tag, path,
+                eatBoolean(properties, "module.lavendelize", true),
+                eatOpt(properties, "module.resourcePathPrefix", ""),
+                eatOpt(properties, "module.targetPathPrefix", ""),
+                eatIndex(properties),
+                scmsrc);
+    }
+
+    private static ScmProperties loadClassic(Properties properties, String source) throws IOException {
         List<String> prefixes;
         String prefix;
         String tag;
@@ -149,8 +175,7 @@ public class ModuleProperties extends PropertiesBase {
                         eatBoolean(properties, prefix + ".lavendelize", true),
                         eatOpt(properties, prefix + ".resourcePathPrefix", ""),
                         eatOpt(properties, prefix + ".targetPathPrefix", ""),
-                        eatIndexOpt(properties),
-                        scmsrc);
+                        null, scmsrc);
     }
 
     private static String join(String left, String right) {

@@ -53,7 +53,7 @@ public abstract class PropertiesBase {
         return result == null ? dflt : result;
     }
 
-    public static Map<String, String> eatIndexOpt(Properties p) {
+    public static Map<String, String> eatIndex(Properties p) {
         final String prefix = "index.";
         final int length = prefix.length();
         Map<String, String> map;
@@ -69,9 +69,6 @@ public abstract class PropertiesBase {
             if (key.startsWith(prefix)) {
                 map.put(key.substring(length), (String) entry.getValue());
             }
-        }
-        if (map.isEmpty()) {
-            return null;
         }
         for (String suffix : map.keySet()) {
             if (p.remove(prefix + suffix) == null) {
