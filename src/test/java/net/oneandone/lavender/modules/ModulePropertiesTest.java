@@ -43,8 +43,7 @@ public class ModulePropertiesTest {
         assertEquals("foo", config.name);
         assertFalse(config.lavendelize);
         assertEquals("prefix", config.targetPathPrefix);
-        assertEquals("svn", config.connectionProd);
-        assertEquals("svn", config.connectionDevel);
+        assertEquals("svn", config.connection);
     }
 
     private static Properties pomInfo() throws IOException {

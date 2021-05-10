@@ -41,9 +41,9 @@ public class ScmProperties {
 
     public final String name;
     public final Filter filter;
-    public final String connectionProd;
-    public final String connectionDevel;
-    /** for svn: revision number */
+    public final String connection;
+
+    /** for svn: revision number; git: commit hash */
     public final String tag;
     public final String path;
     public final boolean lavendelize;
@@ -56,11 +56,11 @@ public class ScmProperties {
     public final String source;
 
     /// CHECKSTYLE:OFF
-    public ScmProperties(String name, Filter filter, String connectionProd, String connectionDevel, String tag, String path,
+    public ScmProperties(String name, Filter filter, String connection, String tag, String path,
                          boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Map<String, String> indexOpt,
                          String source) {
         /// CHECKSTYLE:ON
-        if (connectionProd == null) {
+        if (connection == null) {
             throw new NullPointerException();
         }
         if (name.startsWith("/") || name.endsWith("/")) {
@@ -68,8 +68,7 @@ public class ScmProperties {
         }
         this.name = name;
         this.filter = filter;
-        this.connectionProd = connectionProd;
-        this.connectionDevel = connectionDevel;
+        this.connection = connection;
         this.tag = tag;
         this.path = path;
         this.lavendelize = lavendelize;
@@ -133,8 +132,7 @@ public class ScmProperties {
             }
             // fall-through
         }
-        scm = prod ? connectionProd : connectionDevel;
-        scm = Strings.removeLeft(scm, "scm:");
+        scm = Strings.removeLeft(connection, "scm:");
         if (indexOpt != null) {
             return createIndexedModule(world, scm, tag, accessPathPrefix(path), jarConfigOpt, secrets);
         } else {
@@ -224,8 +222,7 @@ public class ScmProperties {
                 + "tag: " + tag + "\n"
                 + "include: " + Strings.toList(filter.getIncludes()) + "\n"
                 + "exclude: " + Strings.toList(filter.getExcludes()) + "\n"
-                + "connectionProd: " + connectionProd + "\n"
-                + "connectionDevel: " + connectionDevel + "\n"
+                + "connection: " + connection + "\n"
                 + "path: " + path + "\n"
                 + "lavendelize: " + lavendelize + "\n"
                 + "resourcePathPrefix: " + resourcePathPrefix + "\n"

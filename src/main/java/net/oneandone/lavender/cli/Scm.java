@@ -70,7 +70,7 @@ public class Scm extends Base {
         }
         scmurlstr = "scm:" + url;
         moduleConfig = new ScmProperties(ScmProperties.urlToFilename(scmurlstr), filter, scmurlstr,
-                scmurlstr, "", "", false, "", prefix, null, null);
+                "", "", false, "", prefix, null, null);
         cacheroot = globals.cacheroot();
         module = moduleConfig.create(cacheroot, true, properties.secrets, null);
         try (Pool pool = globals.pool()) {

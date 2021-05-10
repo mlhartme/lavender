@@ -120,11 +120,14 @@ public class ModuleProperties extends PropertiesBase {
                 path = "/" + path;
             }
             scmsrc = fallback(scmurlProd, source == null ? null : join(source, path));
+            if (!scmurlProd.equals(scmurlDevel)) {
+                throw new IOException("scm url mismatch between dev + prod: " + scmurlProd + " vs " + scmurlDevel);
+            }
             result.configs.add(
                     new ScmProperties(
                             prefix.substring(prefix.indexOf('.') + 1),
                             eatFilter(properties, prefix, DEFAULT_INCLUDES),
-                            scmurlProd, scmurlDevel, tag, path,
+                            scmurlProd, tag, path,
                             eatBoolean(properties, prefix + ".lavendelize", true),
                             eatOpt(properties, prefix + ".resourcePathPrefix", ""),
                             eatOpt(properties, prefix + ".targetPathPrefix", ""),
