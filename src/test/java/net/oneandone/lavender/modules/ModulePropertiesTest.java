@@ -36,10 +36,10 @@ public class ModulePropertiesTest {
         props.put("module.scmurl", "scm");
         props.put("module.revision", "rev");
         props.put("module.targetPathPrefix", "prefix");
-        props.put("module.lavendelize", "false");
+        props.put("module.lavenderize", "false");
         result = ModuleProperties.parse(false, props, pomInfo());
         assertEquals("modern", result.name);
-        assertFalse(result.lavendelize);
+        assertFalse(result.lavenderize);
         assertEquals("scm", result.scmurl);
         assertEquals("rev", result.revision);
         assertEquals("prefix", result.targetPathPrefix);
@@ -56,7 +56,7 @@ public class ModulePropertiesTest {
         props.put("scm.foo.lavendelize", "false");
         result = ModuleProperties.parse(false, props, pomInfo());
         assertEquals("foo", result.name);
-        assertFalse(result.lavendelize);
+        assertFalse(result.lavenderize);
         assertEquals("prefix", result.targetPathPrefix);
         assertEquals("svn", result.scmurl);
     }

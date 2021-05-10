@@ -135,7 +135,7 @@ public class ModuleProperties extends PropertiesBase {
                 name, false,
                 eatFilter(properties, "module", DEFAULT_INCLUDES),
                 redirect(scmurl), revision, path,
-                eatBoolean(properties, "module.lavendelize", true),
+                eatBoolean(properties, "module.lavenderize", true),
                 eatOpt(properties, "module.resourcePathPrefix", ""),
                 eatOpt(properties, "module.targetPathPrefix", ""),
                 eatIndex(properties),
@@ -326,7 +326,7 @@ public class ModuleProperties extends PropertiesBase {
     /** for svn: revision number; git: commit hash */
     public final String revision;
     public final String path;
-    public final boolean lavendelize;
+    public final boolean lavenderize;
     public final String resourcePathPrefix;
     public final String targetPathPrefix;
 
@@ -337,7 +337,7 @@ public class ModuleProperties extends PropertiesBase {
 
     /// CHECKSTYLE:OFF
     public ModuleProperties(String name, boolean classic, Filter filter, String scmurl, String revision, String path,
-                         boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Map<String, String> indexOpt,
+                         boolean lavenderize, String resourcePathPrefix, String targetPathPrefix, Map<String, String> indexOpt,
                          String source) {
         /// CHECKSTYLE:ON
         if (scmurl == null) {
@@ -352,7 +352,7 @@ public class ModuleProperties extends PropertiesBase {
         this.scmurl = scmurl;
         this.revision = revision;
         this.path = path;
-        this.lavendelize = lavendelize;
+        this.lavenderize = lavenderize;
         this.resourcePathPrefix = resourcePathPrefix;
         this.targetPathPrefix = targetPathPrefix;
         this.indexOpt = indexOpt;
@@ -374,7 +374,7 @@ public class ModuleProperties extends PropertiesBase {
                 // I could also check if the svnurl noted in the artifact matches the svn url of checkout,
                 // but that fails for frontend teams creating a branch without adjusting scm elements in the pom.
 
-                return new NodeModule(checkout, name, this, lavendelize, resourcePathPrefix, targetPathPrefix, filter) {
+                return new NodeModule(checkout, name, this, lavenderize, resourcePathPrefix, targetPathPrefix, filter) {
                     @Override
                     protected Map<String, Node> loadEntries() throws Exception {
                         Filter f;
@@ -452,7 +452,7 @@ public class ModuleProperties extends PropertiesBase {
             throw new UnsupportedOperationException("TODO " + scm);
         }
         urlPattern = UrlPattern.create(world, scm, at, secrets);
-        return new IndexedModule(scm, name, this, lavendelize, resourcePathPrefix, targetPathPrefix, filter,
+        return new IndexedModule(scm, name, this, lavenderize, resourcePathPrefix, targetPathPrefix, filter,
                 accessPathPrefix, configOpt, indexOpt, urlPattern);
     }
 
@@ -466,7 +466,7 @@ public class ModuleProperties extends PropertiesBase {
             root.checkDirectory();
             cache = cacheDir.join("svn", urlToFilename(scm) + ".idx");
             cache.getParent().mkdirsOpt();
-            return new SvnModule(name, this, cache, root, pinnedRevision, lavendelize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
+            return new SvnModule(name, this, cache, root, pinnedRevision, lavenderize, resourcePathPrefix, targetPathPrefix, filter, jarConfig);
         } catch (RuntimeException | IOException e) {
             throw e;
         } catch (Exception e) {
@@ -494,7 +494,7 @@ public class ModuleProperties extends PropertiesBase {
         project = uriPath.substring(0, idx);
         repository = Strings.removeRight(uriPath.substring(idx + 1), ".git");
         return new BitbucketModule(Bitbucket.create(world, uri.getHost(), up),
-                project, repository, repository.isEmpty() ? "master" : revision, accessPathPrefix, name, this, lavendelize, resourcePathPrefix,
+                project, repository, repository.isEmpty() ? "master" : revision, accessPathPrefix, name, this, lavenderize, resourcePathPrefix,
                 targetPathPrefix, filter, config);
     }
 
@@ -506,7 +506,7 @@ public class ModuleProperties extends PropertiesBase {
                 + "path: " + path + "\n"
                 + "include: " + Strings.toList(filter.getIncludes()) + "\n"
                 + "exclude: " + Strings.toList(filter.getExcludes()) + "\n"
-                + "lavendelize: " + lavendelize + "\n"
+                + "lavenderize: " + lavenderize + "\n"
                 + "resourcePathPrefix: " + resourcePathPrefix + "\n"
                 + "targetPathPrefix: " + targetPathPrefix;
     }

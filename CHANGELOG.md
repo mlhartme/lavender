@@ -20,11 +20,12 @@ CAUTION: this version requires Java 11+
     (they have been rejected for application properties; they were still supported for module properties)
   * removed unused module loading code
 * introduced new lavender.properties format "modern" (the previous format is now called classic)
-  * module fields: name, scmurl, revision, path, includes, excludes, lavendelize, resourcePathPrefix, targetPathPrefix
+  * module fields: name, scmurl, revision, path, includes, excludes, lavenderize, resourcePathPrefix, targetPathPrefix
   * notes
     * name is explicit now
     * connection is now called scmurl  
     * tag is now called revision
+    * lavendelize is now called lavenderize  
     * connectionDevel is gone
 * dumped pws work-around that tried to load pominfo.properties from target/classes
 * fixed application warning with Java 16: the launcher no longer checks the Java version, 
