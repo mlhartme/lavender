@@ -4,29 +4,30 @@
 
 CAUTION: this version requires Java 11+
 
-* added IndexModule which is used new lavender-plugin
+* added IndexModule and lavender-plugin to configure it
 * environment variable LAVENDER_REDIRECTS replaces LAVENDER_SOURCES: it defines a comma-separated url prefix -> url prefix mapping
 * added `info` command
 * renamed branch `master` to `main`, https://github.com/github/renaming
 * cleanup lavender.properties loading code:
   * dumped `scan-legacy` command
-  * prod- and devel connections have to be the same
-  * reject properties with multiple prefixes  
-  * application lavender.properties with `legacy` are rejected as unknown
-    (it was rejected since Lavender 2.8.0; I also checked the logs for 2021)
-  * lavender.properties with `type` properties are rejected  
-    (type had no effect and wasn't used in latest parent poms)
-  * lavender.properties with `pustefix.relative` are rejected
-    (they have been rejected for application properties; they were still supported for module properties)
-  * removed unused module loading code
-* introduced new lavender.properties format "modern" (the previous format is now called classic)
-  * module fields: name, scmurl, revision, path, includes, excludes, lavenderize, resourcePathPrefix, targetPathPrefix
-  * notes
-    * name is explicit now
-    * connection is now called scmurl  
-    * tag is now called revision
-    * lavendelize is now called lavenderize  
-    * connectionDevel is gone
+  * introduced new lavender.properties format "modern" (the previous format is now called classic)
+    * module fields: name, scmurl, revision, path, includes, excludes, lavenderize, resourcePathPrefix, targetPathPrefix
+    * notes
+      * name is explicit now
+      * connection is now called scmurl
+      * tag is now called revision
+      * lavendelize is now called lavenderize
+      * connectionDevel is gone
+  * for classic properties 
+    * prod- and devel connections have to be the same
+    * reject properties with multiple prefixes  
+    * application lavender.properties with `legacy` are rejected as unknown
+      (it was rejected since Lavender 2.8.0; I also checked the logs for 2021)
+    * lavender.properties with `type` properties are rejected  
+      (type had no effect and wasn't used in latest parent poms)
+    * lavender.properties with `pustefix.relative` are rejected
+      (they have been rejected for application properties; they were still supported for module properties)
+    * removed unused module loading code
 * dumped pws work-around that tried to load pominfo.properties from target/classes
 * fixed application warning with Java 16: the launcher no longer checks the Java version, 
   and it no longer sets the illegal-access option
