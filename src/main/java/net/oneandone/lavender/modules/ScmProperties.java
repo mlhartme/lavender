@@ -40,6 +40,7 @@ public class ScmProperties {
     public static final String SCM_PREFIX = "scm.";
 
     public final String name;
+    public final boolean legacy;
     public final Filter filter;
     public final String connection;
 
@@ -56,7 +57,7 @@ public class ScmProperties {
     public final String source;
 
     /// CHECKSTYLE:OFF
-    public ScmProperties(String name, Filter filter, String connection, String tag, String path,
+    public ScmProperties(String name, boolean legacy, Filter filter, String connection, String tag, String path,
                          boolean lavendelize, String resourcePathPrefix, String targetPathPrefix, Map<String, String> indexOpt,
                          String source) {
         /// CHECKSTYLE:ON
@@ -67,6 +68,7 @@ public class ScmProperties {
             throw new IllegalArgumentException(name);
         }
         this.name = name;
+        this.legacy = legacy;
         this.filter = filter;
         this.connection = connection;
         this.tag = tag;
@@ -219,6 +221,7 @@ public class ScmProperties {
 
     public String toString() {
         return "name: " + name + "\n"
+                + "legacy: " + legacy + "\n"
                 + "tag: " + tag + "\n"
                 + "include: " + Strings.toList(filter.getIncludes()) + "\n"
                 + "exclude: " + Strings.toList(filter.getExcludes()) + "\n"

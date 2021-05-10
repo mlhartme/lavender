@@ -126,6 +126,7 @@ public class ModuleProperties extends PropertiesBase {
             result.configs.add(
                     new ScmProperties(
                             prefix.substring(prefix.indexOf('.') + 1),
+                            true,
                             eatFilter(properties, prefix, DEFAULT_INCLUDES),
                             scmurlProd, tag, path,
                             eatBoolean(properties, prefix + ".lavendelize", true),
