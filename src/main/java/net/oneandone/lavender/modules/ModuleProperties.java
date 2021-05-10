@@ -122,7 +122,6 @@ public class ModuleProperties extends PropertiesBase {
         String name;
         String scmurl;
         String revision;
-        String scmsrc;
         String path;
 
         name = eat(properties, "module.name");
@@ -132,16 +131,15 @@ public class ModuleProperties extends PropertiesBase {
         if (!path.isEmpty() && !path.startsWith("/")) {
             path = "/" + path;
         }
-        scmsrc = fallback(scmurl, source == null ? null : join(source, path));
         return new ModuleProperties(
                 name, false,
                 eatFilter(properties, "module", DEFAULT_INCLUDES),
-                scmurl, revision, path,
+                redirect(scmurl), revision, path,
                 eatBoolean(properties, "module.lavendelize", true),
                 eatOpt(properties, "module.resourcePathPrefix", ""),
                 eatOpt(properties, "module.targetPathPrefix", ""),
                 eatIndex(properties),
-                scmsrc);
+                source == null ? null : join(source, path));
     }
 
     private static ModuleProperties loadClassic(Properties properties, String source) throws IOException {
@@ -150,7 +148,6 @@ public class ModuleProperties extends PropertiesBase {
         String tag;
         String scmurlProd;
         String scmurlDevel;
-        String scmsrc;
 
         prefixes = prefixes(properties, SCM_PREFIX);
         if (prefixes.size() != 1) {
@@ -164,18 +161,17 @@ public class ModuleProperties extends PropertiesBase {
         if (!path.isEmpty() && !path.startsWith("/")) {
             path = "/" + path;
         }
-        scmsrc = fallback(scmurlProd, source == null ? null : join(source, path));
         if (!scmurlProd.equals(scmurlDevel)) {
             throw new IOException("scm url mismatch between dev + prod: " + scmurlProd + " vs " + scmurlDevel);
         }
         return new ModuleProperties(
                         prefix.substring(prefix.indexOf('.') + 1), true,
                         eatFilter(properties, prefix, DEFAULT_INCLUDES),
-                        scmurlProd, tag, path,
+                        redirect(scmurlProd), tag, path,
                         eatBoolean(properties, prefix + ".lavendelize", true),
                         eatOpt(properties, prefix + ".resourcePathPrefix", ""),
                         eatOpt(properties, prefix + ".targetPathPrefix", ""),
-                        null, scmsrc);
+                        null, source == null ? null : join(source, path));
     }
 
     private static String join(String left, String right) {
@@ -284,39 +280,38 @@ public class ModuleProperties extends PropertiesBase {
 
     //--
 
-    private static final Map<String, String> FALLBACK_SOURCES;
+    private static final Map<String, String> FALLBACK_REDIRECTS;
 
     static {
         String str;
         int idx;
-        String file;
+        String dest;
 
-        FALLBACK_SOURCES = new HashMap<>();
-        str = System.getenv("LAVENDER_FALLBACKS");
+        FALLBACK_REDIRECTS = new HashMap<>();
+        str = System.getenv("LAVENDER_REDIRECTS");
         if (str != null) {
             for (String entry : Separator.COMMA.split(str)) {
                 idx = entry.indexOf('=');
                 if (idx == -1) {
-                    throw new IllegalStateException("illegal fallback entry: " + entry);
+                    throw new IllegalStateException("illegal redirect entry: " + entry);
                 }
-                file = entry.substring(idx + 1);
-                if (!new java.io.File(file).isDirectory()) {
-                    throw new IllegalStateException("fallback directory not found: " + file);
-                }
-                FALLBACK_SOURCES.put(entry.substring(0, idx), file);
+                dest = entry.substring(idx + 1);
+                FALLBACK_REDIRECTS.put(entry.substring(0, idx), dest);
             }
-            LOG.info("fallback configured: " + FALLBACK_SOURCES);
+            LOG.info("redirects configured: " + FALLBACK_REDIRECTS);
         }
     }
 
-    private static String fallback(String url, String source) {
-        String fallbackSource;
+    private static String redirect(String url) {
+        String prefix;
 
-        fallbackSource = FALLBACK_SOURCES.get(url);
-        if (!FALLBACK_SOURCES.isEmpty()) {
-            LOG.info("fallback for url " + url + ": " + fallbackSource);
+        for (Map.Entry<String, String> entry : FALLBACK_REDIRECTS.entrySet()) {
+            prefix = entry.getKey();
+            if (url.startsWith(prefix)) {
+                return entry.getValue() + url.substring(prefix.length());
+            }
         }
-        return fallbackSource != null ? fallbackSource : source;
+        return url;
     }
 
     //--

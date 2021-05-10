@@ -5,6 +5,7 @@
 CAUTION: this version requires Java 11+
 
 * added IndexModule which is used new lavender-plugin
+* environment variable LAVENDER_REDIRECTS replaces LAVENDER_SOURCES: it defines a comma-separated url prefix -> url prefix mapping
 * added `info` command
 * renamed branch `master` to `main`, https://github.com/github/renaming
 * cleanup lavender.properties loading code:
