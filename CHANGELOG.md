@@ -18,7 +18,9 @@ CAUTION: this version requires Java 11+
   * lavender.properties with `pustefix.relative` are rejected
     (they have been rejected for application properties; they were still supported for module properties)
   * removed unused module loading code
-* introducted new lavender.properties format "modern" (the previous format is now called classic)  
+* introduced new lavender.properties format "modern" (the previous format is now called classic)
+  * module fields: name, connection, path, includes, excludes, lavendelize
+  * note that connectionDevel is gone
 * dumped pws work-around that tried to load pominfo.properties from target/classes
 * fixed application warning with Java 16: the launcher no longer checks the Java version, 
   and it no longer sets the illegal-access option
