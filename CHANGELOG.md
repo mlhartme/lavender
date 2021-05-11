@@ -1,5 +1,10 @@
 ## Changelog 
 
+### 2.10.1 (2021-05-11)
+
+* fixed Bitbucket Module banchOrTag configuration
+
+
 ### 2.10.0 (2021-05-11)
 
 CAUTION - breaking changes: requires Java 11+

@@ -494,7 +494,7 @@ public class ModuleProperties extends PropertiesBase {
         project = uriPath.substring(0, idx);
         repository = Strings.removeRight(uriPath.substring(idx + 1), ".git");
         return new BitbucketModule(Bitbucket.create(world, uri.getHost(), up),
-                project, repository, repository.isEmpty() ? "master" : revision, accessPathPrefix, name, this, lavenderize, resourcePathPrefix,
+                project, repository, revision.isEmpty() ? "master" : revision, accessPathPrefix, name, this, lavenderize, resourcePathPrefix,
                 targetPathPrefix, filter, config);
     }
 
