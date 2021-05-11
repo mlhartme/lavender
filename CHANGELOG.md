@@ -1,8 +1,9 @@
 ## Changelog 
 
-### 2.10.0 (pending)
+### 2.10.0 (2021-05-11)
 
-CAUTION: this version requires Java 11+
+CAUTION - breaking changes: requires Java 11+
+
 
 Migration steps:
 * update dependency version to 2.10.0
