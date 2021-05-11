@@ -114,7 +114,7 @@ rm -rf ${testhost}
 
 # artifact com.oneandone.sales ionos-eu 0.0.63
 
-# root=/Users/mhm/Projects/github.com/net/oneandone/lavender-test/shops
-# war ionos-eu ${root}/ionos-eu-orig/target/ionos-eu-0.0.64-SNAPSHOT.war ${root}/ionos-eu/target/ionos-eu-0.0.64-SNAPSHOT.war
+root=/Users/mhm/Projects/github.com/net/oneandone/lavender-test/shops
+war ionos-eu ${root}/ionos-eu-orig/target/ionos-eu-0.0.64-SNAPSHOT.war ${root}/ionos-eu/target/ionos-eu-0.0.64-SNAPSHOT.war
 
-cpArtifacts
+shopArtifacts

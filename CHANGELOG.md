@@ -4,6 +4,11 @@
 
 CAUTION: this version requires Java 11+
 
+Migration steps:
+* update dependency version to 2.10.0
+* update build process to generate lavender.properties with lavender-plugin
+
+Changes
 * added IndexModule and lavender-plugin to configure it
 * environment variable LAVENDER_REDIRECTS replaces LAVENDER_SOURCES: it defines a comma-separated url prefix -> url prefix mapping
 * added `info` command
