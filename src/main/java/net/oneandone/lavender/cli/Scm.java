@@ -44,7 +44,7 @@ public class Scm extends Base {
         this.scm = scm;
         this.cluster = globals.network().get(clusterName);
         this.docrootName = docrootName;
-        this.indexName = indexName.isEmpty() ? scm + ".idx" : indexName;
+        this.indexName = indexName == null || indexName.isEmpty() ? scm + ".idx" : indexName;
     }
 
     public void run() throws IOException, URISyntaxException {
