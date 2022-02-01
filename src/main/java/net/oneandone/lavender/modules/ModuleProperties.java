@@ -18,7 +18,6 @@ package net.oneandone.lavender.modules;
 import net.oneandone.lavender.config.PropertiesBase;
 import net.oneandone.lavender.config.Secrets;
 import net.oneandone.lavender.config.UsernamePassword;
-import net.oneandone.sushi.fs.FileNotFoundException;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -56,17 +55,12 @@ public class ModuleProperties extends PropertiesBase {
 
     public static ModuleProperties loadApp(boolean prod, Node webapp) throws IOException {
         Node src;
-        Properties pominfo;
         Properties properties;
 
         src = webapp.join(ModuleProperties.APP_PROPERTIES);
         src.checkFile();
-        pominfo = pominfoOpt(webapp.join("WEB-INF/classes"));
-        if (pominfo == null) {
-            throw new IOException("pominfo.properties for application not found");
-        }
         properties = src.readProperties();
-        return parse(prod, properties, pominfo);
+        return parse(prod, properties, pominfo(webapp.join("WEB-INF/classes")));
     }
 
     public static ModuleProperties loadModule(boolean prod, Node root, Node pominfo) throws IOException {
@@ -83,15 +77,11 @@ public class ModuleProperties extends PropertiesBase {
         if (!src.exists()) {
             return null;
         }
-        return ModuleProperties.parse(prod, src.readProperties(), pominfoOpt(root));
+        return ModuleProperties.parse(prod, src.readProperties(), pominfo(root));
     }
 
-    private static Properties pominfoOpt(Node root) throws IOException {
-        try {
-            return root.join(PustefixJar.POMINFO_PROPERTIES).readProperties();
-        } catch (FileNotFoundException e) {
-            return null;
-        }
+    private static Properties pominfo(Node root) throws IOException {
+        return root.join(PustefixJar.POMINFO_PROPERTIES).readProperties();
     }
 
     // public only for testing
@@ -100,7 +90,7 @@ public class ModuleProperties extends PropertiesBase {
         String source;
 
         if (pominfo == null) {
-            throw new IOException("pominfo.properties for module not found: " + properties);
+            throw new IllegalArgumentException(properties.toString());
         }
         if (!prod && thisMachine(pominfo.getProperty("ethernet"))) {
             source = pominfo.getProperty("basedir");
