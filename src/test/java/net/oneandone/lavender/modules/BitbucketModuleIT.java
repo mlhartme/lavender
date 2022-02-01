@@ -18,7 +18,6 @@ package net.oneandone.lavender.modules;
 import net.oneandone.lavender.config.Secrets;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
-import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -42,7 +41,7 @@ public class BitbucketModuleIT {
         }
     }
 
-    @Test
+    // @Test TODO: module was wiped from bitbucket
     public void directory() throws Exception {
         Secrets secrets;
         Module<?> module;
