@@ -1,5 +1,10 @@
 ## Changelog 
 
+### 2.10.2 (pending)
+
+* updated debian dependencies from Java 8 to 11
+
+
 ### 2.10.1 (2021-05-11)
 
 * fixed Bitbucket Module banchOrTag configuration
