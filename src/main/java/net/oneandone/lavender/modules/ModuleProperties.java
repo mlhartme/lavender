@@ -102,9 +102,6 @@ public class ModuleProperties extends PropertiesBase {
         if (pominfo == null) {
             throw new IOException("pominfo.properties for module not found: " + properties);
         }
-        if (eatOpt(properties, "pustefix.relative", null) != null) {
-            throw new IOException("pustefix.relative is no longer supported: " + pominfo);
-        }
         if (!prod && thisMachine(pominfo.getProperty("ethernet"))) {
             source = pominfo.getProperty("basedir");
         } else {

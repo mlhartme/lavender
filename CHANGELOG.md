@@ -2,6 +2,7 @@
 
 ### 2.10.2 (pending)
 
+* dumped explicitly rejecting pustefix.relative
 * updated debian dependencies from Java 8 to 11
 * no parent pom update, because it would compile for java 16, which is not yet an option
   (shops and bkshops use Java 15; telesales uses Java 13 Tower only has Java 11)
