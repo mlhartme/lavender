@@ -62,6 +62,7 @@ public class GiteaScmRoot extends ScmRoot {
 
         content = gitea.repoGetContents(organization, repository, path, ref);
         switch (content.getEncoding()) {
+            // TODO: more encodings?
             case "base64":
                 return Base64.getDecoder().decode(content.getContent());
             default:

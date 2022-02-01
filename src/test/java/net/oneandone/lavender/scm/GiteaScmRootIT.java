@@ -19,13 +19,23 @@ import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class GiteaScmRootIT {
     @Test
-    public void read() throws Exception {
+    public void readTextFile() throws Exception {
         GiteaScmRoot r;
 
         r = GiteaScmRoot.create(URI.create("https://git.ionos.org/CP-DevEnv/application-parent-pom.git"), "main", "TODO:invalidtoken");
         System.out.println("test: " + new String(r.read("pom.xml"), StandardCharsets.UTF_8));
+    }
+
+    @Test
+    public void readImage() throws Exception {
+        GiteaScmRoot r;
+
+        r = GiteaScmRoot.create(URI.create("https://git.ionos.org/mhm/lavender-test-module.git"), "main", "TODO:invalidtoken");
+        Files.write(Path.of("tmp.jpg"), r.read("Penny_test.jpg"));
     }
 }
