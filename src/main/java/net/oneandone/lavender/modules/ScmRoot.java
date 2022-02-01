@@ -25,9 +25,9 @@ import java.io.OutputStream;
 import java.net.URI;
 
 /**
- * Currently Bitbucket rest api only. TODO: turn into abstract base with different implementations
+ * Used for index modules to fetch resources.
  */
-public class ScmRoot {
+public abstract class ScmRoot {
     public static ScmRoot create(World world, String urlstr, String at, Secrets secrets) throws IOException {
         URI uri;
         UsernamePassword up;
@@ -51,26 +51,36 @@ public class ScmRoot {
         idx = uriPath.indexOf('/');
         project = uriPath.substring(0, idx);
         repository = Strings.removeRight(uriPath.substring(idx + 1), ".git");
-        return new ScmRoot(Bitbucket.create(world, host, up), project, repository, at);
+        return new BitbucketScmRoot(Bitbucket.create(world, host, up), project, repository, at);
     }
 
-    private final Bitbucket bitbucket;
-    private final String project;
-    private final String repository;
-    private final String at;
-
-    public ScmRoot(Bitbucket bitbucket, String project, String repository, String at) {
-        this.bitbucket = bitbucket;
-        this.project = project;
-        this.repository = repository;
-        this.at = at;
+    public ScmRoot() {
     }
 
-    public String getOrigin() {
-        return bitbucket.getOrigin(project, repository);
-    }
+    public abstract String getOrigin();
+    public abstract void writeTo(String path, OutputStream dest) throws IOException;
 
-    public void writeTo(String path, OutputStream dest) throws IOException {
-        bitbucket.writeTo(project, repository, path, at, dest);
+    //--
+
+    public static class BitbucketScmRoot extends ScmRoot {
+        private final Bitbucket bitbucket;
+        private final String project;
+        private final String repository;
+        private final String at;
+
+        public BitbucketScmRoot(Bitbucket bitbucket, String project, String repository, String at) {
+            this.bitbucket = bitbucket;
+            this.project = project;
+            this.repository = repository;
+            this.at = at;
+        }
+
+        public String getOrigin() {
+            return bitbucket.getOrigin(project, repository);
+        }
+
+        public void writeTo(String path, OutputStream dest) throws IOException {
+            bitbucket.writeTo(project, repository, path, at, dest);
+        }
     }
 }
