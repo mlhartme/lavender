@@ -433,12 +433,12 @@ public class ModuleProperties extends PropertiesBase {
 
     private IndexedModule createIndexedModule(World world, String scm, String at, String accessPathPrefix,
                                               PustefixJarConfig configOpt, Secrets secrets) throws IOException {
-        UrlPattern urlPattern;
+        ScmRoot urlPattern;
 
         if (!scm.startsWith("git:")) {
             throw new UnsupportedOperationException("TODO " + scm);
         }
-        urlPattern = UrlPattern.create(world, scm, at, secrets);
+        urlPattern = ScmRoot.create(world, scm, at, secrets);
         return new IndexedModule(scm, name, this, lavenderize, resourcePathPrefix, targetPathPrefix, filter,
                 accessPathPrefix, configOpt, indexOpt, urlPattern);
     }

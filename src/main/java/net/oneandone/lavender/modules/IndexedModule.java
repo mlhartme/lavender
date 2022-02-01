@@ -25,12 +25,12 @@ public class IndexedModule extends Module<IndexedEntry> {
     private final String accessPathPrefix;
     private final PustefixJarConfig configOpt;
     private final Map<String, String> index; // maps path to md5
-    private final UrlPattern urlPattern;
+    private final ScmRoot urlPattern;
 
     // CHECKSTYLE:OFF
     public IndexedModule(String origin, String name, ModuleProperties descriptorOpt, boolean lavendelize,
                          String resourcePathPrefix, String targetPathPrefix, Filter filter,
-                         String accessPathPrefix, PustefixJarConfig configOpt, Map<String, String> index, UrlPattern urlPattern) {
+                         String accessPathPrefix, PustefixJarConfig configOpt, Map<String, String> index, ScmRoot urlPattern) {
         super(origin, name, descriptorOpt, lavendelize, resourcePathPrefix, targetPathPrefix, filter);
         this.accessPathPrefix = accessPathPrefix;
         this.configOpt = configOpt;

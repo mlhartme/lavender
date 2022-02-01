@@ -27,8 +27,8 @@ import java.net.URI;
 /**
  * Currently Bitbucket rest api only. TODO: turn into abstract base with different implementations
  */
-public class UrlPattern {
-    public static UrlPattern create(World world, String urlstr, String at, Secrets secrets) throws IOException {
+public class ScmRoot {
+    public static ScmRoot create(World world, String urlstr, String at, Secrets secrets) throws IOException {
         URI uri;
         UsernamePassword up;
         String uriPath;
@@ -51,7 +51,7 @@ public class UrlPattern {
         idx = uriPath.indexOf('/');
         project = uriPath.substring(0, idx);
         repository = Strings.removeRight(uriPath.substring(idx + 1), ".git");
-        return new UrlPattern(Bitbucket.create(world, host, up), project, repository, at);
+        return new ScmRoot(Bitbucket.create(world, host, up), project, repository, at);
     }
 
     private final Bitbucket bitbucket;
@@ -59,7 +59,7 @@ public class UrlPattern {
     private final String repository;
     private final String at;
 
-    public UrlPattern(Bitbucket bitbucket, String project, String repository, String at) {
+    public ScmRoot(Bitbucket bitbucket, String project, String repository, String at) {
         this.bitbucket = bitbucket;
         this.project = project;
         this.repository = repository;
