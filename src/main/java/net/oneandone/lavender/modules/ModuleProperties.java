@@ -433,14 +433,14 @@ public class ModuleProperties extends PropertiesBase {
 
     private IndexedModule createIndexedModule(World world, String scm, String at, String accessPathPrefix,
                                               PustefixJarConfig configOpt, Secrets secrets) throws IOException {
-        ScmRoot urlPattern;
+        ScmRoot scmRoot;
 
         if (!scm.startsWith("git:")) {
             throw new UnsupportedOperationException("TODO " + scm);
         }
-        urlPattern = ScmRoot.create(world, scm, at, secrets);
+        scmRoot = ScmRoot.create(world, scm, at, secrets);
         return new IndexedModule(scm, name, this, lavenderize, resourcePathPrefix, targetPathPrefix, filter,
-                accessPathPrefix, configOpt, indexOpt, urlPattern);
+                accessPathPrefix, configOpt, indexOpt, scmRoot);
     }
 
     private SvnModule createSvnModule(FileNode cacheDir, PustefixJarConfig jarConfig, World world, String scm, Secrets secrets, long pinnedRevision) throws IOException {

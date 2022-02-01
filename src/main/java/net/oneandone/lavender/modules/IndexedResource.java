@@ -19,13 +19,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public class IndexedResource extends Resource {
-    private final ScmRoot urlPattern;
+    private final ScmRoot scmRoot;
     private final String accessPath;
     private final String md5;
 
-    public IndexedResource(ScmRoot urlPattern, String resourcePath, String accessPath, String md5) {
+    public IndexedResource(ScmRoot scmRoot, String resourcePath, String accessPath, String md5) {
         super(resourcePath);
-        this.urlPattern = urlPattern;
+        this.scmRoot = scmRoot;
         this.accessPath = accessPath;
         this.md5 = md5;
     }
@@ -42,12 +42,12 @@ public class IndexedResource extends Resource {
 
     @Override
     public String getOrigin() {
-        return urlPattern.getOrigin();
+        return scmRoot.getOrigin();
     }
 
     @Override
     public void writeTo(OutputStream dest) throws IOException {
-        urlPattern.writeTo(accessPath, dest);
+        scmRoot.writeTo(accessPath, dest);
     }
 
     @Override
