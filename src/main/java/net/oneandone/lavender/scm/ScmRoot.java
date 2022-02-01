@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.oneandone.lavender.modules;
+package net.oneandone.lavender.scm;
 
 import net.oneandone.lavender.config.Secrets;
 import net.oneandone.lavender.config.UsernamePassword;

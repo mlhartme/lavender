@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.modules;
 
+import net.oneandone.lavender.scm.Bitbucket;
 import net.oneandone.sushi.fs.filter.Filter;
 
 import java.io.IOException;

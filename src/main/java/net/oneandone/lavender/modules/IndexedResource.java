@@ -15,6 +15,8 @@
  */
 package net.oneandone.lavender.modules;
 
+import net.oneandone.lavender.scm.ScmRoot;
+
 import java.io.IOException;
 import java.io.OutputStream;
 

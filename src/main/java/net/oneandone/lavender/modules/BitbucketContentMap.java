@@ -15,6 +15,8 @@
  */
 package net.oneandone.lavender.modules;
 
+import net.oneandone.lavender.scm.Bitbucket;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
