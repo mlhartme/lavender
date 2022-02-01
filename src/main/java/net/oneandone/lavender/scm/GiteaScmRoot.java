@@ -6,28 +6,43 @@ import io.gitea.Configuration;
 import io.gitea.api.RepositoryApi;
 import io.gitea.auth.ApiKeyAuth;
 import io.gitea.model.ContentsResponse;
+import net.oneandone.sushi.fs.NodeInstantiationException;
+import net.oneandone.sushi.util.Strings;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
+import java.net.URI;
 import java.util.Base64;
 
 public class GiteaScmRoot extends ScmRoot {
+    public static GiteaScmRoot create(URI uri, String at, String token) throws NodeInstantiationException {
+        String uriPath;
+        int idx;
+        String project;
+        String repository;
+
+        uriPath = Strings.removeLeft(uri.getPath(), "/");
+        idx = uriPath.indexOf('/');
+        project = uriPath.substring(0, idx);
+        repository = Strings.removeRight(uriPath.substring(idx + 1), ".git");
+        return new GiteaScmRoot(uri.getHost(), project, repository, at, token);
+    }
+
     private final RepositoryApi gitea;
     private final String organization;
     private final String repository;
     private final String ref;
 
-    public GiteaScmRoot(String host, String organization, String repository, String ref) {
+    public GiteaScmRoot(String host, String organization, String repository, String ref, String token) {
         ApiClient client;
 
         client = Configuration.getDefaultApiClient();
         client.setBasePath("https://" + host + "/api/v1");
         client.setReadTimeout(5000);
-
-        /* TODO
-        ApiKeyAuth accessToken = (ApiKeyAuth) defaultClient.getAuthentication("AccessToken");
-        accessToken.setApiKey(apiKey); */
+        if (token != null) {
+            ApiKeyAuth accessToken = (ApiKeyAuth) client.getAuthentication("AccessToken");
+            accessToken.setApiKey(token);
+        }
 
         this.gitea = new RepositoryApi(client);
         this.organization = organization;
@@ -42,13 +57,15 @@ public class GiteaScmRoot extends ScmRoot {
     public void writeTo(String path, OutputStream dest) throws IOException {
     }
 
-    public String read(String path) throws ApiException {
-        ContentsResponse content = gitea.repoGetContents(organization, repository, path, ref);
+    public byte[] read(String path) throws ApiException, IOException {
+        ContentsResponse content;
 
-        String str = content.getContent();
-        if ("base64".equals(content.getEncoding())) {
-            str = new String(Base64.getDecoder().decode(str.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
+        content = gitea.repoGetContents(organization, repository, path, ref);
+        switch (content.getEncoding()) {
+            case "base64":
+                return Base64.getDecoder().decode(content.getContent());
+            default:
+                throw new IOException("unknown encoding: " + content.getEncoding());
         }
-        return str;
     }
 }

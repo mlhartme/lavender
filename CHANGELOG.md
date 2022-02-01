@@ -2,6 +2,7 @@
 
 ### 2.10.2 (pending)
 
+* added Gitea support for IndexModules
 * dumped explicitly rejecting pustefix.relative
 * updated debian dependencies from Java 8 to 11
 * no parent pom update, because it would compile for java 16, which is not yet an option

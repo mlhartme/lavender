@@ -17,12 +17,15 @@ package net.oneandone.lavender.scm;
 
 import org.junit.jupiter.api.Test;
 
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+
 public class GiteaScmRootIT {
     @Test
     public void read() throws Exception {
         GiteaScmRoot r;
 
-        r = new GiteaScmRoot("git.ionos.org", "CP-DevEnv", "application-parent-pom", "main");
-        System.out.println("test: " + r.read("pom.xml"));
+        r = GiteaScmRoot.create(URI.create("https://git.ionos.org/CP-DevEnv/application-parent-pom.git"), "main", "TODO:invalidtoken");
+        System.out.println("test: " + new String(r.read("pom.xml"), StandardCharsets.UTF_8));
     }
 }

@@ -15,27 +15,23 @@
  */
 package net.oneandone.lavender.scm;
 
+import io.gitea.auth.ApiKeyAuth;
 import net.oneandone.lavender.config.Secrets;
 import net.oneandone.lavender.config.UsernamePassword;
 import net.oneandone.sushi.fs.World;
-import net.oneandone.sushi.util.Strings;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 
 /**
- * Used for index modules to fetch resources.
+ * Used for IndexedModules to fetch resources.
  */
 public abstract class ScmRoot {
     public static ScmRoot create(World world, String urlstr, String at, Secrets secrets) throws IOException {
-        URI uri;
         UsernamePassword up;
-        String uriPath;
-        String project;
-        String repository;
-        int idx;
-        String host;
+        URI uri;
+        String token;
 
         up = secrets.get(urlstr);
         uri = URI.create(urlstr);
@@ -43,15 +39,21 @@ public abstract class ScmRoot {
             throw new IllegalArgumentException("git uri expected, got " + urlstr);
         }
         uri = URI.create(uri.getSchemeSpecificPart());
-        host = uri.getHost();
-        if (!host.contains("bitbucket")) {
-            throw new UnsupportedOperationException("TODO: " + host);
+
+        // TODO: configurable
+        if (uri.getHost().contains("bitbucket")) {
+            return BitbucketScmRoot.create(world, uri, up, at);
+        } else {
+            if (up != null) {
+                if (!"token".equals(up.username)) {
+                    throw new IOException("username has to be token: " + up.username);
+                }
+                token = up.password;
+            } else {
+                token = null;
+            }
+            return GiteaScmRoot.create(uri, at, token);
         }
-        uriPath = Strings.removeLeft(uri.getPath(), "/");
-        idx = uriPath.indexOf('/');
-        project = uriPath.substring(0, idx);
-        repository = Strings.removeRight(uriPath.substring(idx + 1), ".git");
-        return new BitbucketScmRoot(Bitbucket.create(world, host, up), project, repository, at);
     }
 
     public ScmRoot() {
