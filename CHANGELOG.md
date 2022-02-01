@@ -7,7 +7,7 @@
 
 ### 2.10.0 (2021-05-11)
 
-CAUTION - breaking changes: requires Java 11+
+CAUTION - breaking change: requires Java 11+
 
 
 Migration steps:

@@ -30,7 +30,7 @@ Add Lavender to your `pom.xml`:
      <dependency>
        <groupId>net.oneandone</groupId>
        <artifactId>lavender</artifactId>
-       <version>2.7.0</version>
+       <version>2.10.1</version>
      </dependency>
 
 Add the Servlet Filter to your `web.xml`:
