@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.oneandone.lavender.modules;
+package net.oneandone.lavender.scm;
 
 import net.oneandone.lavender.config.Secrets;
+import net.oneandone.lavender.modules.BitbucketModule;
+import net.oneandone.lavender.modules.Module;
+import net.oneandone.lavender.modules.Resource;
 import net.oneandone.lavender.scm.Bitbucket;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.file.FileNode;
