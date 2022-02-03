@@ -15,7 +15,6 @@
  */
 package net.oneandone.lavender.scm;
 
-import io.gitea.auth.ApiKeyAuth;
 import net.oneandone.lavender.config.Secrets;
 import net.oneandone.lavender.config.UsernamePassword;
 import net.oneandone.sushi.fs.World;

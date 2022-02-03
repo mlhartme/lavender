@@ -60,6 +60,7 @@ public class GiteaScmRoot extends ScmRoot {
     public byte[] read(String path) throws ApiException, IOException {
         ContentsResponse content;
 
+        // TODO: how can I stream contents
         content = gitea.repoGetContents(organization, repository, path, ref);
         switch (content.getEncoding()) {
             // TODO: more encodings?

@@ -27,7 +27,7 @@ public class GiteaScmRootIT {
     public void readTextFile() throws Exception {
         GiteaScmRoot r;
 
-        r = GiteaScmRoot.create(URI.create("https://git.ionos.org/CP-DevEnv/application-parent-pom.git"), "main", "TODO:invalidtoken");
+        r = GiteaScmRoot.create(URI.create("https://git.ionos.org/CP-DevEnv/application-parent-pom.git"), "main", null);
         System.out.println("test: " + new String(r.read("pom.xml"), StandardCharsets.UTF_8));
     }
 
@@ -35,7 +35,7 @@ public class GiteaScmRootIT {
     public void readImage() throws Exception {
         GiteaScmRoot r;
 
-        r = GiteaScmRoot.create(URI.create("https://git.ionos.org/mhm/lavender-test-module.git"), "main", "TODO:invalidtoken");
+        r = GiteaScmRoot.create(URI.create("https://git.ionos.org/mhm/lavender-test-module.git"), "main", null);
         Files.write(Path.of("tmp.jpg"), r.read("Penny_test.jpg"));
     }
 }
