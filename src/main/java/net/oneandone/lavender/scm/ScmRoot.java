@@ -40,14 +40,13 @@ public abstract class ScmRoot {
             throw new IllegalArgumentException("git uri expected, got " + urlstr);
         }
         uri = URI.create(uri.getSchemeSpecificPart());
-
         wirelog = System.getProperty("lavender.wirelog");
         if (wirelog != null) {
             HttpFilesystem.wireLog(wirelog);
         }
 
-        // TODO: configurable
-        if (uri.getHost().contains("bitbucket")) {
+        // TODO: poor check ... configurable
+        if (uri.toString().contains("bitbucket.1and1.org")) {
             return BitbucketScmRoot.create(world, uri, up, at);
         } else {
             if (up != null) {

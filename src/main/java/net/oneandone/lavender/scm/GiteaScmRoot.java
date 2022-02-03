@@ -26,7 +26,7 @@ public class GiteaScmRoot extends ScmRoot {
         idx = uriPath.indexOf('/');
         project = uriPath.substring(0, idx);
         repository = Strings.removeRight(uriPath.substring(idx + 1), ".git");
-        return new GiteaScmRoot((HttpNode) world.node(uri.resolve("/")).join("api/v1"), project, repository, at, token);
+        return new GiteaScmRoot((HttpNode) world.validNode("https://" + uri.getHost() + "/api/v1"), project, repository, at, token);
     }
 
     private final HttpNode root;
