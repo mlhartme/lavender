@@ -2,7 +2,6 @@ package net.oneandone.lavender.scm;
 
 import net.oneandone.sushi.fs.NodeInstantiationException;
 import net.oneandone.sushi.fs.World;
-import net.oneandone.sushi.fs.http.HttpFilesystem;
 import net.oneandone.sushi.fs.http.HttpNode;
 import net.oneandone.sushi.fs.http.model.HeaderList;
 import net.oneandone.sushi.util.Strings;
@@ -15,16 +14,10 @@ import java.net.URI;
 /** I know there's https://github.com/zeripath/java-gitea-api, but I didn't find a way to stream raw file results. */
 public class GiteaScmRoot extends ScmRoot {
     public static GiteaScmRoot create(World world, URI uri, String at, String token) throws NodeInstantiationException {
-        String wireLog;
         String uriPath;
         int idx;
         String project;
         String repository;
-
-        wireLog = System.getProperty("lavender.wirelog");
-        if (wireLog != null) {
-            HttpFilesystem.wireLog(wireLog);
-        }
 
         uriPath = Strings.removeLeft(uri.getPath(), "/");
         idx = uriPath.indexOf('/');

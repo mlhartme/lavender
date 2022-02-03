@@ -22,7 +22,6 @@ import com.google.gson.JsonParser;
 import net.oneandone.lavender.config.UsernamePassword;
 import net.oneandone.sushi.fs.NodeInstantiationException;
 import net.oneandone.sushi.fs.World;
-import net.oneandone.sushi.fs.http.HttpFilesystem;
 import net.oneandone.sushi.fs.http.HttpNode;
 import net.oneandone.sushi.fs.http.model.HeaderList;
 import net.oneandone.sushi.io.Buffer;
@@ -47,13 +46,7 @@ import java.util.Map;
 public class Bitbucket {
     public static Bitbucket create(World world, String hostname, UsernamePassword up) throws NodeInstantiationException {
         String credentials;
-        String wireLog;
         URI uri;
-
-        wireLog = System.getProperty("lavender.wirelog");
-        if (wireLog != null) {
-            HttpFilesystem.wireLog(wireLog);
-        }
 
         if (up != null && !up.equals(UsernamePassword.ANONYMOUS)) {
             credentials = up.username + ":" + up.password;

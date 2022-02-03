@@ -18,6 +18,7 @@ package net.oneandone.lavender.scm;
 import net.oneandone.lavender.config.Secrets;
 import net.oneandone.lavender.config.UsernamePassword;
 import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.http.HttpFilesystem;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,6 +32,7 @@ public abstract class ScmRoot {
         UsernamePassword up;
         URI uri;
         String token;
+        String wirelog;
 
         up = secrets.get(urlstr);
         uri = URI.create(urlstr);
@@ -38,6 +40,11 @@ public abstract class ScmRoot {
             throw new IllegalArgumentException("git uri expected, got " + urlstr);
         }
         uri = URI.create(uri.getSchemeSpecificPart());
+
+        wirelog = System.getProperty("lavender.wirelog");
+        if (wirelog != null) {
+            HttpFilesystem.wireLog(wirelog);
+        }
 
         // TODO: configurable
         if (uri.getHost().contains("bitbucket")) {
