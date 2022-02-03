@@ -51,7 +51,7 @@ public abstract class ScmRoot {
             } else {
                 token = null;
             }
-            return GiteaScmRoot.create(uri, at, token);
+            return GiteaScmRoot.create(world, uri, at, token);
         }
     }
 

@@ -128,13 +128,6 @@
       <version>1.2.0</version>
     </dependency>
 
-    <dependency>
-      <groupId>com.github.zeripath</groupId>
-      <artifactId>java-gitea-api</artifactId>
-      <version>1.15.0</version>
-    </dependency>
-
-
     <dependency><!-- TODO: 3.1 results in compile errors -->
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>

@@ -50,7 +50,7 @@ public class Bitbucket {
         String wireLog;
         URI uri;
 
-        wireLog = System.getProperty("lavender.bitbucket.wirelog");
+        wireLog = System.getProperty("lavender.wirelog");
         if (wireLog != null) {
             HttpFilesystem.wireLog(wireLog);
         }

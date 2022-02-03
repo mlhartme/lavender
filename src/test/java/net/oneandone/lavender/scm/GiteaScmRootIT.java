@@ -15,19 +15,31 @@
  */
 package net.oneandone.lavender.scm;
 
+import net.oneandone.sushi.fs.World;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class GiteaScmRootIT {
+    private static final World WORLD;
+
+    static {
+        try {
+            WORLD = World.create(false);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     @Test
     public void readTextFile() throws Exception {
         GiteaScmRoot r;
 
-        r = GiteaScmRoot.create(URI.create("https://git.ionos.org/CP-DevEnv/application-parent-pom.git"), "main", null);
+        r = GiteaScmRoot.create(WORLD, URI.create("https://git.ionos.org/CP-DevEnv/application-parent-pom.git"), "main", null);
         System.out.println("test: " + new String(r.read("pom.xml"), StandardCharsets.UTF_8));
     }
 
@@ -35,7 +47,7 @@ public class GiteaScmRootIT {
     public void readImage() throws Exception {
         GiteaScmRoot r;
 
-        r = GiteaScmRoot.create(URI.create("https://git.ionos.org/mhm/lavender-test-module.git"), "main", null);
+        r = GiteaScmRoot.create(WORLD, URI.create("https://git.ionos.org/mhm/lavender-test-module.git"), "main", null);
         Files.write(Path.of("tmp.jpg"), r.read("Penny_test.jpg"));
     }
 }

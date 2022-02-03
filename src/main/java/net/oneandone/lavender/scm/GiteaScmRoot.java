@@ -1,73 +1,73 @@
 package net.oneandone.lavender.scm;
 
-import io.gitea.ApiClient;
-import io.gitea.ApiException;
-import io.gitea.Configuration;
-import io.gitea.api.RepositoryApi;
-import io.gitea.auth.ApiKeyAuth;
-import io.gitea.model.ContentsResponse;
 import net.oneandone.sushi.fs.NodeInstantiationException;
+import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.http.HttpFilesystem;
+import net.oneandone.sushi.fs.http.HttpNode;
+import net.oneandone.sushi.fs.http.model.HeaderList;
 import net.oneandone.sushi.util.Strings;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
-import java.util.Base64;
 
+/** I know there's https://github.com/zeripath/java-gitea-api, but I didn't find a way to stream raw file results. */
 public class GiteaScmRoot extends ScmRoot {
-    public static GiteaScmRoot create(URI uri, String at, String token) throws NodeInstantiationException {
+    public static GiteaScmRoot create(World world, URI uri, String at, String token) throws NodeInstantiationException {
+        String wireLog;
         String uriPath;
         int idx;
         String project;
         String repository;
 
+        wireLog = System.getProperty("lavender.wirelog");
+        if (wireLog != null) {
+            HttpFilesystem.wireLog(wireLog);
+        }
+
         uriPath = Strings.removeLeft(uri.getPath(), "/");
         idx = uriPath.indexOf('/');
         project = uriPath.substring(0, idx);
         repository = Strings.removeRight(uriPath.substring(idx + 1), ".git");
-        return new GiteaScmRoot(uri.getHost(), project, repository, at, token);
+        return new GiteaScmRoot((HttpNode) world.node(uri.resolve("/")).join("api/v1"), project, repository, at, token);
     }
 
-    private final RepositoryApi gitea;
+    private final HttpNode root;
+    private final String token;
     private final String organization;
     private final String repository;
     private final String ref;
 
-    public GiteaScmRoot(String host, String organization, String repository, String ref, String token) {
-        ApiClient client;
-
-        client = Configuration.getDefaultApiClient();
-        client.setBasePath("https://" + host + "/api/v1");
-        client.setReadTimeout(5000);
-        if (token != null) {
-            ApiKeyAuth accessToken = (ApiKeyAuth) client.getAuthentication("AccessToken");
-            accessToken.setApiKey(token);
-        }
-
-        this.gitea = new RepositoryApi(client);
+    public GiteaScmRoot(HttpNode root, String organization, String repository, String ref, String token) {
+        this.root = root;
+        this.token = token;
         this.organization = organization;
         this.repository = repository;
         this.ref = ref;
     }
 
     public String getOrigin() {
-        return gitea.getApiClient().getBasePath();
+        return root.toString();
     }
 
     public void writeTo(String path, OutputStream dest) throws IOException {
+        HttpNode node;
+
+        node = root;
+        if (token != null) {
+            node = node.withHeaders(HeaderList.of("Authorization", "token " + token));
+        }
+        node = node.join("repos", organization, repository, "raw", path);
+        node = node.withParameter("ref", ref);
+        node.copyFileTo(dest, 0);
     }
 
-    public byte[] read(String path) throws ApiException, IOException {
-        ContentsResponse content;
+    public byte[] read(String path) throws IOException {
+        ByteArrayOutputStream dest;
 
-        // TODO: how can I stream contents
-        content = gitea.repoGetContents(organization, repository, path, ref);
-        switch (content.getEncoding()) {
-            // TODO: more encodings?
-            case "base64":
-                return Base64.getDecoder().decode(content.getContent());
-            default:
-                throw new IOException("unknown encoding: " + content.getEncoding());
-        }
+        dest = new ByteArrayOutputStream();
+        writeTo(path, dest);
+        return dest.toByteArray();
     }
 }
