@@ -16,6 +16,7 @@
 package net.oneandone.lavender.scm;
 
 import net.oneandone.sushi.fs.World;
+import net.oneandone.sushi.fs.http.HttpFilesystem;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -47,6 +48,7 @@ public class GiteaScmRootIT {
     public void readImage() throws Exception {
         GiteaScmRoot r;
 
+        // HttpFilesystem.wireLog("wire.log");
         r = GiteaScmRoot.create(WORLD, URI.create("https://git.ionos.org/mhm/lavender-test-module.git"), "main", null);
         Files.write(Path.of("tmp.jpg"), r.read("Penny_test.jpg"));
     }

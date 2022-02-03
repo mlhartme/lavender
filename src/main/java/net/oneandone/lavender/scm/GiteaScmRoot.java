@@ -11,7 +11,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 
-/** I know there's https://github.com/zeripath/java-gitea-api, but I didn't find a way to stream raw file results. */
+/**
+ * Minimal sushi client for https://docs.gitea.io/en-us/api-usage/#api-guide
+ * I know there's https://github.com/zeripath/java-gitea-api, but I didn't find a way to stream raw file results.
+ */
 public class GiteaScmRoot extends ScmRoot {
     public static GiteaScmRoot create(World world, URI uri, String at, String token) throws NodeInstantiationException {
         String uriPath;
@@ -47,11 +50,10 @@ public class GiteaScmRoot extends ScmRoot {
     public void writeTo(String path, OutputStream dest) throws IOException {
         HttpNode node;
 
-        node = root;
+        node = root.join("repos", organization, repository, "raw", path);
         if (token != null) {
             node = node.withHeaders(HeaderList.of("Authorization", "token " + token));
         }
-        node = node.join("repos", organization, repository, "raw", path);
         node = node.withParameter("ref", ref);
         node.copyFileTo(dest, 0);
     }
