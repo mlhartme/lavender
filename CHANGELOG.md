@@ -1,14 +1,14 @@
 ## Changelog 
 
-### 2.11.0 (pending)
+### 2.11.0 (2022-02-04)
 
 * added Gitea support for IndexModules
 * host properties
   * added `modern` property to reject classic modules on publishing
   * added `bitbucketHosts` property to specify (comma-separated) the git hosts running bitbucket; everything else is consideded gitea;
-    default is to bitbucket.1and1.org because old lavender versions would reject this property
-* changed system property `lavender.bitbucket.wirelog` to `lavender.wirelog`
-* dumped explicitly rejecting pustefix.relative
+    default is `bitbucket.1and1.org` because old lavender versions would reject this property
+* changed system property `lavender.bitbucket.wirelog` to `lavender.wirelog`; also works for gitea
+* dumped explicitly testing for and rejecting `pustefix.relative`
 * updated debian dependencies from Java 8 to 11
 * no parent pom update, because it would compile for java 16, which is not yet an option
   (shops and bkshops use Java 15; telesales uses Java 13 Tower only has Java 11)
