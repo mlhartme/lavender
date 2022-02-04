@@ -98,7 +98,7 @@ public class WarEngine {
         return index;
     }
 
-    private void failClassic(List<Module> modules) {
+    private void failClassic(List<Module> modules) throws IOException {
         List<String> lst;
 
         lst = new ArrayList<>();
@@ -108,7 +108,7 @@ public class WarEngine {
             }
         }
         if (lst.isEmpty()) {
-            throw new IllegalArgumentException("only modern modules enabled, these modules are classic: " + lst);
+            throw new IOException("only modern modules enabled, these modules are classic: " + lst);
         }
     }
 
