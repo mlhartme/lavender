@@ -116,7 +116,7 @@ public class HostProperties extends PropertiesBase {
         }
         str = eatOpt(properties, "modern", "false");
         modern = Boolean.parseBoolean(str);
-        bitbucketHosts = Separator.COMMA.split(eatOpt(properties, "bitbucketHosts", ""));
+        bitbucketHosts = Separator.COMMA.split(eatOpt(properties, "bitbucketHosts", "bitbucket.1and1.org")); // TODO: change default to "" once we're on gitea
         str = eatOpt(properties, "network", null);
         if (str == null) {
             network = file.getParent().join("network.xml").getUri();

@@ -5,7 +5,8 @@
 * added Gitea support for IndexModules
 * host properties
   * added `modern` property to reject classic modules on publishing
-  * added `bitbucketHosts` property to specify (comma-separated) the git hosts running bitbucket; everything else is consideded gitea
+  * added `bitbucketHosts` property to specify (comma-separated) the git hosts running bitbucket; everything else is consideded gitea;
+    default is to bitbucket.1and1.org because old lavender versions would reject this property
 * changed system property `lavender.bitbucket.wirelog` to `lavender.wirelog`
 * dumped explicitly rejecting pustefix.relative
 * updated debian dependencies from Java 8 to 11
