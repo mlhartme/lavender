@@ -25,6 +25,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class GiteaScmRootIT {
     private static final World WORLD;
 
@@ -50,6 +52,6 @@ public class GiteaScmRootIT {
 
         // HttpFilesystem.wireLog("wire.log");
         r = GiteaScmRoot.create(WORLD, URI.create("https://git.ionos.org/mhm/lavender-test-module.git"), "main", null);
-        Files.write(Path.of("tmp.jpg"), r.read("Penny_test.jpg"));
+        assertTrue(r.read("Penny_test.jpg").length > 0);
     }
 }
