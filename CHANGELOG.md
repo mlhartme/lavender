@@ -1,8 +1,9 @@
 ## Changelog 
 
-### 2.10.2 (pending)
+### 2.11.0 (pending)
 
 * added Gitea support for IndexModules
+* added `modern` host property to reject classic modules on publishing
 * changed system property `lavender.bitbucket.wirelog` to `lavender.wirelog`
 * dumped explicitly rejecting pustefix.relative
 * updated debian dependencies from Java 8 to 11

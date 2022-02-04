@@ -80,6 +80,7 @@ public class HostProperties extends PropertiesBase {
         FileNode cache;
         Secrets secrets;
         World world;
+        boolean modern;
         URI network;
         HostProperties result;
         Node<?> root;
@@ -112,13 +113,15 @@ public class HostProperties extends PropertiesBase {
                 }
             }
         }
+        str = eatOpt(properties, "modern", "false");
+        modern = Boolean.parseBoolean(str);
         str = eatOpt(properties, "network", null);
         if (str == null) {
             network = file.getParent().join("network.xml").getUri();
         } else {
             network = secrets.withSecrets(new URI(str));
         }
-        result = new HostProperties(world, cache, network, secrets);
+        result = new HostProperties(world, cache, network, modern, secrets);
         for (String key : properties.stringPropertyNames()) {
             if (key.startsWith("scm.")) {
                 result.addScm(key.substring(4), new URI(eat(properties, key)));
@@ -142,14 +145,16 @@ public class HostProperties extends PropertiesBase {
 
     /** caution: URI, not node to avoid access */
     public final URI network;
+    public final boolean modern;
     public final Secrets secrets;
     private final List<Node> sshKeys;
 
-    public HostProperties(World world, FileNode cache, URI network, Secrets secrets) {
+    public HostProperties(World world, FileNode cache, URI network, boolean modern, Secrets secrets) {
         this.world = world;
         this.cache = cache;
         this.scms = new HashMap<>();
         this.network = network;
+        this.modern = modern;
         this.secrets = secrets;
         this.sshKeys = new ArrayList<>();
     }

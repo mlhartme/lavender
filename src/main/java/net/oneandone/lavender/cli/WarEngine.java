@@ -35,6 +35,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,14 +49,16 @@ public class WarEngine {
 
     private final FileNode cache;
     private final Distributor distributor;
+    private final boolean modernOnly;
     private final Secrets secrets;
     private final FileNode war;
     private final FileNode outputNodesFile;
     private final String nodes;
 
-    public WarEngine(FileNode cache, Distributor distributor, Secrets secrets, FileNode war, FileNode outputNodesFile, String nodes) {
+    public WarEngine(FileNode cache, Distributor distributor, boolean modernOnly, Secrets secrets, FileNode war, FileNode outputNodesFile, String nodes) {
         this.cache = cache;
         this.distributor = distributor;
+        this.modernOnly = modernOnly;
         this.secrets = secrets;
         this.war = war;
         this.outputNodesFile = outputNodesFile;
@@ -77,6 +80,9 @@ public class WarEngine {
 
         started = System.currentTimeMillis();
         modules = NodeModule.fromWebapp(cache, true, war.openZip(), secrets);
+        if (modernOnly) {
+            failClassic(modules);
+        }
         absolute = 0;
         changed = extract(modules);
 
@@ -90,6 +96,20 @@ public class WarEngine {
         LOG.info("done: "
                 + changed + "/" + absolute + " files changed in " + modules.size() + " modules, " + (System.currentTimeMillis() - started) + " ms");
         return index;
+    }
+
+    private void failClassic(List<Module> modules) {
+        List<String> lst;
+
+        lst = new ArrayList<>();
+        for (Module module : modules) {
+            if (module.descriptorOpt != null && module.descriptorOpt.classic) {
+                lst.add(module.getName());
+            }
+        }
+        if (lst.isEmpty()) {
+            throw new IllegalArgumentException("only modern modules enabled, these modules are classic: " + lst);
+        }
     }
 
     private long extract(List<Module> modules) throws IOException {
