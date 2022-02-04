@@ -23,12 +23,13 @@ import net.oneandone.sushi.fs.http.HttpFilesystem;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.List;
 
 /**
  * Used for IndexedModules to fetch resources.
  */
 public abstract class ScmRoot {
-    public static ScmRoot create(World world, String urlstr, String at, Secrets secrets) throws IOException {
+    public static ScmRoot create(World world, String urlstr, String at, Secrets secrets, List<String> bitbucketHosts) throws IOException {
         UsernamePassword up;
         URI uri;
         String token;
@@ -45,8 +46,7 @@ public abstract class ScmRoot {
             HttpFilesystem.wireLog(wirelog);
         }
 
-        // TODO: poor check ... configurable
-        if (uri.toString().contains("bitbucket.1and1.org")) {
+        if (bitbucketHosts.contains(uri.getHost())) {
             return BitbucketScmRoot.create(world, uri, up, at);
         } else {
             if (up != null) {

@@ -51,15 +51,18 @@ public class WarEngine {
     private final Distributor distributor;
     private final boolean modernOnly;
     private final Secrets secrets;
+    private final List<String> bitbucketHosts;
     private final FileNode war;
     private final FileNode outputNodesFile;
     private final String nodes;
 
-    public WarEngine(FileNode cache, Distributor distributor, boolean modernOnly, Secrets secrets, FileNode war, FileNode outputNodesFile, String nodes) {
+    public WarEngine(FileNode cache, Distributor distributor, boolean modernOnly, Secrets secrets, List<String> bitbucketHosts,
+                     FileNode war, FileNode outputNodesFile, String nodes) {
         this.cache = cache;
         this.distributor = distributor;
         this.modernOnly = modernOnly;
         this.secrets = secrets;
+        this.bitbucketHosts = bitbucketHosts;
         this.war = war;
         this.outputNodesFile = outputNodesFile;
         this.nodes = nodes;
@@ -79,7 +82,7 @@ public class WarEngine {
         long warStart;
 
         started = System.currentTimeMillis();
-        modules = NodeModule.fromWebapp(cache, true, war.openZip(), secrets);
+        modules = NodeModule.fromWebapp(cache, true, war.openZip(), secrets, bitbucketHosts);
         if (modernOnly) {
             failClassic(modules);
         }

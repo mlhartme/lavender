@@ -349,7 +349,8 @@ public class ModuleProperties extends PropertiesBase {
     }
 
     /** @param jarConfigOpt null when creating the application module or a temporary module for the scm command */
-    public Module create(FileNode cacheDir, boolean prod, Secrets secrets, PustefixJarConfig jarConfigOpt) throws IOException {
+    public Module create(FileNode cacheDir, boolean prod, Secrets secrets, List<String> bitbucketHosts,
+                         PustefixJarConfig jarConfigOpt) throws IOException {
         World world;
         final FileNode checkout;
         String scm;
@@ -404,7 +405,7 @@ public class ModuleProperties extends PropertiesBase {
         }
         scm = Strings.removeLeft(scmurl, "scm:");
         if (indexOpt != null) {
-            return createIndexedModule(world, scm, revision, accessPathPrefix(path), jarConfigOpt, secrets);
+            return createIndexedModule(world, scm, revision, accessPathPrefix(path), jarConfigOpt, secrets, bitbucketHosts);
         } else {
             if (scm.startsWith("svn:")) {
                 pinnedRevision = !prod || revision.isEmpty() ? -1 : Long.parseLong(revision);
@@ -433,14 +434,14 @@ public class ModuleProperties extends PropertiesBase {
         return url;
     }
 
-    private IndexedModule createIndexedModule(World world, String scm, String at, String accessPathPrefix,
-                                              PustefixJarConfig configOpt, Secrets secrets) throws IOException {
+    private IndexedModule createIndexedModule(World world, String scm, String at, String accessPathPrefix, PustefixJarConfig configOpt,
+                                              Secrets secrets, List<String> bitbucketHosts) throws IOException {
         ScmRoot scmRoot;
 
         if (!scm.startsWith("git:")) {
             throw new UnsupportedOperationException("TODO " + scm);
         }
-        scmRoot = ScmRoot.create(world, scm, at, secrets);
+        scmRoot = ScmRoot.create(world, scm, at, secrets, bitbucketHosts);
         return new IndexedModule(scm, name, this, lavenderize, resourcePathPrefix, targetPathPrefix, filter,
                 accessPathPrefix, configOpt, indexOpt, scmRoot);
     }

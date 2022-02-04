@@ -84,6 +84,7 @@ public class HostProperties extends PropertiesBase {
         URI network;
         HostProperties result;
         Node<?> root;
+        List<String> bitbucketHosts;
 
         world = file.getWorld();
         properties = file.readProperties();
@@ -115,6 +116,7 @@ public class HostProperties extends PropertiesBase {
         }
         str = eatOpt(properties, "modern", "false");
         modern = Boolean.parseBoolean(str);
+        bitbucketHosts = Separator.COMMA.split(eatOpt(properties, "bitbucketHosts", ""));
         str = eatOpt(properties, "network", null);
         if (str == null) {
             network = file.getParent().join("network.xml").getUri();
@@ -122,6 +124,7 @@ public class HostProperties extends PropertiesBase {
             network = secrets.withSecrets(new URI(str));
         }
         result = new HostProperties(world, cache, network, modern, secrets);
+        result.bitbucketHosts.addAll(bitbucketHosts);
         for (String key : properties.stringPropertyNames()) {
             if (key.startsWith("scm.")) {
                 result.addScm(key.substring(4), new URI(eat(properties, key)));
@@ -147,6 +150,7 @@ public class HostProperties extends PropertiesBase {
     public final URI network;
     public final boolean modern;
     public final Secrets secrets;
+    public final List<String> bitbucketHosts;
     private final List<Node> sshKeys;
 
     public HostProperties(World world, FileNode cache, URI network, boolean modern, Secrets secrets) {
@@ -156,6 +160,7 @@ public class HostProperties extends PropertiesBase {
         this.network = network;
         this.modern = modern;
         this.secrets = secrets;
+        this.bitbucketHosts = new ArrayList<>();
         this.sshKeys = new ArrayList<>();
     }
 

@@ -30,7 +30,7 @@ public abstract class NodeModule extends Module<Node> {
     private static final Logger LOG = LoggerFactory.getLogger(Module.class);
     // used to detect a recent parent pom
 
-    public static List<Module> fromWebapp(FileNode cache, boolean prod, Node<?> webapp, Secrets secrets)
+    public static List<Module> fromWebapp(FileNode cache, boolean prod, Node<?> webapp, Secrets secrets, List<String> bitbucketHosts)
             throws IOException {
         List<Module> result;
         PustefixWarConfig rootConfig;
@@ -47,11 +47,11 @@ public abstract class NodeModule extends Module<Node> {
             pustefixJar = PustefixJar.forNodeOpt(prod, jar, rootConfig);
             if (pustefixJar != null) {
                 if (pustefixJar.moduleProperties != null) {
-                    result.add(pustefixJar.moduleProperties.create(cache, prod, secrets, pustefixJar.config));
+                    result.add(pustefixJar.moduleProperties.create(cache, prod, secrets, bitbucketHosts, pustefixJar.config));
                 }
             }
         }
-        result.add(application.create(cache, prod, secrets, null));
+        result.add(application.create(cache, prod, secrets, bitbucketHosts, null));
         return result;
     }
 

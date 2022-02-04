@@ -15,6 +15,7 @@
  */
 package net.oneandone.lavender.cli;
 
+import net.oneandone.lavender.config.HostProperties;
 import net.oneandone.lavender.modules.NodeModule;
 import net.oneandone.sushi.fs.Node;
 import net.oneandone.sushi.fs.file.FileNode;
@@ -35,11 +36,13 @@ public class Info extends Base {
     }
 
     public void run() throws IOException, URISyntaxException {
+        HostProperties hostProperties;
         Node<?> open;
         List<Module> modules;
 
+        hostProperties = globals.properties();
         open = war.openZip();
-        modules = NodeModule.fromWebapp(globals.cacheroot(), true, open, globals.properties().secrets);
+        modules = NodeModule.fromWebapp(globals.cacheroot(), true, open, hostProperties.secrets, hostProperties.bitbucketHosts);
         for (Module module : modules) {
             System.out.println(module.getName() + " " + module.getClass().getSimpleName());
             System.out.println(Strings.indent("" + module.descriptorOpt, "  "));

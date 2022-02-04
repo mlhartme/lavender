@@ -94,7 +94,7 @@ public class DevelopmentFilter implements Filter {
     }
 
     List<Module> loadModulesFromWebapp(Node webapp, HostProperties properties, FileNode cache) throws IOException {
-        return NodeModule.fromWebapp(cache, false, webapp, properties.secrets);
+        return NodeModule.fromWebapp(cache, false, webapp, properties.secrets, properties.bitbucketHosts);
     }
 
     public boolean intercept(HttpServletRequest request, HttpServletResponse response) throws IOException {

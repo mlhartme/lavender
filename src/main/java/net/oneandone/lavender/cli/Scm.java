@@ -72,7 +72,7 @@ public class Scm extends Base {
         moduleConfig = new ModuleProperties(ModuleProperties.urlToFilename(scmurlstr), false, filter, scmurlstr,
                 "", "", false, "", prefix, null, null);
         cacheroot = globals.cacheroot();
-        module = moduleConfig.create(cacheroot, true, properties.secrets, null);
+        module = moduleConfig.create(cacheroot, true, properties.secrets, properties.bitbucketHosts, null);
         try (Pool pool = globals.pool()) {
             distributor = Distributor.open(cacheroot, cluster.connect(pool), docroot, indexName);
             changed = distributor.publish(module);

@@ -45,7 +45,7 @@ public class BitbucketModuleIT {
         }
     }
 
-    // @Test TODO: module was wiped from bitbucket
+    // @Test TODO: module was moved from bitbucket to gitea (mhm organization), bit I don't have GiteaModules ...
     public void directory() throws Exception {
         Secrets secrets;
         Module<?> module;
