@@ -1,5 +1,10 @@
 ## Changelog 
 
+### 2.11.1 (pending)
+
+* improved error message for invalid gitea url
+
+
 ### 2.11.0 (2022-02-04)
 
 * added Gitea support for IndexModules

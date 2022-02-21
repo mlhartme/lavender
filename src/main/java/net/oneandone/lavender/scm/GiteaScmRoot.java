@@ -15,7 +15,6 @@
  */
 package net.oneandone.lavender.scm;
 
-import net.oneandone.sushi.fs.NodeInstantiationException;
 import net.oneandone.sushi.fs.World;
 import net.oneandone.sushi.fs.http.HttpNode;
 import net.oneandone.sushi.fs.http.model.HeaderList;
@@ -31,7 +30,7 @@ import java.net.URI;
  * I know there's https://github.com/zeripath/java-gitea-api, but I didn't find a way to stream raw file results.
  */
 public class GiteaScmRoot extends ScmRoot {
-    public static GiteaScmRoot create(World world, URI uri, String at, String token) throws NodeInstantiationException {
+    public static GiteaScmRoot create(World world, URI uri, String at, String token) throws IOException {
         String uriPath;
         int idx;
         String project;
@@ -39,6 +38,9 @@ public class GiteaScmRoot extends ScmRoot {
 
         uriPath = Strings.removeLeft(uri.getPath(), "/");
         idx = uriPath.indexOf('/');
+        if (idx < 0) {
+            throw new IOException("invalid url for gitea repository: " + uri);
+        }
         project = uriPath.substring(0, idx);
         repository = Strings.removeRight(uriPath.substring(idx + 1), ".git");
         return new GiteaScmRoot((HttpNode) world.validNode("https://" + uri.getHost() + "/api/v1"), project, repository, at, token);
