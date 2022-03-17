@@ -78,7 +78,7 @@ public class File extends Base {
                 result = new HashMap<>();
                 for (Node node : exploded.find(filter)) {
                     if (node.isFile()) {
-                        result.put(node.getPath(), node);
+                        result.put(node.getRelative(exploded), node);
                     }
                 }
                 return result;

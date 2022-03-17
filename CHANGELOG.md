@@ -2,6 +2,7 @@
 
 ### 2.11.1 (pending)
 
+* `file`: fixed paths under htdocs: for directory arguments, they were absolute paths, now they are relative
 * improved error message for invalid gitea url
 * fixed usage message for `file`
 
