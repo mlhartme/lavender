@@ -3,6 +3,7 @@
 ### 2.11.1 (pending)
 
 * improved error message for invalid gitea url
+* fixed usage message for `file`
 
 
 ### 2.11.0 (2022-02-04)

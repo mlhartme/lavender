@@ -65,7 +65,7 @@ public class File extends Base {
                 throw new ArgumentException(archive + ": cannot open zip archive: " + e.getMessage(), e);
             }
         } else {
-            exploded = archive;
+            exploded = archive.checkDirectory();
         }
         docroot = cluster.docroot(docrootName);
         filter = new Filter();

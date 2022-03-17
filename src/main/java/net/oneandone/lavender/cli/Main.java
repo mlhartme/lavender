@@ -83,7 +83,7 @@ public class Main {
         help.append("  'scm' ['-prefix' prefix] scm cluster docroot index?\n");
         help.append("                            publish resources from the specified scm\n");
         help.append("                            <scm> is searched in from host.properties;\n");
-        help.append("                            index defaults to <scm> + '.idx'; prefix defaults to <scm> + '/'");
+        help.append("                            index defaults to <scm> + '.idx'; prefix defaults to <scm> + '/'\n");
         help.append("  'file' ['-prefix' prefix] archive cluster docroot index\n");
         help.append("                            publish resources from archive to docroot on the specified cluster;\n");
         help.append("                            index is a file name with suffix; default prefix is empty;\n");
