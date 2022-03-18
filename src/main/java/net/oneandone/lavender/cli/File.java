@@ -30,18 +30,22 @@ import net.oneandone.sushi.fs.filter.Filter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class File extends Base {
     private final String prefix;
+    private final List<String> excludes;
     private final FileNode archive;
     private final String indexName;
     private final String docrootName;
     private final Cluster cluster;
 
-    public File(Globals globals, String prefix, FileNode archive, String clusterName, String docrootName, String indexName) throws IOException, URISyntaxException {
+    public File(Globals globals, String prefix, List<String> excludes,
+                FileNode archive, String clusterName, String docrootName, String indexName) throws IOException, URISyntaxException {
         super(globals);
         this.prefix = prefix;
+        this.excludes = excludes;
         this.archive = archive.checkExists();
         this.indexName = indexName;
         this.docrootName = docrootName;
@@ -68,8 +72,7 @@ public class File extends Base {
             exploded = archive.checkDirectory();
         }
         docroot = cluster.docroot(docrootName);
-        filter = new Filter();
-        filter.includeAll();
+        filter = new Filter().includeAll().exclude(excludes);
         module = new NodeModule(archive, indexName, null, false, "", prefix, filter) {
             @Override
             protected Map<String, Node> loadEntries() throws Exception {
