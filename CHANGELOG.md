@@ -1,6 +1,6 @@
 ## Changelog 
 
-### 2.11.1 (pending)
+### 2.11.1 (2022-04-05)
 
 * `file` command
   * added exclude option
